@@ -11,8 +11,16 @@ composeBom = "2026.02.01"
 appcompat = "1.7.1"
 material = "1.14.0"
 jetbrainsKotlinJvm = "2.2.10"
+compileSdk = "36" # Read by convention plugin do not erase
+minSdk = "24" # Read by convention plugin
+targetSdk = "36" # Read by convention plugin
 
 [libraries]
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
+
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
