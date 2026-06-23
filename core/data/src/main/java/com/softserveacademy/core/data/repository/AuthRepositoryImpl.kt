@@ -25,4 +25,14 @@ class AuthRepositoryImpl : AuthRepository {
             Result.failure(Exception("Invalid credentials"))
         }
     }
+
+    override suspend fun recoverPassword(email: String): Result<Unit> {
+        // Mocking a network call
+        delay(2000.milliseconds)
+        return if (email.contains("@")) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exception("User not found"))
+        }
+    }
 }
