@@ -40,6 +40,8 @@ dependencies {
     implementation(project(":core:presentation:ui"))
     implementation(project(":core:presentation:design_system"))
 
+    implementation(libs.androidx.datastore.preferences)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

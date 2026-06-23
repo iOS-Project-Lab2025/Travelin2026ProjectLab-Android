@@ -8,5 +8,6 @@ android {
 
 dependencies {
     implementation(project(":core:domain"))
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.appcompat)
 }
