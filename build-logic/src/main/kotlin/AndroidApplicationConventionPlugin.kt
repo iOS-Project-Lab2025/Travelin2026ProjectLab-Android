@@ -12,9 +12,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("com.android.application")
-            if (extensions.findByName("kotlin") == null) {
-                pluginManager.apply("org.jetbrains.kotlin.android")
-            }
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")

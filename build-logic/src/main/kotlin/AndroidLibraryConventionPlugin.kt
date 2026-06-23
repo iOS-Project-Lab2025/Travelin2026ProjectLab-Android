@@ -13,10 +13,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("com.android.library")
-            // Apply kotlin-android only if kotlin extension is not already present to avoid conflicts
-            if (extensions.findByName("kotlin") == null) {
-                pluginManager.apply("org.jetbrains.kotlin.android")
-            }
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 

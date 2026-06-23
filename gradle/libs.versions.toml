@@ -13,9 +13,9 @@ material = "1.14.0"
 jetbrainsKotlinJvm = "2.2.10"
 hilt = "2.59.2"
 ksp = "2.2.10-2.0.2"
-compileSdk = "36" # Read by convention plugin do not erase
+compileSdk = "37" # Read by convention plugin do not erase
 minSdk = "24" # Read by convention plugin
-targetSdk = "36" # Read by convention plugin
+targetSdk = "37" # Read by convention plugin
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
