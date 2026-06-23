@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.ui.auth
+package com.softserveacademy.feature.auth
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
@@ -17,13 +17,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.domain.usecase.LoginUseCase
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
     onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
     if (viewModel.isSuccess) {
@@ -32,6 +32,31 @@ fun LoginScreen(
         }
     }
 
+    LoginContent(
+        email = viewModel.email,
+        onEmailChange = { viewModel.email = it },
+        password = viewModel.password,
+        onPasswordChange = { viewModel.password = it },
+        isLoading = viewModel.isLoading,
+        error = viewModel.error,
+        onLoginClick = { viewModel.onLoginClick() },
+        onNavigateToRegister = onNavigateToRegister,
+        onNavigateToForgotPassword = onNavigateToForgotPassword
+    )
+}
+
+@Composable
+fun LoginContent(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    isLoading: Boolean,
+    error: String?,
+    onLoginClick: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
+) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
@@ -68,8 +93,8 @@ fun LoginScreen(
         ) {
             Text(text = "Email", fontWeight = FontWeight.Medium)
             OutlinedTextField(
-                value = viewModel.email,
-                onValueChange = { viewModel.email = it },
+                value = email,
+                onValueChange = onEmailChange,
                 placeholder = { Text("Enter your email address") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = shapes.small
@@ -77,8 +102,8 @@ fun LoginScreen(
 
             Text(text = "Password", fontWeight = FontWeight.Medium)
             OutlinedTextField(
-                value = viewModel.password,
-                onValueChange = { viewModel.password = it },
+                value = password,
+                onValueChange = onPasswordChange,
                 placeholder = { Text("Enter your password") },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -89,20 +114,33 @@ fun LoginScreen(
                 },
                 shape = shapes.small
             )
+
+            TextButton(
+                onClick = onNavigateToForgotPassword,
+                modifier = Modifier.align(Alignment.End),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "Forgot Password?",
+                    color = Color(0xFF03A9F4),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
 
-        if (viewModel.error != null) {
+        if (error != null) {
             Text(
-                text = viewModel.error!!,
+                text = error,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = TravelinDimens.PaddingMedium)
             )
         }
 
         Button(
-            onClick = { viewModel.onLoginClick() },
+            onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ButtonHeightLarge),
@@ -110,9 +148,9 @@ fun LoginScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF03A9F4)
             ),
-            enabled = !viewModel.isLoading
+            enabled = !isLoading
         ) {
-            if (viewModel.isLoading) {
+            if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
                 Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -173,12 +211,15 @@ fun DiscoverLogo(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(
-        viewModel = LoginViewModel(LoginUseCase(object : com.softserveacademy.core.domain.repository.AuthRepository {
-            override suspend fun register(user: com.softserveacademy.core.domain.model.User, password: String) = Result.success(Unit)
-            override suspend fun login(email: String, password: String) = Result.success(Unit)
-        })),
+    LoginContent(
+        email = "",
+        onEmailChange = {},
+        password = "",
+        onPasswordChange = {},
+        isLoading = false,
+        error = null,
+        onLoginClick = {},
         onNavigateToRegister = {},
-        onLoginSuccess = {}
+        onNavigateToForgotPassword = {}
     )
 }

@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.ui.auth
+package com.softserveacademy.feature.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +28,49 @@ fun RegisterScreen(
         }
     }
 
+    RegisterContent(
+        firstName = viewModel.firstName,
+        onFirstNameChange = { viewModel.firstName = it },
+        lastName = viewModel.lastName,
+        onLastNameChange = { viewModel.lastName = it },
+        phone = viewModel.phone,
+        onPhoneChange = { viewModel.phone = it },
+        age = viewModel.age,
+        onAgeChange = { viewModel.age = it },
+        email = viewModel.email,
+        onEmailChange = { viewModel.email = it },
+        password = viewModel.password,
+        onPasswordChange = { viewModel.password = it },
+        termsAccepted = viewModel.termsAccepted,
+        onTermsAcceptedChange = { viewModel.termsAccepted = it },
+        isLoading = viewModel.isLoading,
+        error = viewModel.error,
+        onRegisterClick = { viewModel.onRegisterClick() },
+        onNavigateBack = onNavigateBack
+    )
+}
+
+@Composable
+fun RegisterContent(
+    firstName: String,
+    onFirstNameChange: (String) -> Unit,
+    lastName: String,
+    onLastNameChange: (String) -> Unit,
+    phone: String,
+    onPhoneChange: (String) -> Unit,
+    age: String,
+    onAgeChange: (String) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    termsAccepted: Boolean,
+    onTermsAcceptedChange: (Boolean) -> Unit,
+    isLoading: Boolean,
+    error: String?,
+    onRegisterClick: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
@@ -66,48 +109,48 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
         OutlinedTextField(
-            value = viewModel.firstName,
-            onValueChange = { viewModel.firstName = it },
+            value = firstName,
+            onValueChange = onFirstNameChange,
             label = { Text("First name") },
             modifier = Modifier.fillMaxWidth(),
             shape = shapes.small
         )
 
         OutlinedTextField(
-            value = viewModel.lastName,
-            onValueChange = { viewModel.lastName = it },
+            value = lastName,
+            onValueChange = onLastNameChange,
             label = { Text("Last name") },
             modifier = Modifier.fillMaxWidth(),
             shape = shapes.small
         )
 
         OutlinedTextField(
-            value = viewModel.phone,
-            onValueChange = { viewModel.phone = it },
+            value = phone,
+            onValueChange = onPhoneChange,
             label = { Text("Phone") },
             modifier = Modifier.fillMaxWidth(),
             shape = shapes.small
         )
 
         OutlinedTextField(
-            value = viewModel.age,
-            onValueChange = { viewModel.age = it },
+            value = age,
+            onValueChange = onAgeChange,
             label = { Text("Age") },
             modifier = Modifier.fillMaxWidth(),
             shape = shapes.small
         )
 
         OutlinedTextField(
-            value = viewModel.email,
-            onValueChange = { viewModel.email = it },
+            value = email,
+            onValueChange = onEmailChange,
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
             shape = shapes.small
         )
 
         OutlinedTextField(
-            value = viewModel.password,
-            onValueChange = { viewModel.password = it },
+            value = password,
+            onValueChange = onPasswordChange,
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -124,28 +167,28 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Checkbox(
-                checked = viewModel.termsAccepted,
-                onCheckedChange = { viewModel.termsAccepted = it }
+                checked = termsAccepted,
+                onCheckedChange = onTermsAcceptedChange
             )
             Text(text = "I accept terms and condition", style = MaterialTheme.typography.bodySmall)
         }
 
-        if (viewModel.error != null) {
-            Text(text = viewModel.error!!, color = MaterialTheme.colorScheme.error)
+        if (error != null) {
+            Text(text = error, color = MaterialTheme.colorScheme.error)
         }
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
         Button(
-            onClick = { viewModel.onRegisterClick() },
+            onClick = onRegisterClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ButtonHeightLarge),
             shape = shapes.small,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
-            enabled = !viewModel.isLoading
+            enabled = !isLoading
         ) {
-            if (viewModel.isLoading) {
+            if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
                 Text("Create Account", fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -166,12 +209,24 @@ fun RegisterScreen(
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
-    RegisterScreen(
-        viewModel = RegisterViewModel(com.softserveacademy.core.domain.usecase.RegisterUseCase(object : com.softserveacademy.core.domain.repository.AuthRepository {
-            override suspend fun register(user: com.softserveacademy.core.domain.model.User, password: String) = Result.success(Unit)
-            override suspend fun login(email: String, password: String) = Result.success(Unit)
-        })),
-        onNavigateBack = {},
-        onRegisterSuccess = {}
+    RegisterContent(
+        firstName = "",
+        onFirstNameChange = {},
+        lastName = "",
+        onLastNameChange = {},
+        phone = "",
+        onPhoneChange = {},
+        age = "",
+        onAgeChange = {},
+        email = "",
+        onEmailChange = {},
+        password = "",
+        onPasswordChange = {},
+        termsAccepted = false,
+        onTermsAcceptedChange = {},
+        isLoading = false,
+        error = null,
+        onRegisterClick = {},
+        onNavigateBack = {}
     )
 }

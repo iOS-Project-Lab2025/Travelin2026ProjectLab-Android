@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":feature:auth"))
     implementation(project(":core:presentation:ui"))
     implementation(project(":core:presentation:design_system"))
 

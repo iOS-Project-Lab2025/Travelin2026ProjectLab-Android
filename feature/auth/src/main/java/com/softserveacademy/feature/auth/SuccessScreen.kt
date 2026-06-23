@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.ui.auth
+package com.softserveacademy.feature.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
