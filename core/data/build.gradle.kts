@@ -1,5 +1,6 @@
 plugins {
-    id("com.softserveacademy.android.application")
+    id("com.softserveacademy.android.library")
+    id("com.softserveacademy.android.hilt")
 }
 
 android {
