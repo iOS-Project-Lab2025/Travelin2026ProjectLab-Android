@@ -4,44 +4,59 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.data.repository.AuthRepositoryImpl
+import com.softserveacademy.core.domain.usecase.LoginUseCase
+import com.softserveacademy.core.domain.usecase.RegisterUseCase
+import com.softserveacademy.core.presentation.ui.auth.*
 import com.softserveacademy.travelin2026projectlab.ui.theme.Travelin2026ProjectLabTheme
 
 class MainActivity : ComponentActivity() {
+    private val authRepository = AuthRepositoryImpl()
+    private val registerUseCase = RegisterUseCase(authRepository)
+    private val loginUseCase = LoginUseCase(authRepository)
+    
+    private val registerViewModel = RegisterViewModel(registerUseCase)
+    private val loginViewModel = LoginViewModel(loginUseCase)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Travelin2026ProjectLabTheme {
+                var currentScreen by remember { mutableStateOf("login") }
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        when (currentScreen) {
+                            "login" -> {
+                                LoginScreen(
+                                    viewModel = loginViewModel,
+                                    onNavigateToRegister = { currentScreen = "register" },
+                                    onLoginSuccess = { /* Navigate to home */ }
+                                )
+                            }
+                            "register" -> {
+                                RegisterScreen(
+                                    viewModel = registerViewModel,
+                                    onNavigateBack = { currentScreen = "login" },
+                                    onRegisterSuccess = { currentScreen = "success" }
+                                )
+                            }
+                            "success" -> {
+                                SuccessScreen(
+                                    onExploreClick = { /* Navigate to home */ }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Travelin2026ProjectLabTheme {
-        Greeting("Android")
     }
 }
