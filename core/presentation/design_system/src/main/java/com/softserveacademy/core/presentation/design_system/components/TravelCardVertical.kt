@@ -30,7 +30,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
 
 @Composable
-fun AppCardVertical(hotel: Hotel){
+fun TravelCardVertical(hotel: Hotel){
         Column(
             modifier = Modifier
                 .height(280.dp)
@@ -137,5 +137,5 @@ fun HotelCardVerticalPreview() {
         pricePerNight = 150,
         image = R.drawable.mount_bromo
     )
-    AppCardVertical(hotel = hotelExample)
+    TravelCardVertical(hotel = hotelExample)
 }
