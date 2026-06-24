@@ -28,7 +28,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
 
 @Composable
-fun AppCardHorizontal(hotel: Hotel){
+fun TravelCardHorizontal(hotel: Hotel){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -107,5 +107,5 @@ fun HotelCardHorizontalPreview() {
         pricePerNight = 50,
         image = R.drawable.mask_group
     )
-    AppCardHorizontal(hotel = hotelExample)
+    TravelCardHorizontal(hotel = hotelExample)
 }
