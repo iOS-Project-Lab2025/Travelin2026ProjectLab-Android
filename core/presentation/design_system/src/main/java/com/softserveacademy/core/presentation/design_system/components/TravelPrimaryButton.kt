@@ -4,9 +4,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -40,15 +40,18 @@ fun TravelPrimaryButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier
+            .requiredHeight(TravelinDimens.ButtonHeightMedium)
             .fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             containerColor = colors.containerColor,
             contentColor = colors.contentColor,
         ),
         shape = MaterialTheme.shapes.extraLarge,
-        contentPadding = PaddingValues(TravelinDimens.PaddingMedium)
     ) {
-        Text(text)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+        )
     }
 }
 

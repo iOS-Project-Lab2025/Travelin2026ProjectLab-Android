@@ -26,6 +26,10 @@ object TravelinDimens {
     val ElevationLarge = 8.dp
 
     // Button sizes
+    val ButtonHeightExtraSmall = 24.dp
+    val ButtonHeightSmall = 40.dp
+    val ButtonHeightMedium = 48.dp
+    val ButtonHeightLarge = 56.dp
     val SocialButtonWidth = 75.dp
 
     // Icon sizes
