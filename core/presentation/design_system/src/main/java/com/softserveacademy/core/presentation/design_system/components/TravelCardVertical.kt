@@ -1,5 +1,6 @@
 package com.softserveacademy.core.presentation.design_system.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,10 +117,15 @@ fun TravelCardVertical(hotel: Hotel){
 
                     Text(
                         text = "3D2N",
-                        modifier = Modifier.padding(top = TravelinDimens.PaddingExtraSmall),
-                        // Todo: edit style and color.
+                        modifier = Modifier
+                            .clip(shapes.extraLarge)
+                            .background(Green50)
+                            .padding(
+                                horizontal = TravelinDimens.PaddingSmall,
+                                vertical = TravelinDimens.Padding2ExtraSmall
+                            ),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = Color.White
                     )
                 }
             }
