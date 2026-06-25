@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
     private val loginUseCase by lazy { LoginUseCase(authRepository) }
     private val recoverPasswordUseCase by lazy { RecoverPasswordUseCase(authRepository) }
     private val checkSessionUseCase by lazy { CheckSessionUseCase(authRepository) }
-    
+
     private val registerViewModel by lazy { RegisterViewModel(registerUseCase) }
     private val loginViewModel by lazy { LoginViewModel(loginUseCase) }
     private val forgotPasswordViewModel by lazy { ForgotPasswordViewModel(recoverPasswordUseCase) }

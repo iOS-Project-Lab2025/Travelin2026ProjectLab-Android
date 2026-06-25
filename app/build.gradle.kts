@@ -6,6 +6,7 @@ plugins {
 
 android {
     namespace = "com.softserveacademy.travelin2026projectlab"
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.softserveacademy.travelin2026projectlab"
