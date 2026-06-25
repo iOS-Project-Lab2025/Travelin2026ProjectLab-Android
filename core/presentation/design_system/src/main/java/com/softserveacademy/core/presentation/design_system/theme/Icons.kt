@@ -156,3 +156,17 @@ val UserCircleFilledIcon: ImageVector
 val UserCircleLineIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.user_circle_line)
+
+// Social Icons
+
+val SocialGoogleIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.google)
+
+val SocialAppleIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.apple)
+
+val SocialFacebookIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.facebook)

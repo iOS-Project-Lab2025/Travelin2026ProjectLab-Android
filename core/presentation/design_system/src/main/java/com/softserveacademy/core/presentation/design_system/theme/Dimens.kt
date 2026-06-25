@@ -13,9 +13,10 @@ object TravelinDimens {
     val Space2ExtraLarge = 40.dp
 
     // Paddings
-    val PaddingExtraSmall = 2.dp
-    val PaddingSmall = 4.dp
-    val PaddingMedium = 8.dp
+    val Padding2ExtraSmall = 2.dp
+    val PaddingExtraSmall = 4.dp
+    val PaddingSmall = 8.dp
+    val PaddingMedium = 16.dp
     val PaddingLarge = 20.dp
     val PaddingExtraLarge = 24.dp
 
@@ -29,12 +30,14 @@ object TravelinDimens {
     val ButtonHeightSmall = 40.dp
     val ButtonHeightMedium = 48.dp
     val ButtonHeightLarge = 56.dp
+    val SocialButtonWidth = 75.dp
 
     // Icon sizes
     val IconSizeExtraSmall = 12.dp
     val IconSizeSmall = 20.dp
     val IconSizeMedium = 24.dp
     val IconSizeLarge = 32.dp
+    val IconSizeExtraLarge = 40.dp
 
     // Image Sizes
     val ImageSizeExtraSmall=40.dp

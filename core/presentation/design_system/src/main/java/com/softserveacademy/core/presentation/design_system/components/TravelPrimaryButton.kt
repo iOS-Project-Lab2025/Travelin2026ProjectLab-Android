@@ -1,0 +1,80 @@
+package com.softserveacademy.core.presentation.design_system.components
+
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import com.softserveacademy.core.presentation.design_system.components.util.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.colors
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+
+/**
+ * Text button that use the primary color as the background or the content color.
+ *
+ * @param text The text to display on the button
+ * @param onClick The action to perform when the button is clicked
+ * @param modifier The modifier to apply to the button
+ * @param enabled Whether the button is enabled or disabled
+ * @param variant The variant of the button (`PrimaryButtonVariant.ColorBackground`, `PrimaryButtonVariant.ColorContent`)
+ */
+@Composable
+fun TravelPrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    variant: PrimaryButtonVariant = PrimaryButtonVariant.ColorBackground
+) {
+    val colors = variant.colors()
+
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier
+            .requiredHeight(TravelinDimens.ButtonHeightMedium)
+            .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colors.containerColor,
+            contentColor = colors.contentColor,
+        ),
+        shape = MaterialTheme.shapes.extraLarge,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+@Preview(widthDp = 250)
+@Composable
+fun TravelPrimaryButtonPreview() {
+    Travelin2026ProjectLabTheme {
+        Column(
+            modifier = Modifier.padding(TravelinDimens.PaddingSmall),
+            verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+        ) {
+            TravelPrimaryButton(
+                text = "Button",
+                onClick = {},
+                variant = PrimaryButtonVariant.ColorBackground,
+                enabled = true
+            )
+            TravelPrimaryButton(
+                text = "Button",
+                onClick = {},
+                variant = PrimaryButtonVariant.ColorContent,
+                enabled = true
+            )
+        }
+    }
+}
