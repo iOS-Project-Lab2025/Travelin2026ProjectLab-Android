@@ -10,9 +10,11 @@ java {
 }
 
 dependencies {
-    compileOnly(libs.android.gradlePlugin)
-    compileOnly(libs.kotlin.gradlePlugin)
-    compileOnly(libs.compose.gradlePlugin)
+    implementation(libs.android.gradlePlugin)
+    implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.compose.gradlePlugin)
+    implementation(libs.hilt.gradlePlugin)
+    implementation(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -32,6 +34,10 @@ gradlePlugin {
         register("domainModule") {
             id = "com.softserveacademy.domain.module"
             implementationClass = "DomainModuleConventionPlugin"
+        }
+        register("androidHilt") {
+            id = "com.softserveacademy.android.hilt"
+            implementationClass = "AndroidHiltConventionPlugin"
         }
     }
 }

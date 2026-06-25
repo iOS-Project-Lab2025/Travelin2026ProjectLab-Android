@@ -25,6 +25,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Travelin2026ProjectLab"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 include(":core:data")
 include(":core:domain")
