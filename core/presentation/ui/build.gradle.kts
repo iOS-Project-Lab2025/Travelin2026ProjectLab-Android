@@ -1,32 +1,13 @@
 plugins {
-    alias(libs.plugins.android.library)
+    id("com.softserveacademy.android.feature")
 }
 
 android {
-    namespace = "com.softserveacademycore.presentation.ui"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
-
-    defaultConfig {
-        minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
+    namespace = "com.softserveacademy.core.presentation.ui"
 }
 
 dependencies {
+    implementation(project(":core:domain"))
+    implementation(project(":core:presentation:design_system"))
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
 }
