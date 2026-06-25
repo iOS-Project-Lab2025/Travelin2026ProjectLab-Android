@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.softserveacademy.core.presentation.design_system"
 }
+
+dependencies {
+    implementation(projects.core.domain)
+}
