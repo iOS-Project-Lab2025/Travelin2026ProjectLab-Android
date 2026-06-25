@@ -6,6 +6,7 @@ plugins {
 
 android {
     namespace = "com.softserveacademy.travelin2026projectlab"
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.softserveacademy.travelin2026projectlab"
@@ -23,6 +24,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.datastore.preferences)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -42,4 +44,7 @@ dependencies {
     // modules
     implementation(projects.core.domain)
     implementation(projects.core.data)
+    implementation(projects.core.presentation.ui)
+    implementation(projects.core.presentation.designSystem)
+    implementation(projects.feature.auth)
 }

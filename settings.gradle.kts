@@ -1,6 +1,7 @@
 includeBuild("build-logic")
 
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -13,9 +14,11 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -32,3 +35,4 @@ include(":core:data")
 include(":core:domain")
 include(":core:presentation:design_system")
 include(":core:presentation:ui")
+include(":feature:auth")

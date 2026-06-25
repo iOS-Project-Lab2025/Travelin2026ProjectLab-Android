@@ -3,5 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.softserveacademycore.presentation.ui"
+    namespace = "com.softserveacademy.core.presentation.ui"
+}
+
+dependencies {
+    implementation(project(":core:domain"))
+    implementation(project(":core:presentation:design_system"))
+    implementation(libs.androidx.appcompat)
 }
