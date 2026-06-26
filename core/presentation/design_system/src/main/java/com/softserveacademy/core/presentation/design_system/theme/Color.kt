@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.design_system
+package com.softserveacademy.core.presentation.design_system.theme
 
 import androidx.compose.ui.graphics.Color
 // ============================================================================
