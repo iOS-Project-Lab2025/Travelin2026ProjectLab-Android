@@ -12,6 +12,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.datastore.preferences.preferencesDataStore
 import com.softserveacademy.feature.auth.common.data.SessionRepositoryImpl
@@ -24,6 +29,8 @@ import com.softserveacademy.feature.auth.register.domain.RegisterUseCase
 import com.softserveacademy.feature.auth.login.presentation.*
 import com.softserveacademy.feature.auth.register.presentation.*
 import com.softserveacademy.feature.auth.common.presentation.*
+import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.travelin2026projectlab.test.screen.TravelHomeScreen
 import com.softserveacademy.travelin2026projectlab.ui.theme.Travelin2026ProjectLabTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,6 +56,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Travelin2026ProjectLabTheme {
+                TravelHomeScreen()
+            }
+        }
+    }
+}
+
                 val isLoggedIn by checkSessionUseCase().collectAsState(initial = null)
                 var currentScreen by remember { mutableStateOf<String?>(null) }
 
