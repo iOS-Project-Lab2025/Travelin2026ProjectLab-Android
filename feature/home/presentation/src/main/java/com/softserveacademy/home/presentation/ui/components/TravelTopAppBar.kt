@@ -1,4 +1,4 @@
-package com.softserveacademy.travelin2026projectlab.test.screen
+package com.softserveacademy.home.presentation.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,12 +39,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.travelin2026projectlab.R
-import com.softserveacademy.travelin2026projectlab.ui.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.home.presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +52,7 @@ fun TravelTopAppBar(navSelected: () -> Unit) {
         title = { Text("Travel") },
         navigationIcon = {
             Icon(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.travel_ic_home),
                 contentDescription = null,
                 modifier = Modifier.clickable {
                     navSelected()
@@ -62,11 +60,11 @@ fun TravelTopAppBar(navSelected: () -> Unit) {
         },
         actions = {
             Icon(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.travel_ic_home),
                 contentDescription = null
             )
             Icon(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.travel_ic_home),
                 contentDescription = null
             )
         },
@@ -88,7 +86,7 @@ fun TravelFab(modifier: Modifier = Modifier) {
 @Composable
 fun TravelNavigationBar() {
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.shadow(
             elevation = 12.dp,
             clip = false
@@ -184,7 +182,7 @@ fun TravelTextField(modifier: Modifier = Modifier) {
             }
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.background,
+            focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,

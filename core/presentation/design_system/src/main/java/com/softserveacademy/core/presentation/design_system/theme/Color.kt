@@ -25,6 +25,12 @@ val Gray40 = Color(0xFFA0AAB2) //Secondary text, disable icons and inputs, and p
 val GrayLight20 = Color(0xFFE2E8F0) // Primary Text and Titles in Dark Mode
 
 // ============================================================================
+// 4. Icons
+// ============================================================================
+val TravelBlue40 = Color(0xFF007A8C)
+val TravelGray30 = Color(0xFF6C757D)
+
+// ============================================================================
 // Alert and Error
 // ============================================================================
 val Yellow50 = Color(0xFFFFC107) // User points and alerts

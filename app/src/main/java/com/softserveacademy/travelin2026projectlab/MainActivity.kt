@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.datastore.preferences.preferencesDataStore
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.feature.auth.common.data.SessionRepositoryImpl
 import com.softserveacademy.feature.auth.login.data.LoginRepositoryImpl
 import com.softserveacademy.feature.auth.register.data.RegisterRepositoryImpl
