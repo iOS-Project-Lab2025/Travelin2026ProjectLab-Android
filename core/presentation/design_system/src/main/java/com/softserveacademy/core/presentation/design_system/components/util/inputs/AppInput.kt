@@ -1,21 +1,27 @@
 package com.softserveacademy.core.presentation.design_system.components.util.inputs
 
+
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.height 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composable 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.VisualTransformation
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.core.presentation.design_system.theme.shapes
+
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.theme.shapes
 /**
  * A custom outlined text field component for the Travelin app.
@@ -99,4 +105,5 @@ fun AppInput(
             )
         }
     }
+}
 }

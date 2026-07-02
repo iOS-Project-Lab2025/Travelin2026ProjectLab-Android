@@ -11,33 +11,33 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel class responsible for managing the state of a hotel card.
+ * ViewModel class responsible for managing the state of the horizontal card.
  *
  * @param hotelRepo The repository responsible for fetching hotel data.
- * @property _uiHotelCardState The mutable state flow representing the state of the hotel card.
+ * @property _horizontalCardState The mutable state flow representing the state of the hotel card.
  *
- * @see UIHotelCardState
+ * @see HorizontalCardState
  */
 @HiltViewModel
-class HotelViewModel @Inject constructor(
+class HorizontalCardViewModel @Inject constructor(
     private val hotelRepo: HotelRepo
 ) : ViewModel() {
-    private val _uiHotelCardState = MutableStateFlow(UIHotelCardState.IsLoading() as UIHotelCardState)
-    val uiHotelCardState = _uiHotelCardState.asStateFlow()
+    private val _horizontalCardState = MutableStateFlow(HorizontalCardState.IsLoading() as HorizontalCardState)
+    val horizontalCardState = _horizontalCardState.asStateFlow()
 
     fun getHotel(id: Int?) {
         viewModelScope.launch {
-            _uiHotelCardState.update{
-                UIHotelCardState.IsLoading(true)
+            _horizontalCardState.update{
+                HorizontalCardState.IsLoading(true)
             }
             try {
                 val hotel = hotelRepo.getHotelById(id)
-                _uiHotelCardState.update {
-                    UIHotelCardState.Data(hotel)
+                _horizontalCardState.update {
+                    HorizontalCardState.Data(hotel)
                 }
             } catch (e: Exception) {
-                _uiHotelCardState.update {
-                    UIHotelCardState.Error(e.message)
+                _horizontalCardState.update {
+                    HorizontalCardState.Error(e.message)
                 }
             }
         }

@@ -63,6 +63,7 @@ fun Travelin2026ProjectLabTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = TravelinTypography,
+        shapes = shapes,
         content = content
     )
 }

@@ -24,7 +24,7 @@ import com.softserveacademy.feature.auth.register.domain.RegisterUseCase
 import com.softserveacademy.feature.auth.login.presentation.*
 import com.softserveacademy.feature.auth.register.presentation.*
 import com.softserveacademy.feature.auth.common.presentation.*
-import com.softserveacademy.travelin2026projectlab.ui.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 private val Context.dataStore by preferencesDataStore(name = "settings")

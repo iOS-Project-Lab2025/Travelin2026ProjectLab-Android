@@ -1,5 +1,4 @@
 package com.softserveacademy.core.presentation.design_system.components.util.inputs
-
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
@@ -38,3 +37,4 @@ internal fun AppInputState.style(): AppInputStyle {
         )
     }
 }
+

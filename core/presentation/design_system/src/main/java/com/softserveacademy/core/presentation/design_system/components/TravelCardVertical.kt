@@ -26,7 +26,6 @@ import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.theme.StarIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.core.presentation.design_system.theme.shapes
 
 /**
  * A reusable card for displaying information about the tour package.
@@ -41,7 +40,7 @@ fun TravelCardVertical(hotel: Hotel){
         modifier = Modifier
             .height(240.dp)
             .width(180.dp)
-            .clip(shapes.medium)
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.background)
     ) {
         // Add image and modify his size.
@@ -124,7 +123,7 @@ fun TravelCardVertical(hotel: Hotel){
                 Text(
                     text = "3D2N",
                     modifier = Modifier
-                        .clip(shapes.extraLarge)
+                        .clip(MaterialTheme.shapes.extraLarge)
                         .background(MaterialTheme.colorScheme.secondary)
                         .padding(
                             horizontal = TravelinDimens.PaddingSmall,
