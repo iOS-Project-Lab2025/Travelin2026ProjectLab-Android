@@ -8,9 +8,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:auth:login:domain"))
-    implementation(project(":feature:auth:common:domain"))
-    implementation(project(":feature:auth:common:data"))
+    implementation(projects.feature.auth.login.domain)
+    implementation(projects.feature.auth.common.domain)
+    implementation(projects.feature.auth.common.data)
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(libs.androidx.datastore.preferences)

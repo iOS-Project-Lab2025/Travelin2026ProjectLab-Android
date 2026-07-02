@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":feature:auth:common:domain"))
+    implementation(projects.feature.auth.common.domain)
     implementation(projects.core.domain)
     implementation(libs.kotlinx.coroutines.core)
 }

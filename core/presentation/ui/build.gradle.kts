@@ -1,5 +1,6 @@
 plugins {
     id("com.softserveacademy.android.feature")
+    id("com.softserveacademy.android.hilt")
 }
 
 android {
@@ -7,7 +8,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-    implementation(project(":core:presentation:design_system"))
+    implementation(projects.core.domain)
+    implementation(projects.core.presentation.designSystem)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.hilt.navigation.compose)
 }

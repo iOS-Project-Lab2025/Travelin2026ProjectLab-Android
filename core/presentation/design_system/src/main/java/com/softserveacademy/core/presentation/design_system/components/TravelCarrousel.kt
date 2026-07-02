@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.domain.Hotel
+import com.softserveacademy.core.domain.model.Hotel
 import androidx.compose.ui.tooling.preview.Preview
 
 //Here we create a composable of the carrousel
@@ -36,31 +36,31 @@ fun TravelCarousel(
 @Composable
 fun TravelCarouselPreview() {
 
-    val ExampleHotels = listOf(
+    val exampleHotels = listOf(
         Hotel(
             name = "Mount Bromo",
             address = "Volcano in East Java",
             userRating = 4.9,
             pricePerNight = 150,
             //An example picture has been added to Res/drawables
-            image = R.drawable.mount_bromo
+            image = R.drawable.test_place
         ),
         Hotel(
             name = "Swiss-Belhotel Rainforest",
             address = "Kuta, Bali, Indonesia",
             userRating = 4.5,
             pricePerNight = 50,
-            image = R.drawable.mount_bromo
+            image = R.drawable.test_place
         ),
         Hotel(
             name = "Tokyo Adventure Resort",
             address = "Tokyo, Japan",
             userRating = 4.8,
             pricePerNight = 200,
-            image = R.drawable.mount_bromo
+            image = R.drawable.test_place
         )
     )
 
     // This is the way we call the instance of carrousel
-    TravelCarousel(packages = ExampleHotels)
+    TravelCarousel(packages = exampleHotels)
 }
