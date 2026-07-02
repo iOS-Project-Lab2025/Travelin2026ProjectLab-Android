@@ -1,6 +1,5 @@
 package com.softserveacademy.core.presentation.ui.home
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,13 +7,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
 import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 
 @Composable
 fun HotelCardState(
@@ -37,9 +36,6 @@ fun HotelCard(state : UIHotelCardState, modifier: Modifier = Modifier) {
         shape = shapes.medium,
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
         modifier = modifier
-            .padding(TravelinDimens.PaddingMedium)
-            .height(IntrinsicSize.Min)
-            .width(360.dp)
     ) {
         when(state){
             is UIHotelCardState.Data -> {
@@ -67,6 +63,7 @@ fun HotelCardPreview() {
         image = R.drawable.test_hotel
     )
 
-    HotelCard(state = UIHotelCardState.Data(hotelExample), modifier = Modifier)
-
+    Travelin2026ProjectLabTheme(darkTheme = true) {
+        HotelCard(state = UIHotelCardState.Data(hotelExample), modifier = Modifier)
+    }
 }
