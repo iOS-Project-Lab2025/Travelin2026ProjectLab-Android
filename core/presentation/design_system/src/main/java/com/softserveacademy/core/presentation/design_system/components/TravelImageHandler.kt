@@ -3,20 +3,20 @@ package com.softserveacademy.core.presentation.design_system.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.core.presentation.design_system.theme.shapes
 
 @Composable
 fun TravelImageHandler(
     image: Int,
     imageWidth: androidx.compose.ui.unit.Dp = TravelinDimens.ImageSizeMedium,
     imageHeight: androidx.compose.ui.unit.Dp = TravelinDimens.ImageSizeMedium,
-    shape: androidx.compose.ui.graphics.Shape = shapes.medium,
+    shape: androidx.compose.ui.graphics.Shape = MaterialTheme.shapes.medium,
     shouldClip: Boolean = true
 ) {
     Image(

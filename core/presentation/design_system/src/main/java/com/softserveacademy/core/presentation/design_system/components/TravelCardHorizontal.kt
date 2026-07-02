@@ -22,7 +22,6 @@ import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.theme.StarIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.core.presentation.design_system.theme.shapes
 
 /**
  * A reusable card for displaying hotel information.
@@ -38,14 +37,14 @@ fun TravelCardHorizontal(hotel: Hotel){
                 .fillMaxWidth()
                 .height(TravelinDimens.ImageSizeMedium)
                 .background(MaterialTheme.colorScheme.background)
-                .clip(shapes.medium)
+                .clip(MaterialTheme.shapes.medium)
         ) {
             // Add image and modify his size.
             TravelImageHandler(
                 image = hotel.image,
                 imageWidth = TravelinDimens.ImageSizeMedium,
                 imageHeight = TravelinDimens.ImageSizeMedium,
-                shape = shapes.medium
+                shape = MaterialTheme.shapes.medium
             )
             Column(
                 modifier = Modifier
