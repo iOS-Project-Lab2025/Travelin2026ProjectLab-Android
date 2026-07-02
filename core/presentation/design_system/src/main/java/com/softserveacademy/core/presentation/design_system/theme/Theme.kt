@@ -24,6 +24,8 @@ private val DarkColorScheme = darkColorScheme(
     error = Red50,
     onError = White100,
     outline = Gray80,
+    primaryContainer = TravelBlue40,
+    secondaryContainer = TravelGray30,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -41,6 +43,8 @@ private val LightColorScheme = lightColorScheme(
     error = Red50,
     onError = White100,
     outline = Gray80,
+    primaryContainer = TravelBlue40,
+    secondaryContainer = TravelGray30,
 
 )
 
