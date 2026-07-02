@@ -12,7 +12,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
 
 @Composable
-fun HotelImage(
+fun TravelImageHandler(
     image: Int,
     imageWidth: androidx.compose.ui.unit.Dp = TravelinDimens.ImageSizeMedium,
     imageHeight: androidx.compose.ui.unit.Dp = TravelinDimens.ImageSizeMedium,

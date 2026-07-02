@@ -1,6 +1,5 @@
 package com.softserveacademy.core.presentation.design_system.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +29,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Teal40,
     onPrimary = White100,
-    secondary = Green50,
+    secondary = Green80,
     onSecondary = White100,
     tertiary = Yellow50,
     background = Gray10,
@@ -38,7 +37,7 @@ private val LightColorScheme = lightColorScheme(
     surface = White100,
     onSurface = Gray80,
     surfaceVariant = Gray10,
-    onSurfaceVariant = Gray40,
+    onSurfaceVariant = Gray80,
     error = Red50,
     onError = White100,
     outline = Gray80,
@@ -63,7 +62,7 @@ fun Travelin2026ProjectLabTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        //typography = com.softserveacademy.travelin2026projectlab.design_system.theme.Typography,
+        typography = TravelinTypography,
         content = content
     )
 }

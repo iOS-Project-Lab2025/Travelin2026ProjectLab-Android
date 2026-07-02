@@ -15,6 +15,7 @@ val Teal40 = Color(0xFF007A8C) // Primary Color
 val Teal40_Alpha50 = Teal40.copy(alpha = 0.5f)
 val Teal40_Alpha30 = Teal40.copy(alpha = 0.3f)
 val Green50 = Color(0xFF52996C) // Success State and Active Categories (Tag "Upcoming" in cards and badges)
+val Green80 = Color(0xFF336749) // Green text and background in cards in light mode.
 
 // ============================================================================
 // 3. Typo

@@ -7,9 +7,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:auth:login:domain"))
-    implementation(project(":feature:auth:common:domain"))
-    implementation(project(":feature:auth:common:presentation"))
+    implementation(projects.feature.auth.login.domain)
+    implementation(projects.feature.auth.common.domain)
+    implementation(projects.feature.auth.common.presentation)
     implementation(projects.core.domain)
     implementation(projects.core.presentation.designSystem)
     
