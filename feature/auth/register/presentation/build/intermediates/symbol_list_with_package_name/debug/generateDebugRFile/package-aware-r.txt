@@ -1,1 +1,0 @@
-com.softserveacademy.feature.auth.register.presentation
