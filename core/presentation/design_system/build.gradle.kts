@@ -7,6 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
     implementation(projects.core.domain)
 }

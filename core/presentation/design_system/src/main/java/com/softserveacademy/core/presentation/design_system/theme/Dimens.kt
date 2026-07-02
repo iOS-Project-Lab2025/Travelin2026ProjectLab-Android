@@ -16,6 +16,7 @@ object TravelinDimens {
     val Padding2ExtraSmall = 2.dp
     val PaddingExtraSmall = 4.dp
     val PaddingSmall = 8.dp
+    val PaddingNormal = 12.dp
     val PaddingMedium = 16.dp
     val PaddingLarge = 20.dp
     val PaddingExtraLarge = 24.dp
