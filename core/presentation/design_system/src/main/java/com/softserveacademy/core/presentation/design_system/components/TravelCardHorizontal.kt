@@ -1,5 +1,6 @@
 package com.softserveacademy.core.presentation.design_system.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.domain.model.Hotel
@@ -35,6 +37,8 @@ fun TravelCardHorizontal(hotel: Hotel){
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ImageSizeMedium)
+                .background(MaterialTheme.colorScheme.background)
+                .clip(shapes.medium)
         ) {
             // Add image and modify his size.
             TravelImageHandler(
@@ -117,7 +121,7 @@ fun TravelCardHorizontalPreview() {
         pricePerNight = 50,
         image = R.drawable.test_hotel
     )
-    Travelin2026ProjectLabTheme(darkTheme = false) {
+    Travelin2026ProjectLabTheme(darkTheme = true) {
         TravelCardHorizontal(hotel = hotelExample)
     }
 }

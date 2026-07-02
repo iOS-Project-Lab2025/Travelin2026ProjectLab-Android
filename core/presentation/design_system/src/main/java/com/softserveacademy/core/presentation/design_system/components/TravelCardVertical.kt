@@ -42,6 +42,7 @@ fun TravelCardVertical(hotel: Hotel){
             .height(240.dp)
             .width(180.dp)
             .clip(shapes.medium)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Add image and modify his size.
         TravelImageHandler(

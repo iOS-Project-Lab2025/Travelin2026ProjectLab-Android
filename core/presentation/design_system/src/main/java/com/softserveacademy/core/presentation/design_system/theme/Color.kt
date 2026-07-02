@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 val Gray10 = Color(0xFFF6F6F6) // Primary Background Light Mode
 val White100 = Color(0xFFFFFFFF) // Cards, Inputs and Login Background Light Mode
 val BlueDark90 = Color(0xFF12181B) // Primary Background Dark Mode
-val BlueDark80 = Color(0xFF1E262B) // Cards, Inputs and Login Background Dark Mode
+val BlueDark80 = Color(0xFF1E262A) // Cards, Inputs and Login Background Dark Mode
 // ============================================================================
 // 2. Brans Colors
 // ============================================================================
