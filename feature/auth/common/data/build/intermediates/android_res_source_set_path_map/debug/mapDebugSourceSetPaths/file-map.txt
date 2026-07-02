@@ -1,0 +1,9 @@
+com.softserveacademy.feature.auth.common.data-pngs-0 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\build\generated\res\pngs\debug
+com.softserveacademy.feature.auth.common.data-updated_navigation_xml-1 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\build\generated\updated_navigation_xml\debug
+com.softserveacademy.feature.auth.common.data-mergeDebugResources-2 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+com.softserveacademy.feature.auth.common.data-mergeDebugResources-3 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+com.softserveacademy.feature.auth.common.data-debug-4 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\build\intermediates\merged_res\debug\mergeDebugResources
+com.softserveacademy.feature.auth.common.data-debug-5 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\build\intermediates\packaged_res\debug\packageDebugResources
+com.softserveacademy.feature.auth.common.data-debug-6 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\src\debug\res
+com.softserveacademy.feature.auth.common.data-main-7 C:\Users\DELL\Desktop\softserveAcademy\Travelin2026ProjectLab\feature\auth\common\data\src\main\res
+gradleHome-0 C:\Users\DELL\.gradle
