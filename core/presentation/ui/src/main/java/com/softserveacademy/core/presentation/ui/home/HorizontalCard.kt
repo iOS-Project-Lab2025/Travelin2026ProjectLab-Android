@@ -16,35 +16,35 @@ import com.softserveacademy.core.presentation.design_system.components.TravelCar
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 
 @Composable
-fun HotelCardState(
+fun HorizontalCardState(
     modifier: Modifier = Modifier,
-    viewModel: HotelViewModel = hiltViewModel()
+    viewModel: HorizontalCardViewModel = hiltViewModel()
 ){
-    val uiHotelCardState by viewModel.uiHotelCardState.collectAsState()
+    val horizontalCardState by viewModel.horizontalCardState.collectAsState()
 
     LaunchedEffect(Unit){
         viewModel.getHotel(1)
     }
 
-    HotelCard(state = uiHotelCardState, modifier = modifier)
+    HorizontalCard(state = horizontalCardState, modifier = modifier)
 }
 
 
 @Composable
-fun HotelCard(state : UIHotelCardState, modifier: Modifier = Modifier) {
+fun HorizontalCard(state : HorizontalCardState, modifier: Modifier = Modifier) {
     Card(
         shape = shapes.medium,
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
         modifier = modifier
     ) {
         when(state){
-            is UIHotelCardState.Data -> {
+            is HorizontalCardState.Data -> {
                 TravelCardHorizontal(state.hotel)
             }
-            is UIHotelCardState.Error -> {
+            is HorizontalCardState.Error -> {
                 Text(text = "Error: ${state.message}")
             }
-            is UIHotelCardState.IsLoading -> {
+            is HorizontalCardState.IsLoading -> {
                 CircularProgressIndicator()
             }
         }
@@ -54,7 +54,7 @@ fun HotelCard(state : UIHotelCardState, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = false)
 @Composable
-fun HotelCardPreview() {
+fun HorizontalCardPreview() {
     val hotelExample = Hotel(
         name = "Swiss-Belhotel Rainforest Kuta",
         address = "Jl. Sunset Road No. 101, Kuta, Bali , Indonesia",
@@ -64,6 +64,6 @@ fun HotelCardPreview() {
     )
 
     Travelin2026ProjectLabTheme(darkTheme = true) {
-        HotelCard(state = UIHotelCardState.Data(hotelExample), modifier = Modifier)
+        HorizontalCard(state = HorizontalCardState.Data(hotelExample), modifier = Modifier)
     }
 }
