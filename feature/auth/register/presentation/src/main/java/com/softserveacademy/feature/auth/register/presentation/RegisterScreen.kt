@@ -46,7 +46,8 @@ fun RegisterScreen(
         isLoading = viewModel.isLoading,
         error = viewModel.error,
         onRegisterClick = { viewModel.onRegisterClick() },
-        onNavigateBack = onNavigateBack
+        onNavigateBack=onNavigateBack,
+        onRegisterSuccess=onRegisterSuccess,
     )
 }
 
@@ -69,7 +70,8 @@ fun RegisterContent(
     isLoading: Boolean,
     error: String?,
     onRegisterClick: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onRegisterSuccess: () -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -180,6 +182,7 @@ fun RegisterContent(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
         Button(
+            //onClick = onRegisterSuccess,
             onClick = onRegisterClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -227,6 +230,7 @@ fun RegisterScreenPreview() {
         isLoading = false,
         error = null,
         onRegisterClick = {},
-        onNavigateBack = {}
+        onNavigateBack = {},
+        onRegisterSuccess= {}
     )
 }

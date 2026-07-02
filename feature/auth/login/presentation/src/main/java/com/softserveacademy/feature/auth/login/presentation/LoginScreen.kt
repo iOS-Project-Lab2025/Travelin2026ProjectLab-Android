@@ -22,9 +22,10 @@ import com.softserveacademy.core.presentation.design_system.theme.*
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onNavigateToRegister: () -> Unit,
+
     onNavigateToForgotPassword: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onLoginSuccess: () -> Unit,
 ) {
     if (viewModel.isSuccess) {
         LaunchedEffect(Unit) {
@@ -39,9 +40,9 @@ fun LoginScreen(
         onPasswordChange = { viewModel.password = it },
         isLoading = viewModel.isLoading,
         error = viewModel.error,
-        onLoginClick = { viewModel.onLoginClick() },
-        onNavigateToRegister = onNavigateToRegister,
-        onNavigateToForgotPassword = onNavigateToForgotPassword
+        onLoginSuccess=onLoginSuccess,
+        onNavigateToForgotPassword=onNavigateToForgotPassword,
+        onNavigateToRegister=onNavigateToRegister
     )
 }
 
@@ -53,9 +54,9 @@ fun LoginContent(
     onPasswordChange: (String) -> Unit,
     isLoading: Boolean,
     error: String?,
-    onLoginClick: () -> Unit,
-    onNavigateToRegister: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit
+    onLoginSuccess:() -> Unit,
+    onNavigateToForgotPassword:() -> Unit,
+    onNavigateToRegister:() -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -140,7 +141,7 @@ fun LoginContent(
         }
 
         Button(
-            onClick = onLoginClick,
+            onClick = onLoginSuccess,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ButtonHeightLarge),
@@ -218,8 +219,9 @@ fun LoginScreenPreview() {
         onPasswordChange = {},
         isLoading = false,
         error = null,
-        onLoginClick = {},
-        onNavigateToRegister = {},
-        onNavigateToForgotPassword = {}
+
+        onLoginSuccess={},
+        onNavigateToForgotPassword = {},
+        onNavigateToRegister={}
     )
 }

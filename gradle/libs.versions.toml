@@ -20,6 +20,12 @@ minSdk = "24" # Read by convention plugin
 targetSdk = "37" # Read by convention plugin
 datastore = "1.1.3"
 
+##Added for feature of NavGraph
+navigationRuntimeKtx = "2.9.8"
+multidex = "1.0.3"
+navigationCompose = "2.8.0"
+kotlinSerialization = "1.7.3"
+
 [libraries]
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -51,6 +57,11 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+##Added for feature of NavGraph
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+multidex = { group = "com.android.support", name = "multidex", version.ref = "multidex" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.7.3" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -59,4 +70,6 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+##Added for feature of NavGraph
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

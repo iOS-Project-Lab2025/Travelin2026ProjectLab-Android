@@ -2,6 +2,7 @@ plugins {
     id("com.softserveacademy.android.application")
     id("com.softserveacademy.android.hilt")
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -40,6 +41,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    //Implementation needed for navgraph
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
 
     // modules
     implementation(projects.core.domain)
