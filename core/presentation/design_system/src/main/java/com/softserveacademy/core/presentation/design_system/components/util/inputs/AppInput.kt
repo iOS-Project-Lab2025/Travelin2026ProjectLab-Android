@@ -19,11 +19,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.VisualTransformation
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
-
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.presentation.design_system.theme.shapes
 /**
  * A custom outlined text field component for the Travelin app.
  *
@@ -81,6 +76,7 @@ fun AppInput(
             },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
+            //Material Theme
             shape = shape,
 
             colors = OutlinedTextFieldDefaults.colors(
@@ -108,4 +104,4 @@ fun AppInput(
         }
     }
 }
-}
+
