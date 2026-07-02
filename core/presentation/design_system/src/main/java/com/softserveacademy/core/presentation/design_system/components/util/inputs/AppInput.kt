@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.VisualTransformation
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
@@ -56,6 +57,7 @@ fun AppInput(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
     enabled: Boolean = true,
+    shape: Shape = MaterialTheme.shapes.small,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     val inputStyle = state.style()
@@ -79,7 +81,7 @@ fun AppInput(
             },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
-            shape = shapes.small,
+            shape = shape,
 
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = inputStyle.textColor,
