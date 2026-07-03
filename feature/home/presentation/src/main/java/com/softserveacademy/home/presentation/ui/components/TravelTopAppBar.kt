@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -243,65 +244,85 @@ fun TravelCard(modifier: Modifier = Modifier) {
 @Composable
 fun TravelIconsCard() {
     Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF007A8C).copy(alpha = 0.3F)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.travel_ic_plane), contentDescription = null,
-                tint = Color(0xFF336749)
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(color=MaterialTheme.colorScheme.secondary.copy(alpha = 0.3F)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.travel_ic_plane), contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Text(text = "Flights", color = MaterialTheme.colorScheme.secondary)
+
         }
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF007A8C).copy(alpha = 0.3F)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.travel_ic_plane), contentDescription = null,
-                tint = Color(0xFF336749)
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.3F)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.travel_ic_hotel), contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Text(text = "Hotels", color = MaterialTheme.colorScheme.secondary)
+
         }
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF007A8C).copy(alpha = 0.3F)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.travel_ic_plane), contentDescription = null,
-                tint = Color(0xFF336749)
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.3F)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.travel_ic_train), contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Text(text = "Trains", color = MaterialTheme.colorScheme.secondary)
+
         }
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF007A8C).copy(alpha = 0.3F)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.travel_ic_plane), contentDescription = null,
-                tint = Color(0xFF336749)
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.3F)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.travel_ic_ferry), contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Text(text = "Ferry", color = MaterialTheme.colorScheme.secondary)
+
         }
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF007A8C).copy(alpha = 0.3F)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.travel_ic_plane), contentDescription = null,
-                tint = Color(0xFF336749)
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.3F)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.travel_ic_bus), contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Text(text = "Bus", color = MaterialTheme.colorScheme.secondary)
+
         }
     }
 }
