@@ -158,11 +158,3 @@ fun TypographyPreview() {
         }
     }
 }
-
-@Composable
-fun Travelin2026ProjectLabTheme(content: @Composable () -> Unit) {
-    androidx.compose.material3.MaterialTheme(
-        typography = TravelinTypography,
-        content = content
-    )
-}
