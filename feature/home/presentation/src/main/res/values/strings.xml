@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Travelin</string>
     <string name="flights_label">Flights</string>
+    <string name="hotels_label">Hotels</string>
+    <string name="train_label">Trains</string>
+    <string name="ferry_label">Ferry</string>
+    <string name="bus_label">Bus</string>
+
+    <string name="home_ic_label">Home</string>
+    <string name="orders_ic_label">Order</string>
+    <string name="deals_ic_label">Deals</string>
+    <string name="accounts_ic_label">Accounts</string>
+
 </resources>
