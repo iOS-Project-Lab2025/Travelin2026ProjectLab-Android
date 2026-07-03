@@ -41,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -110,7 +111,7 @@ fun TravelNavigationBar() {
             },
             label = {
                 Text(
-                    text = "Home"/*, color =
+                    text = stringResource(R.string.home_ic_label)/*, color =
              MaterialTheme.colorScheme.primaryContainer*/
                 )
             })
@@ -122,7 +123,7 @@ fun TravelNavigationBar() {
                 )
             }, label = {
                 Text(
-                    text = "Orders"/*, color =
+                    text = stringResource(R.string.orders_ic_label)/*, color =
              MaterialTheme.colorScheme.primaryContainer*/
                 )
             })
@@ -134,7 +135,7 @@ fun TravelNavigationBar() {
                 )
             }, label = {
                 Text(
-                    text = "Deals"/*, color =
+                    text = stringResource(R.string.deals_ic_label)/*, color =
              MaterialTheme.colorScheme.primaryContainer*/
                 )
             })
@@ -146,7 +147,7 @@ fun TravelNavigationBar() {
                 )
             }, label = {
                 Text(
-                    text = "Accounts"/*, color =
+                    text = stringResource(R.string.accounts_ic_label)/*, color =
              MaterialTheme.colorScheme.primaryContainer*/
                 )
             })
@@ -257,7 +258,7 @@ fun TravelIconsCard() {
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-            Text(text = "Flights", color = MaterialTheme.colorScheme.secondary)
+            Text(text = stringResource(R.string.flights_label), color = MaterialTheme.colorScheme.secondary)
 
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -273,7 +274,7 @@ fun TravelIconsCard() {
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-            Text(text = "Hotels", color = MaterialTheme.colorScheme.secondary)
+            Text(text = stringResource(R.string.hotels_label), color = MaterialTheme.colorScheme.secondary)
 
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -289,7 +290,7 @@ fun TravelIconsCard() {
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-            Text(text = "Trains", color = MaterialTheme.colorScheme.secondary)
+            Text(text = stringResource(R.string.train_label), color = MaterialTheme.colorScheme.secondary)
 
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -305,7 +306,7 @@ fun TravelIconsCard() {
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-            Text(text = "Ferry", color = MaterialTheme.colorScheme.secondary)
+            Text(text = stringResource(R.string.ferry_label), color = MaterialTheme.colorScheme.secondary)
 
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -321,7 +322,7 @@ fun TravelIconsCard() {
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-            Text(text = "Bus", color = MaterialTheme.colorScheme.secondary)
+            Text(text = stringResource(R.string.bus_label), color = MaterialTheme.colorScheme.secondary)
 
         }
     }
