@@ -68,7 +68,8 @@ fun SuccessScreen(
 @Preview(showBackground = true)
 @Composable
 fun SuccessScreenPreview() {
-    SuccessScreen(onExploreClick = {})
+    SuccessScreen(onExploreClick = {}
+    )
 }
 
 @Composable

@@ -17,7 +17,8 @@ import com.softserveacademy.core.presentation.design_system.theme.*
 @Composable
 fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    NavonRecoverClick: () -> Unit
 ) {
     ForgotPasswordContent(
         email = viewModel.email,
@@ -26,7 +27,9 @@ fun ForgotPasswordScreen(
         error = viewModel.error,
         isSuccess = viewModel.isSuccess,
         onRecoverClick = { viewModel.onRecoverClick() },
-        onNavigateBack = onNavigateBack
+        onNavigateBack = onNavigateBack,
+        navonRecoverClick = NavonRecoverClick
+
     )
 }
 
@@ -38,7 +41,8 @@ fun ForgotPasswordContent(
     error: String?,
     isSuccess: Boolean,
     onRecoverClick: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    navonRecoverClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -110,7 +114,8 @@ fun ForgotPasswordContent(
         }
 
         Button(
-            onClick = onRecoverClick,
+            //onClick = onRecoverClick,
+            onClick = navonRecoverClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ButtonHeightLarge),
@@ -139,6 +144,7 @@ fun ForgotPasswordScreenPreview() {
         error = null,
         isSuccess = false,
         onRecoverClick = {},
-        onNavigateBack = {}
+        onNavigateBack= {},
+        navonRecoverClick= {}
     )
 }
