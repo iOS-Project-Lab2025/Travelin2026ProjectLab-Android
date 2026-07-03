@@ -1,0 +1,50 @@
+# Workflow de CI para verificar que el proyecto compila correctamente en main
+name: CI
+
+# Controla cuándo se ejecuta el workflow
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # Permite ejecutarlo manualmente desde la pestaña Actions
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Descarga el código del repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configura el JDK (Android requiere JDK 17 para AGP moderno)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Cachea las dependencias de Gradle para builds más rápidos
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Da permisos de ejecución al wrapper de Gradle (necesario en Linux)
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Compila el proyecto en modo debug (verifica que no haya errores de compilación)
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      # (Opcional) corre los tests unitarios también
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
