@@ -48,3 +48,19 @@ jobs:
       # (Opcional) corre los tests unitarios también
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
+
+
+      # Valida que el formato estético cumpla con Ktlint
+      #- name: Verify Code Style (ktlint)
+      # run: ./gradlew ktlintCheck
+
+      # Valida la semántica y la existencia de KDocs obligatorios en funciones públicas
+      #- name: Verify Documentation & Code Smells (Detekt)
+      # run: ./gradlew detekt
+
+      # Reporte Visual: Si algo falla, publica una tabla estética en la pestaña "Checks" de la PR
+      #- name: Generate Visual Test Report
+      # uses: mikepenz/action-junit-report@v4
+        #if: always() # Se ejecuta aunque los pasos de prueba anteriores hayan fallado
+        #with:
+        #report_paths: '**/build/test-results/**/*.xml'
