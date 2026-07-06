@@ -2,8 +2,8 @@ package com.softserveacademy.feature.auth.register.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softserveacademy.core.domain.model.User
 import com.softserveacademy.feature.auth.register.domain.RegisterRepository
 import kotlinx.coroutines.delay
@@ -25,11 +25,13 @@ class RegisterRepositoryImpl(
 
     private suspend fun saveSession() {
         dataStore.edit { preferences ->
-            preferences[IS_LOGGED_IN] = true
+            preferences[ACCESS_TOKEN] = "mock_access_token"
+            preferences[REFRESH_TOKEN] = "mock_refresh_token"
         }
     }
 
     companion object {
-        private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+        private val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }
 }
