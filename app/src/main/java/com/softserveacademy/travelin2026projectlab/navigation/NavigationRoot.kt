@@ -130,7 +130,7 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
             ForgotPasswordScreen(
                 viewModel= forgotPasswordViewModel,
                 onNavigateBack= {navController.navigate(Routes.AuthGraph)},
-                NavonRecoverClick = {navController.navigate(Routes.AuthGraph)}
+                navonRecoverClick = {navController.navigate(Routes.AuthGraph)}
             )
 
         }

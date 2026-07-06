@@ -15,6 +15,7 @@ class RegisterViewModel(
 
     var firstName by mutableStateOf("")
     var lastName by mutableStateOf("")
+    var countryCode by mutableStateOf("+855")
     var phone by mutableStateOf("")
     var age by mutableStateOf("")
     var email by mutableStateOf("")
@@ -40,7 +41,7 @@ class RegisterViewModel(
         val user = User(
             firstName = firstName,
             lastName = lastName,
-            phone = phone,
+            phone = "$countryCode $phone",
             age = ageInt,
             email = email
         )

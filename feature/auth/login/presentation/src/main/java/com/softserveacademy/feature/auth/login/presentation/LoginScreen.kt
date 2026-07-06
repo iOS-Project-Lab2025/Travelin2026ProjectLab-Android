@@ -1,28 +1,38 @@
 package com.softserveacademy.feature.auth.login.presentation
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.components.AppPasswordInput
+import com.softserveacademy.core.presentation.design_system.components.AppTextInput
+import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.core.presentation.design_system.components.TravelSocialButton
+import com.softserveacademy.core.presentation.design_system.components.util.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.TextActionButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onLoginSuccess: () -> Unit,
@@ -40,9 +50,9 @@ fun LoginScreen(
         onPasswordChange = { viewModel.password = it },
         isLoading = viewModel.isLoading,
         error = viewModel.error,
-        onLoginSuccess=onLoginSuccess,
-        onNavigateToForgotPassword=onNavigateToForgotPassword,
-        onNavigateToRegister=onNavigateToRegister
+        onLoginClick = { viewModel.onLoginClick() },
+        onNavigateToForgotPassword = onNavigateToForgotPassword,
+        onNavigateToRegister = onNavigateToRegister
     )
 }
 
@@ -54,174 +64,236 @@ fun LoginContent(
     onPasswordChange: (String) -> Unit,
     isLoading: Boolean,
     error: String?,
-    onLoginSuccess:() -> Unit,
-    onNavigateToForgotPassword:() -> Unit,
-    onNavigateToRegister:() -> Unit
+    onLoginClick: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
-    var passwordVisible by remember { mutableStateOf(false) }
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(TravelinDimens.PaddingLarge)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+            .background(MaterialTheme.colorScheme.primary)
     ) {
-        Spacer(modifier = Modifier.height(64.dp))
-        
-        // Discover Logo Placeholder
-        DiscoverLogo(modifier = Modifier.size(100.dp))
-
-        Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
-
-        Text(
-            text = "Welcome to Discover",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "Please choose your login option below",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
-        ) {
-            Text(text = "Email", fontWeight = FontWeight.Medium)
-            OutlinedTextField(
-                value = email,
-                onValueChange = onEmailChange,
-                placeholder = { Text("Enter your email address") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = shapes.small
-            )
-
-            Text(text = "Password", fontWeight = FontWeight.Medium)
-            OutlinedTextField(
-                value = password,
-                onValueChange = onPasswordChange,
-                placeholder = { Text("Enter your password") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = EyeIcon, contentDescription = "Toggle password visibility")
-                    }
-                },
-                shape = shapes.small
-            )
-
-            TextButton(
-                onClick = onNavigateToForgotPassword,
-                modifier = Modifier.align(Alignment.End),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Forgot Password?",
-                    color = Color(0xFF03A9F4),
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
-
-        if (error != null) {
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(bottom = TravelinDimens.PaddingMedium)
-            )
-        }
-
-        Button(
-            onClick = onLoginSuccess,
+        // Background Image at the bottom
+        Image(
+            painter = painterResource(id = com.softserveacademy.core.presentation.design_system.R.drawable.test_place),
+            contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(TravelinDimens.ButtonHeightLarge),
-            shape = shapes.small,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF03A9F4)
-            ),
-            enabled = !isLoading
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-            } else {
-                Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-        }
+                .align(Alignment.BottomCenter)
+                .height(300.dp),
+            contentScale = ContentScale.FillWidth,
+            alpha = 0.5f
+        )
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        Row(
-            modifier = Modifier.padding(vertical = TravelinDimens.PaddingLarge),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Doesn't have account on discover? ", color = Color.Gray, fontSize = 12.sp)
-            TextButton(
-                onClick = onNavigateToRegister,
-                contentPadding = PaddingValues(0.dp)
+            // Language selector
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = TravelinDimens.PaddingMedium),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Create Account", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text(
+                    text = "English ",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Icon(
+                    imageVector = AngleRightIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .size(TravelinDimens.IconSizeSmall)
+                        .rotate(0f)
+                )
             }
-        }
-    }
-}
 
-@Composable
-fun DiscoverLogo(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val strokeWidth = size.width * 0.15f
-        val color = Color(0xFF03A9F4)
-        
-        // Drawing three slanted lines/shapes that resemble the logo in the screenshot
-        // Line 1
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.2f, size.height * 0.7f),
-            end = Offset(size.width * 0.5f, size.height * 0.2f),
-            strokeWidth = strokeWidth,
-            cap = StrokeCap.Round
-        )
-        
-        // Line 2
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.45f, size.height * 0.8f),
-            end = Offset(size.width * 0.75f, size.height * 0.35f),
-            strokeWidth = strokeWidth,
-            cap = StrokeCap.Round
-        )
-        
-        // Dot/Small line
-        drawCircle(
-            color = color,
-            center = Offset(size.width * 0.75f, size.height * 0.75f),
-            radius = strokeWidth * 0.7f
-        )
+            Spacer(modifier = Modifier.height(TravelinDimens.Space2ExtraLarge))
+
+            // Main Card
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = TravelinDimens.PaddingLarge),
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = TravelinDimens.PaddingExtraLarge,
+                        vertical = 32.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraLarge)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)) {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
+                                    append("Let's ")
+                                }
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                    append("Travel")
+                                }
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
+                                    append(" you in.")
+                                }
+                            },
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Discover the World with Every\nSign In",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)) {
+                        AppTextInput(
+                            value = email,
+                            onValueChange = onEmailChange,
+                            placeholder = "Email or Phone Number",
+                            modifier = Modifier.fillMaxWidth(),
+                            state = if (error != null) AppInputState.Error else AppInputState.Normal,
+                            errorMessage = error
+                        )
+
+                        AppPasswordInput(
+                            value = password,
+                            onValueChange = onPasswordChange,
+                            placeholder = "Password",
+                            modifier = Modifier.fillMaxWidth(),
+                            state = if (error != null) AppInputState.Error else AppInputState.Normal
+                        )
+
+                        Text(
+                            text = "Forgot password?",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .clickable { onNavigateToForgotPassword() }
+                        )
+                    }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)) {
+                        TravelPrimaryButton(
+                            text = "Sign In",
+                            onClick = onLoginClick,
+                            enabled = !isLoading,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(TravelinDimens.ButtonHeightLarge)
+                        )
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "or sign in with",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                TravelSocialButton(
+                                    icon = SocialGoogleIcon,
+                                    onClick = {},
+                                    modifier = Modifier.height(TravelinDimens.SocialButtonWidth)
+                                )
+                                Spacer(modifier = Modifier.width(TravelinDimens.SpaceMedium))
+                                TravelSocialButton(
+                                    icon = SocialAppleIcon,
+                                    onClick = {},
+                                    colorByTheme = true,
+                                    modifier = Modifier.height(TravelinDimens.SocialButtonWidth)
+                                )
+                                Spacer(modifier = Modifier.width(TravelinDimens.SpaceMedium))
+                                TravelSocialButton(
+                                    icon = SocialFacebookIcon,
+                                    onClick = {},
+                                    modifier = Modifier.height(TravelinDimens.SocialButtonWidth)
+                                )
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = "I don't have a account?",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
+
+            // Sign Up Section
+            TravelPrimaryButton(
+                text = "Sign Up",
+                onClick = onNavigateToRegister,
+                variant = PrimaryButtonVariant.ColorContent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = TravelinDimens.PaddingLarge)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = MaterialTheme.shapes.extraLarge
+                    )
+            )
+
+            Spacer(modifier = Modifier.height(TravelinDimens.PaddingLarge))
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginContent(
-        email = "",
-        onEmailChange = {},
-        password = "",
-        onPasswordChange = {},
-        isLoading = false,
-        error = null,
+    Travelin2026ProjectLabTheme {
+        LoginContent(
+            email = "",
+            onEmailChange = {},
+            password = "",
+            onPasswordChange = {},
+            isLoading = false,
+            error = null,
+            onLoginClick = {},
+            onNavigateToForgotPassword = {},
+            onNavigateToRegister = {}
+        )
+    }
+}
 
-        onLoginSuccess={},
-        onNavigateToForgotPassword = {},
-        onNavigateToRegister={}
-    )
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenErrorPreview() {
+    Travelin2026ProjectLabTheme {
+        LoginContent(
+            email = "wrong@email.com",
+            onEmailChange = {},
+            password = "password",
+            onPasswordChange = {},
+            isLoading = false,
+            error = "The email or password is incorrect, please try again",
+            onLoginClick = {},
+            onNavigateToForgotPassword = {},
+            onNavigateToRegister = {}
+        )
+    }
 }

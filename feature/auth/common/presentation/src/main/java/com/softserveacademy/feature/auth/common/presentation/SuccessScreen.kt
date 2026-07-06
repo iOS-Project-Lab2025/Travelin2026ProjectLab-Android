@@ -10,8 +10,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.core.presentation.design_system.components.util.PrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
@@ -21,7 +22,7 @@ fun SuccessScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF03A9F4))
+            .background(MaterialTheme.colorScheme.primary)
             .padding(TravelinDimens.PaddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -35,7 +36,7 @@ fun SuccessScreen(
         
         Text(
             text = "Successfully created an account",
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.displayMedium,
             color = Color.White,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold
@@ -45,23 +46,19 @@ fun SuccessScreen(
         
         Text(
             text = "After this you can explore any place you want enjoy it!",
-            color = Color.White,
+            color = Color.White.copy(alpha = 0.8f),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.headlineLarge
         )
         
         Spacer(modifier = Modifier.weight(1f))
         
-        Button(
+        TravelPrimaryButton(
+            text = "Let's Explore",
             onClick = onExploreClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(TravelinDimens.ButtonHeightLarge),
-            shape = shapes.small,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
-        ) {
-            Text("Let's Explore", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        }
+            variant = PrimaryButtonVariant.ColorContent,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
