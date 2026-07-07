@@ -26,6 +26,10 @@ multidex = "1.0.3"
 navigationCompose = "2.8.0"
 kotlinSerialization = "1.7.3"
 
+##Added for testing purpose
+mockk = "1.13.13"
+robolectric = "4.14.1"
+
 [libraries]
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -63,6 +67,12 @@ multidex = { group = "com.android.support", name = "multidex", version.ref = "mu
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.7.3" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
+##Added for testing purpose
+
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -73,3 +83,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ##Added for feature of NavGraph
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
+##Added for testing purpose
+[bundles]
+testing-stack = ["junit", "mockk", "robolectric", "kotlinx-coroutines-test"]
