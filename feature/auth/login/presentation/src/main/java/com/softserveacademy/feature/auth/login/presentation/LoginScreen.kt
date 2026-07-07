@@ -23,10 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.AppPasswordInput
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
-import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.TravelSocialButton
-import com.softserveacademy.core.presentation.design_system.components.util.PrimaryButtonVariant
-import com.softserveacademy.core.presentation.design_system.components.util.TextActionButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.*
 
@@ -184,7 +183,7 @@ fun LoginContent(
                     }
 
                     Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)) {
-                        TravelPrimaryButton(
+                        TravelAuthPrimaryButton(
                             text = "Sign In",
                             onClick = onLoginClick,
                             enabled = !isLoading,
@@ -243,10 +242,10 @@ fun LoginContent(
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
 
             // Sign Up Section
-            TravelPrimaryButton(
+            TravelAuthPrimaryButton(
                 text = "Sign Up",
                 onClick = onNavigateToRegister,
-                variant = PrimaryButtonVariant.ColorContent,
+                variant = AuthPrimaryButtonVariant.ColorContent,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = TravelinDimens.PaddingLarge)

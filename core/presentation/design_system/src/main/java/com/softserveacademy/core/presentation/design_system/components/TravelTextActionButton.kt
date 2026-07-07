@@ -15,9 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.presentation.design_system.components.util.TextActionButtonVariant
-import com.softserveacademy.core.presentation.design_system.components.util.color
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TextActionButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.color
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -44,14 +45,16 @@ fun TravelTextActionButton(
     val alpha by animateFloatAsState(
         targetValue = when {
             !enabled -> 0.3f
-            isPressed -> 0.5f
+            isPressed -> 0.7f
             else -> 1f
-        }
+        },
+        label = "alpha",
     )
     Text(
         text = text,
         color = variant.color(),
         style = MaterialTheme.typography.labelLarge,
+        textDecoration = if (isPressed) TextDecoration.Underline else TextDecoration.None,
         modifier = modifier
             .alpha(alpha)
             .clickable(
@@ -60,7 +63,7 @@ fun TravelTextActionButton(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
-            )
+            ),
     )
 }
 

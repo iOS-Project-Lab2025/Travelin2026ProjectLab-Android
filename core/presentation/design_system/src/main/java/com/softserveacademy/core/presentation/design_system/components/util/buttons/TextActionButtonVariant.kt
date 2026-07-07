@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.design_system.components.util
+package com.softserveacademy.core.presentation.design_system.components.util.buttons
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
