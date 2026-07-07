@@ -170,3 +170,20 @@ val SocialAppleIcon: ImageVector
 val SocialFacebookIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.facebook)
+
+// Inline Banners icons - error, success or check, info, warning
+val InfoIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.info)
+
+val ErrorIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.error)
+
+val SuccessIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.success_check)
+
+val WarningIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.warning)
