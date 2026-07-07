@@ -22,8 +22,7 @@ import com.softserveacademy.core.presentation.design_system.components.AppPasswo
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.AppNumberInput
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
-import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.TravelTextActionButton
+import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
@@ -346,7 +345,7 @@ fun RegisterContent(
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
-        TravelPrimaryButton(
+        TravelAuthPrimaryButton(
             text = "Create Account",
             onClick = onRegisterClick,
             enabled = !isLoading,

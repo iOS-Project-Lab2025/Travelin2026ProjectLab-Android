@@ -11,8 +11,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
@@ -53,10 +53,10 @@ fun SuccessScreen(
         
         Spacer(modifier = Modifier.weight(1f))
         
-        TravelPrimaryButton(
+        TravelAuthPrimaryButton(
             text = "Let's Explore",
             onClick = onExploreClick,
-            variant = PrimaryButtonVariant.ColorContent,
+            variant = AuthPrimaryButtonVariant.ColorContent,
             modifier = Modifier.fillMaxWidth()
         )
     }
