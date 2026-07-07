@@ -1,6 +1,9 @@
 package com.softserveacademy.home.presentation.state
 
-import com.softserveacademy.core.presentation.
+import com.softserveacademy.home.presentation.model.DestinationUi
+import com.softserveacademy.home.presentation.model.HotelUi
+import com.softserveacademy.home.presentation.model.UpcomingTripUi
+import com.softserveacademy.home.presentation.model.UserProfileUi
 
 data class HomeUiState(
     val userProfile: SectionState<UserProfileUi> = SectionState.Loading,
