@@ -12,4 +12,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(libs.androidx.datastore.preferences)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
 }
