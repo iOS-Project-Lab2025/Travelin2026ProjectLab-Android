@@ -8,5 +8,6 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.feature.home.domain)
     implementation(projects.core.presentation.designSystem)
 }

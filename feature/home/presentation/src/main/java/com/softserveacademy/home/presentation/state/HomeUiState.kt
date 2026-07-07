@@ -5,6 +5,7 @@ import com.softserveacademy.home.presentation.model.HotelUi
 import com.softserveacademy.home.presentation.model.UpcomingTripUi
 import com.softserveacademy.home.presentation.model.UserProfileUi
 
+
 data class HomeUiState(
     val userProfile: SectionState<UserProfileUi> = SectionState.Loading,
     val upcomingTrip: SectionState<UpcomingTripUi> = SectionState.Loading,
