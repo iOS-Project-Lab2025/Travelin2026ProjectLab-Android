@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
-import com.softserveacademy.core.presentation.design_system.theme.AngleLeftIcon
+import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -34,7 +34,7 @@ fun TravelHotelBookingTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TravelIconButton(
-                icon = AngleLeftIcon,
+                icon = ArrowLeftIcon,
                 onClick = onBackClick
             )
             Text(

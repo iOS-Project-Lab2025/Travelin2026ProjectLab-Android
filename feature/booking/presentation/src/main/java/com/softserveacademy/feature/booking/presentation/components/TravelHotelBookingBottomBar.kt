@@ -34,7 +34,7 @@ fun TravelHotelBookingBottomBar(
             TravelPrimaryButton(
                 text = "Back",
                 onClick = onBackClick,
-                variant = PrimaryButtonVariant.Neutral,
+                variant = PrimaryButtonVariant.SecondaryAction,
                 modifier = Modifier.weight(1f)
             )
             TravelPrimaryButton(
