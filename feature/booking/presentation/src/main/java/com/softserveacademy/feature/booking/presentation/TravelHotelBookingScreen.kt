@@ -6,6 +6,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -38,13 +39,23 @@ fun TravelHotelBookingScreen(
                 onNextClick = onNextClick
             )
         },
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { paddingValues ->
         DateRangePicker(
             state = dateRangePickerState,
-            title = null,
-            headline = {TravelDatePickerHeadline(modifier = Modifier, state = dateRangePickerState)},
+            title = { Text(
+                text = "Available date",
+                modifier = Modifier
+                    .padding(
+                        TravelinDimens.PaddingMedium,
+                        TravelinDimens.PaddingLarge,
+                        TravelinDimens.PaddingMedium,
+                        TravelinDimens.PaddingSmall
+                    ),
+                style = MaterialTheme.typography.headlineSmall
+            )},
+            headline = {TravelDatePickerHeadline(state = dateRangePickerState)},
             showModeToggle = false,
             colors = DatePickerDefaults.colors(
                 containerColor = Color.Transparent,
@@ -54,7 +65,6 @@ fun TravelHotelBookingScreen(
                 dayInSelectionRangeContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                 todayContentColor = MaterialTheme.colorScheme.primary,
                 todayDateBorderColor = MaterialTheme.colorScheme.primary,
-                dividerColor = Color.Transparent
             ),
             modifier = Modifier
                 .fillMaxSize()
@@ -67,7 +77,15 @@ fun TravelHotelBookingScreen(
 @Preview
 @Composable
 private fun TravelHotelBookingScreenPreview() {
-    Travelin2026ProjectLabTheme {
+    Travelin2026ProjectLabTheme(darkTheme = false) {
+        TravelHotelBookingScreen()
+    }
+}
+
+@Preview
+@Composable
+private fun TravelHotelBookingScreenDarkPreview() {
+    Travelin2026ProjectLabTheme(darkTheme = true) {
         TravelHotelBookingScreen()
     }
 }
