@@ -14,8 +14,8 @@ import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
-import com.softserveacademy.feature.profile.presentation.ui.screens.ProfileScreen
-import com.softserveacademy.feature.profile.presentation.viewmodel.ProfileViewModel
+import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
+import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 
 import com.softserveacademycore.presentation.ui.bookinggraph.DetailScreen
 import com.softserveacademycore.presentation.ui.maingraph.HomeScreen
