@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="booking_topbar_title">Choose your booking</string>
+    <string name="booking_date_picker_title">Available date</string>
+
+    <string name="back_button_label">Back</string>
+    <string name="next_button_label">Next</string>
+</resources>
