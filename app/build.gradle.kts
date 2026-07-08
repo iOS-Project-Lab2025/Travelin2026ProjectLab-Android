@@ -61,5 +61,5 @@ dependencies {
     implementation(projects.feature.auth.common.domain)
     implementation(projects.feature.auth.common.data)
     implementation(projects.feature.auth.common.presentation)
-    implementation(projects.feature.profile.presentation)
+    implementation(projects.feature.home.presentation)
 }
