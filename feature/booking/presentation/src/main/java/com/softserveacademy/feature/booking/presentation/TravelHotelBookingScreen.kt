@@ -11,6 +11,7 @@ import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -30,7 +31,7 @@ fun TravelHotelBookingScreen(
         topBar = {
             TravelHotelBookingTopBar(
                 onBackClick = onBackClick,
-                title = "Choose your booking"
+                title = stringResource(R.string.booking_topbar_title)
             )
         },
         bottomBar = {
@@ -45,7 +46,7 @@ fun TravelHotelBookingScreen(
         DateRangePicker(
             state = dateRangePickerState,
             title = { Text(
-                text = "Available date",
+                text = stringResource(R.string.booking_date_picker_title),
                 modifier = Modifier
                     .padding(
                         TravelinDimens.PaddingMedium,

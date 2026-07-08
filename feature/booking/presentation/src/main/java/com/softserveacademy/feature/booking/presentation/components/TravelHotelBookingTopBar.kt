@@ -10,16 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.booking.presentation.R
 
 @Composable
 fun TravelHotelBookingTopBar(
     onBackClick: () -> Unit,
-    title: String = "Title"
+    title: String = stringResource(R.string.booking_topbar_title)
 ) {
     Surface (
         modifier = Modifier.fillMaxWidth(),
@@ -50,8 +52,7 @@ fun TravelHotelBookingTopBar(
 private fun TravelHotelBookingTopBarPreview() {
     Travelin2026ProjectLabTheme {
         TravelHotelBookingTopBar(
-            onBackClick = {},
-            "Choose your booking"
+            onBackClick = {}
         )
     }
 }

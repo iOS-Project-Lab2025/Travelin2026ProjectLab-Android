@@ -8,11 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.booking.presentation.R
 
 @Composable
 fun TravelHotelBookingBottomBar(
@@ -32,13 +34,13 @@ fun TravelHotelBookingBottomBar(
             horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
         ) {
             TravelPrimaryButton(
-                text = "Back",
+                text = stringResource(R.string.back_button_label),
                 onClick = onBackClick,
                 variant = PrimaryButtonVariant.SecondaryAction,
                 modifier = Modifier.weight(1f)
             )
             TravelPrimaryButton(
-                text = "Next",
+                text = stringResource(R.string.next_button_label),
                 onClick = onNextClick,
                 variant = PrimaryButtonVariant.CallToAction,
                 modifier = Modifier.weight(1f)
