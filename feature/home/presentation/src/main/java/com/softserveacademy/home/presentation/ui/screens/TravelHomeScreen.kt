@@ -21,6 +21,7 @@ import com.softserveacademy.home.presentation.ui.components.TravelCard
 import com.softserveacademy.home.presentation.ui.components.TravelIconsCard
 import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
 import com.softserveacademy.home.presentation.ui.components.TravelTextField
+
 @Composable
 fun TravelHomeScreen(modifier: Modifier = Modifier) {
     val snackbarHostState = remember { SnackbarHostState() }
