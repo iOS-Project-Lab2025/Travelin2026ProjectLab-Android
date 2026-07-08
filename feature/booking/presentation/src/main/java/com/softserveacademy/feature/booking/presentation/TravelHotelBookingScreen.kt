@@ -1,0 +1,73 @@
+package com.softserveacademy.feature.booking.presentation
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.booking.presentation.components.TravelDatePickerHeadline
+import com.softserveacademy.feature.booking.presentation.components.TravelHotelBookingBottomBar
+import com.softserveacademy.feature.booking.presentation.components.TravelHotelBookingTopBar
+
+@Composable
+fun TravelHotelBookingScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
+    onNextClick: () -> Unit = {},
+){
+    val dateRangePickerState = rememberDateRangePickerState()
+
+    Scaffold(
+        topBar = {
+            TravelHotelBookingTopBar(
+                onBackClick = onBackClick,
+                title = "Choose your booking"
+            )
+        },
+        bottomBar = {
+            TravelHotelBookingBottomBar(
+                onBackClick = onBackClick,
+                onNextClick = onNextClick
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
+    ) { paddingValues ->
+        DateRangePicker(
+            state = dateRangePickerState,
+            title = null,
+            headline = {TravelDatePickerHeadline(modifier = Modifier, state = dateRangePickerState)},
+            showModeToggle = false,
+            colors = DatePickerDefaults.colors(
+                containerColor = Color.Transparent,
+                selectedDayContainerColor = MaterialTheme.colorScheme.primary,
+                dayContentColor = MaterialTheme.colorScheme.onSurface,
+                selectedDayContentColor = MaterialTheme.colorScheme.onPrimary,
+                dayInSelectionRangeContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                todayContentColor = MaterialTheme.colorScheme.primary,
+                todayDateBorderColor = MaterialTheme.colorScheme.primary,
+                dividerColor = Color.Transparent
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = TravelinDimens.PaddingMedium)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TravelHotelBookingScreenPreview() {
+    Travelin2026ProjectLabTheme {
+        TravelHotelBookingScreen()
+    }
+}
