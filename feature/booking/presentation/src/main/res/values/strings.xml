@@ -5,4 +5,12 @@
 
     <string name="back_button_label">Back</string>
     <string name="next_button_label">Next</string>
+
+    <string name="passengers_title">Passengers</string>
+    <string name="passengers_subtitle">Add passengers to this trip</string>
+    <string name="adults_label">Adults</string>
+    <string name="kids_label">Kids</string>
+    <string name="kids_subtitle">2 – 17 years</string>
+    <string name="pets_label">Pets</string>
+    <string name="accept_button_label">Accept</string>
 </resources>
