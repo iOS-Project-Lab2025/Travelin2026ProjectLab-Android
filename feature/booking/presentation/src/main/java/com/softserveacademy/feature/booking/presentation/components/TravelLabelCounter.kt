@@ -9,19 +9,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.booking.presentation.R
 
 @Composable
-fun TravelPassengerCounter(
+fun TravelLabelCounter(
     label: String,
     count: Int,
     onCountChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     minCount: Int = 0,
-    maxCount: Int = 10
+    maxCount: Int = 50
 ) {
     Row(
         modifier = modifier
@@ -32,13 +34,13 @@ fun TravelPassengerCounter(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface
             )
             if (subtitle != null) {
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -53,12 +55,13 @@ fun TravelPassengerCounter(
     }
 }
 
-@Preview
+@Preview(widthDp = 250)
 @Composable
-fun TravelPassengerCounterPreview() {
+fun TravelLabelCounterPreview() {
     Travelin2026ProjectLabTheme() {
-        TravelPassengerCounter(
-            label = "Adults",
+        TravelLabelCounter(
+            label = stringResource(R.string.kids_label),
+            subtitle = stringResource(R.string.kids_subtitle),
             count = 1,
             onCountChange = {},
             modifier = Modifier

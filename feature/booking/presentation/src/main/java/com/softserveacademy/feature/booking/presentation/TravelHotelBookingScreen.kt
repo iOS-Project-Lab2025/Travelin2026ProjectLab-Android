@@ -23,7 +23,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.components.TravelDatePickerHeadline
 import com.softserveacademy.feature.booking.presentation.components.TravelHotelBookingBottomBar
 import com.softserveacademy.feature.booking.presentation.components.TravelHotelBookingTopBar
-import com.softserveacademy.feature.booking.presentation.components.TravelPassengerBottomSheet
+import com.softserveacademy.feature.booking.presentation.components.TravelGuestBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,9 +83,9 @@ fun TravelHotelBookingScreen(
     }
 
     if (showPassengerBottomSheet) {
-        TravelPassengerBottomSheet(
+        TravelGuestBottomSheet(
             onDismissRequest = { showPassengerBottomSheet = false },
-            onAccept = { adults, kids, pets ->
+            onAccept = { adults, kids, hasPets ->
                 // Handle passenger selection
                 onNextClick()
             }
@@ -97,14 +97,6 @@ fun TravelHotelBookingScreen(
 @Composable
 private fun TravelHotelBookingScreenPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelHotelBookingScreen()
-    }
-}
-
-@Preview
-@Composable
-private fun TravelHotelBookingScreenDarkPreview() {
-    Travelin2026ProjectLabTheme(darkTheme = true) {
         TravelHotelBookingScreen()
     }
 }
