@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.theme.AddIcon
@@ -69,13 +70,12 @@ fun TravelCounter(
 
 @Composable
 private fun CounterButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     onClick: () -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (enabled) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.5f)
-    val contentColor = Color.White
+    val backgroundColor = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
 
     Box(
         modifier = modifier
@@ -88,8 +88,8 @@ private fun CounterButton(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = contentColor,
-            modifier = Modifier.size(20.dp)
+            tint =  Color.White,
+            modifier = Modifier.size(TravelinDimens.IconSizeSmall)
         )
     }
 }
@@ -99,7 +99,7 @@ private fun CounterButton(
 fun TravelCounterPreview(){
     Travelin2026ProjectLabTheme {
         TravelCounter(
-            count = 1,
+            count = 0,
             onCountChange = {},
             modifier = Modifier
         )

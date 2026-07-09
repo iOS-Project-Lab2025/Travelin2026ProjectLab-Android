@@ -14,11 +14,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
@@ -28,31 +28,32 @@ import com.softserveacademy.feature.booking.presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TravelPassengerBottomSheet(
+fun TravelGuestBottomSheet(
     onDismissRequest: () -> Unit,
-    onAccept: (adults: Int, kids: Int, pets: Int) -> Unit,
+    onAccept: (adults: Int, kids: Int, hasPets: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     var adults by remember { mutableIntStateOf(1) }
     var kids by remember { mutableIntStateOf(0) }
-    var pets by remember { mutableIntStateOf(0) }
+    var hasPets by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
-        modifier = modifier
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier,
     ) {
-        TravelPassengerBottomSheetContent(
+        TravelGuestBottomSheetContent(
             adults = adults,
             kids = kids,
-            pets = pets,
+            hasPets = hasPets,
             onAdultsChange = { adults = it },
             onKidsChange = { kids = it },
-            onPetsChange = { pets = it },
+            onHasPetsChange = { hasPets = it },
             onAccept = {
-                onAccept(adults, kids, pets)
+                onAccept(adults, kids, hasPets)
                 onDismissRequest()
             }
         )
@@ -60,13 +61,13 @@ fun TravelPassengerBottomSheet(
 }
 
 @Composable
-fun TravelPassengerBottomSheetContent(
+fun TravelGuestBottomSheetContent(
     adults: Int,
     kids: Int,
-    pets: Int,
+    hasPets: Boolean,
     onAdultsChange: (Int) -> Unit,
     onKidsChange: (Int) -> Unit,
-    onPetsChange: (Int) -> Unit,
+    onHasPetsChange: (Boolean) -> Unit,
     onAccept: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -76,34 +77,34 @@ fun TravelPassengerBottomSheetContent(
             .padding(TravelinDimens.PaddingExtraLarge)
     ) {
         Text(
-            text = stringResource(R.string.passengers_title),
+            text = stringResource(R.string.guest_title),
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
+            color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = stringResource(R.string.passengers_subtitle),
+            text = stringResource(R.string.guest_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
-        TravelPassengerCounter(
+        TravelLabelCounter(
             label = stringResource(R.string.adults_label),
             count = adults,
             onCountChange = onAdultsChange,
             minCount = 1
         )
-        TravelPassengerCounter(
+        TravelLabelCounter(
             label = stringResource(R.string.kids_label),
             subtitle = stringResource(R.string.kids_subtitle),
             count = kids,
             onCountChange = onKidsChange
         )
-        TravelPassengerCounter(
+        TravelLabelSwitch(
             label = stringResource(R.string.pets_label),
-            count = pets,
-            onCountChange = onPetsChange
+            checked = hasPets,
+            onCheckedChange = onHasPetsChange
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
@@ -113,22 +114,20 @@ fun TravelPassengerBottomSheetContent(
             onClick = onAccept,
             variant = PrimaryButtonVariant.CallToAction
         )
-
-        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TravelPassengerBottomSheetPreview() {
+fun TravelGuestBottomSheetPreview() {
     Travelin2026ProjectLabTheme {
-        TravelPassengerBottomSheetContent(
+        TravelGuestBottomSheetContent(
             adults = 1,
-            kids = 1,
-            pets = 1,
+            kids = 0,
+            hasPets = false,
             onAdultsChange = {},
             onKidsChange = {},
-            onPetsChange = {},
+            onHasPetsChange = {},
             onAccept = {}
         )
     }
