@@ -44,6 +44,7 @@ dependencies {
     //Implementation needed for navgraph
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     // modules
@@ -60,4 +61,5 @@ dependencies {
     implementation(projects.feature.auth.common.domain)
     implementation(projects.feature.auth.common.data)
     implementation(projects.feature.auth.common.presentation)
+    implementation(projects.feature.home.presentation)
 }
