@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.HeartFilledIcon
 import com.softserveacademy.core.presentation.design_system.theme.HeartLineIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -35,14 +36,16 @@ fun TravelIconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     iconColor : Color = MaterialTheme.colorScheme.onSurface,
+    showBackground: Boolean = true,
     contentDescription: String? = null,
 ){
+    val containerColor = if (showBackground) MaterialTheme.colorScheme.surface else Color.Transparent
     IconButton (
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = containerColor,
         )
     ){
         Icon(
@@ -72,6 +75,12 @@ fun TravelIconButtonPreview() {
                 onClick = {},
                 modifier = Modifier,
                 iconColor = MaterialTheme.colorScheme.error
+            )
+            TravelIconButton(
+                icon = ArrowLeftIcon,
+                onClick = {},
+                modifier = Modifier,
+                showBackground = false
             )
         }
     }
