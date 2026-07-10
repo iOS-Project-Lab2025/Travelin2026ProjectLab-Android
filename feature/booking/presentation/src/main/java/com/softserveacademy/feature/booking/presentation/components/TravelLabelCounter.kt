@@ -15,6 +15,17 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.R
 
+/**
+ * A component that displays a label and an optional subtitle alongside a [TravelCounter].
+ *
+ * @param label The main label text.
+ * @param count The current count value.
+ * @param onCountChange The callback to be invoked when the count value changes.
+ * @param modifier The modifier to be applied to the component.
+ * @param subtitle An optional subtitle text displayed below the label.
+ * @param minCount The minimum allowed count value.
+ * @param maxCount The maximum allowed count value.
+ */
 @Composable
 fun TravelLabelCounter(
     label: String,

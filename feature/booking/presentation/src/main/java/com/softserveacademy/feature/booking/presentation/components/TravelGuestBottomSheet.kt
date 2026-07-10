@@ -12,32 +12,48 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.components.InlineErrorBanner
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.R
 
+/**
+ * A bottom sheet for selecting the number of guests (adults, kids, pets).
+ *
+ * @param modifier The modifier to be applied to the bottom sheet.
+ * @param adults The current number of adults.
+ * @param kids The current number of children.
+ * @param hasPets Whether pets are included.
+ * @param onAdultsChange The callback to be invoked when the number of adults changes.
+ * @param onKidsChange The callback to be invoked when the number of children changes.
+ * @param onHasPetsChange The callback to be invoked when the pets toggle changes.
+ * @param onAccept The callback to be invoked when the selection is accepted.
+ * @param onDismissRequest The callback to be invoked when the bottom sheet is dismissed.
+ * @param isErrorVisible Whether the error message is visible.
+ * @param errorMessage The error message to be displayed.
+ * @param sheetState The state of the bottom sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelGuestBottomSheet(
-    onDismissRequest: () -> Unit,
-    onAccept: (adults: Int, kids: Int, hasPets: Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    adults: Int,
+    kids: Int,
+    hasPets: Boolean,
+    onAdultsChange: (Int) -> Unit,
+    onKidsChange: (Int) -> Unit,
+    onHasPetsChange: (Boolean) -> Unit,
+    onAccept: () -> Unit,
+    onDismissRequest: () -> Unit,
+    isErrorVisible: Boolean = false,
+    errorMessage: String? = null,
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
-    var adults by remember { mutableIntStateOf(1) }
-    var kids by remember { mutableIntStateOf(0) }
-    var hasPets by remember { mutableStateOf(false) }
-
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
@@ -49,19 +65,33 @@ fun TravelGuestBottomSheet(
             adults = adults,
             kids = kids,
             hasPets = hasPets,
-            onAdultsChange = { adults = it },
-            onKidsChange = { kids = it },
-            onHasPetsChange = { hasPets = it },
-            onAccept = {
-                onAccept(adults, kids, hasPets)
-                onDismissRequest()
-            }
+            onAdultsChange = onAdultsChange,
+            onKidsChange = onKidsChange,
+            onHasPetsChange = onHasPetsChange,
+            onAccept = onAccept,
+            isErrorVisible = isErrorVisible,
+            errorMessage = errorMessage
         )
     }
 }
 
+/**
+ * Internal composable that represents the content of the guest selection bottom sheet.
+ *
+ * @param modifier The modifier to be applied to the content.
+ * @param adults The current number of adults.
+ * @param kids The current number of children.
+ * @param hasPets Whether pets are included.
+ * @param onAdultsChange The callback to be invoked when the number of adults changes.
+ * @param onKidsChange The callback to be invoked when the number of children changes.
+ * @param onHasPetsChange The callback to be invoked when the pets toggle changes.
+ * @param onAccept The callback to be invoked when the selection is accepted.
+ * @param isErrorVisible Whether the error message is visible.
+ * @param errorMessage The error message to be displayed.
+ */
 @Composable
 fun TravelGuestBottomSheetContent(
+    modifier: Modifier = Modifier,
     adults: Int,
     kids: Int,
     hasPets: Boolean,
@@ -69,7 +99,8 @@ fun TravelGuestBottomSheetContent(
     onKidsChange: (Int) -> Unit,
     onHasPetsChange: (Boolean) -> Unit,
     onAccept: () -> Unit,
-    modifier: Modifier = Modifier
+    isErrorVisible: Boolean = false,
+    errorMessage: String? = null,
 ) {
     Column(
         modifier = modifier
@@ -88,6 +119,12 @@ fun TravelGuestBottomSheetContent(
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+        InlineErrorBanner(
+            message = errorMessage ?: "",
+            isVisible = isErrorVisible,
+            modifier = Modifier.padding(bottom = TravelinDimens.PaddingMedium)
+        )
 
         TravelLabelCounter(
             label = stringResource(R.string.adults_label),
