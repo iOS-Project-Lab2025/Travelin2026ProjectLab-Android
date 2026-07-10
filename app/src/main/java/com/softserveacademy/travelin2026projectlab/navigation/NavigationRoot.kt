@@ -14,8 +14,8 @@ import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 
-import com.softserveacademycore.presentation.ui.bookinggraph.DetailScreen
-import com.softserveacademycore.presentation.ui.maingraph.HomeScreen
+import com.softserveacademy.home.presentation.ui.screens.DetailScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
 
 /**
  * Root navigation host for the application.
@@ -41,7 +41,7 @@ fun NavigationRoot(
 
     NavHost(
         navController = navController,
-        //this line is commented since we haven´t discussed the isloggenin variable
+        //this line is commented since we haven´t discussed the isloggedin variable
         //startDestination = if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph
         startDestination = Routes.AuthGraph
     ) {
@@ -106,8 +106,6 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
                     }
                 },
                 onNavigateBack={
-                    // Clear the authentication flow from the back stack
-                    // so users cannot return to Login after signing in.
                     navController.popBackStack()
                 },
             )
@@ -116,7 +114,7 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
 
         composable<Routes.SuccessScreen> {
             SuccessScreen(
-                onExploreClick={navController.navigate(Routes.HomeScreen)
+                onExploreClick={navController.navigate(Routes.MainGraph)
                 {
                     popUpTo(Routes.AuthGraph) { inclusive = true }
                 }
@@ -148,16 +146,13 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
 fun NavGraphBuilder.mainGraph(navController: NavHostController) {
 
     navigation<Routes.MainGraph>(
-        startDestination = Routes.HomeScreen
+        startDestination = Routes.TravelHomeScreen
     ) {
 
-        composable<Routes.HomeScreen> {
-            HomeScreen(
-                onSearchClick = {
-                    navController.navigate(Routes.BookingGraph)
-                },
-                onItemClick = {
-                    navController.navigate(Routes.BookingGraph)
+        composable<Routes.TravelHomeScreen> {
+            TravelHomeScreen(
+                onHotelClick = {
+                    navController.navigate(Routes.DetailScreen)
                 }
             )
         }

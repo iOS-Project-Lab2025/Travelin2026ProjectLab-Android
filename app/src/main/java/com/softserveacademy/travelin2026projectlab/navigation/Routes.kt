@@ -38,8 +38,11 @@ sealed interface Routes {
     data object ForgotPasswordScreen : Routes
 
     // ---------------- MAIN ----------------
+
+
     @Serializable
-    data object HomeScreen : Routes
+    data object TravelHomeScreen : Routes
+
 
 
 
