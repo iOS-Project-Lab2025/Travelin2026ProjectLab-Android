@@ -29,6 +29,13 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.R
 
+/**
+ * A custom date range picker component that uses Material 3's [DateRangePicker].
+ *
+ * @param title The title to be displayed above the date range picker.
+ * @param state The state of the date range picker.
+ * @param modifier The modifier to be applied to the date range picker.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelDateRangePicker(
@@ -67,6 +74,13 @@ fun TravelDateRangePicker(
     )
 }
 
+/**
+ * Internal composable for the title section of the [TravelDateRangePicker].
+ *
+ * @param title The title text.
+ * @param state The state of the date range picker.
+ * @param modifier The modifier to be applied to the title section.
+ */
 @Composable
 fun TravelDateRangePickerTitle(
     title: String,
@@ -99,6 +113,12 @@ fun TravelDateRangePickerTitle(
     }
 }
 
+/**
+ * Internal composable for the headline section of the [TravelDateRangePicker].
+ *
+ * @param state The state of the date range picker.
+ * @param modifier The modifier to be applied to the headline section.
+ */
 @Composable
 fun TravelDateRangePickerHeadline(
     state: DateRangePickerState,

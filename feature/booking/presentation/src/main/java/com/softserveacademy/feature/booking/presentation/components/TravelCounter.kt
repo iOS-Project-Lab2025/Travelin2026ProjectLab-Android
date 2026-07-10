@@ -24,6 +24,15 @@ import com.softserveacademy.core.presentation.design_system.theme.MinusIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
+/**
+ * A counter component that allows the user to increment and decrement a numeric value.
+ *
+ * @param count The current count value.
+ * @param onCountChange The callback to be invoked when the count value changes.
+ * @param modifier The modifier to be applied to the counter.
+ * @param minCount The minimum allowed count value.
+ * @param maxCount The maximum allowed count value.
+ */
 @Composable
 fun TravelCounter(
     count: Int,
@@ -68,6 +77,14 @@ fun TravelCounter(
     }
 }
 
+/**
+ * A button used within the [TravelCounter] to increment or decrement the count.
+ *
+ * @param icon The icon to be displayed on the button.
+ * @param onClick The callback to be invoked when the button is clicked.
+ * @param enabled Whether the button is enabled.
+ * @param modifier The modifier to be applied to the button.
+ */
 @Composable
 private fun CounterButton(
     icon: ImageVector,

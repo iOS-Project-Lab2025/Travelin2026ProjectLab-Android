@@ -12,4 +12,7 @@
     <string name="kids_subtitle">0 – 17 years</string>
     <string name="pets_label">Do you travel with pets?</string>
     <string name="accept_button_label">Accept</string>
+
+    <string name="booking_error_select_dates">Please select check-in and check-out dates</string>
+    <string name="booking_error_at_least_one_adult">At least one adult is required</string>
 </resources>

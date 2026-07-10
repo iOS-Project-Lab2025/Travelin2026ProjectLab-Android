@@ -17,6 +17,15 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.R
 
+/**
+ * A component that displays a label and an optional subtitle alongside a [Switch].
+ *
+ * @param label The main label text.
+ * @param checked Whether the switch is checked.
+ * @param onCheckedChange The callback to be invoked when the switch's checked state changes.
+ * @param modifier The modifier to be applied to the component.
+ * @param subtitle An optional subtitle text displayed below the label.
+ */
 @Composable
 fun TravelLabelSwitch(
     label: String,
