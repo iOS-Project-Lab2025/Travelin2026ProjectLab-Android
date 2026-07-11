@@ -26,6 +26,7 @@ import com.softserveacademy.feature.auth.register.domain.RegisterUseCase
 import com.softserveacademy.feature.auth.login.presentation.*
 import com.softserveacademy.feature.auth.register.presentation.*
 import com.softserveacademy.feature.auth.common.presentation.*
+import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.travelin2026projectlab.navigation.NavigationRoot
 import com.softserveacademy.travelin2026projectlab.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
