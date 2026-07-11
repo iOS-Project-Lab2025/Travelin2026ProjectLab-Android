@@ -12,7 +12,10 @@ import com.softserveacademy.feature.auth.login.presentation.ForgotPasswordViewMo
 import com.softserveacademy.feature.auth.login.presentation.LoginScreen
 import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
+import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
+import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 
 import com.softserveacademy.home.presentation.ui.screens.DetailScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
@@ -143,7 +146,9 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
  *
  * @param navController The navigation controller used for screen navigation.
  */
-fun NavGraphBuilder.mainGraph(navController: NavHostController) {
+fun NavGraphBuilder.mainGraph(
+    navController: NavHostController
+) {
 
     navigation<Routes.MainGraph>(
         startDestination = Routes.TravelHomeScreen
@@ -154,6 +159,14 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
                 onHotelClick = {
                     navController.navigate(Routes.DetailScreen)
                 }
+            )
+        }
+
+        composable<Routes.ProfileScreen> {
+            val viewModel: ProfileViewModel = hiltViewModel()
+            ProfileScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

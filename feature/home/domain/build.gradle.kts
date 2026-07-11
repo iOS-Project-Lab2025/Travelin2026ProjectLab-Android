@@ -3,4 +3,6 @@ plugins {
 }
 dependencies{
     implementation(projects.core.domain)
+    testImplementation(libs.bundles.testing.stack)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

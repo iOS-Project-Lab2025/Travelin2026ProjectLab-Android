@@ -44,6 +44,9 @@ sealed interface Routes {
     data object TravelHomeScreen : Routes
 
 
+    @Serializable
+    data object ProfileScreen : Routes
+
 
 
 

@@ -44,6 +44,7 @@ dependencies {
     //Implementation needed for navgraph
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     // modules
