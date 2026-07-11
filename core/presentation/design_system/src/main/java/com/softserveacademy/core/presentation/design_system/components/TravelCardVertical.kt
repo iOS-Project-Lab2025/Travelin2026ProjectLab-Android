@@ -1,6 +1,7 @@
 package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,17 +32,22 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * A reusable card for displaying information about the tour package.
  *
  * @param hotel The hotel object containing information needed to display in the card.
+ * @param onClick Callback invoked when the card is clicked.
  *
  * @see Hotel
  */
 @Composable
-fun TravelCardVertical(hotel: Hotel){
+fun TravelCardVertical(
+    hotel: Hotel,
+    onClick: (Hotel) -> Unit = {}
+){
     Column(
         modifier = Modifier
             .height(240.dp)
             .width(180.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.background)
+            .clickable { onClick(hotel) }
     ) {
         // Add image and modify his size.
         TravelImageHandler(

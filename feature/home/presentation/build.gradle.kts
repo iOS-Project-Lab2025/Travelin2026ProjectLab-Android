@@ -11,6 +11,8 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.feature.home.domain)
     implementation(projects.core.presentation.designSystem)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(projects.feature.auth.common.domain)
 
     testImplementation(libs.bundles.testing.stack)

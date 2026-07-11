@@ -11,13 +11,20 @@ import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.Hotel
 import androidx.compose.ui.tooling.preview.Preview
 
-//Here we create a composable of the carrousel
-//As entry variables we need to pass the list of hotels available
-//at line 37-ish there is a mocklist of hotels as an example
+/**
+ * A horizontal carousel component that displays a list of travel packages (hotels).
+ *
+ * This composable uses a [LazyRow] to efficiently display cards for each hotel.
+ *
+ * @param packages The list of [Hotel] objects to be displayed in the carousel.
+ * @param modifier The modifier to be applied to the carousel layout.
+ * @param onHotelClick Callback invoked when a specific hotel card is clicked.
+ */
 @Composable
 fun TravelCarousel(
     packages: List<Hotel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onHotelClick: (Hotel) -> Unit = {}
 ) {
     //This is the function that makes the carrousel
     LazyRow(
@@ -27,7 +34,10 @@ fun TravelCarousel(
     ) {
         //Since the view if cards is ready here we only call that instance
         items(packages) { hotelItem ->
-            TravelCardVertical(hotel = hotelItem)
+            TravelCardVertical(
+                hotel = hotelItem,
+                onClick = onHotelClick
+            )
         }
     }
 }
