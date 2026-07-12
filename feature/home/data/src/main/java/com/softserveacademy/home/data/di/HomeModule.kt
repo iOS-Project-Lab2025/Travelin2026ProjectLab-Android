@@ -2,6 +2,10 @@ package com.softserveacademy.home.data.di
 
 import com.softserveacademy.home.data.repository.HomeRepositoryImpl
 import com.softserveacademy.home.domain.HomeRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
