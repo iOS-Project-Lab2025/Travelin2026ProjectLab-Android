@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.home.domain)
+    implementation(projects.core.domain)
     implementation(projects.core.domain)
     implementation(projects.feature.home.domain)
     implementation(projects.core.data)

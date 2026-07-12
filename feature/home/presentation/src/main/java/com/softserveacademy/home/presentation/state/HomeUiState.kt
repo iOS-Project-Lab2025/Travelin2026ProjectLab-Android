@@ -1,15 +1,15 @@
 package com.softserveacademy.home.presentation.state
 
-import com.softserveacademy.home.presentation.model.DestinationUi
-import com.softserveacademy.home.presentation.model.HotelUi
-import com.softserveacademy.home.presentation.model.UpcomingTripUi
-import com.softserveacademy.home.presentation.model.UserProfileUi
+import com.softserveacademy.home.domain.model.Destination
+import com.softserveacademy.home.domain.model.Hotel
+import com.softserveacademy.home.domain.model.UpcomingTrip
+import com.softserveacademy.home.domain.model.UserProfile
 
 
 data class HomeUiState(
-    val userProfile: SectionState<UserProfileUi> = SectionState.Loading,
-    val upcomingTrip: SectionState<UpcomingTripUi> = SectionState.Loading,
-    val journeyTogether: SectionState<List<DestinationUi>> = SectionState.Loading,
-    val hotelsRecommended: SectionState<List<HotelUi>> = SectionState.Loading,
+    val userProfile: SectionState<UserProfile> = SectionState.Loading,
+    val upcomingTrip: SectionState<UpcomingTrip> = SectionState.Loading,
+    val journeyTogether: SectionState<List<Destination>> = SectionState.Loading,
+    val hotelsRecommended: SectionState<List<Hotel>> = SectionState.Loading,
     val searchQuery: String = ""
 )
