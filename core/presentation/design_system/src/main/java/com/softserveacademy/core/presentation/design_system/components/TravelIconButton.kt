@@ -27,6 +27,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param enabled Whether the button is enabled or disabled
  * @param contentDescription The content description for the icon
  * @param iconColor The color of the icon
+ * @param backgroundColor The background color of the button
  */
 @Composable
 fun TravelIconButton(
@@ -35,6 +36,7 @@ fun TravelIconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     iconColor : Color = MaterialTheme.colorScheme.onSurface,
+    backgroundColor : Color = MaterialTheme.colorScheme.surface,
     contentDescription: String? = null,
 ){
     IconButton (
@@ -42,7 +44,7 @@ fun TravelIconButton(
         modifier = modifier,
         enabled = enabled,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = backgroundColor,
         )
     ){
         Icon(

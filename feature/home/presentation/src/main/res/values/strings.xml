@@ -11,4 +11,21 @@
     <string name="deals_ic_label">Deals</string>
     <string name="accounts_ic_label">Accounts</string>
 
+    // TravelHotelDetailScreen
+    <string name="about_label">About</string>
+    <string name="read_more_label">Read more</string>
+    <string name="read_less_label">Read less</string>
+    <string name="What_is_included_label">What is included</string>
+
+    // Include items
+    <string name="buffet_breakfast_label">Buffet breakfast</string>
+    <string name="free_wifi_label">Free wifi</string>
+    <string name="fitness_center_label">On-site fitness center</string>
+    <string name="pool_label">Pool</string>
+    <string name="cleaning_services_label">Cleaning services</string>
+    <string name="parking_label">Self-parking</string>
+    <string name="room_service_label">Room service</string>
+    <string name="ac_unit_label">AC unit</string>
+    <string name="included_label">Included</string>
+
 </resources>
