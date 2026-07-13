@@ -40,11 +40,11 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
 }
 
 private val previewImages = listOf(
-    "https://picsum.photos/200/300",
-    "https://picsum.photos/200",
+    "https://picsum.photos/id/237/200/300",
+    "https://picsum.photos/id/238/200/300",
     "https://picsum.photos/id/1020/800/600",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd",
+    "https://picsum.photos/id/537/200/300",
+    "https://picsum.photos/id/134/200/300",
     "https://images.unsplash.com/photo-1582719508461-905c673771fd",
     "https://images.unsplash.com/photo-1582719508461-905c673771fd",
     "https://images.unsplash.com/photo-1582719508461-905c673771fd"

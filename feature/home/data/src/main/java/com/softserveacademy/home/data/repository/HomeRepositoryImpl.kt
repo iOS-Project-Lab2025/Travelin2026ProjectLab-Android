@@ -17,12 +17,11 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
         id = 1,
         minimumPrice = 400,
         imageList = listOf(
-        "https://picsum.photos/id/1020/800/600",
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd"
+            "https://picsum.photos/id/237/200/300",
+            "https://picsum.photos/id/238/200/300",
+            "https://picsum.photos/id/1020/800/600",
+            "https://picsum.photos/id/537/200/300",
+            "https://picsum.photos/id/134/200/300"
         ),
         name = "Koh Rong Samloem",
         numberOfReviews = 30,

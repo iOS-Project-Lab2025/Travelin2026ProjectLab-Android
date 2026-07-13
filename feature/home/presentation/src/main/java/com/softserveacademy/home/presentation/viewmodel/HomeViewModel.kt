@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.screens
+package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
