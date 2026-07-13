@@ -38,13 +38,19 @@ sealed interface Routes {
     data object ForgotPasswordScreen : Routes
 
     // ---------------- MAIN ----------------
+
+
     @Serializable
-    data object HomeScreen : Routes
+    data object TravelHomeScreen : Routes
 
 
+    @Serializable
+    data object ProfileScreen : Routes
+
+    @Serializable
+    data object TravelHotelDetailScreen : Routes
 
 
     // ---------------- BOOKING ----------------
-    @Serializable
-    data object DetailScreen : Routes
+
 }

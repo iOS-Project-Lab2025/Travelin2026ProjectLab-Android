@@ -118,7 +118,8 @@ fun TravelCardHorizontalPreview() {
         address = "Jl. Sunset Road No. 101, Kuta, Bali , Indonesia",
         star = 4,
         pricePerNight = 50,
-        image = R.drawable.test_hotel
+        image = R.drawable.test_hotel,
+        imagesList = emptyList()
     )
     Travelin2026ProjectLabTheme(darkTheme = true) {
         TravelCardHorizontal(hotel = hotelExample)

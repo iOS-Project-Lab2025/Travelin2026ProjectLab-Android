@@ -10,6 +10,8 @@ package com.softserveacademy.core.domain.model
  * @param userRating The user rating of the hotel.
  * @param pricePerNight The price per night for the hotel.
  * @param image The image source of the hotel.
+ * @param imagesList A list of image URLs associated with the hotel.As default is an empty list so you don´t
+ * have to give it a list of images to compile.
  */
 data class Hotel(
     val id: Int? = null,
@@ -18,5 +20,6 @@ data class Hotel(
     val star: Int? = null,
     val userRating: Double? = null,
     val pricePerNight: Int,
-    val image: Int
+    val image: Int,
+    val imagesList: List<String> = emptyList()
 )

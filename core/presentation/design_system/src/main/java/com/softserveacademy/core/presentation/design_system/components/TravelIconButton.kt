@@ -28,6 +28,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param enabled Whether the button is enabled or disabled
  * @param contentDescription The content description for the icon
  * @param iconColor The color of the icon
+ * @param backgroundColor The background color of the button
  */
 @Composable
 fun TravelIconButton(
@@ -36,16 +37,15 @@ fun TravelIconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     iconColor : Color = MaterialTheme.colorScheme.onSurface,
-    showBackground: Boolean = true,
+    backgroundColor : Color = MaterialTheme.colorScheme.surface,
     contentDescription: String? = null,
 ){
-    val containerColor = if (showBackground) MaterialTheme.colorScheme.surface else Color.Transparent
     IconButton (
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = containerColor,
+            containerColor = backgroundColor,
         )
     ){
         Icon(
@@ -80,7 +80,7 @@ fun TravelIconButtonPreview() {
                 icon = ArrowLeftIcon,
                 onClick = {},
                 modifier = Modifier,
-                showBackground = false
+                backgroundColor = Color.Transparent
             )
         }
     }
