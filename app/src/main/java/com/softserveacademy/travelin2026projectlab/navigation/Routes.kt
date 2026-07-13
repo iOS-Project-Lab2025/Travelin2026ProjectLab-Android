@@ -50,6 +50,9 @@ sealed interface Routes {
     @Serializable
     data object TravelHotelDetailScreen : Routes
 
+    @Serializable
+    data object HotelGalleryScreen : Routes
+
 
     // ---------------- BOOKING ----------------
 

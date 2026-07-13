@@ -19,6 +19,7 @@ import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 
 /**
  * Root navigation host for the application.
@@ -187,7 +188,14 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
         composable<Routes.TravelHotelDetailScreen> {
             HotelDetailState(
-                onBackClick = {navController.navigate(Routes.TravelHomeScreen)}
+                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen) }
+            )
+        }
+
+        composable<Routes.HotelGalleryScreen> {
+            TravelHotelGalleryScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

@@ -45,6 +45,14 @@ import com.softserveacademy.home.presentation.model.IncludedItemUi
 import com.softserveacademy.home.presentation.ui.components.TravelBookingBar
 import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailsTopIcons
 import com.softserveacademy.home.presentation.ui.components.TravelIncludedItem
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import com.softserveacademy.home.presentation.R.string
 import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.home.presentation.state.HotelDetailState
@@ -64,8 +72,9 @@ import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 @Composable
 fun HotelDetailState(
     onBackClick: () -> Unit,
+    onSeeAllPhotosClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HotelDetailsViewModel = hiltViewModel()
+    viewModel: HotelDetailsViewModel = hiltViewModel(),
 ){
     val hotelDetailState by viewModel.hotelDetailState.collectAsState()
 
@@ -93,6 +102,7 @@ fun HotelDetailState(
             TravelHotelDetailScreen(
                 hotelInformation = hotelDetailsUi,
                 onBackClick = onBackClick,
+                onSeeAllPhotosClick = onSeeAllPhotosClick,
                 modifier = modifier
             )
         }
@@ -138,6 +148,7 @@ fun TravelHotelDetailScreen(
     hotelInformation: HotelDetailsUi,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
+    onSeeAllPhotosClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {},
     onBookClick: () -> Unit = {}
@@ -178,7 +189,11 @@ fun TravelHotelDetailScreen(
                 IncludingSection(includedItems = hotelInformation.includedItems)
             }
             item {
-
+                GalleryPreviewSection(
+                    imageList = hotelInformation.imageList,
+                    numberOfImages = hotelInformation.numberOfImages,
+                    onSeeAllPhotosClick = onSeeAllPhotosClick
+                )
             }
         }
     }
@@ -366,6 +381,96 @@ private fun IncludingSection(
                     vertical = TravelinDimens.PaddingLarge
                 )
         )
+    }
+}
+
+/**
+ * Displays a preview of the hotel gallery with 3 images and a button to view all photos.
+ *
+ * @param imageList List of image URLs to choose from.
+ * @param numberOfImages Total number of images available.
+ * @param onSeeAllPhotosClick Action to perform when the button is clicked.
+ */
+@Composable
+private fun GalleryPreviewSection(
+    imageList: List<String>,
+    numberOfImages: Int,
+    onSeeAllPhotosClick: () -> Unit
+) {
+    if (imageList.isEmpty()) return
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = TravelinDimens.PaddingLarge)
+            .padding(bottom = TravelinDimens.PaddingLarge)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+            ) {
+                if (imageList.isNotEmpty()) {
+                    AsyncImage(
+                        model = imageList[0],
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                if (imageList.size > 1) {
+                    AsyncImage(
+                        model = imageList[1],
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            if (imageList.size > 2) {
+                AsyncImage(
+                    model = imageList[2],
+                    contentDescription = null,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+        OutlinedButton(
+            onClick = onSeeAllPhotosClick,
+            modifier = Modifier
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline
+            )
+        ) {
+            Text(
+                text = "See all +$numberOfImages photos",
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
