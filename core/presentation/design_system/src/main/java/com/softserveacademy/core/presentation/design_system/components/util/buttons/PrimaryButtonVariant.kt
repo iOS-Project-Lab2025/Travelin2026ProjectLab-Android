@@ -5,12 +5,14 @@ import androidx.compose.runtime.Composable
 
 /**
 * Defines the primary button variants:
- * - CallToAction: This variant use the primary color as the background color.
+ * - CallToAction This variant use the primary color as the background color.
  * - Neutral: This variant use the surface color as the background color.
+ * - SecondaryAction: This variant use the background color as the background color.
 */
 enum class PrimaryButtonVariant {
     CallToAction,
     Neutral,
+    SecondaryAction,
 }
 
 /**
@@ -31,6 +33,12 @@ internal fun PrimaryButtonVariant.colors(): PrimaryButtonColors {
             PrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
+            )
+
+        PrimaryButtonVariant.SecondaryAction ->
+            PrimaryButtonColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground,
             )
     }
 }

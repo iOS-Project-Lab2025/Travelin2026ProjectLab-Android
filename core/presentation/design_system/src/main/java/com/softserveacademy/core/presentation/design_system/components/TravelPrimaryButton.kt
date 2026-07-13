@@ -78,6 +78,12 @@ fun TravelPrimaryButtonPreview() {
                 variant = PrimaryButtonVariant.Neutral,
                 enabled = true
             )
+            TravelPrimaryButton(
+                text = "Button",
+                onClick = {},
+                variant = PrimaryButtonVariant.SecondaryAction,
+                enabled = true
+            )
         }
     }
 }
