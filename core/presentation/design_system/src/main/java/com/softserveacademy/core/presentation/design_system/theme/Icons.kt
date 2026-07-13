@@ -5,6 +5,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.runtime.Composable
 
+val AcUnitIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_ac_unit)
+
 val AngleLeftIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.angle_left)
@@ -37,6 +41,10 @@ val CalendarIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.calendar)
 
+val CleaningServicesIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_cleaning_services)
+
 val DotsMenuIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.dots_menu)
@@ -52,6 +60,10 @@ val EyeIcon: ImageVector
 val FerryIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ferry)
+
+val FitnessCenterIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_fitness_center)
 
 val FlightIcon: ImageVector
     @Composable
@@ -93,6 +105,10 @@ val MoonIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.moon)
 
+val ParkingIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_parking_sign)
+
 val PlaneIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.plane)
@@ -109,9 +125,17 @@ val PointsCoinIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.points_coin)
 
+val PoolIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_pool)
+
 val QrcodeIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.qrcode)
+
+val RoomServiceIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_room_service)
 
 val SaleCircleLineIcon: ImageVector
     @Composable
@@ -187,3 +211,7 @@ val SuccessIcon: ImageVector
 val WarningIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.warning)
+
+val WifiIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_wifi)
