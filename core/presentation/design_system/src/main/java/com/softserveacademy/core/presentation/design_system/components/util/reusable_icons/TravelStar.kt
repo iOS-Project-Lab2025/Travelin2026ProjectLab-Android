@@ -10,11 +10,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.core.presentation.design_system.theme.StarIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.Yellow50
 
@@ -35,7 +34,7 @@ fun TravelStar(
     iconFill : Float = 1f
 ){
     Icon(
-        painter = painterResource(id = R.drawable.star),
+        imageVector = StarIcon,
         contentDescription = "Star icon",
         tint = starColor,
         modifier = Modifier

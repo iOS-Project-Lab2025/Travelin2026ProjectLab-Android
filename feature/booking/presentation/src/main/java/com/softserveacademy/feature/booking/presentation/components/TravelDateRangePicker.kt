@@ -108,7 +108,7 @@ fun TravelDateRangePickerTitle(
                     DisplayMode.Picker
                 }
             },
-            showBackground = false
+            backgroundColor = Color.Transparent
         )
     }
 }

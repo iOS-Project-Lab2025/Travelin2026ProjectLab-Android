@@ -9,6 +9,10 @@ val AcUnitIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_ac_unit)
 
+val AddIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_add)
+
 val AngleLeftIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_angle_left)
@@ -101,6 +105,10 @@ val LocationMarkerIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_location_marker)
 
+val MinusIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_minus)
+
 val MoonIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_moon)
@@ -181,13 +189,9 @@ val UserCircleLineIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_user_circle_line)
 
-val AddIcon: ImageVector
+val WifiIcon: ImageVector
     @Composable
-    get() = ImageVector.vectorResource(id = R.drawable.ic_add)
-
-val MinusIcon: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(id = R.drawable.ic_minus)
+    get() = ImageVector.vectorResource(id = R.drawable.ic_wifi)
 
 // -------------------------------------------------------------------------------------------------
 // Social Icons
@@ -222,7 +226,3 @@ val SuccessIcon: ImageVector
 val WarningIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_warning)
-
-val WifiIcon: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(id = R.drawable.ic_wifi)

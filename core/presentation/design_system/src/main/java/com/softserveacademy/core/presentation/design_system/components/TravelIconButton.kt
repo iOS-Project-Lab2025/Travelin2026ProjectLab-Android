@@ -26,9 +26,9 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param onClick The action to perform when the button is clicked
  * @param modifier The modifier to apply to the button
  * @param enabled Whether the button is enabled or disabled
- * @param contentDescription The content description for the icon
  * @param iconColor The color of the icon
  * @param backgroundColor The background color of the button
+ * @param contentDescription The content description for the icon
  */
 @Composable
 fun TravelIconButton(
