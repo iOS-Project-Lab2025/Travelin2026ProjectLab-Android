@@ -14,6 +14,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(projects.feature.auth.common.domain)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.bundles.testing.stack)
     testImplementation(libs.androidx.compose.ui.test.junit4)

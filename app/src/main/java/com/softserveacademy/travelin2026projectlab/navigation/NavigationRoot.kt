@@ -17,8 +17,9 @@ import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 
-import com.softserveacademy.home.presentation.ui.screens.DetailScreen
+import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 
 /**
  * Root navigation host for the application.
@@ -158,7 +159,7 @@ fun NavGraphBuilder.mainGraph(
         composable<Routes.TravelHomeScreen> {
             TravelHomeScreen(
                 onHotelClick = {
-                    navController.navigate(Routes.DetailScreen)
+                    navController.navigate(Routes.TravelHotelDetailScreen)
                 }
             )
         }
@@ -188,17 +189,19 @@ fun NavGraphBuilder.mainGraph(
 fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
     navigation<Routes.BookingGraph>(
-        startDestination = Routes.DetailScreen
+        startDestination = Routes.TravelHotelDetailScreen
     ) {
 
-        composable<Routes.DetailScreen> {
-            DetailScreen(
-                onSearchClick = {
-                    navController.navigate(Routes.AuthGraph)
-                },
-                onItemClick = {
-                    navController.navigate(Routes.AuthGraph)
-                }
+        composable<Routes.TravelHotelDetailScreen> {
+            HotelDetailState(
+                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen) }
+            )
+        }
+
+        composable<Routes.HotelGalleryScreen> {
+            TravelHotelGalleryScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

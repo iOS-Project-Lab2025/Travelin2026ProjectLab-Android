@@ -47,10 +47,13 @@ sealed interface Routes {
     @Serializable
     data object ProfileScreen : Routes
 
+    @Serializable
+    data object TravelHotelDetailScreen : Routes
 
+    @Serializable
+    data object HotelGalleryScreen : Routes
 
 
     // ---------------- BOOKING ----------------
-    @Serializable
-    data object DetailScreen : Routes
+
 }
