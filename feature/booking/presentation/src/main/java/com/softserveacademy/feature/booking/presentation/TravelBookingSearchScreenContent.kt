@@ -55,13 +55,26 @@ fun TravelBookingSearchScreenContent(
         }
     )
 
+    // Sync state to picker state when state changes (e.g. after async load from DataStore)
+    LaunchedEffect(state.startDateMillis, state.endDateMillis) {
+        if (state.startDateMillis != dateRangePickerState.selectedStartDateMillis ||
+            state.endDateMillis != dateRangePickerState.selectedEndDateMillis
+        ) {
+            dateRangePickerState.setSelection(state.startDateMillis, state.endDateMillis)
+        }
+    }
+
     LaunchedEffect(dateRangePickerState.selectedStartDateMillis, dateRangePickerState.selectedEndDateMillis) {
-        onEvent(
-            TravelBookingSearchEvent.OnDateRangeSelected(
-                dateRangePickerState.selectedStartDateMillis,
-                dateRangePickerState.selectedEndDateMillis
+        if (dateRangePickerState.selectedStartDateMillis != state.startDateMillis ||
+            dateRangePickerState.selectedEndDateMillis != state.endDateMillis
+        ) {
+            onEvent(
+                TravelBookingSearchEvent.OnDateRangeSelected(
+                    dateRangePickerState.selectedStartDateMillis,
+                    dateRangePickerState.selectedEndDateMillis
+                )
             )
-        )
+        }
     }
 
     Scaffold(

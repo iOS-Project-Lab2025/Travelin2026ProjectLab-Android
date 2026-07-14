@@ -2,24 +2,30 @@ package com.softserveacademy.feature.booking.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.softserveacademy.feature.booking.domain.HotelBookingDraft
+import androidx.lifecycle.viewModelScope
+import com.softserveacademy.feature.booking.domain.repository.BookingRepository
+import com.softserveacademy.feature.booking.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.domain.ValidateBookingSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
  * View model for the hotel booking search screen.
  *
  * @property savedStateHandle The handle to saved state.
+ * @property validateBookingSearchUseCase Use case for validating booking search input.
+ * @property bookingRepository Repository for persisting booking drafts.
  */
 @HiltViewModel
 class HotelBookingSearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val validateBookingSearchUseCase: ValidateBookingSearchUseCase
+    private val validateBookingSearchUseCase: ValidateBookingSearchUseCase,
+    private val bookingRepository: BookingRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TravelBookingSearchState())
@@ -32,16 +38,18 @@ class HotelBookingSearchViewModel @Inject constructor(
     private var hotelBookingDraft = HotelBookingDraft()
 
     init {
-        savedStateHandle.get<HotelBookingDraft>(KEY_BOOKING_DRAFT)?.let { draft ->
-            hotelBookingDraft = draft
-            _uiState.update {
-                it.copy(
-                    startDateMillis = draft.checkInDate,
-                    endDateMillis = draft.checkOutDate,
-                    adultsCount = draft.amountOfAdults,
-                    childrenCount = draft.amountOfChildren,
-                    hasPets = draft.hasPets
-                )
+        val restoredDraft = savedStateHandle.get<HotelBookingDraft>(KEY_BOOKING_DRAFT)
+        if (restoredDraft != null) {
+            hotelBookingDraft = restoredDraft
+            updateUiState()
+        } else {
+            val hotelIdFromSavedState = savedStateHandle.get<Int>("hotelId") ?: savedStateHandle.get<String>("hotelId")?.toIntOrNull()
+            viewModelScope.launch {
+                val repositoryDraft = hotelIdFromSavedState?.let { bookingRepository.getHotelBookingDraft(it.toString()) }
+                
+                hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelIdFromSavedState?.toString())
+                syncSavedState()
+                updateUiState()
             }
         }
     }
@@ -69,6 +77,8 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     private fun onDateRangeSelected(startDateMillis: Long?, endDateMillis: Long?) {
+        if (hotelBookingDraft.checkInDate == startDateMillis && hotelBookingDraft.checkOutDate == endDateMillis) return
+
         hotelBookingDraft = hotelBookingDraft.copy(
             checkInDate = startDateMillis,
             checkOutDate = endDateMillis
@@ -80,7 +90,7 @@ class HotelBookingSearchViewModel @Inject constructor(
                 isDateErrorVisible = false
             )
         }
-        updateSavedState()
+        syncSavedState()
     }
 
     private fun onAdultsCountChange(count: Int) {
@@ -91,7 +101,7 @@ class HotelBookingSearchViewModel @Inject constructor(
                 isGuestErrorVisible = false
             )
         }
-        updateSavedState()
+        syncSavedState()
     }
 
     private fun onChildrenCountChange(count: Int) {
@@ -99,7 +109,7 @@ class HotelBookingSearchViewModel @Inject constructor(
         _uiState.update {
             it.copy(childrenCount = count)
         }
-        updateSavedState()
+        syncSavedState()
     }
 
     private fun onHasPetsChange(hasPets: Boolean) {
@@ -107,7 +117,7 @@ class HotelBookingSearchViewModel @Inject constructor(
         _uiState.update {
             it.copy(hasPets = hasPets)
         }
-        updateSavedState()
+        syncSavedState()
     }
 
     private fun onNextClick() {
@@ -167,8 +177,23 @@ class HotelBookingSearchViewModel @Inject constructor(
         }
     }
 
-    private fun updateSavedState() {
+    private fun updateUiState() {
+        _uiState.update {
+            it.copy(
+                startDateMillis = hotelBookingDraft.checkInDate,
+                endDateMillis = hotelBookingDraft.checkOutDate,
+                adultsCount = hotelBookingDraft.amountOfAdults,
+                childrenCount = hotelBookingDraft.amountOfChildren,
+                hasPets = hotelBookingDraft.hasPets
+            )
+        }
+    }
+
+    private fun syncSavedState() {
         savedStateHandle[KEY_BOOKING_DRAFT] = hotelBookingDraft
+        viewModelScope.launch {
+            bookingRepository.saveHotelBookingDraft(hotelBookingDraft)
+        }
     }
 
     companion object {

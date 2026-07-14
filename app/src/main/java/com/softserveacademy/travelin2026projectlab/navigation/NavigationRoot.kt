@@ -1,5 +1,6 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -22,6 +23,7 @@ import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
+import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
 
 /**
  * Root navigation host for the application.
@@ -197,7 +199,7 @@ fun NavGraphBuilder.mainGraph(
                 hotelId = route.id, // Receive the ID
                 onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
                 onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
-                onBookClick = { navController.navigate(Routes.BookingGraph) }
+                onBookClick = { navController.navigate(Routes.HotelBookingSearchScreen(hotelId = route.id)) }
             )
         }
 
@@ -220,18 +222,18 @@ fun NavGraphBuilder.mainGraph(
 fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
     navigation<Routes.BookingGraph>(
-        startDestination = Routes.HotelBookingSearchScreen
+        startDestination = Routes.HotelBookingSearchScreen(hotelId = 0)
     ) {
+        composable<Routes.HotelBookingSearchScreen> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Routes.BookingGraph)
+            }
+            val viewModel: HotelBookingSearchViewModel = hiltViewModel(parentEntry)
 
-
-
-        composable<Routes.HotelBookingSearchScreen>{
             HotelBookingSearchScreen(
-                onBackClick={navController.popBackStack()}
-
+                onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
-
         }
-
     }
 }
