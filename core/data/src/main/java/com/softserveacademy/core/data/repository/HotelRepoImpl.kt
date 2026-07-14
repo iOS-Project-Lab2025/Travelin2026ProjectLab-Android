@@ -15,6 +15,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             name = "Swiss-Belhotel Rainforest",
             address = "Jl. Sunset Road No. 101, Kuta, Bali, Indonesia",
             star = 4,
+            userRating = 4.5,
             pricePerNight = 50,
             image = R.drawable.test_place,
             imagesList = previewImages
@@ -24,9 +25,10 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             name = "Discovery Kartika Plaza",
             address = "Jl. Kartika Plaza, Kuta, Bali",
             star = 5,
+            userRating = 1.5,
             pricePerNight = 120,
             image = R.drawable.test_hotel,
-            imagesList = previewImages
+            imagesList = previewImages1
         )
     )
 
@@ -48,5 +50,18 @@ private val previewImages = listOf(
     "https://images.unsplash.com/photo-1582719508461-905c673771fd",
     "https://images.unsplash.com/photo-1582719508461-905c673771fd",
     "https://images.unsplash.com/photo-1582719508461-905c673771fd"
+    //"https://picsum.photos/id/1020/800/600"
+)
+
+private val previewImages1 = listOf(
+    "https://picsum.photos/id/137/200/300",
+    "https://picsum.photos/id/138/200/300",
+    "https://picsum.photos/id/20/800/600",
+    "https://picsum.photos/id/937/200/300",
+    "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
+    "https://picsum.photos/id/111/200/300",
+    "https://picsum.photos/id/152/200/300"
     //"https://picsum.photos/id/1020/800/600"
 )

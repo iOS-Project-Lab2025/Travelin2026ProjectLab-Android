@@ -33,6 +33,38 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
             IncludedItem.FreeWifi,
             IncludedItem.Pool
             )
+        ),
+        HotelDetails(
+            id = 2,
+            minimumPrice = 800,
+            imageList = listOf(
+                "https://picsum.photos/id/137/200/300",
+                "https://picsum.photos/id/20/800/600",
+                "https://picsum.photos/id/937/200/300",
+                "https://picsum.photos/id/324/200/300",
+                "https://picsum.photos/id/643/200/300",
+                "https://picsum.photos/id/682/200/300",
+                "https://picsum.photos/id/111/200/300",
+                "https://picsum.photos/id/152/200/300",
+                "https://picsum.photos/id/137/200/300",
+                "https://picsum.photos/id/20/800/600",
+                "https://picsum.photos/id/937/200/300",
+                "https://picsum.photos/id/324/200/300",
+                "https://picsum.photos/id/643/200/300",
+                "https://picsum.photos/id/682/200/300",
+                "https://picsum.photos/id/111/200/300",
+                "https://picsum.photos/id/152/200/300"
+            ),
+            name = "Testing number 2",
+            numberOfReviews = 13,
+            rating = 1.6,
+            numberOfImages = 134,
+            description = LoremIpsum(words = 80).values.first(),
+            includedItems = listOf(
+                IncludedItem.BuffetBreakfast,
+                IncludedItem.FreeWifi,
+                IncludedItem.Pool
+            )
         )
     )
 

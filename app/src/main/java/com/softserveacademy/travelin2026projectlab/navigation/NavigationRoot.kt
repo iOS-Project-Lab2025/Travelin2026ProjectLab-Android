@@ -13,6 +13,7 @@ import com.softserveacademy.feature.auth.login.presentation.LoginScreen
 import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.toRoute
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
@@ -20,6 +21,7 @@ import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
+import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
 
 /**
  * Root navigation host for the application.
@@ -158,8 +160,8 @@ fun NavGraphBuilder.mainGraph(
 
         composable<Routes.TravelHomeScreen> {
             TravelHomeScreen(
-                onHotelClick = {
-                    navController.navigate(Routes.TravelHotelDetailScreen)
+                onHotelClick = { hotel ->
+                    navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
                 }
             )
         }
@@ -177,6 +179,23 @@ fun NavGraphBuilder.mainGraph(
             )
         }
 
+        composable<Routes.TravelHotelDetailScreen> { backStackEntry ->
+            val route: Routes.TravelHotelDetailScreen = backStackEntry.toRoute()
+            HotelDetailState(
+                hotelId = route.id, // Receive the ID
+                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
+                onBookClick = { navController.navigate(Routes.BookingGraph) }
+            )
+        }
+
+        composable<Routes.HotelGalleryScreen> { backStackEntry ->
+            val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
+            TravelHotelGalleryScreen(
+                hotelId = route.id, // Receive the ID
+                onBackClick = { navController.popBackStack() }
+            )
+        }
     }
 }
 /**
@@ -189,20 +208,18 @@ fun NavGraphBuilder.mainGraph(
 fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
     navigation<Routes.BookingGraph>(
-        startDestination = Routes.TravelHotelDetailScreen
+        startDestination = Routes.HotelBookingSearchScreen
     ) {
 
-        composable<Routes.TravelHotelDetailScreen> {
-            HotelDetailState(
-                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
-                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen) }
+
+
+        composable<Routes.HotelBookingSearchScreen>{
+            HotelBookingSearchScreen(
+                onBackClick={navController.popBackStack()}
+
             )
+
         }
 
-        composable<Routes.HotelGalleryScreen> {
-            TravelHotelGalleryScreen(
-                onBackClick = { navController.popBackStack() }
-            )
-        }
     }
 }
