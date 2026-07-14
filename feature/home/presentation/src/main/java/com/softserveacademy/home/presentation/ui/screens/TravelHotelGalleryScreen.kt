@@ -26,13 +26,14 @@ import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
  */
 @Composable
 fun TravelHotelGalleryScreen(
+    hotelId: Int,
     onBackClick: () -> Unit,
     viewModel: HotelDetailsViewModel = hiltViewModel()
 ) {
     val state by viewModel.hotelDetailState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getHotelDetail(1)
+        viewModel.getHotelDetail(hotelId)
     }
 
     Scaffold { padding ->

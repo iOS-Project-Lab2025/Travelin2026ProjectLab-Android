@@ -71,15 +71,17 @@ import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
  */
 @Composable
 fun HotelDetailState(
+    hotelId: Int,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
+    onBookClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HotelDetailsViewModel = hiltViewModel(),
 ){
     val hotelDetailState by viewModel.hotelDetailState.collectAsState()
 
     LaunchedEffect(Unit){
-        viewModel.getHotelDetail(1)
+        viewModel.getHotelDetail(hotelId)
     }
 
     when(hotelDetailState){
@@ -93,7 +95,8 @@ fun HotelDetailState(
                 imageList = hotelInformation.imageList,
                 name = hotelInformation.name,
                 numberOfReviews = hotelInformation.numberOfReviews,
-                numberOfImages = hotelInformation.numberOfImages,
+                numberOfImages = hotelInformation.imageList.size,
+                //numberOfImages = hotelInformation.numberOfImages,
                 rating = hotelInformation.rating,
                 description = hotelInformation.description,
                 includedItems = hotelInformation.includedItems.map { it.toUi() }
@@ -103,6 +106,7 @@ fun HotelDetailState(
                 hotelInformation = hotelDetailsUi,
                 onBackClick = onBackClick,
                 onSeeAllPhotosClick = onSeeAllPhotosClick,
+                onBookClick = onBookClick,
                 modifier = modifier
             )
         }
@@ -191,7 +195,8 @@ fun TravelHotelDetailScreen(
             item {
                 GalleryPreviewSection(
                     imageList = hotelInformation.imageList,
-                    numberOfImages = hotelInformation.numberOfImages,
+                    //numberOfImages = hotelInformation.numberOfImages,
+                    numberOfImages =hotelInformation.imageList.size,
                     onSeeAllPhotosClick = onSeeAllPhotosClick
                 )
             }
