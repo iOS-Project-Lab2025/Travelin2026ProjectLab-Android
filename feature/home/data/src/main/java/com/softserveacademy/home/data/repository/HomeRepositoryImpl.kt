@@ -8,7 +8,9 @@ import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.domain.model.UpcomingTrip
 import com.softserveacademy.core.domain.model.UserProfile
 import com.softserveacademy.home.domain.repository.HomeRepository
+import kotlinx.coroutines.delay
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 class HomeRepositoryImpl @Inject constructor() : HomeRepository {
 
@@ -26,7 +28,6 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
         name = "Koh Rong Samloem",
         numberOfReviews = 30,
         rating = 3.6,
-        numberOfImages = 200,
         description = LoremIpsum(words = 80).values.first(),
         includedItems = listOf(
             IncludedItem.BuffetBreakfast,
@@ -58,7 +59,6 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
             name = "Testing number 2",
             numberOfReviews = 13,
             rating = 1.6,
-            numberOfImages = 134,
             description = LoremIpsum(words = 80).values.first(),
             includedItems = listOf(
                 IncludedItem.BuffetBreakfast,
@@ -85,6 +85,8 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
     }
 
     override suspend fun getHotelDetailsById(hotelId: Int): HotelDetails {
+        //TODO("Remove when finish")
+        delay(1000.milliseconds)
         return  hotelDetailExampleData.find{ it.id == hotelId } ?:  hotelDetailExampleData.first()
     }
 }
