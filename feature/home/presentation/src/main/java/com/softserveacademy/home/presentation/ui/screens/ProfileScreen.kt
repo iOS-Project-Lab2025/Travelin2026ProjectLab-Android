@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,6 +27,7 @@ import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.state.ProfileState
 import com.softserveacademy.home.presentation.R
+import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -38,7 +40,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     onNavigateBack: () -> Unit,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onHomeClick: () -> Unit
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
 
@@ -53,29 +56,58 @@ fun ProfileScreen(
         onNavigateBack = onNavigateBack,
         onEditProfileClick = viewModel::onEditProfileClick,
         onLogoutClick = { showLogoutDialog = true },
-        onRetry = viewModel::loadProfile
+        onRetry = viewModel::loadProfile,
+        onHomeClick = onHomeClick
     )
 
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text(text = stringResource(R.string.logout_dialog_title)) },
-            text = { Text(text = stringResource(R.string.logout_dialog_message)) },
+            shape = MaterialTheme.shapes.large,
+            title = {
+                Text(
+                    text = stringResource(R.string.logout_dialog_title),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.logout_dialog_message),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        showLogoutDialog = false
-                        viewModel.onLogoutClick()
-                    }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = TravelinDimens.PaddingSmall),
+                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
                 ) {
-                    Text(text = stringResource(R.string.logout_confirm))
+                    Button(
+                        onClick = {
+                            showLogoutDialog = false
+                            viewModel.onLogoutClick()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(text = stringResource(R.string.logout_confirm))
+                    }
+                    OutlinedButton(
+                        onClick = { showLogoutDialog = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(TravelinDimens.SpaceSmall)
+                    ) {
+                        Text(text = stringResource(R.string.logout_cancel))
+                    }
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text(text = stringResource(R.string.logout_cancel))
-                }
-            }
+            dismissButton = null
         )
     }
 }
@@ -89,7 +121,8 @@ fun ProfileContent(
     onNavigateBack: () -> Unit,
     onEditProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onHomeClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -106,6 +139,14 @@ fun ProfileContent(
                     contentDescription = "Back"
                 )
             }
+        },
+        bottomBar = {
+            TravelNavigationBar(
+                selectedTab = 3,
+                onTabClick = { index ->
+                    if (index == 0) onHomeClick()
+                }
+            )
         }
     ) { innerPadding ->
         Box(
@@ -235,9 +276,9 @@ fun ProfileSuccessContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ButtonHeightMedium),
-            shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.onSurface
             ),
             border = androidx.compose.foundation.BorderStroke(
@@ -321,7 +362,8 @@ fun ProfileScreenPreview() {
             onNavigateBack = {},
             onEditProfileClick = {},
             onLogoutClick = {},
-            onRetry = {}
+            onRetry = {},
+            onHomeClick = {}
         )
     }
 }
@@ -337,7 +379,8 @@ fun ProfileScreenDarkPreview() {
             onNavigateBack = {},
             onEditProfileClick = {},
             onLogoutClick = {},
-            onRetry = {}
+            onRetry = {},
+            onHomeClick = {}
         )
     }
 }

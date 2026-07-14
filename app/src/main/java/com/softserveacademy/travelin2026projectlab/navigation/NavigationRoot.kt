@@ -162,6 +162,12 @@ fun NavGraphBuilder.mainGraph(
             TravelHomeScreen(
                 onHotelClick = { hotel ->
                     navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
+                },
+                onAccountClick = {
+                    navController.navigate(Routes.ProfileScreen) {
+                        popUpTo(Routes.TravelHomeScreen)
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -174,6 +180,12 @@ fun NavGraphBuilder.mainGraph(
                 onLogoutSuccess = {
                     navController.navigate(Routes.AuthGraph) {
                         popUpTo(Routes.MainGraph) { inclusive = true }
+                    }
+                },
+                onHomeClick = {
+                    navController.navigate(Routes.TravelHomeScreen) {
+                        popUpTo(Routes.TravelHomeScreen) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )
