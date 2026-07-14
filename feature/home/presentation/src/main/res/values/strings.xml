@@ -11,4 +11,9 @@
     <string name="deals_ic_label">Deals</string>
     <string name="accounts_ic_label">Accounts</string>
 
+    <string name="logout_dialog_title">Logout</string>
+    <string name="logout_dialog_message">Are you sure you want to log out?</string>
+    <string name="logout_confirm">Logout</string>
+    <string name="logout_cancel">Cancel</string>
+
 </resources>

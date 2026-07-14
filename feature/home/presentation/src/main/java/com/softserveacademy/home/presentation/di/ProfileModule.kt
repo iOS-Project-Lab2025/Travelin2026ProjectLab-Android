@@ -1,5 +1,7 @@
 package com.softserveacademy.home.presentation.di
 
+import com.softserveacademy.feature.auth.common.domain.usecase.LogoutUseCase
+import com.softserveacademy.feature.auth.common.domain.SessionRepository
 import com.softserveacademy.home.domain.repository.ProfileRepository
 import com.softserveacademy.home.domain.usecases.GetProfileUseCase
 import dagger.Module
@@ -24,5 +26,16 @@ object ProfileModule {
         profileRepository: ProfileRepository
     ): GetProfileUseCase {
         return GetProfileUseCase(profileRepository)
+    }
+
+    /**
+     * Provides the [LogoutUseCase] dependency.
+     */
+    @Provides
+    @ViewModelScoped
+    fun provideLogoutUseCase(
+        sessionRepository: SessionRepository
+    ): LogoutUseCase {
+        return LogoutUseCase(sessionRepository)
     }
 }

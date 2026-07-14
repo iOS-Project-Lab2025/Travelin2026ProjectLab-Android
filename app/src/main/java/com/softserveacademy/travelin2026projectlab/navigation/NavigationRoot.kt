@@ -44,9 +44,10 @@ fun NavigationRoot(
 
     NavHost(
         navController = navController,
-        //this line is commented since we haven´t discussed the isloggedin variable
-        //startDestination = if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph
-        startDestination = Routes.AuthGraph
+        // I deleted the comment, as we have the implementation of an isLoggedIn
+        // variable. So this should do it, as if the person is logged the app sends
+        // them to the MainGraph, otherwise, it redirects them to the AuthGraph.
+        startDestination = if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph
     ) {
 
         authGraph(navController, loginViewModel = loginViewModel,
@@ -166,7 +167,12 @@ fun NavGraphBuilder.mainGraph(
             val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onLogoutSuccess = {
+                    navController.navigate(Routes.AuthGraph) {
+                        popUpTo(Routes.MainGraph) { inclusive = true }
+                    }
+                }
             )
         }
 
