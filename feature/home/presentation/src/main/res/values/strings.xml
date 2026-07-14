@@ -11,6 +11,11 @@
     <string name="deals_ic_label">Deals</string>
     <string name="accounts_ic_label">Accounts</string>
 
+    <string name="logout_dialog_title">Logout</string>
+    <string name="logout_dialog_message">Are you sure you want to log out?</string>
+    <string name="logout_confirm">Logout</string>
+    <string name="logout_cancel">Cancel</string>
+
     <!-- TravelHotelDetailScreen -->
     <string name="about_label">About</string>
     <string name="read_more_label">Read more</string>
@@ -29,6 +34,8 @@
     <string name="parking_label">Self-parking</string>
     <string name="room_service_label">Room service</string>
     <string name="ac_unit_label">AC unit</string>
+  
+    <!-- Error state -->
     <string name="retry_label">Retry</string>
     <string name="unexpected_error">An unexpected error occurred</string>
 

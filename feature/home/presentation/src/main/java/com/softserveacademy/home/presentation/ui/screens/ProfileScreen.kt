@@ -5,9 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,24 +26,90 @@ import com.softserveacademy.core.presentation.design_system.components.TravelIco
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.state.ProfileState
+import com.softserveacademy.home.presentation.R
+import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Main entry point for the Profile screen.
  * @param viewModel The [ProfileViewModel] that manages the screen state.
  * @param onNavigateBack Callback when the user clicks the back button.
+ * @param onLogoutSuccess Callback when logout is successful.
  */
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onLogoutSuccess: () -> Unit,
+    onHomeClick: () -> Unit
 ) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModel.logoutEvent) {
+        viewModel.logoutEvent.collectLatest {
+            onLogoutSuccess()
+        }
+    }
+
     ProfileContent(
         state = viewModel.state,
         onNavigateBack = onNavigateBack,
         onEditProfileClick = viewModel::onEditProfileClick,
-        onLogoutClick = viewModel::onLogoutClick,
-        onRetry = viewModel::loadProfile
+        onLogoutClick = { showLogoutDialog = true },
+        onRetry = viewModel::loadProfile,
+        onHomeClick = onHomeClick
     )
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            shape = MaterialTheme.shapes.large,
+            title = {
+                Text(
+                    text = stringResource(R.string.logout_dialog_title),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.logout_dialog_message),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
+            confirmButton = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = TravelinDimens.PaddingSmall),
+                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+                ) {
+                    Button(
+                        onClick = {
+                            showLogoutDialog = false
+                            viewModel.onLogoutClick()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(text = stringResource(R.string.logout_confirm))
+                    }
+                    OutlinedButton(
+                        onClick = { showLogoutDialog = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(TravelinDimens.SpaceSmall)
+                    ) {
+                        Text(text = stringResource(R.string.logout_cancel))
+                    }
+                }
+            },
+            dismissButton = null
+        )
+    }
 }
 
 /**
@@ -53,7 +121,8 @@ fun ProfileContent(
     onNavigateBack: () -> Unit,
     onEditProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onHomeClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -70,6 +139,14 @@ fun ProfileContent(
                     contentDescription = "Back"
                 )
             }
+        },
+        bottomBar = {
+            TravelNavigationBar(
+                selectedTab = 3,
+                onTabClick = { index ->
+                    if (index == 0) onHomeClick()
+                }
+            )
         }
     ) { innerPadding ->
         Box(
@@ -199,9 +276,9 @@ fun ProfileSuccessContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ButtonHeightMedium),
-            shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.onSurface
             ),
             border = androidx.compose.foundation.BorderStroke(
@@ -285,7 +362,8 @@ fun ProfileScreenPreview() {
             onNavigateBack = {},
             onEditProfileClick = {},
             onLogoutClick = {},
-            onRetry = {}
+            onRetry = {},
+            onHomeClick = {}
         )
     }
 }
@@ -301,7 +379,8 @@ fun ProfileScreenDarkPreview() {
             onNavigateBack = {},
             onEditProfileClick = {},
             onLogoutClick = {},
-            onRetry = {}
+            onRetry = {},
+            onHomeClick = {}
         )
     }
 }
