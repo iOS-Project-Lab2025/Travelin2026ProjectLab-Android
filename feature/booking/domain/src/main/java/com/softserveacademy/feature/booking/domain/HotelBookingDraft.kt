@@ -11,7 +11,7 @@ import java.io.Serializable
  * @property checkOutDate The check-out date in milliseconds.
  * @property amountOfAdults The number of adults for the booking.
  * @property amountOfChildren The number of children for the booking.
- * @property amountOfPets The number of pets for the booking.
+ * @property hasPets Whether the booking includes pets.
  * @property guest The guest information for the booking.
  */
 data class HotelBookingDraft(
@@ -21,7 +21,7 @@ data class HotelBookingDraft(
     val checkOutDate: Long? = null,
     val amountOfAdults: Int = 1,
     val amountOfChildren: Int = 0,
-    val amountOfPets: Int = 0,
+    val hasPets: Boolean = false,
     val guest: GuestInfo = GuestInfo()
 ) : Serializable
 

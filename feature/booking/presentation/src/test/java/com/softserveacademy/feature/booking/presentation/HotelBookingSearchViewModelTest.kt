@@ -26,11 +26,11 @@ class HotelBookingSearchViewModelTest {
     @Test
     fun `initial state is default`() {
         val state = viewModel.uiState.value
-        assertEquals(1, state.draft.amountOfAdults)
-        assertEquals(0, state.draft.amountOfChildren)
-        assertEquals(0, state.draft.amountOfPets)
-        assertNull(state.draft.checkInDate)
-        assertNull(state.draft.checkOutDate)
+        assertEquals(1, state.adultsCount)
+        assertEquals(0, state.childrenCount)
+        assertFalse(state.hasPets)
+        assertNull(state.startDateMillis)
+        assertNull(state.endDateMillis)
         assertFalse(state.showGuestBottomSheet)
     }
 
@@ -40,17 +40,17 @@ class HotelBookingSearchViewModelTest {
         savedStateHandle["booking_draft"] = draft
         
         val newViewModel = HotelBookingSearchViewModel(savedStateHandle, validateBookingSearchUseCase)
-        assertEquals(3, newViewModel.uiState.value.draft.amountOfAdults)
-        assertEquals(1000L, newViewModel.uiState.value.draft.checkInDate)
+        assertEquals(3, newViewModel.uiState.value.adultsCount)
+        assertEquals(1000L, newViewModel.uiState.value.startDateMillis)
     }
 
     @Test
     fun `onDateRangeSelected updates state and savedState`() {
-        viewModel.onEvent(HotelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
+        viewModel.onEvent(TravelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
         
         val state = viewModel.uiState.value
-        assertEquals(100L, state.draft.checkInDate)
-        assertEquals(200L, state.draft.checkOutDate)
+        assertEquals(100L, state.startDateMillis)
+        assertEquals(200L, state.endDateMillis)
         
         val savedDraft = savedStateHandle.get<HotelBookingDraft>("booking_draft")
         assertEquals(100L, savedDraft?.checkInDate)
@@ -58,7 +58,7 @@ class HotelBookingSearchViewModelTest {
 
     @Test
     fun `onNextClick shows error when dates are missing`() {
-        viewModel.onEvent(HotelBookingSearchEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingSearchEvent.OnNextClick)
         
         val state = viewModel.uiState.value
         assertTrue(state.isDateErrorVisible)
@@ -67,8 +67,8 @@ class HotelBookingSearchViewModelTest {
 
     @Test
     fun `onNextClick shows bottom sheet when dates are selected`() {
-        viewModel.onEvent(HotelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
-        viewModel.onEvent(HotelBookingSearchEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
+        viewModel.onEvent(TravelBookingSearchEvent.OnNextClick)
         
         val state = viewModel.uiState.value
         assertFalse(state.isDateErrorVisible)
@@ -77,11 +77,11 @@ class HotelBookingSearchViewModelTest {
 
     @Test
     fun `onAcceptGuests shows error when adults count is less than 1`() {
-        viewModel.onEvent(HotelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
-        viewModel.onEvent(HotelBookingSearchEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
+        viewModel.onEvent(TravelBookingSearchEvent.OnNextClick)
         
-        viewModel.onEvent(HotelBookingSearchEvent.OnAdultsCountChange(0))
-        viewModel.onEvent(HotelBookingSearchEvent.OnAcceptGuests)
+        viewModel.onEvent(TravelBookingSearchEvent.OnAdultsCountChange(0))
+        viewModel.onEvent(TravelBookingSearchEvent.OnAcceptGuests)
         
         val state = viewModel.uiState.value
         assertTrue(state.isGuestErrorVisible)
@@ -90,11 +90,11 @@ class HotelBookingSearchViewModelTest {
 
     @Test
     fun `onAcceptGuests dismisses sheet on success`() {
-        viewModel.onEvent(HotelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
-        viewModel.onEvent(HotelBookingSearchEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
+        viewModel.onEvent(TravelBookingSearchEvent.OnNextClick)
         
-        viewModel.onEvent(HotelBookingSearchEvent.OnAdultsCountChange(2))
-        viewModel.onEvent(HotelBookingSearchEvent.OnAcceptGuests)
+        viewModel.onEvent(TravelBookingSearchEvent.OnAdultsCountChange(2))
+        viewModel.onEvent(TravelBookingSearchEvent.OnAcceptGuests)
         
         val state = viewModel.uiState.value
         assertFalse(state.isGuestErrorVisible)

@@ -22,16 +22,27 @@ class HotelBookingSearchViewModel @Inject constructor(
     private val validateBookingSearchUseCase: ValidateBookingSearchUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HotelBookingSearchState())
+    private val _uiState = MutableStateFlow(TravelBookingSearchState())
 
     /**
      * The current state of the hotel booking search screen.
      */
-    val uiState: StateFlow<HotelBookingSearchState> = _uiState.asStateFlow()
+    val uiState: StateFlow<TravelBookingSearchState> = _uiState.asStateFlow()
+
+    private var hotelBookingDraft = HotelBookingDraft()
 
     init {
         savedStateHandle.get<HotelBookingDraft>(KEY_BOOKING_DRAFT)?.let { draft ->
-            _uiState.update { it.copy(draft = draft) }
+            hotelBookingDraft = draft
+            _uiState.update {
+                it.copy(
+                    startDateMillis = draft.checkInDate,
+                    endDateMillis = draft.checkOutDate,
+                    adultsCount = draft.amountOfAdults,
+                    childrenCount = draft.amountOfChildren,
+                    hasPets = draft.hasPets
+                )
+            }
         }
     }
 
@@ -40,29 +51,32 @@ class HotelBookingSearchViewModel @Inject constructor(
      *
      * @param event The event to handle.
      */
-    fun onEvent(event: HotelBookingSearchEvent) {
+    fun onEvent(event: TravelBookingSearchEvent) {
         when (event) {
-            is HotelBookingSearchEvent.OnDateRangeSelected -> onDateRangeSelected(
+            is TravelBookingSearchEvent.OnDateRangeSelected -> onDateRangeSelected(
                 event.startDateMillis,
                 event.endDateMillis
             )
 
-            is HotelBookingSearchEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
-            is HotelBookingSearchEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
-            is HotelBookingSearchEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
-            HotelBookingSearchEvent.OnNextClick -> onNextClick()
-            HotelBookingSearchEvent.OnDismissGuestBottomSheet -> onDismissGuestBottomSheet()
-            HotelBookingSearchEvent.OnAcceptGuests -> onAcceptGuests()
+            is TravelBookingSearchEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
+            is TravelBookingSearchEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
+            is TravelBookingSearchEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
+            TravelBookingSearchEvent.OnNextClick -> onNextClick()
+            TravelBookingSearchEvent.OnBackClick -> { /* Handled by navigation */ }
+            TravelBookingSearchEvent.OnDismissGuestBottomSheet -> onDismissGuestBottomSheet()
+            TravelBookingSearchEvent.OnAcceptGuests -> onAcceptGuests()
         }
     }
 
     private fun onDateRangeSelected(startDateMillis: Long?, endDateMillis: Long?) {
+        hotelBookingDraft = hotelBookingDraft.copy(
+            checkInDate = startDateMillis,
+            checkOutDate = endDateMillis
+        )
         _uiState.update {
             it.copy(
-                draft = it.draft.copy(
-                    checkInDate = startDateMillis,
-                    checkOutDate = endDateMillis
-                ),
+                startDateMillis = startDateMillis,
+                endDateMillis = endDateMillis,
                 isDateErrorVisible = false
             )
         }
@@ -70,9 +84,10 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     private fun onAdultsCountChange(count: Int) {
+        hotelBookingDraft = hotelBookingDraft.copy(amountOfAdults = count)
         _uiState.update {
             it.copy(
-                draft = it.draft.copy(amountOfAdults = count),
+                adultsCount = count,
                 isGuestErrorVisible = false
             )
         }
@@ -80,24 +95,25 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     private fun onChildrenCountChange(count: Int) {
+        hotelBookingDraft = hotelBookingDraft.copy(amountOfChildren = count)
         _uiState.update {
-            it.copy(draft = it.draft.copy(amountOfChildren = count))
+            it.copy(childrenCount = count)
         }
         updateSavedState()
     }
 
     private fun onHasPetsChange(hasPets: Boolean) {
+        hotelBookingDraft = hotelBookingDraft.copy(hasPets = hasPets)
         _uiState.update {
-            it.copy(draft = it.draft.copy(amountOfPets = if (hasPets) 1 else 0))
+            it.copy(hasPets = hasPets)
         }
         updateSavedState()
     }
 
     private fun onNextClick() {
-        val draft = _uiState.value.draft
         val validationResult = validateBookingSearchUseCase.validateDates(
-            draft.checkInDate,
-            draft.checkOutDate
+            hotelBookingDraft.checkInDate,
+            hotelBookingDraft.checkOutDate
         )
 
         when (validationResult) {
@@ -126,8 +142,7 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     private fun onAcceptGuests() {
-        val draft = _uiState.value.draft
-        val validationResult = validateBookingSearchUseCase.validateGuests(draft.amountOfAdults)
+        val validationResult = validateBookingSearchUseCase.validateGuests(hotelBookingDraft.amountOfAdults)
 
         when (validationResult) {
             is ValidateBookingSearchUseCase.ValidationResult.Success -> {
@@ -153,7 +168,7 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     private fun updateSavedState() {
-        savedStateHandle[KEY_BOOKING_DRAFT] = _uiState.value.draft
+        savedStateHandle[KEY_BOOKING_DRAFT] = hotelBookingDraft
     }
 
     companion object {
