@@ -5,9 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.feature.auth.common.domain.usecase.LogoutUseCase
 import com.softserveacademy.home.domain.usecases.GetProfileUseCase
 import com.softserveacademy.home.presentation.state.ProfileState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +20,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getProfileUseCase: GetProfileUseCase
+    private val getProfileUseCase: GetProfileUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     /**
@@ -25,6 +29,9 @@ class ProfileViewModel @Inject constructor(
      */
     var state by mutableStateOf<ProfileState>(ProfileState.Loading)
         private set
+
+    private val _logoutEvent = MutableSharedFlow<Unit>()
+    val logoutEvent = _logoutEvent.asSharedFlow()
 
     init {
         loadProfile()
@@ -48,7 +55,11 @@ class ProfileViewModel @Inject constructor(
      * Handles the logout action.
      */
     fun onLogoutClick() {
-        // Mocked for now
+        viewModelScope.launch {
+            logoutUseCase().onSuccess {
+                _logoutEvent.emit(Unit)
+            }
+        }
     }
     
     /**

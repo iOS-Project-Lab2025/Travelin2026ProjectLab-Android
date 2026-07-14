@@ -33,6 +33,7 @@ import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
 @Composable
 fun TravelHomeScreen(
     onHotelClick: (Hotel) -> Unit,
+    onAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -43,7 +44,14 @@ fun TravelHomeScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
        // floatingActionButton = { TravelFab() },
-        bottomBar = { TravelNavigationBar() }) { innerPadding ->
+        bottomBar = {
+            TravelNavigationBar(
+                selectedTab = 0,
+                onTabClick = { index ->
+                    if (index == 3) onAccountClick()
+                }
+            )
+        }) { innerPadding ->
         Box(modifier = modifier.fillMaxSize().padding(innerPadding)) {
             TravelBackground()
             Column(
@@ -76,6 +84,6 @@ fun TravelHomeScreen(
 @Composable
 private fun TravelHomeScreenPreview() {
     Travelin2026ProjectLabTheme() {
-        TravelHomeScreen(onHotelClick = {})
+        TravelHomeScreen(onHotelClick = {}, onAccountClick = {})
     }
 }
