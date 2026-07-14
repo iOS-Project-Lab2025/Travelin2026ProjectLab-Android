@@ -16,8 +16,10 @@ import com.softserveacademy.core.presentation.design_system.components.InlineErr
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.components.TravelBookingBottomBar
+import com.softserveacademy.feature.booking.presentation.components.TravelBookingLoadingScreen
 import com.softserveacademy.feature.booking.presentation.components.TravelDateRangePicker
 import com.softserveacademy.feature.booking.presentation.components.TravelGuestBottomSheet
+import androidx.compose.foundation.layout.fillMaxSize
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -77,26 +79,34 @@ fun TravelBookingSearchScreenContent(
         }
     }
 
-    Scaffold(
-        bottomBar = {
-            TravelBookingBottomBar(
-                onBackClick = { onEvent(TravelBookingSearchEvent.OnBackClick) },
-                onNextClick = { onEvent(TravelBookingSearchEvent.OnNextClick) }
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background,
-        modifier = modifier
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            InlineErrorBanner(
-                message = state.dateErrorMessage?.let { stringResource(it) } ?: "",
-                isVisible = state.isDateErrorVisible,
-                modifier = Modifier.padding(TravelinDimens.PaddingMedium)
-            )
-            TravelDateRangePicker(
-                title = stringResource(R.string.booking_date_picker_title),
-                state = dateRangePickerState
-            )
+    if (state.isLoading) {
+        TravelBookingLoadingScreen()
+    } else {
+        Scaffold(
+            bottomBar = {
+                TravelBookingBottomBar(
+                    onBackClick = { onEvent(TravelBookingSearchEvent.OnBackClick) },
+                    onNextClick = { onEvent(TravelBookingSearchEvent.OnNextClick) }
+                )
+            },
+            containerColor = MaterialTheme.colorScheme.background,
+            modifier = modifier
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                InlineErrorBanner(
+                    message = state.dateErrorMessage?.let { stringResource(it) } ?: "",
+                    isVisible = state.isDateErrorVisible,
+                    modifier = Modifier.padding(TravelinDimens.PaddingMedium)
+                )
+                TravelDateRangePicker(
+                    title = stringResource(R.string.booking_date_picker_title),
+                    state = dateRangePickerState
+                )
+            }
         }
     }
 

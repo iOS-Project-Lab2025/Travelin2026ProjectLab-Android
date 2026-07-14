@@ -7,12 +7,14 @@ import com.softserveacademy.feature.booking.domain.repository.BookingRepository
 import com.softserveacademy.feature.booking.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.domain.ValidateBookingSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * View model for the hotel booking search screen.
@@ -44,12 +46,15 @@ class HotelBookingSearchViewModel @Inject constructor(
             updateUiState()
         } else {
             val hotelIdFromSavedState = savedStateHandle.get<Int>("hotelId") ?: savedStateHandle.get<String>("hotelId")?.toIntOrNull()
+            _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
                 val repositoryDraft = hotelIdFromSavedState?.let { bookingRepository.getHotelBookingDraft(it.toString()) }
                 
                 hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelIdFromSavedState?.toString())
                 syncSavedState()
                 updateUiState()
+                delay(500.milliseconds) // Small delay for smooth transition
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }

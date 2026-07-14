@@ -26,4 +26,5 @@ data class TravelBookingSearchState(
     val isGuestErrorVisible: Boolean = false,
     val guestErrorMessage: Int? = null,
     val showGuestBottomSheet: Boolean = false,
+    val isLoading: Boolean = false,
 )
