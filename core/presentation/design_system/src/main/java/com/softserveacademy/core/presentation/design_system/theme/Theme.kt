@@ -26,6 +26,7 @@ private val DarkColorScheme = darkColorScheme(
     outline = Gray80,
     primaryContainer = TravelBlue40,
     secondaryContainer = TravelGray30,
+    onPrimaryFixed = Gray40
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -45,7 +46,7 @@ private val LightColorScheme = lightColorScheme(
     outline = Gray80,
     primaryContainer = TravelBlue40,
     secondaryContainer = TravelGray30,
-
+    onPrimaryFixed = BlueDark90
 )
 
 @Composable

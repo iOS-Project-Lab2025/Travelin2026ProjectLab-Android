@@ -1,5 +1,6 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,10 +13,17 @@ import com.softserveacademy.feature.auth.login.presentation.ForgotPasswordViewMo
 import com.softserveacademy.feature.auth.login.presentation.LoginScreen
 import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.toRoute
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
+import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
+import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 
-import com.softserveacademycore.presentation.ui.bookinggraph.DetailScreen
-import com.softserveacademycore.presentation.ui.maingraph.HomeScreen
+import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
+import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
+import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
+import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
 
 /**
  * Root navigation host for the application.
@@ -41,9 +49,10 @@ fun NavigationRoot(
 
     NavHost(
         navController = navController,
-        //this line is commented since we haven´t discussed the isloggenin variable
-        //startDestination = if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph
-        startDestination = Routes.AuthGraph
+        // I deleted the comment, as we have the implementation of an isLoggedIn
+        // variable. So this should do it, as if the person is logged the app sends
+        // them to the MainGraph, otherwise, it redirects them to the AuthGraph.
+        startDestination = if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph
     ) {
 
         authGraph(navController, loginViewModel = loginViewModel,
@@ -106,8 +115,6 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
                     }
                 },
                 onNavigateBack={
-                    // Clear the authentication flow from the back stack
-                    // so users cannot return to Login after signing in.
                     navController.popBackStack()
                 },
             )
@@ -116,7 +123,7 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
 
         composable<Routes.SuccessScreen> {
             SuccessScreen(
-                onExploreClick={navController.navigate(Routes.HomeScreen)
+                onExploreClick={navController.navigate(Routes.MainGraph)
                 {
                     popUpTo(Routes.AuthGraph) { inclusive = true }
                 }
@@ -145,23 +152,64 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
  *
  * @param navController The navigation controller used for screen navigation.
  */
-fun NavGraphBuilder.mainGraph(navController: NavHostController) {
+fun NavGraphBuilder.mainGraph(
+    navController: NavHostController
+) {
 
     navigation<Routes.MainGraph>(
-        startDestination = Routes.HomeScreen
+        startDestination = Routes.TravelHomeScreen
     ) {
 
-        composable<Routes.HomeScreen> {
-            HomeScreen(
-                onSearchClick = {
-                    navController.navigate(Routes.BookingGraph)
+        composable<Routes.TravelHomeScreen> {
+            TravelHomeScreen(
+                onHotelClick = { hotel ->
+                    navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
                 },
-                onItemClick = {
-                    navController.navigate(Routes.BookingGraph)
+                onAccountClick = {
+                    navController.navigate(Routes.ProfileScreen) {
+                        popUpTo(Routes.TravelHomeScreen)
+                        launchSingleTop = true
+                    }
                 }
             )
         }
 
+        composable<Routes.ProfileScreen> {
+            val viewModel: ProfileViewModel = hiltViewModel()
+            ProfileScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onLogoutSuccess = {
+                    navController.navigate(Routes.AuthGraph) {
+                        popUpTo(Routes.MainGraph) { inclusive = true }
+                    }
+                },
+                onHomeClick = {
+                    navController.navigate(Routes.TravelHomeScreen) {
+                        popUpTo(Routes.TravelHomeScreen) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable<Routes.TravelHotelDetailScreen> { backStackEntry ->
+            val route: Routes.TravelHotelDetailScreen = backStackEntry.toRoute()
+            HotelDetailState(
+                hotelId = route.id, // Receive the ID
+                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
+                onBookClick = { navController.navigate(Routes.HotelBookingSearchScreen(hotelId = route.id)) }
+            )
+        }
+
+        composable<Routes.HotelGalleryScreen> { backStackEntry ->
+            val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
+            TravelHotelGalleryScreen(
+                hotelId = route.id, // Receive the ID
+                onBackClick = { navController.popBackStack() }
+            )
+        }
     }
 }
 /**
@@ -174,17 +222,17 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
 fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
     navigation<Routes.BookingGraph>(
-        startDestination = Routes.DetailScreen
+        startDestination = Routes.HotelBookingSearchScreen(hotelId = 0)
     ) {
+        composable<Routes.HotelBookingSearchScreen> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Routes.BookingGraph)
+            }
+            val viewModel: HotelBookingSearchViewModel = hiltViewModel(parentEntry)
 
-        composable<Routes.DetailScreen> {
-            DetailScreen(
-                onSearchClick = {
-                    navController.navigate(Routes.AuthGraph)
-                },
-                onItemClick = {
-                    navController.navigate(Routes.AuthGraph)
-                }
+            HotelBookingSearchScreen(
+                onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
     }

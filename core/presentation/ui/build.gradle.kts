@@ -12,4 +12,6 @@ dependencies {
     implementation(projects.core.presentation.designSystem)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

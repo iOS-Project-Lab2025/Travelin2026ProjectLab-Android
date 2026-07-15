@@ -38,13 +38,24 @@ sealed interface Routes {
     data object ForgotPasswordScreen : Routes
 
     // ---------------- MAIN ----------------
+
+
     @Serializable
-    data object HomeScreen : Routes
+    data object TravelHomeScreen : Routes
 
 
+    @Serializable
+    data object ProfileScreen : Routes
+
+    @Serializable
+    data class TravelHotelDetailScreen(val id: Int) : Routes
+
+    @Serializable
+    data class HotelGalleryScreen(val id: Int) : Routes
 
 
     // ---------------- BOOKING ----------------
+
     @Serializable
-    data object DetailScreen : Routes
+    data class HotelBookingSearchScreen(val hotelId: Int) : Routes
 }
