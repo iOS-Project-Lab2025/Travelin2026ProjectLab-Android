@@ -17,14 +17,14 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.R
 
 /**
- * A bottom bar component for the hotel booking search screen, containing "Back" and "Next" buttons.
+ * A bottom bar component for the booking search screen, containing "Back" and "Next" buttons.
  *
  * @param onBackClick The callback to be invoked when the back button is clicked.
  * @param onNextClick The callback to be invoked when the next button is clicked.
  * @param modifier The modifier to be applied to the bottom bar.
  */
 @Composable
-fun TravelHotelBookingBottomBar(
+fun TravelBookingBottomBar(
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -58,9 +58,9 @@ fun TravelHotelBookingBottomBar(
 
 @Preview
 @Composable
-private fun TravelHotelBookingBottomBarPreview() {
+private fun TravelBookingBottomBarPreview() {
     Travelin2026ProjectLabTheme {
-        TravelHotelBookingBottomBar(
+        TravelBookingBottomBar(
             onBackClick = {},
             onNextClick = {}
         )

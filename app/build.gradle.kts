@@ -65,5 +65,6 @@ dependencies {
     implementation(projects.feature.home.data)
     implementation(projects.feature.home.presentation)
     implementation(projects.feature.booking.presentation)
+    implementation(projects.feature.booking.data)
 
 }

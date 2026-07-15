@@ -1,5 +1,7 @@
 plugins {
     id("com.softserveacademy.android.library")
+    id("com.softserveacademy.android.hilt")
+    kotlin("plugin.serialization") version "2.2.10"
 }
 
 android {
@@ -8,4 +10,6 @@ android {
 
 dependencies {
     implementation(projects.feature.booking.domain)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
 }
