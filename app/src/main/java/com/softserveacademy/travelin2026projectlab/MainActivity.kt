@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.navigation.compose.rememberNavController
+import com.softserveacademy.core.domain.model.AppTheme
+import com.softserveacademy.core.domain.usecase.GetThemeUseCase
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.feature.auth.login.data.LoginRepositoryImpl
 import com.softserveacademy.feature.auth.register.data.RegisterRepositoryImpl
@@ -39,6 +42,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var checkSessionUseCase: CheckSessionUseCase
 
+    @Inject
+    lateinit var getThemeUseCase: GetThemeUseCase
+
     private val loginRepository by lazy { LoginRepositoryImpl(dataStore) }
     private val registerRepository by lazy { RegisterRepositoryImpl(dataStore) }
 
@@ -54,7 +60,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Travelin2026ProjectLabTheme {
+            val appTheme by getThemeUseCase().collectAsState(initial = AppTheme.SYSTEM)
+            val darkTheme = when (appTheme) {
+                AppTheme.LIGHT -> false
+                AppTheme.DARK -> true
+                AppTheme.SYSTEM -> isSystemInDarkTheme()
+            }
+
+            Travelin2026ProjectLabTheme(darkTheme = darkTheme) {
                 val isLoggedIn by checkSessionUseCase().collectAsState(initial = null)
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
