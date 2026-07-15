@@ -26,7 +26,7 @@ data class HotelDetailsUi (
     val limitedReviews: String
         get() = if (numberOfReviews > 100) "100+ reviews" else "$numberOfReviews reviews"
     val limitedImages: String
-        get() = if (numberOfImages > 100) "100+ Photos" else "$numberOfImages Photos"
+        get() = if (numberOfImages > 400) "400+ Photos" else "${numberOfImages-1}+ Photos"
 }
 
 

@@ -29,8 +29,7 @@ data class IncludedItemUi(
         val BuffetBreakfast: IncludedItemUi
             @Composable get() = IncludedItemUi(
                 title = R.string.buffet_breakfast_label,
-                icon = BreakfastIcon,
-                subtitle = R.string.included_label
+                icon = BreakfastIcon
             )
         val FreeWifi: IncludedItemUi
             @Composable get() = IncludedItemUi(
@@ -55,8 +54,7 @@ data class IncludedItemUi(
         val SelfParking: IncludedItemUi
             @Composable get() = IncludedItemUi(
                 title = R.string.parking_label,
-                icon = ParkingIcon,
-                subtitle = R.string.included_label
+                icon = ParkingIcon
             )
         val RoomService: IncludedItemUi
             @Composable get() = IncludedItemUi(
@@ -68,6 +66,5 @@ data class IncludedItemUi(
                 title = R.string.ac_unit_label,
                 icon = TimeIcon,
             )
-
     }
 }

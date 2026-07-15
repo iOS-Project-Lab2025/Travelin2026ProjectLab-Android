@@ -25,6 +25,9 @@ val Green80 = Color(0xFF336749) // Green text and background in cards in light m
 // ============================================================================
 val Gray80 = Color(0xFF6C757D) //Inactive Inputs and Primary Text in Inputs
 val Gray40 = Color(0xFFA0AAB2) //Secondary text, disable icons and inputs, and placeholders
+val Gray40_Alpha60 = Gray40.copy(alpha = 0.6f)
+val Gray40_Alpha20 = Gray40.copy(alpha = 0.2f)
+
 val GrayLight20 = Color(0xFFE2E8F0) // Primary Text and Titles in Dark Mode
 
 // ============================================================================

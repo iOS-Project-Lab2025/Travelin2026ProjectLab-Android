@@ -16,13 +16,16 @@
     <string name="logout_confirm">Logout</string>
     <string name="logout_cancel">Cancel</string>
 
-    // TravelHotelDetailScreen
+    <!-- TravelHotelDetailScreen -->
     <string name="about_label">About</string>
     <string name="read_more_label">Read more</string>
     <string name="read_less_label">Read less</string>
     <string name="What_is_included_label">What is included</string>
+    <string name="see_all_label">See all</string>
+    <string name="plus_photos_label">+ photos</string>
 
-    // Include items
+
+    <!-- Include items -->
     <string name="buffet_breakfast_label">Buffet breakfast</string>
     <string name="free_wifi_label">Free wifi</string>
     <string name="fitness_center_label">On-site fitness center</string>
@@ -31,6 +34,9 @@
     <string name="parking_label">Self-parking</string>
     <string name="room_service_label">Room service</string>
     <string name="ac_unit_label">AC unit</string>
-    <string name="included_label">Included</string>
+  
+    <!-- Error state -->
+    <string name="retry_label">Retry</string>
+    <string name="unexpected_error">An unexpected error occurred</string>
 
 </resources>

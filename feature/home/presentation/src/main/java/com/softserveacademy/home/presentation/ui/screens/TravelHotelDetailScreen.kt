@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -50,12 +48,15 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import com.softserveacademy.home.presentation.R.string
 import com.softserveacademy.core.domain.model.IncludedItem
+import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.home.presentation.state.HotelDetailState
+import com.softserveacademy.home.presentation.ui.components.HotelDetailLoading
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
 /**
@@ -74,7 +75,7 @@ fun HotelDetailState(
     hotelId: Int,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
-    onBookClick: () -> Unit = {},
+    onBookClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HotelDetailsViewModel = hiltViewModel(),
 ){
@@ -96,7 +97,6 @@ fun HotelDetailState(
                 name = hotelInformation.name,
                 numberOfReviews = hotelInformation.numberOfReviews,
                 numberOfImages = hotelInformation.imageList.size,
-                //numberOfImages = hotelInformation.numberOfImages,
                 rating = hotelInformation.rating,
                 description = hotelInformation.description,
                 includedItems = hotelInformation.includedItems.map { it.toUi() }
@@ -111,11 +111,46 @@ fun HotelDetailState(
             )
         }
         is HotelDetailState.Error -> {
-            Text(text = "Error: ${(hotelDetailState as HotelDetailState.Error).message}")
+            HotelDetailError(
+                message = (hotelDetailState as HotelDetailState.Error).message,
+                onRetry = { viewModel.getHotelDetail(hotelId) }
+            )
         }
         is HotelDetailState.IsLoading -> {
-            CircularProgressIndicator()
+            HotelDetailLoading()
         }
+    }
+}
+
+/**
+ * Displays an error message and a retry button when data fetching fails.
+ *
+ * @param message The error message to display.
+ * @param onRetry The action to perform when the retry button is clicked.
+ * @param modifier The modifier to be applied to the layout.
+ */
+@Composable
+private fun HotelDetailError(
+    message: String?,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message ?: stringResource(id = string.unexpected_error),
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+        TravelPrimaryButton(
+            onClick = onRetry,
+            text = stringResource(id = string.retry_label),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        )
     }
 }
 
@@ -195,8 +230,7 @@ fun TravelHotelDetailScreen(
             item {
                 GalleryPreviewSection(
                     imageList = hotelInformation.imageList,
-                    //numberOfImages = hotelInformation.numberOfImages,
-                    numberOfImages =hotelInformation.imageList.size,
+                    numberOfImages = hotelInformation.imageList.size,
                     onSeeAllPhotosClick = onSeeAllPhotosClick
                 )
             }
@@ -328,6 +362,7 @@ private fun HotelDescriptionSection(
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
                 .clickable { isExpanded = !isExpanded }
+                .padding(vertical = TravelinDimens.SpaceSmall)
         )
         HorizontalDivider(
             modifier = Modifier
@@ -383,7 +418,8 @@ private fun IncludingSection(
         HorizontalDivider(
             modifier = Modifier
                 .padding(
-                    vertical = TravelinDimens.PaddingLarge
+                    top = TravelinDimens.PaddingLarge,
+                    bottom = TravelinDimens.PaddingExtraLarge
                 )
         )
     }
@@ -470,12 +506,24 @@ private fun GalleryPreviewSection(
             )
         ) {
             Text(
-                text = "See all +$numberOfImages photos",
+                text = "${stringResource(id = string.see_all_label)} ${numberOfImages-1} " +
+                        stringResource(id = string.plus_photos_label),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HotelDetailErrorPreview() {
+    Travelin2026ProjectLabTheme {
+        HotelDetailError(
+            message = "Unable to load hotel details. Please try again.",
+            onRetry = {}
+        )
     }
 }
 
