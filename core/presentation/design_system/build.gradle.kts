@@ -1,5 +1,6 @@
 plugins {
     id("com.softserveacademy.android.feature")
+
 }
 
 android {
@@ -15,6 +16,8 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // testing toolkit
     testImplementation(libs.bundles.testing.stack)

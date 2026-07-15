@@ -30,6 +30,10 @@ kotlinSerialization = "1.7.3"
 mockk = "1.13.13"
 robolectric = "4.14.1"
 
+coil = "3.3.0"
+uiToolingPreview = "1.11.4"
+uiTooling = "1.11.4"
+
 [libraries]
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -40,8 +44,12 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processin
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 
+
+javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -67,11 +75,16 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 multidex = { group = "com.android.support", name = "multidex", version.ref = "multidex" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.7.3" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-
 ##Added for testing purpose
 
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
+
+##Added for testing purpose
+[bundles]
+testing-stack = ["junit", "mockk", "robolectric", "kotlinx-coroutines-test"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -83,6 +96,3 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ##Added for feature of NavGraph
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
-##Added for testing purpose
-[bundles]
-testing-stack = ["junit", "mockk", "robolectric", "kotlinx-coroutines-test"]

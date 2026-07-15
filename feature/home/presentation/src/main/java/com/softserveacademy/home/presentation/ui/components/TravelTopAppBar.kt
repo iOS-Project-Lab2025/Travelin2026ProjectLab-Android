@@ -86,7 +86,10 @@ fun TravelFab(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TravelNavigationBar() {
+fun TravelNavigationBar(
+    selectedTab: Int = 0,
+    onTabClick: (Int) -> Unit = {}
+) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.shadow(
@@ -95,7 +98,8 @@ fun TravelNavigationBar() {
         )
     ) {
         NavigationBarItem(
-            selected = true, onClick = {},
+            selected = selectedTab == 0,
+            onClick = { onTabClick(0) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = MaterialTheme.colorScheme.primaryContainer,
                 unselectedIconColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -116,7 +120,9 @@ fun TravelNavigationBar() {
                 )
             })
         NavigationBarItem(
-            selected = false, onClick = {}, icon = {
+            selected = selectedTab == 1,
+            onClick = { onTabClick(1) },
+            icon = {
                 Icon(
                     painter = painterResource(R.drawable.travel_ic_ticket),
                     contentDescription = null
@@ -128,7 +134,9 @@ fun TravelNavigationBar() {
                 )
             })
         NavigationBarItem(
-            selected = false, onClick = {}, icon = {
+            selected = selectedTab == 2,
+            onClick = { onTabClick(2) },
+            icon = {
                 Icon(
                     painter = painterResource(R.drawable.travel_ic_percentage),
                     contentDescription = null
@@ -140,7 +148,9 @@ fun TravelNavigationBar() {
                 )
             })
         NavigationBarItem(
-            selected = false, onClick = {}, icon = {
+            selected = selectedTab == 3,
+            onClick = { onTabClick(3) },
+            icon = {
                 Icon(
                     painter = painterResource(R.drawable.travel_ic_person),
                     contentDescription = null

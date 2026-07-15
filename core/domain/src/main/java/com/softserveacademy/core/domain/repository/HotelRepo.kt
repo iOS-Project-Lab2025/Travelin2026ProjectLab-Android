@@ -13,4 +13,11 @@ interface HotelRepo{
      * @return The fetched hotel object.
      */
     suspend fun getHotelById(id: Int?): Hotel
+
+    /**
+     * Fetch all available hotels.
+     *
+     * @return A list of all hotel objects.
+     */
+    suspend fun getHotels(): List<Hotel>
 }
