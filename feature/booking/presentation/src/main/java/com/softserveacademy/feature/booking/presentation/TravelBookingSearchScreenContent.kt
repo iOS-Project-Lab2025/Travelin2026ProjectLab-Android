@@ -1,5 +1,6 @@
 package com.softserveacademy.feature.booking.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +33,7 @@ import java.util.TimeZone
  * @param modifier The modifier to be applied to the content.
  */
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TravelBookingSearchScreenContent(
     state: TravelBookingSearchState,
@@ -91,11 +93,9 @@ fun TravelBookingSearchScreenContent(
             },
             containerColor = MaterialTheme.colorScheme.background,
             modifier = modifier
-        ) { paddingValues ->
+        ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
+                modifier = Modifier.fillMaxSize()
             ) {
                 InlineErrorBanner(
                     message = state.dateErrorMessage?.let { stringResource(it) } ?: "",
