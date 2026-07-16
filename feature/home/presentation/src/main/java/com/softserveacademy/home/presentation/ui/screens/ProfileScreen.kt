@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,10 +18,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.core.domain.model.UserProfile
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.theme.*
@@ -44,6 +47,7 @@ fun ProfileScreen(
     onHomeClick: () -> Unit
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(viewModel.logoutEvent) {
         viewModel.logoutEvent.collectLatest {
@@ -53,62 +57,155 @@ fun ProfileScreen(
 
     ProfileContent(
         state = viewModel.state,
+        currentTheme = viewModel.currentTheme,
         onNavigateBack = onNavigateBack,
         onEditProfileClick = viewModel::onEditProfileClick,
         onLogoutClick = { showLogoutDialog = true },
+        onThemeClick = { showThemeDialog = true },
         onRetry = viewModel::loadProfile,
         onHomeClick = onHomeClick
     )
 
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            shape = MaterialTheme.shapes.large,
-            title = {
-                Text(
-                    text = stringResource(R.string.logout_dialog_title),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+        LogoutDialog(
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.onLogoutClick()
             },
-            text = {
-                Text(
-                    text = stringResource(R.string.logout_dialog_message),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            },
-            confirmButton = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = TravelinDimens.PaddingSmall),
-                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
-                ) {
-                    Button(
-                        onClick = {
-                            showLogoutDialog = false
-                            viewModel.onLogoutClick()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(text = stringResource(R.string.logout_confirm))
-                    }
-                    OutlinedButton(
-                        onClick = { showLogoutDialog = false },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(TravelinDimens.SpaceSmall)
-                    ) {
-                        Text(text = stringResource(R.string.logout_cancel))
-                    }
-                }
-            },
-            dismissButton = null
+            onDismiss = { showLogoutDialog = false }
         )
+    }
+
+    if (showThemeDialog) {
+        ThemeSelectionDialog(
+            currentTheme = viewModel.currentTheme,
+            onThemeSelected = {
+                viewModel.onThemeSelected(it)
+                showThemeDialog = false
+            },
+            onDismissRequest = { showThemeDialog = false }
+        )
+    }
+}
+
+/**
+ * Dialog for confirming user logout.
+ */
+@Composable
+private fun LogoutDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.large,
+        title = {
+            Text(
+                text = stringResource(R.string.logout_dialog_title),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.logout_dialog_message),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        confirmButton = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = TravelinDimens.PaddingSmall),
+                verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+            ) {
+                Button(
+                    onClick = onConfirm,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(text = stringResource(R.string.logout_confirm))
+                }
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(TravelinDimens.SpaceSmall)
+                ) {
+                    Text(text = stringResource(R.string.logout_cancel))
+                }
+            }
+        },
+        dismissButton = null
+    )
+}
+
+/**
+ * Dialog for selecting the application theme.
+ */
+@Composable
+private fun ThemeSelectionDialog(
+    currentTheme: AppTheme,
+    onThemeSelected: (AppTheme) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        shape = MaterialTheme.shapes.large,
+        title = { Text(text = stringResource(R.string.theme_dialog_title)) },
+        text = {
+            Column {
+                ThemeOption(
+                    text = stringResource(R.string.theme_light),
+                    selected = currentTheme == AppTheme.LIGHT,
+                    onClick = { onThemeSelected(AppTheme.LIGHT) }
+                )
+                ThemeOption(
+                    text = stringResource(R.string.theme_dark),
+                    selected = currentTheme == AppTheme.DARK,
+                    onClick = { onThemeSelected(AppTheme.DARK) }
+                )
+                ThemeOption(
+                    text = stringResource(R.string.theme_system),
+                    selected = currentTheme == AppTheme.SYSTEM,
+                    onClick = { onThemeSelected(AppTheme.SYSTEM) }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "Close")
+            }
+        }
+    )
+}
+
+@Composable
+private fun ThemeOption(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.RadioButton
+            )
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = null
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = text, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -118,9 +215,11 @@ fun ProfileScreen(
 @Composable
 fun ProfileContent(
     state: ProfileState,
+    currentTheme: AppTheme,
     onNavigateBack: () -> Unit,
     onEditProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onThemeClick: () -> Unit,
     onRetry: () -> Unit,
     onHomeClick: () -> Unit
 ) {
@@ -161,8 +260,10 @@ fun ProfileContent(
                 is ProfileState.Success -> {
                     ProfileSuccessContent(
                         profile = state.profile,
+                        currentTheme = currentTheme,
                         onEditProfileClick = onEditProfileClick,
-                        onLogoutClick = onLogoutClick
+                        onLogoutClick = onLogoutClick,
+                        onThemeClick = onThemeClick
                     )
                 }
                 is ProfileState.Error -> {
@@ -187,8 +288,10 @@ fun ProfileContent(
 @Composable
 fun ProfileSuccessContent(
     profile: UserProfile,
+    currentTheme: AppTheme,
     onEditProfileClick: () -> Unit,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onThemeClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -265,7 +368,12 @@ fun ProfileSuccessContent(
         SettingItem(
             icon = MoonIcon,
             title = "Color mode",
-            onClick = { /* Mocked */ }
+            onClick = onThemeClick,
+            trailingText = when (currentTheme) {
+                AppTheme.LIGHT -> "Light"
+                AppTheme.DARK -> "Dark"
+                AppTheme.SYSTEM -> "System"
+            }
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraLarge))
@@ -313,7 +421,8 @@ fun ProfileSuccessContent(
 fun SettingItem(
     icon: ImageVector,
     title: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    trailingText: String? = null
 ) {
     Surface(
         onClick = onClick,
@@ -341,6 +450,14 @@ fun SettingItem(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
+            trailingText?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
+            }
             Icon(
                 imageVector = AngleRightIcon,
                 contentDescription = null,
@@ -359,9 +476,11 @@ fun ProfileScreenPreview() {
             state = ProfileState.Success(
                 UserProfile("John Doe", 100, "", "Mars, Solar System")
             ),
+            currentTheme = AppTheme.SYSTEM,
             onNavigateBack = {},
             onEditProfileClick = {},
             onLogoutClick = {},
+            onThemeClick = {},
             onRetry = {},
             onHomeClick = {}
         )
@@ -376,9 +495,11 @@ fun ProfileScreenDarkPreview() {
             state = ProfileState.Success(
                 UserProfile("John Doe", 100, "", "Mars, Solar System")
             ),
+            currentTheme = AppTheme.SYSTEM,
             onNavigateBack = {},
             onEditProfileClick = {},
             onLogoutClick = {},
+            onThemeClick = {},
             onRetry = {},
             onHomeClick = {}
         )
