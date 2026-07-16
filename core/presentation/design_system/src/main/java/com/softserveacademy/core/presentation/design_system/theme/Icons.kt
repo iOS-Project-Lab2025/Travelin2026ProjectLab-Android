@@ -117,6 +117,10 @@ val ParkingIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_parking_sign)
 
+val PersonsIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_persons)
+
 val PlaneIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_plane)

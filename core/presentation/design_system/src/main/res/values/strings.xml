@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="amenity_wifi">Free Wi-Fi</string>
+    <string name="amenity_breakfast">Breakfast</string>
+    <string name="amenity_parking">Parking</string>
+    <string name="amenity_pool">Swimming Pool</string>
+    <string name="amenity_gym">Gym</string>
+    <string name="amenity_ac">Air Conditioning</string>
+    <string name="amenity_room_service">Room Service</string>
+</resources>
