@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -15,6 +16,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.TravelinLogo
 import com.softserveacademy.core.presentation.design_system.R
@@ -86,7 +89,9 @@ fun SplashScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center
     ) {
         // --- AMBIENT LIGHTING (SOFT GLOW) ---
@@ -95,7 +100,10 @@ fun SplashScreen(
             modifier = Modifier
                 .size(350.dp)
                 .graphicsLayer(scaleX = glowScale, scaleY = glowScale, alpha = alphaAnim * 0.3f)
-                .background(Color.White.copy(alpha = 0.2f), shape = androidx.compose.foundation.shape.CircleShape)
+                .background(
+                    Color.White.copy(alpha = 0.2f),
+                    shape = androidx.compose.foundation.shape.CircleShape
+                )
                 .blur(80.dp)
         )
 
@@ -106,29 +114,52 @@ fun SplashScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_bus),
                     contentDescription = null,
-                    modifier = Modifier.align(Alignment.TopStart).size(40.dp).alpha(busAlpha),
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .size(40.dp)
+                        .alpha(busAlpha),
                     tint = Color.White
                 )
                 // Top-Right: Flight (Fastest appearance)
                 Icon(
                     painter = painterResource(id = R.drawable.ic_flight),
                     contentDescription = null,
-                    modifier = Modifier.align(Alignment.TopEnd).size(55.dp).alpha(flightAlpha),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(55.dp)
+                        .alpha(flightAlpha),
                     tint = Color.White
                 )
                 // Bottom-Left: Bed (Medium appearance)
                 Icon(
                     painter = painterResource(id = R.drawable.ic_bed),
                     contentDescription = null,
-                    modifier = Modifier.align(Alignment.BottomCenter).size(45.dp).alpha(bedAlpha),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .size(45.dp)
+                        .alpha(bedAlpha),
                     tint = Color.White
                 )
             }
         }
 
-        // --- MAIN LOGO ---
-        Box(modifier = Modifier.graphicsLayer(alpha = alphaAnim)) {
+        // --- MAIN CONTENT (LOGO + TAGLINE) ---
+        // We use a Column to put the Tagline below the Logo
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.graphicsLayer(alpha = alphaAnim)
+        ) {
             TravelinLogo()
+
+            Spacer(modifier = Modifier.height((-50).dp))
+
+            Text(
+                text = stringResource(id = R.string.splash_tagline),
+                style = MaterialTheme.typography.bodyLarge, // Inter Regular 14sp
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -27,8 +28,8 @@ fun TravelinLogo(
     Image(
         painter = painterResource(id = R.drawable.logo_travelin),
         contentDescription = "Travelin Official Logo",
-        modifier = modifier.size(250.dp), // Can modify sizing
-        contentScale = ContentScale.Fit
+        modifier = modifier.width(280.dp), // Can modify sizing
+        contentScale = ContentScale.FillWidth
     )
 }
 
