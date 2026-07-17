@@ -39,7 +39,6 @@ fun TravelBookingSearchScreenContent(
     modifier: Modifier = Modifier,
     state: TravelBookingSearchState,
     onEvent: (TravelBookingSearchEvent) -> Unit,
-    onNavigateToRoomSelection: () -> Unit = {},
 ) {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val dateRangePickerState = rememberDateRangePickerState(
@@ -119,12 +118,7 @@ fun TravelBookingSearchScreenContent(
             onAdultsChange = { onEvent(TravelBookingSearchEvent.OnAdultsCountChange(it)) },
             onKidsChange = { onEvent(TravelBookingSearchEvent.OnChildrenCountChange(it)) },
             onHasPetsChange = { onEvent(TravelBookingSearchEvent.OnHasPetsChange(it)) },
-            onAccept = { 
-                onEvent(TravelBookingSearchEvent.OnAcceptGuests)
-                if (state.isGuestErrorVisible.not() && state.isDateErrorVisible.not()) {
-                    onNavigateToRoomSelection()
-                }
-            },
+            onAccept = { onEvent(TravelBookingSearchEvent.OnAcceptGuests) },
             onDismissRequest = { onEvent(TravelBookingSearchEvent.OnDismissGuestBottomSheet) },
             isErrorVisible = state.isGuestErrorVisible,
             errorMessage = state.guestErrorMessage?.let { stringResource(it) }

@@ -108,8 +108,6 @@ class HotelRoomSelectionViewModel @Inject constructor(
                 val updatedDraft = draft.copy(roomId = selectedRoomId.toString())
                 bookingRepository.saveHotelBookingDraft(updatedDraft)
             }
-            
-            // Navigation is handled in the UI
         }
     }
 }

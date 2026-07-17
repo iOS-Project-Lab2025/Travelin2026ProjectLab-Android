@@ -36,6 +36,9 @@ class HotelBookingSearchViewModel @Inject constructor(
      * The current state of the hotel booking search screen.
      */
     val uiState: StateFlow<TravelBookingSearchState> = _uiState.asStateFlow()
+    
+    private val _validationSuccess = MutableStateFlow(false)
+    val validationSuccess: StateFlow<Boolean> = _validationSuccess.asStateFlow()
 
     private var hotelBookingDraft = HotelBookingDraft()
 
@@ -163,7 +166,7 @@ class HotelBookingSearchViewModel @Inject constructor(
             is ValidateBookingSearchUseCase.ValidationResult.Success -> {
                 // Validation passed for both dates and guests
                 _uiState.update { it.copy(showGuestBottomSheet = false) }
-                // TODO: Navigate to room selection
+                _validationSuccess.value = true
             }
 
             is ValidateBookingSearchUseCase.ValidationResult.Invalid -> {

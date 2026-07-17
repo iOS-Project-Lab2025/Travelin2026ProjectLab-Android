@@ -239,7 +239,7 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
             HotelBookingSearchScreen(
                 onBackClick = { navController.popBackStack() },
-                onNextClick = { 
+                onNavigateToRoomSelection = {
                     navController.navigate(Routes.HotelRoomSelectionScreen(hotelId = route.hotelId)) 
                 },
                 viewModel = viewModel
