@@ -10,4 +10,6 @@
     <string name="logo_part_travel">Travel</string>
     <string name="logo_part_in">in</string>
     <string name="splash_tagline">Your Passport to Seamless Adventures!</string>
+    <string name="onboarding_title">Ready to explore\nbeyond boundaries?</string>
+    <string name="onboarding_button">Your Journey Starts Here</string>
 </resources>
