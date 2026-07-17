@@ -40,6 +40,14 @@ class HotelBookingSearchViewModel @Inject constructor(
     private val _validationSuccess = MutableStateFlow(false)
     val validationSuccess: StateFlow<Boolean> = _validationSuccess.asStateFlow()
 
+    /**
+     * Resets the validation success flag.
+     * Should be called when navigation to the next screen is handled or when navigating back.
+     */
+    fun resetValidationStatus() {
+        _validationSuccess.value = false
+    }
+
     private var hotelBookingDraft = HotelBookingDraft()
 
     init {

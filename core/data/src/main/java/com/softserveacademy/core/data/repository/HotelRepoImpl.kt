@@ -11,10 +11,23 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
+ * Data class representing a booking.
+ * @param roomId The ID of the booked room.
+ * @param checkInDate The check-in date in milliseconds.
+ * @param checkOutDate The check-out date in milliseconds.
+ */
+data class Booking(
+    val roomId: Int,
+    val checkInDate: Long,
+    val checkOutDate: Long
+)
+
+/**
  * Test implementation of the HotelRepo interface that mock fetch data.
  */
 @Singleton
 class HotelRepoImpl @Inject constructor() : HotelRepo {
+    private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
     private val _hotels = MutableStateFlow(listOf(
         Hotel(
             id = 1,
@@ -48,26 +61,25 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
         return _hotels.value
     }
 
-    override suspend fun getHotelRooms(hotelId: Int): List<HotelRoom> {
-        return _hotels.value.find { it.id == hotelId }?.rooms ?: emptyList()
+    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long): List<HotelRoom> {
+        val baseRooms = _hotels.value.find { it.id == hotelId }?.rooms ?: emptyList()
+        return baseRooms.map { room ->
+            val bookedCount = _bookings.value.count { booking ->
+                booking.roomId == room.id && 
+                checkInDate < booking.checkOutDate && 
+                booking.checkInDate < checkOutDate
+            }
+            val available = (room.totalRooms - bookedCount).coerceAtLeast(0)
+            room.copy(
+                availableRooms = available,
+                isAvailable = available > 0
+            )
+        }
     }
 
-    override suspend fun reserveRoom(hotelId: Int, roomId: Int) {
-        _hotels.update { currentHotels ->
-            currentHotels.map { hotel ->
-                if (hotel.id == hotelId) {
-                    hotel.copy(
-                        rooms = hotel.rooms.map { room ->
-                            if (room.id == roomId) {
-                                room.copy(
-                                    availableRooms = (room.availableRooms - 1).coerceAtLeast(0),
-                                    isAvailable = (room.availableRooms - 1) > 0
-                                )
-                            } else room
-                        }
-                    )
-                } else hotel
-            }
+    override suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long) {
+        _bookings.update { currentBookings ->
+            currentBookings + Booking(roomId, checkInDate, checkOutDate)
         }
     }
 
@@ -77,13 +89,13 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 1,
                 type = "Deluxe Suite, King Size Bed",
                 description = "Volcano in East Java",
-                maxOccupancy = "1-5 persons",
+                maxOccupancy = "1-2 persons",
                 bedType = "1 King bed",
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
-                pricePerNight = 150,
+                pricePerNight = 170,
                 images = roomPreviewImages,
-                totalRooms = 5,
+                totalRooms = 1,
                 availableRooms = 5,
                 isAvailable = true
             ),
@@ -91,7 +103,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 2,
                 type = "Standard Suite, Queen Size Bed",
                 description = "Volcano in East Java",
-                maxOccupancy = "1-5 persons",
+                maxOccupancy = "1-2 persons",
                 bedType = "1 Queen bed",
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
@@ -105,7 +117,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 3,
                 type = "Family Room, 2 Double Beds",
                 description = "Garden View",
-                maxOccupancy = "1-6 persons",
+                maxOccupancy = "1-4 persons",
                 bedType = "2 Double beds",
                 bedCount = 2,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI, HotelRoomAmenity.AC),

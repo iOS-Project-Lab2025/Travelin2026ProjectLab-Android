@@ -29,6 +29,7 @@ fun HotelBookingSearchScreen(
         viewModel.validationSuccess.collectLatest { success ->
             if (success) {
                 onNavigateToRoomSelection()
+                viewModel.resetValidationStatus()
             }
         }
     }

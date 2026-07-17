@@ -36,6 +36,9 @@ class HotelRoomSelectionViewModelTest {
         HotelRoom(id = 2, type = "Room 2", description = "", maxOccupancy = "", bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
     )
 
+    private val checkIn = 1000L
+    private val checkOut = 2000L
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -43,8 +46,12 @@ class HotelRoomSelectionViewModelTest {
         bookingRepository = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
-        coEvery { hotelRepo.getHotelRooms(hotelId) } returns mockRooms
-        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns HotelBookingDraft(hotelId = hotelId.toString())
+        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any()) } returns mockRooms
+        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns HotelBookingDraft(
+            hotelId = hotelId.toString(),
+            checkInDate = checkIn,
+            checkOutDate = checkOut
+        )
     }
 
     @After
@@ -60,6 +67,7 @@ class HotelRoomSelectionViewModelTest {
         val state = viewModel.uiState.value
         assertEquals(mockRooms, state.rooms)
         assertFalse(state.isLoading)
+        // (2000 - 1000) / (1000 * 60 * 60 * 24) is 0, coerceAtLeast(1) is 1
         assertEquals(1, state.nightCount)
     }
 
@@ -99,12 +107,12 @@ class HotelRoomSelectionViewModelTest {
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
         
-        coEvery { hotelRepo.reserveRoom(hotelId, 1) } returns Unit
+        coEvery { hotelRepo.reserveRoom(hotelId, 1, any(), any()) } returns Unit
         
         viewModel.onEvent(HotelRoomSelectionEvent.OnNextClick)
         advanceUntilIdle()
 
-        coVerify { hotelRepo.reserveRoom(hotelId, 1) }
+        coVerify { hotelRepo.reserveRoom(hotelId, 1, checkIn, checkOut) }
         coVerify { bookingRepository.saveHotelBookingDraft(any()) }
     }
 }

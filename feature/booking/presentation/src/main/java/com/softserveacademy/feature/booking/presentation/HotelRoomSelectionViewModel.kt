@@ -47,14 +47,16 @@ class HotelRoomSelectionViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             bookingDraft = bookingRepository.getHotelBookingDraft(hotelId.toString())
-            val rooms = hotelRepo.getHotelRooms(hotelId)
+            val draft = bookingDraft
+            val checkIn = draft?.checkInDate ?: 0L
+            val checkOut = draft?.checkOutDate ?: 0L
+
+            val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut)
             
             // Calculate night count
-            val nightCount = bookingDraft?.let { draft ->
-                if (draft.checkInDate != null && draft.checkOutDate != null) {
-                    ((draft.checkOutDate!! - draft.checkInDate!!) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
-                } else 1
-            } ?: 1
+            val nightCount = if (checkIn != 0L && checkOut != 0L) {
+                ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
+            } else 1
 
             _uiState.update {
                 it.copy(
@@ -99,13 +101,17 @@ class HotelRoomSelectionViewModel @Inject constructor(
 
     private fun onNextClick() {
         val selectedRoomId = _uiState.value.selectedRoomId ?: return
+        val draft = bookingDraft
+        val checkIn = draft?.checkInDate ?: 0L
+        val checkOut = draft?.checkOutDate ?: 0L
+
         viewModelScope.launch {
-            // Real-time reservation
-            hotelRepo.reserveRoom(hotelId, selectedRoomId)
+            // Real-time reservation considering dates
+            hotelRepo.reserveRoom(hotelId, selectedRoomId, checkIn, checkOut)
             
             // Update booking draft
-            bookingDraft?.let { draft ->
-                val updatedDraft = draft.copy(roomId = selectedRoomId.toString())
+            draft?.let { 
+                val updatedDraft = it.copy(roomId = selectedRoomId.toString())
                 bookingRepository.saveHotelBookingDraft(updatedDraft)
             }
         }
