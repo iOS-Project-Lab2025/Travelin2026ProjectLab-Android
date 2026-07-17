@@ -48,7 +48,7 @@ class ProfileViewModelTest {
     @Test
     fun `given success when loadProfile then state is updated to Success`() = runTest {
         // GIVEN: The use case returns success
-        val profile = UserProfile("John", 10, "url", "Location")
+        val profile = UserProfile("John", "Doe", 10, "url", location = "Location")
         coEvery { getProfileUseCase() } returns Result.success(profile)
 
         // WHEN: ViewModel is initialized (it calls loadProfile in init)
