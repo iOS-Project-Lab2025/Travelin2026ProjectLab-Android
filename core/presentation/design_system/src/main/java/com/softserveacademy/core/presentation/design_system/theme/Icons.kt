@@ -230,3 +230,7 @@ val SuccessIcon: ImageVector
 val WarningIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_warning)
+
+val Bag: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_bag)

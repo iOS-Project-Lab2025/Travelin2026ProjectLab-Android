@@ -7,4 +7,7 @@
     <string name="amenity_gym">Gym</string>
     <string name="amenity_ac">Air Conditioning</string>
     <string name="amenity_room_service">Room Service</string>
+    <string name="logo_part_travel">Travel</string>
+    <string name="logo_part_in">in</string>
+    <string name="splash_tagline">Your Passport to Seamless Adventures!</string>
 </resources>

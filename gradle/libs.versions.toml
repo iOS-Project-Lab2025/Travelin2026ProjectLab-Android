@@ -29,6 +29,7 @@ kotlinSerialization = "1.7.3"
 ##Added for testing purpose
 mockk = "1.13.13"
 robolectric = "4.14.1"
+coreSplashscreen = "1.2.0"
 
 coil = "3.3.0"
 uiToolingPreview = "1.11.4"
@@ -70,6 +71,8 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 ##Added for feature of NavGraph
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 multidex = { group = "com.android.support", name = "multidex", version.ref = "multidex" }
@@ -85,6 +88,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", vers
 ##Added for testing purpose
 [bundles]
 testing-stack = ["junit", "mockk", "robolectric", "kotlinx-coroutines-test"]
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
