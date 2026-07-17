@@ -48,6 +48,9 @@ sealed interface Routes {
     data object ProfileScreen : Routes
 
     @Serializable
+    data object EditProfileScreen : Routes
+
+    @Serializable
     data class TravelHotelDetailScreen(val id: Int) : Routes
 
     @Serializable

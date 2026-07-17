@@ -19,8 +19,7 @@ class GetProfileUseCaseTest {
 
     @Test
     fun `given valid profile when invoke then returns success with profile`() = runTest {
-        // GIVEN: The repository returns a valid profile
-        val profile = UserProfile("John", 10, "url", "Location")
+        val profile = UserProfile("John", "Doe", 10, "url", location = "Location")
         coEvery { repository.getProfile() } returns Result.success(profile)
 
         // WHEN: The use case is invoked

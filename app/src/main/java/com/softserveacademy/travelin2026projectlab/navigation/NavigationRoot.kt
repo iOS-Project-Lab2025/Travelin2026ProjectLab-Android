@@ -17,7 +17,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.toRoute
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
+import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
+import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
@@ -184,11 +186,25 @@ fun NavGraphBuilder.mainGraph(
                         popUpTo(Routes.MainGraph) { inclusive = true }
                     }
                 },
+                onEditProfileClick = {
+                    navController.navigate(Routes.EditProfileScreen)
+                },
                 onHomeClick = {
                     navController.navigate(Routes.TravelHomeScreen) {
                         popUpTo(Routes.TravelHomeScreen) { inclusive = true }
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable<Routes.EditProfileScreen> {
+            val viewModel: EditProfileViewModel = hiltViewModel()
+            EditProfileScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onSaveSuccess = {
+                    navController.popBackStack()
                 }
             )
         }

@@ -4,6 +4,7 @@ import com.softserveacademy.feature.auth.common.domain.usecase.LogoutUseCase
 import com.softserveacademy.feature.auth.common.domain.SessionRepository
 import com.softserveacademy.home.domain.repository.ProfileRepository
 import com.softserveacademy.home.domain.usecases.GetProfileUseCase
+import com.softserveacademy.home.domain.usecases.UpdateProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +27,17 @@ object ProfileModule {
         profileRepository: ProfileRepository
     ): GetProfileUseCase {
         return GetProfileUseCase(profileRepository)
+    }
+
+    /**
+     * Provides the [UpdateProfileUseCase] dependency.
+     */
+    @Provides
+    @ViewModelScoped
+    fun provideUpdateProfileUseCase(
+        profileRepository: ProfileRepository
+    ): UpdateProfileUseCase {
+        return UpdateProfileUseCase(profileRepository)
     }
 
     /**
