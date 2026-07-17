@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
     implementation(projects.feature.booking.domain)
     implementation(projects.core.presentation.designSystem)
 

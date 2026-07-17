@@ -15,4 +15,11 @@
 
     <string name="booking_error_select_dates">Please select check-in and check-out dates</string>
     <string name="booking_error_at_least_one_adult">At least one adult is required</string>
+
+    <string name="room_selection_title">Choose your room</string>
+    <string name="filter_available">Available</string>
+    <string name="filter_all">All</string>
+    <string name="filter_1_bed">1 Bed</string>
+    <string name="filter_2_beds">2 Beds</string>
+    <string name="empty_rooms_message">No rooms available for the selected criteria.</string>
 </resources>
