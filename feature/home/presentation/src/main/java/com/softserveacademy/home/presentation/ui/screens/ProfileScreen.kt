@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     onNavigateBack: () -> Unit,
+    onEditProfileClick: () -> Unit,
     onLogoutSuccess: () -> Unit,
     onHomeClick: () -> Unit
 ) {
@@ -55,11 +56,15 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadProfile()
+    }
+
     ProfileContent(
         state = viewModel.state,
         currentTheme = viewModel.currentTheme,
         onNavigateBack = onNavigateBack,
-        onEditProfileClick = viewModel::onEditProfileClick,
+        onEditProfileClick = onEditProfileClick,
         onLogoutClick = { showLogoutDialog = true },
         onThemeClick = { showThemeDialog = true },
         onRetry = viewModel::loadProfile,
@@ -474,7 +479,7 @@ fun ProfileScreenPreview() {
     Travelin2026ProjectLabTheme {
         ProfileContent(
             state = ProfileState.Success(
-                UserProfile("John Doe", 100, "", "Mars, Solar System")
+                UserProfile("John", "Doe", 100, "", location = "Mars, Solar System")
             ),
             currentTheme = AppTheme.SYSTEM,
             onNavigateBack = {},
@@ -493,7 +498,7 @@ fun ProfileScreenDarkPreview() {
     Travelin2026ProjectLabTheme {
         ProfileContent(
             state = ProfileState.Success(
-                UserProfile("John Doe", 100, "", "Mars, Solar System")
+                UserProfile("John", "Doe", 100, "", location = "Mars, Solar System")
             ),
             currentTheme = AppTheme.SYSTEM,
             onNavigateBack = {},

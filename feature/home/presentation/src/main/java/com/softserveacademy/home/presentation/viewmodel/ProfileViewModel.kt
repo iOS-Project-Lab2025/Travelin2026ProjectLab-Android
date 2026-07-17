@@ -74,13 +74,6 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-    
-    /**
-     * Handles the edit profile action.
-     */
-    fun onEditProfileClick() {
-        // Mocked for now
-    }
 
     /**
      * Updates the application theme preference.
