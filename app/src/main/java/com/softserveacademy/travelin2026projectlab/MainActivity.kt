@@ -8,13 +8,16 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.softserveacademycore.presentation.ui.splash.SplashScreen
+import com.softserveacademy.feature.auth.common.data.SessionRepositoryImpl
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.core.domain.usecase.GetThemeUseCase
@@ -32,6 +35,8 @@ import com.softserveacademy.travelin2026projectlab.navigation.NavigationRoot
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.getValue
+import com.softserveacademy.core.data.repository.CorePreferencesRepositoryImpl
+import com.softserveacademycore.presentation.ui.splash.SplashViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -45,6 +50,13 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var getThemeUseCase: GetThemeUseCase
 
+
+   //for splash screen in core state preferences
+    private val corePreferencesRepository by lazy { CorePreferencesRepositoryImpl(dataStore) }
+
+    // Create the "splash screen brain" and decides where to go
+    private val splashViewModel by lazy { SplashViewModel(corePreferencesRepository) }
+    private val sessionRepository by lazy { SessionRepositoryImpl(dataStore) }
     private val loginRepository by lazy { LoginRepositoryImpl(dataStore) }
     private val registerRepository by lazy { RegisterRepositoryImpl(dataStore) }
 
@@ -70,13 +82,33 @@ class MainActivity : ComponentActivity() {
             Travelin2026ProjectLabTheme(darkTheme = darkTheme) {
                 val isLoggedIn by checkSessionUseCase().collectAsState(initial = null)
 
+                // creating a local state to control splash visual
+                var showSplash by remember { mutableStateOf(true) }
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
 
-                        if (isLoggedIn == null) {
+
+                        /**
+                         * This guarantees the user watch the logo during the setted time we defined in SplashViewModel
+                         * and do not desapear until we know if user is logged or not
+                         */
+
+                        if (showSplash || isLoggedIn == null) {
+                            // MIENTRAS estemos en tiempo de Splash O cargando sesión,
+                            // mostramos la pantalla azul con tu logo.
+                            SplashScreen(
+                                viewModel = splashViewModel,
+                                onNavigateToOnboarding = { showSplash = false },
+                                onNavigateToHome = { showSplash = false }
+                            )
+
+
+                        /*if (isLoggedIn == null) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 CircularProgressIndicator()
-                            }
+                            }*/
+
                         } else {
                             val navController = rememberNavController()
 
