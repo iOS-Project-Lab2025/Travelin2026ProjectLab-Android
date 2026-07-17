@@ -5,7 +5,7 @@ import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.IncludedItem
-import com.softserveacademy.core.domain.model.UpcomingTrip
+import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.domain.model.UserProfile
 import com.softserveacademy.home.domain.repository.HomeRepository
 import kotlinx.coroutines.delay
@@ -72,7 +72,7 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getUpcomingTrip(): Result<UpcomingTrip?> {
+    override suspend fun getUpcomingTrip(): Result<Trip?> {
         TODO("Not yet implemented")
     }
 
