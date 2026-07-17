@@ -27,7 +27,8 @@ import com.softserveacademy.feature.booking.presentation.R
 fun TravelBookingBottomBar(
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    nextButtonEnabled: Boolean = true
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -50,6 +51,7 @@ fun TravelBookingBottomBar(
                 text = stringResource(R.string.next_button_label),
                 onClick = onNextClick,
                 variant = PrimaryButtonVariant.CallToAction,
+                enabled = nextButtonEnabled,
                 modifier = Modifier.weight(1f)
             )
         }

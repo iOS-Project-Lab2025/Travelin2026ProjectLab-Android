@@ -1,4 +1,9 @@
 package com.softserveacademy.travelin2026projectlab.navigation
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
@@ -24,6 +29,7 @@ import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
+import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
 
 /**
  * Root navigation host for the application.
@@ -225,6 +231,7 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
         startDestination = Routes.HotelBookingSearchScreen(hotelId = 0)
     ) {
         composable<Routes.HotelBookingSearchScreen> { backStackEntry ->
+            val route: Routes.HotelBookingSearchScreen = backStackEntry.toRoute()
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Routes.BookingGraph)
             }
@@ -232,8 +239,28 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
             HotelBookingSearchScreen(
                 onBackClick = { navController.popBackStack() },
+                onNextClick = { 
+                    navController.navigate(Routes.HotelRoomSelectionScreen(hotelId = route.hotelId)) 
+                },
                 viewModel = viewModel
             )
+        }
+
+        composable<Routes.HotelRoomSelectionScreen> { backStackEntry ->
+            val route: Routes.HotelRoomSelectionScreen = backStackEntry.toRoute()
+            HotelRoomSelectionScreen(
+                onBackClick = { navController.popBackStack() },
+                onRoomSelected = {
+                    navController.navigate(Routes.GuestInformationScreen(hotelId = route.hotelId))
+                }
+            )
+        }
+
+        composable<Routes.GuestInformationScreen> {
+            // Placeholder for guest information screen
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Guest Information Screen Placeholder")
+            }
         }
     }
 }

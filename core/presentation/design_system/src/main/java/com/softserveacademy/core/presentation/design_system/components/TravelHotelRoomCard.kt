@@ -73,7 +73,7 @@ fun TravelHotelRoomCard(
                 images = room.images,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(TravelinDimens.ImageSizeLarge)
+                    .height(160.dp)
             )
 
             Column(

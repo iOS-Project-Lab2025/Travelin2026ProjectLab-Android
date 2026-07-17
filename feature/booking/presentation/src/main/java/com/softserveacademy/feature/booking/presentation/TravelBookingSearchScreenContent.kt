@@ -36,9 +36,10 @@ import java.util.TimeZone
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TravelBookingSearchScreenContent(
+    modifier: Modifier = Modifier,
     state: TravelBookingSearchState,
     onEvent: (TravelBookingSearchEvent) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToRoomSelection: () -> Unit = {},
 ) {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val dateRangePickerState = rememberDateRangePickerState(
@@ -118,7 +119,12 @@ fun TravelBookingSearchScreenContent(
             onAdultsChange = { onEvent(TravelBookingSearchEvent.OnAdultsCountChange(it)) },
             onKidsChange = { onEvent(TravelBookingSearchEvent.OnChildrenCountChange(it)) },
             onHasPetsChange = { onEvent(TravelBookingSearchEvent.OnHasPetsChange(it)) },
-            onAccept = { onEvent(TravelBookingSearchEvent.OnAcceptGuests) },
+            onAccept = { 
+                onEvent(TravelBookingSearchEvent.OnAcceptGuests)
+                if (state.isGuestErrorVisible.not() && state.isDateErrorVisible.not()) {
+                    onNavigateToRoomSelection()
+                }
+            },
             onDismissRequest = { onEvent(TravelBookingSearchEvent.OnDismissGuestBottomSheet) },
             isErrorVisible = state.isGuestErrorVisible,
             errorMessage = state.guestErrorMessage?.let { stringResource(it) }
