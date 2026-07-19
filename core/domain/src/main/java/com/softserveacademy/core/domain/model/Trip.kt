@@ -1,7 +1,5 @@
 package com.softserveacademy.core.domain.model
 
-import java.time.LocalDate
-
 /**
  * Represents a travel itinerary for a user.
  *
@@ -11,8 +9,8 @@ import java.time.LocalDate
  *
  * @property id Unique identifier of the trip.
  * @property destination Destination associated with the trip.
- * @property startDate Start date of the trip.
- * @property endDate End date of the trip.
+ * @property startDate Start date of the trip (epoch millis).
+ * @property endDate End date of the trip (epoch millis).
  * @property flights Flight bookings included in the trip.
  * @property hotel Hotel booking associated with the trip, if any.
  * @property tours Tour bookings included in the trip, if any.
@@ -20,8 +18,8 @@ import java.time.LocalDate
 data class Trip(
     val id: String,
     val destination: Destination,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val startDate: Long,
+    val endDate: Long,
 
     val flights: List<FlightBooking>,
     val hotel: HotelBooking?,

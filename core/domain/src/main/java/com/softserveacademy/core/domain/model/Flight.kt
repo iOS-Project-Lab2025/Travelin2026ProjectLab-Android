@@ -1,6 +1,5 @@
 package com.softserveacademy.core.domain.model
 
-import java.time.LocalDateTime
 import kotlin.time.Duration
 
 /**
@@ -14,8 +13,8 @@ import kotlin.time.Duration
  * @property flightNumber Flight number assigned by the airline.
  * @property origin Departure airport.
  * @property destination Arrival airport.
- * @property departureTime Scheduled departure date and time.
- * @property arrivalTime Scheduled arrival date and time.
+ * @property departureTime Scheduled departure date and time (epoch millis).
+ * @property arrivalTime Scheduled arrival date and time (epoch millis).
  * @property duration Total flight duration.
  * @property cabinClass Travel cabin class.
  */
@@ -27,8 +26,8 @@ data class Flight(
     val origin: Airport,
     val destination: Airport,
 
-    val departureTime: LocalDateTime,
-    val arrivalTime: LocalDateTime,
+    val departureTime: Long,
+    val arrivalTime: Long,
 
     val duration: Duration,
 
