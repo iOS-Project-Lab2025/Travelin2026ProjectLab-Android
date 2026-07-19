@@ -1,6 +1,6 @@
 package com.softserveacademy.home.presentation.viewmodel
 
-import com.softserveacademy.home.domain.repository.HomeRepository
+import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -23,13 +23,13 @@ import org.junit.Test
 class HotelDetailsViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val homeRepository = mockk<HomeRepository>()
+    private val hotelRepo = mockk<HotelRepo>()
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = HotelDetailsViewModel(homeRepository)
+        viewModel = HotelDetailsViewModel(hotelRepo)
     }
 
     @After
@@ -41,7 +41,7 @@ class HotelDetailsViewModelTest {
     fun `given error when getHotelDetail is called then state is updated to Error`() = runTest {
         // GIVEN: The repository throws an exception
         val errorMessage = "Network Error"
-        coEvery { homeRepository.getHotelDetailsById(any()) } throws Exception(errorMessage)
+        coEvery { hotelRepo.getHotelById(any()) } throws Exception(errorMessage)
 
         // WHEN: getHotelDetail is called
         viewModel.getHotelDetail(1)
@@ -55,7 +55,7 @@ class HotelDetailsViewModelTest {
     @Test
     fun `given null message exception when getHotelDetail is called then state is updated to Error with null message`() = runTest {
         // GIVEN: The repository throws an exception without a message
-        coEvery { homeRepository.getHotelDetailsById(any()) } throws Exception()
+        coEvery { hotelRepo.getHotelById(any()) } throws Exception()
 
         // WHEN: getHotelDetail is called
         viewModel.getHotelDetail(1)

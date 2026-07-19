@@ -2,8 +2,10 @@ package com.softserveacademy.core.data.repository
 
 import com.softserveacademy.core.data.R
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.model.HotelRoomAmenity
+import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.domain.repository.HotelRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,41 +30,56 @@ data class Booking(
 @Singleton
 class HotelRepoImpl @Inject constructor() : HotelRepo {
     private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
-    private val _hotels = MutableStateFlow(listOf(
-        Hotel(
+    
+    private val _hotelDetails = MutableStateFlow(listOf(
+        HotelDetails(
             id = 1,
-            name = "Swiss-Belhotel Rainforest",
+            minimumPrice = 400,
+            imageList = previewImages,
+            name = "Koh Rong Samloem",
             address = "Jl. Sunset Road No. 101, Kuta, Bali, Indonesia",
             star = 4,
-            userRating = 4.5,
-            pricePerNight = 50,
             image = R.drawable.test_place,
-            imagesList = previewImages,
+            numberOfReviews = 30,
+            rating = 3.6,
+            description = "A stunning island destination known for its white sandy beaches and crystal clear waters.",
+            includedItems = listOf(
+                IncludedItem.BuffetBreakfast,
+                IncludedItem.FreeWifi,
+                IncludedItem.Pool
+            ),
             rooms = createMockRooms(1)
         ),
-        Hotel(
+        HotelDetails(
             id = 2,
+            minimumPrice = 800,
+            imageList = previewImages1,
             name = "Discovery Kartika Plaza",
             address = "Jl. Kartika Plaza, Kuta, Bali",
             star = 5,
-            userRating = 1.5,
-            pricePerNight = 120,
             image = R.drawable.test_hotel,
-            imagesList = previewImages1,
+            numberOfReviews = 13,
+            rating = 1.6,
+            description = "A luxurious beachfront resort in Bali with world-class facilities and breathtaking views.",
+            includedItems = listOf(
+                IncludedItem.BuffetBreakfast,
+                IncludedItem.FreeWifi,
+                IncludedItem.Pool
+            ),
             rooms = createMockRooms(2)
         )
     ))
 
-    override suspend fun getHotelById(id: Int?): Hotel {
-        return _hotels.value.find { it.id == id } ?: _hotels.value.first()
+    override suspend fun getHotelById(id: Int): HotelDetails {
+        return _hotelDetails.value.find { it.id == id } ?: _hotelDetails.value.first()
     }
 
     override suspend fun getHotels(): List<Hotel> {
-        return _hotels.value
+        return _hotelDetails.value.map { it.toSummary() }
     }
 
     override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long): List<HotelRoom> {
-        val baseRooms = _hotels.value.find { it.id == hotelId }?.rooms ?: emptyList()
+        val baseRooms = _hotelDetails.value.find { it.id == hotelId }?.rooms ?: emptyList()
         return baseRooms.map { room ->
             val bookedCount = _bookings.value.count { booking ->
                 booking.roomId == room.id && 
