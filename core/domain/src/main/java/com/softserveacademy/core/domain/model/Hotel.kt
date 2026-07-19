@@ -21,7 +21,7 @@ data class Hotel(
     val star: Int? = null,
     val userRating: Double? = null,
     val pricePerNight: Int,
-    val image: Int,
+    val image: List<String>,
     val imagesList: List<String> = emptyList(),
     val rooms: List<HotelRoom> = emptyList()
 )

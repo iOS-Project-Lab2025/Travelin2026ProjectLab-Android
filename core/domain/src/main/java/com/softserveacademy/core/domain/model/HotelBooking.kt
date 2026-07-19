@@ -1,7 +1,5 @@
 package com.softserveacademy.core.domain.model
 
-import java.time.LocalDate
-
 /**
  * Represents a user's hotel reservation.
  *
@@ -11,17 +9,19 @@ import java.time.LocalDate
  * @property bookingId Unique identifier of the booking.
  * @property hotel Hotel associated with this booking.
  * @property roomType Type of room reserved (e.g. "Standard", "Deluxe", "Suite").
- * @property checkIn Scheduled check-in date.
- * @property checkOut Scheduled check-out date.
+ * @property checkIn Scheduled check-in date (epoch millis).
+ * @property checkOut Scheduled check-out date (epoch millis).
  * @property guests Number of guests included in the reservation.
  * @property confirmationCode Hotel or provider confirmation code.
+ * @property status Current status of the booking.
  */
 data class HotelBooking(
     val bookingId: String,
     val hotel: Hotel,
     val roomType: String,
-    val checkIn: LocalDate,
-    val checkOut: LocalDate,
+    val checkIn: Long,
+    val checkOut: Long,
     val guests: Int,
-    val confirmationCode: String
+    val confirmationCode: String,
+    val status: BookingStatus
 )
