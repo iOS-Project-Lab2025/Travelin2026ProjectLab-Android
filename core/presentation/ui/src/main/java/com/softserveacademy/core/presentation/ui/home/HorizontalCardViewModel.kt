@@ -31,9 +31,9 @@ class HorizontalCardViewModel @Inject constructor(
                 HorizontalCardState.IsLoading(true)
             }
             try {
-                val hotel = hotelRepo.getHotelById(id)
+                val hotelDetails = hotelRepo.getHotelById(id ?: 1)
                 _horizontalCardState.update {
-                    HorizontalCardState.Data(hotel)
+                    HorizontalCardState.Data(hotelDetails.toSummary())
                 }
             } catch (e: Exception) {
                 _horizontalCardState.update {

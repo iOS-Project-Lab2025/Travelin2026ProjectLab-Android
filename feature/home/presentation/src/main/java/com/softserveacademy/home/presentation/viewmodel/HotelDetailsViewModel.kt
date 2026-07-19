@@ -2,7 +2,7 @@ package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.home.domain.repository.HomeRepository
+import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HotelDetailsViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val hotelRepo: HotelRepo
 ) : ViewModel() {
     private val _hotelDetailState = MutableStateFlow(HotelDetailState.IsLoading() as HotelDetailState)
     val hotelDetailState = _hotelDetailState.asStateFlow()
@@ -24,7 +24,7 @@ class HotelDetailsViewModel @Inject constructor(
                 HotelDetailState.IsLoading(true)
             }
             try {
-                val hotelDetails = homeRepository.getHotelDetailsById(id)
+                val hotelDetails = hotelRepo.getHotelById(id)
                 _hotelDetailState.update {
                     HotelDetailState.Data(hotelDetails)
                 }
