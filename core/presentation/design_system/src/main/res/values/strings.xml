@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="logo_part_travel">Travel</string>
-    <string name="logo_part_in">in</string>
-    <string name="splash_tagline">Your Passport to Seamless Adventures!</string>
-    
     <string name="amenity_wifi">Free Wi-Fi</string>
     <string name="amenity_breakfast">Breakfast</string>
     <string name="amenity_parking">Parking</string>

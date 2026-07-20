@@ -11,4 +11,6 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.feature.onboarding.domain)
     implementation(projects.core.data)
+
+    testImplementation(libs.bundles.testing.stack)
 }
