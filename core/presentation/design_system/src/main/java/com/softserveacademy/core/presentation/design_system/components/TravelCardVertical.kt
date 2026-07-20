@@ -19,11 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.Hotel
-import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.theme.StarIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -45,13 +45,13 @@ fun TravelCardVertical(
         modifier = Modifier
             .height(240.dp)
             .width(180.dp)
+            .shadow(elevation = TravelinDimens.ElevationMedium, shape = MaterialTheme.shapes.medium)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.background)
             .clickable { onClick(hotel) }
     ) {
-        // Add image and modify his size.
         TravelImageHandler(
-            image = hotel.image,
+            image = hotel.image.first(),
             imageWidth = 180.dp,
             imageHeight = TravelinDimens.ImageSizeLarge,
             shouldClip = false
@@ -152,7 +152,7 @@ fun TravelCardVerticalPreview() {
         address = "Volcano in East Java",
         userRating = 4.9,
         pricePerNight = 150,
-        image = R.drawable.test_place
+        image = listOf("https://picsum.photos/200")
     )
     Travelin2026ProjectLabTheme(darkTheme = false) {
         TravelCardVertical(hotel = hotelExample)

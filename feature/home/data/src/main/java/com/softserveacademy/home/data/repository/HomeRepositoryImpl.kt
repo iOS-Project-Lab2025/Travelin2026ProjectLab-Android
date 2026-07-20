@@ -13,6 +13,10 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Implementation of [HomeRepository] providing home screen data.
+ * Currently uses mock data.
+ */
 class HomeRepositoryImpl @Inject constructor() : HomeRepository {
 
     val hotelDetailExampleData = listOf(

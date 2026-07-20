@@ -48,7 +48,8 @@ object HomeMockData {
     }
 
     val user = UserProfile(
-        name = "John Doe",
+        firstName = "John",
+        lastName = "Doe",
         points = 1280,
         avatarUrl = "https://i.pravatar.cc/300",
         location = "Santiago, Chile"

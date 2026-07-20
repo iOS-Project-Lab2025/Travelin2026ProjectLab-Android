@@ -1,6 +1,5 @@
 package com.softserveacademy.core.data.repository
 
-import com.softserveacademy.core.data.R
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.model.HotelRoomAmenity
@@ -36,7 +35,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             star = 4,
             userRating = 4.5,
             pricePerNight = 50,
-            image = R.drawable.test_place,
+            image = previewImages,
             imagesList = previewImages,
             rooms = createMockRooms(1)
         ),
@@ -47,7 +46,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             star = 5,
             userRating = 1.5,
             pricePerNight = 120,
-            image = R.drawable.test_hotel,
+            image = previewImages1,
             imagesList = previewImages1,
             rooms = createMockRooms(2)
         )

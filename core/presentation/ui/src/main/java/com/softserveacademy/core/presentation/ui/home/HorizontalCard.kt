@@ -11,7 +11,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.shapes
-import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 
@@ -60,7 +59,7 @@ fun HorizontalCardPreview() {
         address = "Jl. Sunset Road No. 101, Kuta, Bali , Indonesia",
         star = 4,
         pricePerNight = 50,
-        image = R.drawable.test_hotel
+        image = listOf("https://picsum.photos/200")
     )
 
     Travelin2026ProjectLabTheme(darkTheme = true) {
