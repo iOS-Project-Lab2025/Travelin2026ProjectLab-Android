@@ -1,5 +1,6 @@
 package com.softserveacademy.core.presentation.design_system.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -23,10 +25,12 @@ import coil3.compose.AsyncImage
  * creating a dynamic and visually appealing gallery.
  *
  * @param images A list of image URLs to be displayed in the grid.
+ * @param onImageClick Callback when an image is clicked, passing its index.
  */
 @Composable
 fun HotelGalleryScreen(
     images: List<String>,
+    onImageClick: (Int) -> Unit = {}
 ) {
 
     LazyVerticalStaggeredGrid(
@@ -40,7 +44,8 @@ fun HotelGalleryScreen(
 
             GalleryItem(
                 imageUrl = image,
-                index = index
+                index = index,
+                onClick = { onImageClick(index) }
             )
         }
     }
@@ -53,11 +58,13 @@ fun HotelGalleryScreen(
  *
  * @param imageUrl The URL of the image to display.
  * @param index The position of the item in the list, used to determine its display height.
+ * @param onClick Callback when the item is clicked.
  */
 @Composable
 fun GalleryItem(
     imageUrl: String,
-    index: Int
+    index: Int,
+    onClick: () -> Unit = {}
 ) {
 
     val height = when (index % 4) {
@@ -73,8 +80,11 @@ fun GalleryItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .clip(RoundedCornerShape(12.dp)),
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick),
         contentScale = ContentScale.Crop,
+        placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+        error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
         onSuccess = {
             android.util.Log.d("GalleryHotel", "Loaded")
         },
