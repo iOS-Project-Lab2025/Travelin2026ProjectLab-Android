@@ -2,4 +2,16 @@
 <resources>
 
     <style name="Theme.Travelin2026ProjectLab" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Tema para la Splash Screen de Sistema (Android 12+) -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- El fondo de la splash de sistema (igual al de tu Compose Splash) -->
+        <item name="windowSplashScreenBackground">@color/primary_travelin</item>
+        <!-- El logo que se verá al centro (tu branding) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <!-- Cuánto tiempo mostrarla (opcional) -->
+        <item name="windowSplashScreenAnimationDuration">100</item>
+        <!-- Tema al que cambiará cuando la app cargue -->
+        <item name="postSplashScreenTheme">@style/Theme.Travelin2026ProjectLab</item>
+    </style>
 </resources>
