@@ -36,9 +36,9 @@ import java.util.TimeZone
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TravelBookingSearchScreenContent(
+    modifier: Modifier = Modifier,
     state: TravelBookingSearchState,
     onEvent: (TravelBookingSearchEvent) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val dateRangePickerState = rememberDateRangePickerState(

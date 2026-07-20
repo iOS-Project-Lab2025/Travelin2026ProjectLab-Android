@@ -48,6 +48,9 @@ sealed interface Routes {
     data object ProfileScreen : Routes
 
     @Serializable
+    data object EditProfileScreen : Routes
+
+    @Serializable
     data class TravelHotelDetailScreen(val id: Int) : Routes
 
     @Serializable
@@ -58,4 +61,10 @@ sealed interface Routes {
 
     @Serializable
     data class HotelBookingSearchScreen(val hotelId: Int) : Routes
+
+    @Serializable
+    data class HotelRoomSelectionScreen(val hotelId: Int) : Routes
+
+    @Serializable
+    data class GuestInformationScreen(val hotelId: Int) : Routes
 }

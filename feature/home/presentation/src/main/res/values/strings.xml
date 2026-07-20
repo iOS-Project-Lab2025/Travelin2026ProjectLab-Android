@@ -23,6 +23,10 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_system">Same as system</string>
 
+    <!-- HomeScreen sections -->
+    <string name="journey_together_title">Journey together</string>
+    <string name="hotels_recommendation_title">Hotels recommendation for you</string>
+
     <!-- TravelHotelDetailScreen -->
     <string name="about_label">About</string>
     <string name="read_more_label">Read more</string>

@@ -5,6 +5,11 @@ plugins {
 
 android {
     namespace = "com.softserveacademy.home.presentation"
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {

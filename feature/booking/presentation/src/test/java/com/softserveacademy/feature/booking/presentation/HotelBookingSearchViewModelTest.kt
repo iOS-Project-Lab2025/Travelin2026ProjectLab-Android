@@ -128,7 +128,7 @@ class HotelBookingSearchViewModelTest {
     }
 
     @Test
-    fun `onAcceptGuests dismisses sheet on success`() = runTest {
+    fun `onAcceptGuests dismisses sheet and sets validation success on success`() = runTest {
         viewModel.onEvent(TravelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
         viewModel.onEvent(TravelBookingSearchEvent.OnNextClick)
         
@@ -138,5 +138,19 @@ class HotelBookingSearchViewModelTest {
         val state = viewModel.uiState.value
         assertFalse(state.isGuestErrorVisible)
         assertFalse(state.showGuestBottomSheet)
+        assertTrue(viewModel.validationSuccess.value)
+    }
+
+    @Test
+    fun `resetValidationStatus sets validation success to false`() = runTest {
+        viewModel.onEvent(TravelBookingSearchEvent.OnDateRangeSelected(100L, 200L))
+        viewModel.onEvent(TravelBookingSearchEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingSearchEvent.OnAdultsCountChange(2))
+        viewModel.onEvent(TravelBookingSearchEvent.OnAcceptGuests)
+        
+        assertTrue(viewModel.validationSuccess.value)
+        
+        viewModel.resetValidationStatus()
+        assertFalse(viewModel.validationSuccess.value)
     }
 }

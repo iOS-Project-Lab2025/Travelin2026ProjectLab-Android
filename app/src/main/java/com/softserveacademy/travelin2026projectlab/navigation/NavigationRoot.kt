@@ -1,4 +1,9 @@
 package com.softserveacademy.travelin2026projectlab.navigation
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
@@ -17,13 +22,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.toRoute
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
+import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
+import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
-import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
+import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
 
 /**
  * Root navigation host for the application.
@@ -161,7 +169,7 @@ fun NavGraphBuilder.mainGraph(
     ) {
 
         composable<Routes.TravelHomeScreen> {
-            TravelHomeScreen(
+            RootHomeScreen(
                 onHotelClick = { hotel ->
                     navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
                 },
@@ -184,11 +192,25 @@ fun NavGraphBuilder.mainGraph(
                         popUpTo(Routes.MainGraph) { inclusive = true }
                     }
                 },
+                onEditProfileClick = {
+                    navController.navigate(Routes.EditProfileScreen)
+                },
                 onHomeClick = {
                     navController.navigate(Routes.TravelHomeScreen) {
                         popUpTo(Routes.TravelHomeScreen) { inclusive = true }
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable<Routes.EditProfileScreen> {
+            val viewModel: EditProfileViewModel = hiltViewModel()
+            EditProfileScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onSaveSuccess = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -225,6 +247,7 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
         startDestination = Routes.HotelBookingSearchScreen(hotelId = 0)
     ) {
         composable<Routes.HotelBookingSearchScreen> { backStackEntry ->
+            val route: Routes.HotelBookingSearchScreen = backStackEntry.toRoute()
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Routes.BookingGraph)
             }
@@ -232,8 +255,28 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
             HotelBookingSearchScreen(
                 onBackClick = { navController.popBackStack() },
+                onNavigateToRoomSelection = {
+                    navController.navigate(Routes.HotelRoomSelectionScreen(hotelId = route.hotelId)) 
+                },
                 viewModel = viewModel
             )
+        }
+
+        composable<Routes.HotelRoomSelectionScreen> { backStackEntry ->
+            val route: Routes.HotelRoomSelectionScreen = backStackEntry.toRoute()
+            HotelRoomSelectionScreen(
+                onBackClick = { navController.popBackStack() },
+                onRoomSelected = {
+                    navController.navigate(Routes.GuestInformationScreen(hotelId = route.hotelId))
+                }
+            )
+        }
+
+        composable<Routes.GuestInformationScreen> {
+            // Placeholder for guest information screen
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Guest Information Screen Placeholder")
+            }
         }
     }
 }

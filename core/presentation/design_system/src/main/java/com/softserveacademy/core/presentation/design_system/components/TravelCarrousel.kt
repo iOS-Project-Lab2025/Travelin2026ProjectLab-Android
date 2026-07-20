@@ -1,6 +1,5 @@
 package com.softserveacademy.core.presentation.design_system.components
 
-import com.softserveacademy.core.presentation.design_system.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
@@ -53,21 +52,21 @@ fun TravelCarouselPreview() {
             userRating = 4.9,
             pricePerNight = 150,
             //An example picture has been added to Res/drawables
-            image = R.drawable.test_place
+            image = listOf("https://picsum.photos/200")
         ),
         Hotel(
             name = "Swiss-Belhotel Rainforest",
             address = "Kuta, Bali, Indonesia",
             userRating = 4.5,
             pricePerNight = 50,
-            image = R.drawable.test_place
+            image = listOf("https://picsum.photos/200")
         ),
         Hotel(
             name = "Tokyo Adventure Resort",
             address = "Tokyo, Japan",
             userRating = 4.8,
             pricePerNight = 200,
-            image = R.drawable.test_place
+            image = listOf("https://picsum.photos/200")
         )
     )
 

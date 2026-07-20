@@ -5,13 +5,18 @@ import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.IncludedItem
-import com.softserveacademy.core.domain.model.UpcomingTrip
+import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.home.data.mockdata.HomeMockData
 import com.softserveacademy.home.domain.repository.HomeRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Implementation of [HomeRepository] providing home screen data.
+ * Currently uses mock data.
+ */
 class HomeRepositoryImpl @Inject constructor() : HomeRepository {
 
     val hotelDetailExampleData = listOf(
@@ -69,24 +74,98 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
     )
 
     override suspend fun getUserProfile(): Result<UserProfile> {
-        TODO("Not yet implemented")
+
+        delay(500)
+
+        return Result.success(
+            HomeMockData.user
+        )
     }
 
-    override suspend fun getUpcomingTrip(): Result<UpcomingTrip?> {
-        TODO("Not yet implemented")
+    override suspend fun getUpcomingTrip(): Result<Trip?> {
+
+        delay(700)
+
+        return Result.success(
+            HomeMockData.trip
+        )
     }
 
     override suspend fun getJourneyTogether(): Result<List<Destination>> {
-        TODO("Not yet implemented")
+
+        delay(700)
+
+        return Result.success(
+            HomeMockData.destinations
+        )
     }
 
     override suspend fun getRecommendedHotels(): Result<List<Hotel>> {
-        TODO("Not yet implemented")
-    }
+        delay(700.milliseconds)
 
-    override suspend fun getHotelDetailsById(hotelId: Int): HotelDetails {
-        //TODO("Remove when finish")
-        delay(1000.milliseconds)
-        return  hotelDetailExampleData.find{ it.id == hotelId } ?:  hotelDetailExampleData.first()
+        return Result.success(
+            listOf(
+                Hotel(
+                    id = 1,
+                    name = "Koh Rong Samloem Resort",
+                    address = "Koh Rong Samloem, Cambodia",
+                    star = 5,
+                    userRating = 4.8,
+                    pricePerNight = 400,
+                    image = listOf(
+                        "https://picsum.photos/id/10/800/600",
+                        "https://picsum.photos/id/20/800/600"
+                    )
+                ),
+                Hotel(
+                    id = 2,
+                    name = "Sunset Paradise",
+                    address = "Phuket, Thailand",
+                    star = 4,
+                    userRating = 4.6,
+                    pricePerNight = 280,
+                    image = listOf(
+                        "https://picsum.photos/id/11/800/600",
+                        "https://picsum.photos/id/21/800/600"
+                    )
+                ),
+                Hotel(
+                    id = 3,
+                    name = "Swiss Mountain Lodge",
+                    address = "Zermatt, Switzerland",
+                    star = 5,
+                    userRating = 4.9,
+                    pricePerNight = 650,
+                    image = listOf(
+                        "https://picsum.photos/id/12/800/600",
+                        "https://picsum.photos/id/22/800/600"
+                    )
+                ),
+                Hotel(
+                    id = 4,
+                    name = "Ocean Breeze",
+                    address = "Bali, Indonesia",
+                    star = 4,
+                    userRating = 4.7,
+                    pricePerNight = 320,
+                    image = listOf(
+                        "https://picsum.photos/id/13/800/600",
+                        "https://picsum.photos/id/23/800/600"
+                    )
+                ),
+                Hotel(
+                    id = 5,
+                    name = "The Grand Palace",
+                    address = "Paris, France",
+                    star = 5,
+                    userRating = 4.9,
+                    pricePerNight = 720,
+                    image = listOf(
+                        "https://picsum.photos/id/14/800/600",
+                        "https://picsum.photos/id/24/800/600"
+                    )
+                )
+            )
+        )
     }
 }
