@@ -39,7 +39,7 @@ class SplashScreenTest {
                 SplashScreen(
                     viewModel = viewModel,
                     onNavigateToOnboarding = {},
-                    onNavigateToHome = {}
+                    onNavigateToLogin = {}
                 )
             }
         }
