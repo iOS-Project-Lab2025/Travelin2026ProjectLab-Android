@@ -6,7 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.home.presentation.model.UpcomingTripUi
-import com.softserveacademy.home.presentation.ui.components.UpcomingTripCard
+import com.softserveacademy.home.presentation.ui.components.TravelUpcomingTripCard
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,7 +14,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Pruebas unitarias para el componente [com.softserveacademy.home.presentation.ui.components.UpcomingTripCard] siguiendo el manual de testing
+ * Pruebas unitarias para el componente [com.softserveacademy.home.presentation.ui.components.TravelUpcomingTripCard] siguiendo el manual de testing
  * del proyecto (Plantilla C: Componentes Compose sin emulador).
  */
 @RunWith(RobolectricTestRunner::class)
@@ -48,7 +48,7 @@ class UpcomingTripCardTest {
         // WHEN: Renderizamos el componente en el entorno de prueba
         composeTestRule.setContent {
             Travelin2026ProjectLabTheme {
-                UpcomingTripCard(trip = sampleTrip)
+                TravelUpcomingTripCard(trip = sampleTrip)
             }
         }
 
@@ -69,7 +69,7 @@ class UpcomingTripCardTest {
 
         composeTestRule.setContent {
             Travelin2026ProjectLabTheme {
-                UpcomingTripCard(trip = sampleTrip)
+                TravelUpcomingTripCard(trip = sampleTrip)
             }
         }
 
@@ -87,7 +87,7 @@ class UpcomingTripCardTest {
 
         composeTestRule.setContent {
             Travelin2026ProjectLabTheme {
-                UpcomingTripCard(trip = sampleTrip, onClick = null)
+                TravelUpcomingTripCard(trip = sampleTrip, onClick = null)
             }
         }
 

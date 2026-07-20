@@ -1,7 +1,5 @@
 package com.softserveacademy.core.domain.model
 
-import java.time.LocalDate
-
 /**
  * Represents a user's tour reservation.
  *
@@ -11,7 +9,7 @@ import java.time.LocalDate
  *
  * @property bookingId Unique identifier of the booking.
  * @property tour Tour associated with this booking.
- * @property date Scheduled date of the tour.
+ * @property date Scheduled date of the tour (epoch millis).
  * @property participants Number of participants included in the booking.
  * @property confirmationCode Tour provider or booking confirmation code.
  * @property status Current status of the booking.
@@ -21,7 +19,7 @@ data class TourBooking(
 
     val tour: Tour,
 
-    val date: LocalDate,
+    val date: Long,
 
     val participants: Int,
 
