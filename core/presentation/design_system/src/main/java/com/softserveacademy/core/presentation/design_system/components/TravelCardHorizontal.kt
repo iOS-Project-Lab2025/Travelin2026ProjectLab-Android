@@ -15,10 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.domain.model.Hotel
-import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.theme.StarIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -35,15 +35,15 @@ fun TravelCardHorizontal(hotel: Hotel){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(TravelinDimens.ImageSizeMedium)
+                .height(TravelinDimens.ImageSizeLarge)
+                .shadow(elevation = TravelinDimens.ElevationMedium, shape = MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.background)
                 .clip(MaterialTheme.shapes.medium)
         ) {
-            // Add image and modify his size.
             TravelImageHandler(
-                image = hotel.image,
-                imageWidth = TravelinDimens.ImageSizeMedium,
-                imageHeight = TravelinDimens.ImageSizeMedium,
+                image = hotel.image.first(),
+                imageWidth = TravelinDimens.ImageSizeLarge,
+                imageHeight = TravelinDimens.ImageSizeLarge,
                 shape = MaterialTheme.shapes.medium
             )
             Column(
@@ -118,7 +118,7 @@ fun TravelCardHorizontalPreview() {
         address = "Jl. Sunset Road No. 101, Kuta, Bali , Indonesia",
         star = 4,
         pricePerNight = 50,
-        image = R.drawable.test_hotel,
+        image = listOf("https://picsum.photos/200"),
         imagesList = emptyList()
     )
     Travelin2026ProjectLabTheme(darkTheme = true) {

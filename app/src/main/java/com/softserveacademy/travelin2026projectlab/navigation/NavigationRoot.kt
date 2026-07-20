@@ -27,7 +27,7 @@ import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
-import com.softserveacademy.home.presentation.ui.screens.TravelHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
@@ -169,7 +169,7 @@ fun NavGraphBuilder.mainGraph(
     ) {
 
         composable<Routes.TravelHomeScreen> {
-            TravelHomeScreen(
+            RootHomeScreen(
                 onHotelClick = { hotel ->
                     navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
                 },

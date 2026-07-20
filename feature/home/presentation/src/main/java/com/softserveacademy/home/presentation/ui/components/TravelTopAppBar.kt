@@ -86,7 +86,7 @@ fun TravelFab(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TravelNavigationBar(
+fun     TravelNavigationBar(
     selectedTab: Int = 0,
     onTabClick: (Int) -> Unit = {}
 ) {
@@ -195,6 +195,7 @@ fun TravelTextField(modifier: Modifier = Modifier) {
         },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,

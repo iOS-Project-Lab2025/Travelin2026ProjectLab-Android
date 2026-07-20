@@ -59,7 +59,7 @@ import com.softserveacademy.home.presentation.model.UpcomingTripUi
  * the trip detail screen). Pass null to make the card non-interactive.
  */
 @Composable
-fun UpcomingTripCard(
+fun TravelUpcomingTripCard(
     trip: UpcomingTripUi,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
@@ -77,6 +77,9 @@ fun UpcomingTripCard(
     Card(
         shape = cardShape,
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        ),
         modifier = modifier
             .fillMaxWidth()
             .then(
@@ -303,7 +306,7 @@ private fun DurationConnector(duration: String, modifier: Modifier = Modifier) {
 /**
  * Draws a full-width dashed horizontal line resembling the perforated tear
  * line of a physical boarding pass, used to separate the flight-info section
- * from the booking ID section of [UpcomingTripCard].
+ * from the booking ID section of [TravelUpcomingTripCard].
  *
  * Takes no parameters: color is derived from [MaterialTheme] so it adapts
  * automatically to light/dark theme.
@@ -397,11 +400,11 @@ private class BoardingPassShape(
 }
 
 /**
- * Preview of [UpcomingTripCard] with sample data, rendered in light theme.
+ * Preview of [TravelUpcomingTripCard] with sample data, rendered in light theme.
  */
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
-private fun UpcomingTripCardPreview() {
+private fun TravelUpcomingTripCardPreview() {
     val sample = UpcomingTripUi(
         status = "Upcoming",
         date = "24 March 2024",
@@ -416,7 +419,7 @@ private fun UpcomingTripCardPreview() {
         bookingId = "ZEEBAW"
     )
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        UpcomingTripCard(
+        TravelUpcomingTripCard(
             trip = sample,
             modifier = Modifier.padding(TravelinDimens.PaddingMedium)
         )
@@ -424,11 +427,11 @@ private fun UpcomingTripCardPreview() {
 }
 
 /**
- * Preview of [UpcomingTripCard] with sample data, rendered in dark theme.
+ * Preview of [TravelUpcomingTripCard] with sample data, rendered in dark theme.
  */
 @Preview(showBackground = true, name = "Dark Mode")
 @Composable
-private fun UpcomingTripCardDarkPreview() {
+private fun TravelUpcomingTripCardDarkPreview() {
     val sample = UpcomingTripUi(
         status = "Upcoming",
         date = "24 March 2024",
@@ -443,7 +446,7 @@ private fun UpcomingTripCardDarkPreview() {
         bookingId = "ZEEBAW"
     )
     Travelin2026ProjectLabTheme(darkTheme = true) {
-        UpcomingTripCard(
+        TravelUpcomingTripCard(
             trip = sample,
             modifier = Modifier.padding(TravelinDimens.PaddingMedium)
         )
