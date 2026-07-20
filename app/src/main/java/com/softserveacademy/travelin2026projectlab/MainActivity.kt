@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
@@ -38,6 +39,16 @@ import kotlin.getValue
 import com.softserveacademy.core.data.repository.CorePreferencesRepositoryImpl
 import com.softserveacademycore.presentation.ui.splash.SplashViewModel
 
+/**
+ * The main entry point of the application.
+ *
+ * This activity manages the top-level state of the app, including:
+ * 1. Theme selection (Light/Dark/System).
+ * 2. Session verification (Logged in vs Anonymous).
+ * 3. Initial navigation flow (Splash -> Onboarding -> Auth/Main).
+ *
+ * It uses [AndroidEntryPoint] to enable Hilt dependency injection.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -63,7 +74,6 @@ class MainActivity : ComponentActivity() {
     private val registerUseCase by lazy { RegisterUseCase(registerRepository) }
     private val loginUseCase by lazy { LoginUseCase(loginRepository) }
     private val recoverPasswordUseCase by lazy { RecoverPasswordUseCase(loginRepository) }
-
     private val registerViewModel by lazy { RegisterViewModel(registerUseCase) }
     private val loginViewModel by lazy { LoginViewModel(loginUseCase) }
     private val forgotPasswordViewModel by lazy { ForgotPasswordViewModel(recoverPasswordUseCase) }
@@ -72,6 +82,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
+            /**
+             * Flag that determines if the user is launching the app for the very first time.
+             * Collected from [corePreferencesRepository].
+             */
+            val isFirstTime by corePreferencesRepository.isFirstTimeUser().collectAsState(initial = true)
+
             val appTheme by getThemeUseCase().collectAsState(initial = AppTheme.SYSTEM)
             val darkTheme = when (appTheme) {
                 AppTheme.LIGHT -> false
@@ -83,7 +100,7 @@ class MainActivity : ComponentActivity() {
                 val isLoggedIn by checkSessionUseCase().collectAsState(initial = null)
 
                 // creating a local state to control splash visual
-                var showSplash by remember { mutableStateOf(true) }
+                var showSplash by rememberSaveable { mutableStateOf(true) }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
@@ -91,34 +108,30 @@ class MainActivity : ComponentActivity() {
 
                         /**
                          * This guarantees the user watch the logo during the setted time we defined in SplashViewModel
-                         * and do not desapear until we know if user is logged or not
+                         * then set the state to false and show the main screen
                          */
 
-                        if (showSplash || isLoggedIn == null) {
-                            // MIENTRAS estemos en tiempo de Splash O cargando sesión,
-                            // mostramos la pantalla azul con tu logo.
+                        if (showSplash) {
+
                             SplashScreen(
                                 viewModel = splashViewModel,
                                 onNavigateToOnboarding = { showSplash = false },
-                                onNavigateToHome = { showSplash = false }
+                                onNavigateToLogin = { showSplash = false }
                             )
-
-
-                        /*if (isLoggedIn == null) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator()
-                            }*/
 
                         } else {
-                            val navController = rememberNavController()
+                            if (isLoggedIn !== null) {
+                                val navController = rememberNavController()
 
-                            NavigationRoot(
-                                navController = navController,
-                                isLoggedIn = isLoggedIn == true,
-                                loginViewModel = loginViewModel,
-                                registerViewModel = registerViewModel,
-                                forgotPasswordViewModel = forgotPasswordViewModel
-                            )
+                                NavigationRoot(
+                                    navController = navController,
+                                    isFirstTime = isFirstTime,
+                                    isLoggedIn = isLoggedIn == true,
+                                    loginViewModel = loginViewModel,
+                                    registerViewModel = registerViewModel,
+                                    forgotPasswordViewModel = forgotPasswordViewModel
+                                )
+                            }
                         }
                     }
                 }

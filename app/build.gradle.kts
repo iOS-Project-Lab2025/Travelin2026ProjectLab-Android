@@ -47,6 +47,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // onboarding feature
+    implementation(projects.feature.onboarding.presentation)
+    implementation(projects.feature.onboarding.domain)
+    implementation(projects.feature.onboarding.data)
+
 
     // modules
     implementation(projects.core.domain)

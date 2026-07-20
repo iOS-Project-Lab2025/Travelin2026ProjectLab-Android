@@ -7,11 +7,12 @@ import androidx.datastore.preferences.core.edit
 import com.softserveacademy.core.domain.repository.CorePreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Implementation of [CorePreferencesRepository] using Jetpack DataStore.
  */
-class CorePreferencesRepositoryImpl(
+class CorePreferencesRepositoryImpl @Inject constructor(
         private val dataStore: DataStore<Preferences>
 ) : CorePreferencesRepository {
 

@@ -13,13 +13,21 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * ViewModel for the Splash screen.
- * Decides whether to navigate to Onboarding or Home based on user history.
+ *
+ * Its main responsibility is to hold the splash screen active for a minimum duration
+ * and then check the user's preferences to decide the next [SplashDestination].
+ *
+ * @property preferencesRepository Repository used to check if the user is a first-time user.
  */
 
 class SplashViewModel(
     private val preferencesRepository: CorePreferencesRepository
 ) : ViewModel() {
 
+    /**
+     * Flow representing the navigation destination after the splash completes.
+     * Null while the decision logic is still running.
+     */
     private val _destination = MutableStateFlow<SplashDestination?>(null)
     val destination = _destination.asStateFlow()
 
@@ -31,7 +39,7 @@ class SplashViewModel(
             _destination.value = if (isFirstTime) {
                 SplashDestination.Onboarding
             } else {
-                SplashDestination.Home
+                SplashDestination.Login
             }
         }
     }
@@ -39,5 +47,5 @@ class SplashViewModel(
 
 sealed class SplashDestination {
     object Onboarding : SplashDestination()
-    object Home : SplashDestination()
+    object Login : SplashDestination()
 }

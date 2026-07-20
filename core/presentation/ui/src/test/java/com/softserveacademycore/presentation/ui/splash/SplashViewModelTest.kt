@@ -57,6 +57,6 @@ class SplashViewModelTest {
         advanceTimeBy(5001.milliseconds)
 
         // THEN
-        assertEquals(SplashDestination.Home, viewModel.destination.value)
+        assertEquals(SplashDestination.Login, viewModel.destination.value)
     }
 }
