@@ -33,7 +33,7 @@ class SplashViewModel(
 
     init {
         viewModelScope.launch {
-            delay(5000.milliseconds) // Visual delay for logo
+            delay(3000.milliseconds) // Visual delay for logo
             val isFirstTime = preferencesRepository.isFirstTimeUser().first()
 
             _destination.value = if (isFirstTime) {

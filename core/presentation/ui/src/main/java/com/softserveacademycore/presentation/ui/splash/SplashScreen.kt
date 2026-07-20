@@ -84,7 +84,7 @@ fun SplashScreen(
     LaunchedEffect(destination) {
         if (destination != null) {
             startAnimation = false
-            delay(400.milliseconds)
+            delay(300.milliseconds)
             when (destination) {
                 is SplashDestination.Onboarding -> onNavigateToOnboarding()
                 is SplashDestination.Login -> onNavigateToLogin()
