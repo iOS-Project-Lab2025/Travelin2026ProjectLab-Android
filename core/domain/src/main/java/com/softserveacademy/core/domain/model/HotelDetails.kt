@@ -11,7 +11,7 @@ package com.softserveacademy.core.domain.model
  * @property name The name of the hotel.
  * @property address The physical address of the hotel.
  * @property star The official star rating of the hotel.
- * @property image The main thumbnail image resource ID for the hotel.
+ * @property image The main thumbnail image URLs for the hotel.
  * @property numberOfReviews The total count of user reviews.
  * @property rating The average user rating, usually on a scale of 0.0 to 5.0.
  * @property description A detailed text description of the hotel and its services.
@@ -25,7 +25,7 @@ data class HotelDetails(
     val name: String,
     val address: String = "",
     val star: Int = 0,
-    val image: Int = 0,
+    val image: List<String> = emptyList(),
     val numberOfReviews: Int,
     val rating: Double,
     val description: String,

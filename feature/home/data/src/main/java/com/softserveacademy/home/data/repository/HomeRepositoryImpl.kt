@@ -168,10 +168,4 @@ class HomeRepositoryImpl @Inject constructor() : HomeRepository {
             )
         )
     }
-
-    override suspend fun getHotelDetailsById(hotelId: Int): HotelDetails {
-        //TODO("Remove when finish")
-        delay(1000.milliseconds)
-        return  hotelDetailExampleData.find{ it.id == hotelId } ?:  hotelDetailExampleData.first()
-    }
 }

@@ -1,10 +1,10 @@
 package com.softserveacademy.core.data.repository
 
-import com.softserveacademy.core.data.R
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.model.HotelRoomAmenity
+import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.domain.repository.HotelRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -54,8 +54,39 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
         )
     ))
 
+    private val _hotelDetails = MutableStateFlow(listOf(
+        HotelDetails(
+            id = 1,
+            minimumPrice = 50,
+            imageList = previewImages,
+            name = "Swiss-Belhotel Rainforest",
+            address = "Jl. Sunset Road No. 101, Kuta, Bali, Indonesia",
+            star = 4,
+            image = previewImages,
+            numberOfReviews = 120,
+            rating = 4.5,
+            description = "Experience luxury in the heart of Bali with world-class amenities and breathtaking views.",
+            includedItems = listOf(IncludedItem.BuffetBreakfast, IncludedItem.FreeWifi, IncludedItem.Pool, IncludedItem.AcUnit),
+            rooms = createMockRooms(1)
+        ),
+        HotelDetails(
+            id = 2,
+            minimumPrice = 120,
+            imageList = previewImages1,
+            name = "Discovery Kartika Plaza",
+            address = "Jl. Kartika Plaza, Kuta, Bali",
+            star = 5,
+            image = previewImages1,
+            numberOfReviews = 340,
+            rating = 1.5,
+            description = "Premier beachfront resort offering exceptional service and stunning ocean views.",
+            includedItems = listOf(IncludedItem.FreeWifi, IncludedItem.FitnessCenter, IncludedItem.Pool, IncludedItem.RoomService, IncludedItem.BuffetBreakfast),
+            rooms = createMockRooms(2)
+        )
+    ))
+
     override suspend fun getHotelById(id: Int): HotelDetails {
-        return _hotelDetails.value.find { it.id == id } ?: _hotelDetails.value.first()
+        return _hotelDetails.value.find { it.id == id } ?: throw NoSuchElementException("Hotel with id $id not found")
     }
 
 
