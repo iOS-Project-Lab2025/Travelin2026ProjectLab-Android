@@ -53,9 +53,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import com.softserveacademy.home.presentation.R.string
 import com.softserveacademy.core.domain.model.IncludedItem
+import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import com.softserveacademy.home.presentation.ui.components.HotelDetailLoading
 import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailError
@@ -256,7 +259,7 @@ private fun HotelHeaderImage(
     ) {
 
         TravelGalleryCarousel(
-            images = imageList,
+            images = imageList.take(5),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
@@ -451,7 +454,9 @@ private fun GalleryPreviewSection(
                             .fillMaxWidth()
                             .height(110.dp)
                             .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+                        error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel)
                     )
                 }
                 if (imageList.size > 1) {
@@ -462,7 +467,9 @@ private fun GalleryPreviewSection(
                             .fillMaxWidth()
                             .height(110.dp)
                             .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+                        error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel)
                     )
                 }
             }
@@ -475,7 +482,9 @@ private fun GalleryPreviewSection(
                         .weight(1f)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+                    error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel)
                 )
             }
         }

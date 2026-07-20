@@ -27,11 +27,13 @@ import com.softserveacademy.feature.auth.login.presentation.LoginScreen
 import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
+import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 // Profile screens.
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
 import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
+
 // Home screens.
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
@@ -196,15 +198,17 @@ fun NavGraphBuilder.mainGraph(
 
         composable<Routes.TravelHomeScreen> {
             RootHomeScreen(
-                onHotelClick = { hotel ->
-                    navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
-                },
-                onAccountClick = {
-                    navController.navigate(Routes.ProfileScreen) {
-                        popUpTo(Routes.TravelHomeScreen)
-                        launchSingleTop = true
+                actions = HomeNavigationActions(
+                    onHotelClick = { hotel ->
+                        navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
+                    },
+                    onAccountClick = {
+                        navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
                     }
-                }
+                )
             )
         }
 

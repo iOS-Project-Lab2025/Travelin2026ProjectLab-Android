@@ -33,7 +33,9 @@ import com.softserveacademy.core.presentation.design_system.components.TravelTex
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.mockdata.PresentationMockData
-import com.softserveacademy.home.presentation.model.UserProfileUi
+import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
+import com.softserveacademy.home.presentation.state.HomeUiState
+import com.softserveacademy.home.presentation.state.SectionState
 import com.softserveacademy.home.presentation.ui.components.TravelBackground
 import com.softserveacademy.home.presentation.ui.components.TravelIconsCard
 import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
@@ -45,44 +47,33 @@ import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
 /**
  * Stateful wrapper for [TravelHomeScreen].
  *
- * <p>Manages the connection between the UI and the [HomeViewModel]. Collects the hotel data
- * from the ViewModel's state flow and delegates rendering to the stateless [TravelHomeScreen]
- * composable.</p>
+ * <p>Manages the connection between the UI and the [HomeViewModel]. Collects the
+ * [HomeUiState] from the ViewModel and delegates rendering to the stateless
+ * [TravelHomeScreen] composable.</p>
  *
- * <p>This composable is intended to be used as the entry point for the Home screen from
- * navigation, while [TravelHomeScreen] can be used directly for previews or testing with
- * custom data.</p>
+ * <p>This composable is intended to be used as the entry point for the Home screen
+ * from navigation, while [TravelHomeScreen] can be used directly for previews or
+ * testing with custom data.</p>
  *
- * @param onHotelClick Action to perform when a hotel card is tapped.
- * @param onAccountClick Action to perform when the account tab in the bottom bar is selected.
- * @param onJourneySeeAllClick Action to perform when the "See all" button in the "Journey together"
- *   section is tapped.
- * @param onHotelsSeeAllClick Action to perform when the "See all" button in the "Hotels
- *   recommendation for you" section is tapped.
- * @param userProfile The user profile data to display at the top of the screen.
+ * @param actions Container for navigation callbacks used by the screen.
  * @param modifier Modifier to be applied to the root layout.
  * @param viewModel The [HomeViewModel] that provides the screen data. Defaults to a
  *   Hilt-injected instance.
  */
 @Composable
 fun RootHomeScreen(
-    onHotelClick: (Hotel) -> Unit,
-    onAccountClick: () -> Unit,
-    onJourneySeeAllClick: () -> Unit = {},
-    onHotelsSeeAllClick: () -> Unit = {},
-    userProfile: UserProfileUi = PresentationMockData.userProfile,
+    actions: HomeNavigationActions = HomeNavigationActions(),
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val hotels by viewModel.hotels.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     TravelHomeScreen(
-        hotels = hotels,
-        userProfile = userProfile,
-        onHotelClick = onHotelClick,
-        onAccountClick = onAccountClick,
-        onJourneySeeAllClick = onJourneySeeAllClick,
-        onHotelsSeeAllClick = onHotelsSeeAllClick,
+        state = state,
+        onHotelClick = actions.onHotelClick,
+        onAccountClick = actions.onAccountClick,
+        onJourneySeeAllClick = actions.onJourneySeeAllClick,
+        onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
         modifier = modifier
     )
 }
@@ -95,11 +86,11 @@ fun RootHomeScreen(
  * "Hotels recommendation for you" section with horizontal cards. A bottom navigation bar provides
  * access to different sections of the app.</p>
  *
- * <p>This composable is stateless — all data is provided through parameters, making it
- * suitable for previews and unit testing.</p>
+ * <p>This composable is stateless — all data is provided through a [HomeUiState], making it
+ * suitable for previews and unit testing. Each section independently reports its loading,
+ * success, or error state via [SectionState].</p>
  *
- * @param hotels The list of [Hotel] objects to display in the carousel and recommendation sections.
- * @param userProfile The user profile data to display at the top of the screen.
+ * @param state The complete UI state for the home screen, including all sections.
  * @param onHotelClick Action to perform when a hotel card is tapped.
  * @param onAccountClick Action to perform when the account tab in the bottom bar is selected.
  * @param onJourneySeeAllClick Action to perform when the "See all" button in the "Journey together"
@@ -110,14 +101,17 @@ fun RootHomeScreen(
  */
 @Composable
 fun TravelHomeScreen(
-    hotels: List<Hotel>,
-    userProfile: UserProfileUi,
+    state: HomeUiState,
     onHotelClick: (Hotel) -> Unit,
     onAccountClick: () -> Unit,
     onJourneySeeAllClick: () -> Unit = {},
     onHotelsSeeAllClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val userProfile = (state.userProfile as? SectionState.Success)?.data
+    val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
+    val hotels = (state.hotelsRecommended as? SectionState.Success)?.data ?: emptyList()
+
     Scaffold(
         bottomBar = {
             TravelNavigationBar(
@@ -136,13 +130,17 @@ fun TravelHomeScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(Modifier.height(16.dp))
-                TravelUserProfileCard(userProfile = userProfile)
-                Spacer(Modifier.height(16.dp))
+                if (userProfile != null) {
+                    TravelUserProfileCard(userProfile = userProfile)
+                    Spacer(Modifier.height(16.dp))
+                }
                 TravelTextField()
                 Spacer(Modifier.height(16.dp))
-                TravelUpcomingTripCard(trip = PresentationMockData.upcomingTrip)
-                Spacer(Modifier.height(16.dp))
-                Spacer(Modifier.height(16.dp))
+                if (upcomingTrip != null) {
+                    TravelUpcomingTripCard(trip = upcomingTrip)
+                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(16.dp))
+                }
                 TravelIconsCard()
                 Spacer(Modifier.height(16.dp))
 
@@ -206,63 +204,69 @@ fun TravelHomeScreen(
 /**
  * Preview of the [TravelHomeScreen] composable.
  *
- * <p>Displays the home screen with sample hotel data inside the app theme.</p>
+ * <p>Displays the home screen with sample data inside the app theme. All sections are
+ * pre-populated with [SectionState.Success] using mock data from [PresentationMockData].</p>
  */
 @Preview
 @Composable
 private fun TravelHomeScreenPreview() {
     Travelin2026ProjectLabTheme() {
         TravelHomeScreen(
-            hotels = listOf(
-                Hotel(
-                    id = 1,
-                    name = "Koh Rong Samloem Resort",
-                    address = "Koh Rong Samloem, Cambodia",
-                    star = 5,
-                    userRating = 4.8,
-                    pricePerNight = 400,
-                    image = listOf("https://picsum.photos/id/10/800/600")
-                ),
-                Hotel(
-                    id = 2,
-                    name = "Sunset Paradise",
-                    address = "Phuket, Thailand",
-                    star = 4,
-                    userRating = 4.6,
-                    pricePerNight = 280,
-                    image = listOf("https://picsum.photos/id/11/800/600")
-                ),
-                Hotel(
-                    id = 3,
-                    name = "Swiss Mountain Lodge",
-                    address = "Zermatt, Switzerland",
-                    star = 5,
-                    userRating = 4.9,
-                    pricePerNight = 650,
-                    image = listOf("https://picsum.photos/id/12/800/600")
-                ),
-                Hotel(
-                    id = 4,
-                    name = "Ocean Breeze",
-                    address = "Bali, Indonesia",
-                    star = 4,
-                    userRating = 4.7,
-                    pricePerNight = 320,
-                    image = listOf("https://picsum.photos/id/13/800/600")
-                ),
-                Hotel(
-                    id = 5,
-                    name = "The Grand Palace",
-                    address = "Paris, France",
-                    star = 5,
-                    userRating = 4.9,
-                    pricePerNight = 720,
-                    image = listOf("https://picsum.photos/id/14/800/600")
+            state = HomeUiState(
+                userProfile = SectionState.Success(PresentationMockData.userProfile),
+                upcomingTrip = SectionState.Success(PresentationMockData.upcomingTrip),
+                hotelsRecommended = SectionState.Success(
+                    listOf(
+                        Hotel(
+                            id = 1,
+                            name = "Koh Rong Samloem Resort",
+                            address = "Koh Rong Samloem, Cambodia",
+                            star = 5,
+                            userRating = 4.8,
+                            pricePerNight = 400,
+                            image = listOf("https://picsum.photos/id/10/800/600")
+                        ),
+                        Hotel(
+                            id = 2,
+                            name = "Sunset Paradise",
+                            address = "Phuket, Thailand",
+                            star = 4,
+                            userRating = 4.6,
+                            pricePerNight = 280,
+                            image = listOf("https://picsum.photos/id/11/800/600")
+                        ),
+                        Hotel(
+                            id = 3,
+                            name = "Swiss Mountain Lodge",
+                            address = "Zermatt, Switzerland",
+                            star = 5,
+                            userRating = 4.9,
+                            pricePerNight = 650,
+                            image = listOf("https://picsum.photos/id/12/800/600")
+                        ),
+                        Hotel(
+                            id = 4,
+                            name = "Ocean Breeze",
+                            address = "Bali, Indonesia",
+                            star = 4,
+                            userRating = 4.7,
+                            pricePerNight = 320,
+                            image = listOf("https://picsum.photos/id/13/800/600")
+                        ),
+                        Hotel(
+                            id = 5,
+                            name = "The Grand Palace",
+                            address = "Paris, France",
+                            star = 5,
+                            userRating = 4.9,
+                            pricePerNight = 720,
+                            image = listOf("https://picsum.photos/id/14/800/600")
+                        )
+                    )
                 )
             ),
             onHotelClick = {},
-            onAccountClick = {},
-            userProfile = PresentationMockData.userProfile
+            onAccountClick = {}
         )
     }
 }
