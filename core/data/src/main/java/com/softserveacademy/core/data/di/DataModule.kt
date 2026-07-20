@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.softserveacademy.core.data.repository.CorePreferencesRepositoryImpl
+import com.softserveacademy.core.domain.repository.CorePreferencesRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,4 +25,18 @@ object DataModule {
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.dataStore
     }
+}
+
+/**
+ * Module for providing dependencies related to CorePreferencesRepository.
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class CoreDataModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindCorePreferencesRepository(
+        impl: CorePreferencesRepositoryImpl
+    ): CorePreferencesRepository
 }

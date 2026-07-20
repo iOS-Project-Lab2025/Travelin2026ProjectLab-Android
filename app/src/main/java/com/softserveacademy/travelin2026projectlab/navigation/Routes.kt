@@ -67,4 +67,14 @@ sealed interface Routes {
 
     @Serializable
     data class GuestInformationScreen(val hotelId: Int) : Routes
+
+// ---------------- ONBOARDING ----------------
+    /**
+     * Routes for the Onboarding flow.
+     */
+    @Serializable
+    data object OnboardingScreen : Routes
+
+
+
 }

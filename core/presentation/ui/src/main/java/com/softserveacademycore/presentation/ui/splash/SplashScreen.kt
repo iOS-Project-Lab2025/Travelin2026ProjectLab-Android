@@ -1,5 +1,6 @@
 package com.softserveacademycore.presentation.ui.splash
 
+import android.app.Activity
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,18 +22,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.TravelinLogo
 import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademycore.presentation.ui.util.LockScreenOrientation
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Splash Screen UI with enter/exit animations, a glowing aura, and staggered travel decorations.
  */
+
+
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel,
     onNavigateToOnboarding: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToLogin: () -> Unit
 ) {
+    LockScreenOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     val destination by viewModel.destination.collectAsState()
     var startAnimation by remember { mutableStateOf(false) }
 
@@ -82,7 +87,7 @@ fun SplashScreen(
             delay(400.milliseconds)
             when (destination) {
                 is SplashDestination.Onboarding -> onNavigateToOnboarding()
-                is SplashDestination.Home -> onNavigateToHome()
+                is SplashDestination.Login -> onNavigateToLogin()
                 else -> Unit
             }
         }

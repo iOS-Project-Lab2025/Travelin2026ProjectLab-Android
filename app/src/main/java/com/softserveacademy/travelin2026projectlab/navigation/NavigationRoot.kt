@@ -11,6 +11,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+
+//Onboarding Screen
+import com.softserveacademy.feature.onboarding.presentation.OnboardingScreen
+import com.softserveacademy.feature.onboarding.presentation.OnboardingViewModel
+
 //Screens of Authgraph
 import com.softserveacademy.feature.auth.common.presentation.SuccessScreen
 import com.softserveacademy.feature.auth.login.presentation.ForgotPasswordScreen
@@ -33,22 +38,21 @@ import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScree
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
 import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
 
+
 /**
  * Root navigation host for the application.
  *
- * Sets up the main navigation graphs and determines the initial destination
- * based on the user's authentication state(if it's logged in or not.)
+ * It defines the conditional start destination based on two primary factors:
+ * @param isFirstTime If true, the user is redirected to the [Routes.OnboardingScreen].
+ * @param isLoggedIn If [isFirstTime] is false, this flag determines if the user goes to [Routes.MainGraph]
+ * or [Routes.AuthGraph].
  *
- * @param navController The navigation controller used to navigate between screens.
- * @param isLoggedIn Indicates whether the user is authenticated.
- * @param loginViewModel ViewModel that manages the login screen state.
- * @param registerViewModel ViewModel that manages the registration screen state.
- * @param forgotPasswordViewModel ViewModel that manages the forgot password screen state.
+ * This component acts as the main router after the Splash screen is dismissed.
  */
-
 @Composable
 fun NavigationRoot(
     navController: NavHostController,
+    isFirstTime: Boolean, // Priority check: Is it the user's first time?
     isLoggedIn: Boolean,
     loginViewModel: LoginViewModel,
     registerViewModel: RegisterViewModel,
@@ -57,11 +61,30 @@ fun NavigationRoot(
 
     NavHost(
         navController = navController,
-        // I deleted the comment, as we have the implementation of an isLoggedIn
-        // variable. So this should do it, as if the person is logged the app sends
-        // them to the MainGraph, otherwise, it redirects them to the AuthGraph.
-        startDestination = if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph
+
+        // If it's the first time, go to Onboarding. Then checks if the user is logged in, if yes goes to mainGraph, otherwise go to Auth (AuthGraph).
+        startDestination = when {
+            isFirstTime -> Routes.OnboardingScreen
+            isLoggedIn -> Routes.MainGraph
+            else -> Routes.AuthGraph
+        }
     ) {
+
+        composable<Routes.OnboardingScreen> {
+            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+            OnboardingScreen(
+                onGetStarted = {
+                    onboardingViewModel.onGetStartedClick {
+                        navController.navigate(if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph) {
+
+                            popUpTo(Routes.OnboardingScreen) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            )
+        }
 
         authGraph(navController, loginViewModel = loginViewModel,
             registerViewModel=registerViewModel,
