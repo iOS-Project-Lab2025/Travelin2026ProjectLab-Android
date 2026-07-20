@@ -31,6 +31,7 @@ import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 
+import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
@@ -193,15 +194,17 @@ fun NavGraphBuilder.mainGraph(
 
         composable<Routes.TravelHomeScreen> {
             RootHomeScreen(
-                onHotelClick = { hotel ->
-                    navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
-                },
-                onAccountClick = {
-                    navController.navigate(Routes.ProfileScreen) {
-                        popUpTo(Routes.TravelHomeScreen)
-                        launchSingleTop = true
+                actions = HomeNavigationActions(
+                    onHotelClick = { hotel ->
+                        navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
+                    },
+                    onAccountClick = {
+                        navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
                     }
-                }
+                )
             )
         }
 
