@@ -10,6 +10,7 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +45,15 @@ fun TravelEnterBookingDetailsScreen(
     bookingCountItems: List<TravelBookingCountItem> = emptyList(),
     onEvent: (TravelEnterBookingDetailsEvent) -> Unit,
 ) {
+    val todayStartUtc = remember {
+        Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val dateRangePickerState = rememberDateRangePickerState(
         initialSelectedStartDateMillis = state.startDateMillis,
@@ -51,24 +61,39 @@ fun TravelEnterBookingDetailsScreen(
         yearRange = IntRange(currentYear, currentYear + 3),
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val todayStartUtc = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
-                    timeInMillis = System.currentTimeMillis()
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.timeInMillis
                 return utcTimeMillis >= todayStartUtc
             }
         }
     )
 
-    // Sync state to picker state when state changes (e.g. after async load from DataStore)
+    // Sync state to picker state and correct past dates when state changes (e.g. after async load from DataStore)
     LaunchedEffect(state.startDateMillis, state.endDateMillis) {
-        if (state.startDateMillis != dateRangePickerState.selectedStartDateMillis ||
-            state.endDateMillis != dateRangePickerState.selectedEndDateMillis
+        var correctedStart = state.startDateMillis
+        var correctedEnd = state.endDateMillis
+        var updated = false
+
+        if (correctedStart != null && correctedStart < todayStartUtc) {
+            correctedStart = todayStartUtc
+            updated = true
+        }
+        if (correctedEnd != null && correctedEnd < todayStartUtc) {
+            correctedEnd = todayStartUtc
+            updated = true
+        }
+
+        if (updated) {
+            onEvent(
+                TravelEnterBookingDetailsEvent.OnDateRangeSelected(
+                    correctedStart,
+                    correctedEnd
+                )
+            )
+        }
+
+        if (correctedStart != dateRangePickerState.selectedStartDateMillis ||
+            correctedEnd != dateRangePickerState.selectedEndDateMillis
         ) {
-            dateRangePickerState.setSelection(state.startDateMillis, state.endDateMillis)
+            dateRangePickerState.setSelection(correctedStart, correctedEnd)
         }
     }
 

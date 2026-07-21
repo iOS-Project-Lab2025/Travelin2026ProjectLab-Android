@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class EnterHotelBookingDetailsViewModelTest {
+class HotelEnterBookingDetailsViewModelTest {
 
     private lateinit var viewModel: HotelEnterBookingDetailsViewModel
     private lateinit var savedStateHandle: SavedStateHandle
