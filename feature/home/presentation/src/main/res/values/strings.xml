@@ -34,6 +34,8 @@
     <string name="What_is_included_label">What is included</string>
     <string name="see_all_label">See all</string>
     <string name="plus_photos_label">+ photos</string>
+    <string name="share_hotel_title">Share Hotel</string>
+    <string name="share_hotel_message">Check out %1$s on Travelin! \n\n%2$s</string>
 
     <!-- Include items -->
     <string name="buffet_breakfast_label">Buffet breakfast</string>
