@@ -42,6 +42,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
     //Implementation needed for navgraph
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
@@ -58,6 +59,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.presentation.ui)
     implementation(projects.core.presentation.designSystem)
+
     implementation(projects.feature.auth.login.domain)
     implementation(projects.feature.auth.login.data)
     implementation(projects.feature.auth.login.presentation)
@@ -67,10 +69,19 @@ dependencies {
     implementation(projects.feature.auth.common.domain)
     implementation(projects.feature.auth.common.data)
     implementation(projects.feature.auth.common.presentation)
+
     implementation(projects.feature.home.domain)
     implementation(projects.feature.home.data)
     implementation(projects.feature.home.presentation)
-    implementation(projects.feature.booking.common.presentation)
+
+    implementation(projects.feature.booking.hotel.domain)
+    implementation(projects.feature.booking.hotel.data)
+    implementation(projects.feature.booking.hotel.presentation)
+    implementation(projects.feature.booking.flight.domain)
+    implementation(projects.feature.booking.flight.data)
+    implementation(projects.feature.booking.flight.presentation)
+    implementation(projects.feature.booking.common.domain)
     implementation(projects.feature.booking.common.data)
+    implementation(projects.feature.booking.common.presentation)
 
 }

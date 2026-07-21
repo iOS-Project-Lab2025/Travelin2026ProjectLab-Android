@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.components
+package com.softserveacademy.feature.booking.common.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

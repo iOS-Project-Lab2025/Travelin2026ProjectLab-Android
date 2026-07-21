@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.viewmodel
+package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
-import com.softserveacademy.feature.booking.common.presentation.events.HotelRoomSelectionEvent
-import com.softserveacademy.feature.booking.common.presentation.states.HotelRoomSelectionState
-import com.softserveacademy.feature.booking.common.presentation.states.RoomFilter
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
+import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
+import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

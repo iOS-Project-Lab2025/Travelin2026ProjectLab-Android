@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.states
+package com.softserveacademy.feature.booking.hotel.presentation.states
 
 /**
  * State class for the Hotel Contact Information screen.

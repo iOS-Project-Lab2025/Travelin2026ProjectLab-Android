@@ -1,11 +1,11 @@
-package com.softserveacademy.feature.booking.common.presentation.viewmodel
+package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.feature.booking.common.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
-import com.softserveacademy.feature.booking.common.presentation.events.HotelContactInfoEvent
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

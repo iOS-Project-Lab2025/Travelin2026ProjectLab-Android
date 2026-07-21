@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.viewmodel
+package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,8 +7,8 @@ import com.softserveacademy.feature.booking.common.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
-import com.softserveacademy.feature.booking.common.presentation.events.HotelContactInfoEvent
-import com.softserveacademy.feature.booking.common.presentation.states.HotelContactInfoState
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
+import com.softserveacademy.feature.booking.hotel.presentation.states.HotelContactInfoState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

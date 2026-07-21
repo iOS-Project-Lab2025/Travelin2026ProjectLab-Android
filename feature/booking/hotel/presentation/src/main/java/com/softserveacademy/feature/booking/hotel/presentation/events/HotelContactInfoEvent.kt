@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.events
+package com.softserveacademy.feature.booking.hotel.presentation.events
 
 /**
  * Events for the Hotel Contact Information screen.

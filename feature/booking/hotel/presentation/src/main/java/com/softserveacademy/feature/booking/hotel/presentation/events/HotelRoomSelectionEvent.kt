@@ -1,6 +1,6 @@
-package com.softserveacademy.feature.booking.common.presentation.events
+package com.softserveacademy.feature.booking.hotel.presentation.events
 
-import com.softserveacademy.feature.booking.common.presentation.states.RoomFilter
+import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
 
 /**
  * Sealed interface representing UI events for the hotel room selection screen.

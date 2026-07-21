@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.screens
+package com.softserveacademy.feature.booking.hotel.presentation.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,8 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelEnterBookingDetailsViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelEnterBookingDetailsScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
 import com.softserveacademy.feature.booking.common.presentation.R
 import kotlinx.coroutines.flow.collectLatest

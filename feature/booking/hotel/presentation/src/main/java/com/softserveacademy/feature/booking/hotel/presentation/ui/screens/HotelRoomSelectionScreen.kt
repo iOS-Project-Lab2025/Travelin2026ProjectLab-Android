@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.screens
+package com.softserveacademy.feature.booking.hotel.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,12 +27,12 @@ import com.softserveacademy.core.domain.model.HotelRoomAmenity
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelRoomCard
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelRoomSelectionViewModel
-import com.softserveacademy.feature.booking.common.presentation.events.HotelRoomSelectionEvent
-import com.softserveacademy.feature.booking.common.presentation.states.HotelRoomSelectionState
-import com.softserveacademy.feature.booking.common.presentation.states.RoomFilter
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelRoomSelectionViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
+import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
+import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
-import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingLoadingScreen
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 

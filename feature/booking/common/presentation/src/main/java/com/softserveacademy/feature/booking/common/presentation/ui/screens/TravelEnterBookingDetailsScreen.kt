@@ -20,7 +20,6 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
-import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingDateRangePicker
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingCountBottomSheet
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem

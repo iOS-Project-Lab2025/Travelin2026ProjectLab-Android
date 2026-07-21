@@ -23,6 +23,7 @@ import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
+
 // Profile screens.
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
 import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
@@ -33,13 +34,14 @@ import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
+
 // Booking screens.
-import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelEnterBookingDetailsScreen
-import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelEnterBookingDetailsViewModel
-import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelRoomSelectionScreen
-import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelContactInfoScreen
-import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelContactInfoViewModel
-import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelBookingConfirmationScreen
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelEnterBookingDetailsScreen
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelRoomSelectionScreen
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelContactInfoScreen
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelContactInfoViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmationScreen
 
 
 /**

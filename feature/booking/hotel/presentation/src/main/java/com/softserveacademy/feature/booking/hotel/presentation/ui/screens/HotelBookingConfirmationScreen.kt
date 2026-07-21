@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.screens
+package com.softserveacademy.feature.booking.hotel.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

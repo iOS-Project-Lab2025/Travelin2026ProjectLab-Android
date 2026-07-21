@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.states
+package com.softserveacademy.feature.booking.hotel.presentation.states
 
 import com.softserveacademy.core.domain.model.HotelRoom
 

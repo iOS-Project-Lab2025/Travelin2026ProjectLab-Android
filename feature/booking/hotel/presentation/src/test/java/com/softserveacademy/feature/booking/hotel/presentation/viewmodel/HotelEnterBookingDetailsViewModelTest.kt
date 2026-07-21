@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.viewmodel
+package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository

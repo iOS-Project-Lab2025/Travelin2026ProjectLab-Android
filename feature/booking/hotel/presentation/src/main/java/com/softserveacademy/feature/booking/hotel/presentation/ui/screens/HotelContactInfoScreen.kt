@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.screens
+package com.softserveacademy.feature.booking.hotel.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,9 +29,9 @@ import com.softserveacademy.core.presentation.design_system.components.TravelPho
 import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelContactInfoViewModel
-import com.softserveacademy.feature.booking.common.presentation.events.HotelContactInfoEvent
-import com.softserveacademy.feature.booking.common.presentation.states.HotelContactInfoState
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelContactInfoViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
+import com.softserveacademy.feature.booking.hotel.presentation.states.HotelContactInfoState
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.common.presentation.R
 
