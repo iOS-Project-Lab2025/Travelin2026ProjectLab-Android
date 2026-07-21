@@ -38,7 +38,7 @@ import com.softserveacademy.feature.booking.presentation.R
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TravelDateRangePicker(
+fun TravelBookingDateRangePicker(
     title: String,
     state: DateRangePickerState,
     modifier: Modifier = Modifier
@@ -46,14 +46,14 @@ fun TravelDateRangePicker(
     DateRangePicker(
         state = state,
         title = {
-            TravelDateRangePickerTitle(
+            TravelBookingDateRangePickerTitle(
                 title = title,
                 state = state,
                 modifier = Modifier
             )
         },
         headline = {
-            TravelDateRangePickerHeadline(
+            TravelBookingDateRangePickerHeadline(
                 state = state,
                 modifier = Modifier
             )
@@ -75,14 +75,14 @@ fun TravelDateRangePicker(
 }
 
 /**
- * Internal composable for the title section of the [TravelDateRangePicker].
+ * Internal composable for the title section of the [TravelBookingDateRangePicker].
  *
  * @param title The title text.
  * @param state The state of the date range picker.
  * @param modifier The modifier to be applied to the title section.
  */
 @Composable
-fun TravelDateRangePickerTitle(
+fun TravelBookingDateRangePickerTitle(
     title: String,
     state: DateRangePickerState,
     modifier: Modifier = Modifier
@@ -114,13 +114,13 @@ fun TravelDateRangePickerTitle(
 }
 
 /**
- * Internal composable for the headline section of the [TravelDateRangePicker].
+ * Internal composable for the headline section of the [TravelBookingDateRangePicker].
  *
  * @param state The state of the date range picker.
  * @param modifier The modifier to be applied to the headline section.
  */
 @Composable
-fun TravelDateRangePickerHeadline(
+fun TravelBookingDateRangePickerHeadline(
     state: DateRangePickerState,
     modifier: Modifier = Modifier,
 ) {
@@ -153,9 +153,9 @@ fun TravelDateRangePickerHeadline(
 
 @Preview
 @Composable
-fun TravelDateRangePickerPreview(){
+fun TravelBookingDateRangePickerPreview(){
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelDateRangePicker(
+        TravelBookingDateRangePicker(
             title = stringResource(R.string.booking_date_picker_title),
             state = rememberDateRangePickerState(),
             modifier = Modifier

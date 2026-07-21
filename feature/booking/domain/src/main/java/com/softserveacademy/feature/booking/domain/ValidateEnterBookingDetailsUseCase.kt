@@ -3,9 +3,9 @@ package com.softserveacademy.feature.booking.domain
 import javax.inject.Inject
 
 /**
- * Use case to validate the hotel booking search input.
+ * Use case to validate the hotel booking details input.
  */
-class ValidateBookingSearchUseCase @Inject constructor() {
+class ValidateEnterBookingDetailsUseCase @Inject constructor() {
 
     /**
      * Validates if the selected dates are valid.

@@ -18,27 +18,31 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.presentation.components.TravelBookingLoadingScreen
-import com.softserveacademy.feature.booking.presentation.components.TravelDateRangePicker
-import com.softserveacademy.feature.booking.presentation.components.TravelGuestBottomSheet
+import com.softserveacademy.feature.booking.presentation.components.TravelBookingDateRangePicker
+import com.softserveacademy.feature.booking.presentation.components.TravelBookingCountBottomSheet
+import com.softserveacademy.feature.booking.presentation.components.util.TravelBookingCountItem
 import androidx.compose.foundation.layout.fillMaxSize
 import java.util.Calendar
 import java.util.TimeZone
 
 /**
- * A generic composable that represents the content of a booking search screen.
- * Decoupled from specific booking types (e.g., Hotel, Flight).
+ * A stateless composable that represents the content of an enter booking details screen.
+ * Allows the user to select a date range and the number of guests/passangers for the booking.
  *
- * @param state The state of the booking search screen.
+ * Decoupled from specific booking types (e.g., Hotel, Flight) to reuse in different booking flows.
+ *
+ * @param state The state of the enter booking details screen.
  * @param onEvent Callback when a UI event occurs.
  * @param modifier The modifier to be applied to the content.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TravelBookingSearchScreenContent(
+fun TravelEnterBookingDetailsScreen(
     modifier: Modifier = Modifier,
-    state: TravelBookingSearchState,
-    onEvent: (TravelBookingSearchEvent) -> Unit,
+    state: TravelEnterBookingDetailsState,
+    bookingCountItems: List<TravelBookingCountItem> = emptyList(),
+    onEvent: (TravelEnterBookingDetailsEvent) -> Unit,
 ) {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val dateRangePickerState = rememberDateRangePickerState(
@@ -73,7 +77,7 @@ fun TravelBookingSearchScreenContent(
             dateRangePickerState.selectedEndDateMillis != state.endDateMillis
         ) {
             onEvent(
-                TravelBookingSearchEvent.OnDateRangeSelected(
+                TravelEnterBookingDetailsEvent.OnDateRangeSelected(
                     dateRangePickerState.selectedStartDateMillis,
                     dateRangePickerState.selectedEndDateMillis
                 )
@@ -87,8 +91,8 @@ fun TravelBookingSearchScreenContent(
         Scaffold(
             bottomBar = {
                 TravelBookingBottomBar(
-                    onBackClick = { onEvent(TravelBookingSearchEvent.OnBackClick) },
-                    onNextClick = { onEvent(TravelBookingSearchEvent.OnNextClick) }
+                    onBackClick = { onEvent(TravelEnterBookingDetailsEvent.OnBackClick) },
+                    onNextClick = { onEvent(TravelEnterBookingDetailsEvent.OnNextClick) }
                 )
             },
             containerColor = MaterialTheme.colorScheme.background,
@@ -102,7 +106,7 @@ fun TravelBookingSearchScreenContent(
                     isVisible = state.isDateErrorVisible,
                     modifier = Modifier.padding(TravelinDimens.PaddingMedium)
                 )
-                TravelDateRangePicker(
+                TravelBookingDateRangePicker(
                     title = stringResource(R.string.booking_date_picker_title),
                     state = dateRangePickerState
                 )
@@ -111,15 +115,10 @@ fun TravelBookingSearchScreenContent(
     }
 
     if (state.showGuestBottomSheet) {
-        TravelGuestBottomSheet(
-            adults = state.adultsCount,
-            kids = state.childrenCount,
-            hasPets = state.hasPets,
-            onAdultsChange = { onEvent(TravelBookingSearchEvent.OnAdultsCountChange(it)) },
-            onKidsChange = { onEvent(TravelBookingSearchEvent.OnChildrenCountChange(it)) },
-            onHasPetsChange = { onEvent(TravelBookingSearchEvent.OnHasPetsChange(it)) },
-            onAccept = { onEvent(TravelBookingSearchEvent.OnAcceptGuests) },
-            onDismissRequest = { onEvent(TravelBookingSearchEvent.OnDismissGuestBottomSheet) },
+        TravelBookingCountBottomSheet(
+            items = bookingCountItems,
+            onAccept = { onEvent(TravelEnterBookingDetailsEvent.OnAcceptClick) },
+            onDismissRequest = { onEvent(TravelEnterBookingDetailsEvent.OnDismissBottomSheet) },
             isErrorVisible = state.isGuestErrorVisible,
             errorMessage = state.guestErrorMessage?.let { stringResource(it) }
         )
@@ -128,21 +127,21 @@ fun TravelBookingSearchScreenContent(
 
 @Preview(name = "Select Dates")
 @Composable
-private fun TravelBookingSearchScreenContentPreview() {
+private fun TravelEnterBookingDetailsScreenPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelBookingSearchScreenContent(
-            state = TravelBookingSearchState(),
+        TravelEnterBookingDetailsScreen(
+            state = TravelEnterBookingDetailsState(),
             onEvent = {}
         )
     }
 }
 
-@Preview(name = "Guest Bottom Sheet")
+@Preview(name = "Count Bottom Sheet")
 @Composable
-private fun TravelBookingGuestBottomSheetPreview() {
+private fun TravelEnterBookingDetailsBottomSheetPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelBookingSearchScreenContent(
-            state = TravelBookingSearchState(showGuestBottomSheet = true),
+        TravelEnterBookingDetailsScreen(
+            state = TravelEnterBookingDetailsState(showGuestBottomSheet = true),
             onEvent = {}
         )
     }

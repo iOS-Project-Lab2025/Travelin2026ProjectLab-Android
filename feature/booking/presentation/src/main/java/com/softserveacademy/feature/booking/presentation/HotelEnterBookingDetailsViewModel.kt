@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.feature.booking.domain.repository.BookingRepository
 import com.softserveacademy.feature.booking.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.domain.ValidateBookingSearchUseCase
+import com.softserveacademy.feature.booking.domain.ValidateEnterBookingDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,25 +17,25 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * View model for the hotel booking search screen.
+ * View model for the enter booking details screen of the hotel booking flow.
  *
  * @property savedStateHandle The handle to saved state.
- * @property validateBookingSearchUseCase Use case for validating booking search input.
+ * @property validateEnterBookingDetailsUseCase Use case for validating booking details input.
  * @property bookingRepository Repository for persisting booking drafts.
  */
 @HiltViewModel
-class HotelBookingSearchViewModel @Inject constructor(
+class HotelEnterBookingDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val validateBookingSearchUseCase: ValidateBookingSearchUseCase,
+    private val validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase,
     private val bookingRepository: BookingRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(TravelBookingSearchState())
+    private val _uiState = MutableStateFlow(TravelEnterBookingDetailsState())
 
     /**
-     * The current state of the hotel booking search screen.
+     * The current state of the enter hotel booking details screen.
      */
-    val uiState: StateFlow<TravelBookingSearchState> = _uiState.asStateFlow()
+    val uiState: StateFlow<TravelEnterBookingDetailsState> = _uiState.asStateFlow()
     
     private val _validationSuccess = MutableStateFlow(false)
     val validationSuccess: StateFlow<Boolean> = _validationSuccess.asStateFlow()
@@ -71,24 +71,24 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     /**
-     * Handles UI events from the hotel booking search screen.
+     * Handles UI events from the enter hotel booking details screen.
      *
      * @param event The event to handle.
      */
-    fun onEvent(event: TravelBookingSearchEvent) {
+    fun onEvent(event: TravelEnterBookingDetailsEvent) {
         when (event) {
-            is TravelBookingSearchEvent.OnDateRangeSelected -> onDateRangeSelected(
+            is TravelEnterBookingDetailsEvent.OnDateRangeSelected -> onDateRangeSelected(
                 event.startDateMillis,
                 event.endDateMillis
             )
 
-            is TravelBookingSearchEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
-            is TravelBookingSearchEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
-            is TravelBookingSearchEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
-            TravelBookingSearchEvent.OnNextClick -> onNextClick()
-            TravelBookingSearchEvent.OnBackClick -> { /* Handled by navigation */ }
-            TravelBookingSearchEvent.OnDismissGuestBottomSheet -> onDismissGuestBottomSheet()
-            TravelBookingSearchEvent.OnAcceptGuests -> onAcceptGuests()
+            is TravelEnterBookingDetailsEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
+            is TravelEnterBookingDetailsEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
+            is TravelEnterBookingDetailsEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
+            TravelEnterBookingDetailsEvent.OnNextClick -> onNextClick()
+            TravelEnterBookingDetailsEvent.OnBackClick -> { /* Handled by navigation */ }
+            TravelEnterBookingDetailsEvent.OnDismissBottomSheet -> onDismissBottomSheet()
+            TravelEnterBookingDetailsEvent.OnAcceptClick -> onAcceptClick()
         }
     }
 
@@ -137,22 +137,22 @@ class HotelBookingSearchViewModel @Inject constructor(
     }
 
     private fun onNextClick() {
-        val validationResult = validateBookingSearchUseCase.validateDates(
+        val validationResult = validateEnterBookingDetailsUseCase.validateDates(
             hotelBookingDraft.checkInDate,
             hotelBookingDraft.checkOutDate
         )
 
         when (validationResult) {
-            is ValidateBookingSearchUseCase.ValidationResult.Success -> {
+            is ValidateEnterBookingDetailsUseCase.ValidationResult.Success -> {
                 _uiState.update { it.copy(showGuestBottomSheet = true) }
             }
 
-            is ValidateBookingSearchUseCase.ValidationResult.Invalid -> {
+            is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid -> {
                 _uiState.update {
                     it.copy(
                         isDateErrorVisible = true,
                         dateErrorMessage = when (validationResult.error) {
-                            ValidateBookingSearchUseCase.ValidationError.EMPTY_DATES ->
+                            ValidateEnterBookingDetailsUseCase.ValidationError.EMPTY_DATES ->
                                 R.string.booking_error_select_dates
 
                             else -> null
@@ -163,26 +163,26 @@ class HotelBookingSearchViewModel @Inject constructor(
         }
     }
 
-    private fun onDismissGuestBottomSheet() {
+    private fun onDismissBottomSheet() {
         _uiState.update { it.copy(showGuestBottomSheet = false, isGuestErrorVisible = false) }
     }
 
-    private fun onAcceptGuests() {
-        val validationResult = validateBookingSearchUseCase.validateGuests(hotelBookingDraft.amountOfAdults)
+    private fun onAcceptClick() {
+        val validationResult = validateEnterBookingDetailsUseCase.validateGuests(hotelBookingDraft.amountOfAdults)
 
         when (validationResult) {
-            is ValidateBookingSearchUseCase.ValidationResult.Success -> {
+            is ValidateEnterBookingDetailsUseCase.ValidationResult.Success -> {
                 // Validation passed for both dates and guests
                 _uiState.update { it.copy(showGuestBottomSheet = false) }
                 _validationSuccess.value = true
             }
 
-            is ValidateBookingSearchUseCase.ValidationResult.Invalid -> {
+            is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid -> {
                 _uiState.update {
                     it.copy(
                         isGuestErrorVisible = true,
                         guestErrorMessage = when (validationResult.error) {
-                            ValidateBookingSearchUseCase.ValidationError.AT_LEAST_ONE_ADULT ->
+                            ValidateEnterBookingDetailsUseCase.ValidationError.AT_LEAST_ONE_ADULT ->
                                 R.string.booking_error_at_least_one_adult
 
                             else -> null

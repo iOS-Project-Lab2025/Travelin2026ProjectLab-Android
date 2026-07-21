@@ -1,7 +1,7 @@
 package com.softserveacademy.feature.booking.presentation
 
 /**
- * Data class representing the state of a booking search screen.
+ * Data class representing the state of an enter booking details screen.
  * Decoupled from specific booking types.
  *
  * @property startDateMillis The selected start date in milliseconds.
@@ -15,7 +15,7 @@ package com.softserveacademy.feature.booking.presentation
  * @property guestErrorMessage The error message for guest selection.
  * @property showGuestBottomSheet Whether the guest selection bottom sheet is visible.
  */
-data class TravelBookingSearchState(
+data class TravelEnterBookingDetailsState(
     val startDateMillis: Long? = null,
     val endDateMillis: Long? = null,
     val adultsCount: Int = 1,

@@ -23,17 +23,13 @@ import com.softserveacademy.core.presentation.design_system.components.util.butt
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.R
+import com.softserveacademy.feature.booking.presentation.components.util.TravelBookingCountItem
 
 /**
- * A bottom sheet for selecting the number of guests (adults, kids, pets).
+ * A generic bottom sheet for selecting various counts and toggles (e.g., guests, rooms, etc.).
  *
  * @param modifier The modifier to be applied to the bottom sheet.
- * @param adults The current number of adults.
- * @param kids The current number of children.
- * @param hasPets Whether pets are included.
- * @param onAdultsChange The callback to be invoked when the number of adults changes.
- * @param onKidsChange The callback to be invoked when the number of children changes.
- * @param onHasPetsChange The callback to be invoked when the pets toggle changes.
+ * @param items The list of [com.softserveacademy.feature.booking.presentation.components.util.TravelBookingCountItem] to be displayed.
  * @param onAccept The callback to be invoked when the selection is accepted.
  * @param onDismissRequest The callback to be invoked when the bottom sheet is dismissed.
  * @param isErrorVisible Whether the error message is visible.
@@ -42,14 +38,9 @@ import com.softserveacademy.feature.booking.presentation.R
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TravelGuestBottomSheet(
+fun TravelBookingCountBottomSheet(
     modifier: Modifier = Modifier,
-    adults: Int,
-    kids: Int,
-    hasPets: Boolean,
-    onAdultsChange: (Int) -> Unit,
-    onKidsChange: (Int) -> Unit,
-    onHasPetsChange: (Boolean) -> Unit,
+    items: List<TravelBookingCountItem>,
     onAccept: () -> Unit,
     onDismissRequest: () -> Unit,
     isErrorVisible: Boolean = false,
@@ -63,13 +54,8 @@ fun TravelGuestBottomSheet(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier,
     ) {
-        TravelGuestBottomSheetContent(
-            adults = adults,
-            kids = kids,
-            hasPets = hasPets,
-            onAdultsChange = onAdultsChange,
-            onKidsChange = onKidsChange,
-            onHasPetsChange = onHasPetsChange,
+        TravelBookingCountBottomSheetContent(
+            items = items,
             onAccept = onAccept,
             isErrorVisible = isErrorVisible,
             errorMessage = errorMessage
@@ -78,28 +64,18 @@ fun TravelGuestBottomSheet(
 }
 
 /**
- * Internal composable that represents the content of the guest selection bottom sheet.
+ * Internal composable that represents the content of the booking count selection bottom sheet.
  *
  * @param modifier The modifier to be applied to the content.
- * @param adults The current number of adults.
- * @param kids The current number of children.
- * @param hasPets Whether pets are included.
- * @param onAdultsChange The callback to be invoked when the number of adults changes.
- * @param onKidsChange The callback to be invoked when the number of children changes.
- * @param onHasPetsChange The callback to be invoked when the pets toggle changes.
+ * @param items The list of [TravelBookingCountItem] to be displayed.
  * @param onAccept The callback to be invoked when the selection is accepted.
  * @param isErrorVisible Whether the error message is visible.
  * @param errorMessage The error message to be displayed.
  */
 @Composable
-fun TravelGuestBottomSheetContent(
+fun TravelBookingCountBottomSheetContent(
     modifier: Modifier = Modifier,
-    adults: Int,
-    kids: Int,
-    hasPets: Boolean,
-    onAdultsChange: (Int) -> Unit,
-    onKidsChange: (Int) -> Unit,
-    onHasPetsChange: (Boolean) -> Unit,
+    items: List<TravelBookingCountItem>,
     onAccept: () -> Unit,
     isErrorVisible: Boolean = false,
     errorMessage: String? = null,
@@ -128,23 +104,28 @@ fun TravelGuestBottomSheetContent(
             modifier = Modifier.padding(bottom = TravelinDimens.PaddingMedium)
         )
 
-        TravelLabelCounter(
-            label = stringResource(R.string.adults_label),
-            count = adults,
-            onCountChange = onAdultsChange,
-            minCount = 1
-        )
-        TravelLabelCounter(
-            label = stringResource(R.string.kids_label),
-            subtitle = stringResource(R.string.kids_subtitle),
-            count = kids,
-            onCountChange = onKidsChange
-        )
-        TravelLabelSwitch(
-            label = stringResource(R.string.pets_label),
-            checked = hasPets,
-            onCheckedChange = onHasPetsChange
-        )
+        items.forEach { item ->
+            when (item) {
+                is TravelBookingCountItem.Counter -> {
+                    TravelLabelCounter(
+                        label = item.label,
+                        subtitle = item.subtitle,
+                        count = item.count,
+                        onCountChange = item.onCountChange,
+                        minCount = item.minCount,
+                        maxCount = item.maxCount
+                    )
+                }
+                is TravelBookingCountItem.Switch -> {
+                    TravelLabelSwitch(
+                        label = item.label,
+                        subtitle = item.subtitle,
+                        checked = item.checked,
+                        onCheckedChange = item.onCheckedChange
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
@@ -158,15 +139,28 @@ fun TravelGuestBottomSheetContent(
 
 @Preview(showBackground = true)
 @Composable
-fun TravelGuestBottomSheetPreview() {
+fun TravelBookingCountBottomSheetPreview() {
     Travelin2026ProjectLabTheme {
-        TravelGuestBottomSheetContent(
-            adults = 1,
-            kids = 0,
-            hasPets = false,
-            onAdultsChange = {},
-            onKidsChange = {},
-            onHasPetsChange = {},
+        TravelBookingCountBottomSheetContent(
+            items = listOf(
+                TravelBookingCountItem.Counter(
+                    label = "Adults",
+                    count = 1,
+                    onCountChange = {},
+                    minCount = 1
+                ),
+                TravelBookingCountItem.Counter(
+                    label = "Kids",
+                    subtitle = "0 - 17 years",
+                    count = 0,
+                    onCountChange = {}
+                ),
+                TravelBookingCountItem.Switch(
+                    label = "Do you travel with pets?",
+                    checked = false,
+                    onCheckedChange = {}
+                )
+            ),
             onAccept = {}
         )
     }

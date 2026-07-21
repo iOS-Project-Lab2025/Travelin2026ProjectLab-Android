@@ -34,8 +34,8 @@ import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 // Booking screens.
-import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
-import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
+import com.softserveacademy.feature.booking.presentation.HotelEnterBookingDetailsScreen
+import com.softserveacademy.feature.booking.presentation.HotelEnterBookingDetailsViewModel
 import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
 import com.softserveacademy.feature.booking.presentation.HotelContactInfoScreen
 import com.softserveacademy.feature.booking.presentation.HotelContactInfoViewModel
@@ -255,7 +255,7 @@ fun NavGraphBuilder.mainGraph(
                 hotelId = route.id, // Receive the ID
                 onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
                 onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
-                onBookClick = { navController.navigate(Routes.HotelBookingSearchScreen(hotelId = route.id)) }
+                onBookClick = { navController.navigate(Routes.HotelEnterBookingDetailsScreen(hotelId = route.id)) }
             )
         }
 
@@ -278,16 +278,16 @@ fun NavGraphBuilder.mainGraph(
 fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
     navigation<Routes.BookingGraph>(
-        startDestination = Routes.HotelBookingSearchScreen(hotelId = 0)
+        startDestination = Routes.HotelEnterBookingDetailsScreen(hotelId = 0)
     ) {
-        composable<Routes.HotelBookingSearchScreen> { backStackEntry ->
-            val route: Routes.HotelBookingSearchScreen = backStackEntry.toRoute()
+        composable<Routes.HotelEnterBookingDetailsScreen> { backStackEntry ->
+            val route: Routes.HotelEnterBookingDetailsScreen = backStackEntry.toRoute()
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Routes.BookingGraph)
             }
-            val viewModel: HotelBookingSearchViewModel = hiltViewModel(parentEntry)
+            val viewModel: HotelEnterBookingDetailsViewModel = hiltViewModel(parentEntry)
 
-            HotelBookingSearchScreen(
+            HotelEnterBookingDetailsScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToRoomSelection = {
                     navController.navigate(Routes.HotelRoomSelectionScreen(hotelId = route.hotelId)) 
