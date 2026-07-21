@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.presentation.components
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.feature.booking.presentation.R
 
 /**
  * A component that displays a label and an optional subtitle alongside a [Switch].
@@ -72,8 +70,8 @@ fun TravelLabelSwitch(
 fun TravelLabelSwitchPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
         TravelLabelSwitch(
-            label = stringResource(R.string.pets_label),
-            checked = false,
+            label = "Do you travel with pets?",
+            checked = true,
             onCheckedChange = {}
         )
     }

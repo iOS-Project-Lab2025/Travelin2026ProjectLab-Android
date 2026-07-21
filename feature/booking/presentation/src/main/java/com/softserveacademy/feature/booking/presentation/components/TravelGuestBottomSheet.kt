@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.InlineErrorBanner
+import com.softserveacademy.core.presentation.design_system.components.TravelLabelCounter
+import com.softserveacademy.core.presentation.design_system.components.TravelLabelSwitch
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme

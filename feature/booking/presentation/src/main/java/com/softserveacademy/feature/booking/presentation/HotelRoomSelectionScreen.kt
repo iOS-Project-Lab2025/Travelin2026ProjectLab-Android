@@ -29,7 +29,7 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.presentation.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.presentation.components.TravelBookingLoadingScreen
-import com.softserveacademy.feature.booking.presentation.components.TravelFilterChip
+import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 
 @Composable
 fun HotelRoomSelectionScreen(

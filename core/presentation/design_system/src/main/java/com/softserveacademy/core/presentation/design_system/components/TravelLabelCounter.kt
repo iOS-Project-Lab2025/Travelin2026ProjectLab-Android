@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.presentation.components
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,11 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.feature.booking.presentation.R
 
 /**
  * A component that displays a label and an optional subtitle alongside a [TravelCounter].
@@ -71,8 +69,8 @@ fun TravelLabelCounter(
 fun TravelLabelCounterPreview() {
     Travelin2026ProjectLabTheme() {
         TravelLabelCounter(
-            label = stringResource(R.string.kids_label),
-            subtitle = stringResource(R.string.kids_subtitle),
+            label = "Kids",
+            subtitle = "0 - 17 years",
             count = 1,
             onCountChange = {},
             modifier = Modifier

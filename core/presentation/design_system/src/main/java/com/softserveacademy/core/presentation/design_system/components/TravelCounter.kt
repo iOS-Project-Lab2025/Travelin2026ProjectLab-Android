@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.presentation.components
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

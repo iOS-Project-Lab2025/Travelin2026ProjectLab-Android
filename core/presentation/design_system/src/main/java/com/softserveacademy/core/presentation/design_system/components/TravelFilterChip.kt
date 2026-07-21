@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.presentation.components
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.feature.booking.presentation.R
 
 /**
  * A custom filter chip composable that represents a single filter option in the UI.
@@ -64,12 +62,12 @@ private fun HotelRoomSelectionScreenPreview() {
             horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
         ) {
             TravelFilterChip(
-                text = stringResource(R.string.filter_available),
+                text = "Available",
                 isSelected = true,
                 onClick = {}
             )
             TravelFilterChip(
-                text = stringResource(R.string.filter_all),
+                text = "All",
                 isSelected = false,
                 onClick = {}
             )
