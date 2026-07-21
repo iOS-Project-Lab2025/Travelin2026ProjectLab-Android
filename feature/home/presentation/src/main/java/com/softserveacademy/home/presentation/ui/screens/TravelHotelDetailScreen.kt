@@ -1,6 +1,7 @@
 package com.softserveacademy.home.presentation.ui.screens
 
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -51,12 +53,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import com.softserveacademy.home.presentation.R.string
 import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import com.softserveacademy.home.presentation.ui.components.HotelDetailLoading
+import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailError
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
 /**
@@ -80,6 +85,7 @@ fun HotelDetailState(
     viewModel: HotelDetailsViewModel = hiltViewModel(),
 ){
     val hotelDetailState by viewModel.hotelDetailState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit){
         viewModel.getHotelDetail(hotelId)
@@ -102,16 +108,32 @@ fun HotelDetailState(
                 includedItems = hotelInformation.includedItems.map { it.toUi() }
             )
 
+            val shareMessage = stringResource(
+                id = string.share_hotel_message,
+                hotelInformation.name,
+                "https://travelin.softserveacademy.com/hotel/${hotelInformation.id}"
+            )
+            val shareTitle = stringResource(id = string.share_hotel_title)
+
             TravelHotelDetailScreen(
                 hotelInformation = hotelDetailsUi,
                 onBackClick = onBackClick,
                 onSeeAllPhotosClick = onSeeAllPhotosClick,
                 onBookClick = onBookClick,
+                onShareClick = {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, shareMessage)
+                        type = "text/plain"
+                    }
+                    val shareIntent = Intent.createChooser(sendIntent, shareTitle)
+                    context.startActivity(shareIntent)
+                },
                 modifier = modifier
             )
         }
         is HotelDetailState.Error -> {
-            HotelDetailError(
+            TravelHotelDetailError(
                 message = (hotelDetailState as HotelDetailState.Error).message,
                 onRetry = { viewModel.getHotelDetail(hotelId) }
             )
@@ -119,38 +141,6 @@ fun HotelDetailState(
         is HotelDetailState.IsLoading -> {
             HotelDetailLoading()
         }
-    }
-}
-
-/**
- * Displays an error message and a retry button when data fetching fails.
- *
- * @param message The error message to display.
- * @param onRetry The action to perform when the retry button is clicked.
- * @param modifier The modifier to be applied to the layout.
- */
-@Composable
-private fun HotelDetailError(
-    message: String?,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = message ?: stringResource(id = string.unexpected_error),
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
-        TravelPrimaryButton(
-            onClick = onRetry,
-            text = stringResource(id = string.retry_label),
-            modifier = Modifier.fillMaxWidth(0.6f)
-        )
     }
 }
 
@@ -269,7 +259,7 @@ private fun HotelHeaderImage(
     ) {
 
         TravelGalleryCarousel(
-            images = imageList,
+            images = imageList.take(5),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
@@ -464,7 +454,9 @@ private fun GalleryPreviewSection(
                             .fillMaxWidth()
                             .height(110.dp)
                             .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+                        error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel)
                     )
                 }
                 if (imageList.size > 1) {
@@ -475,7 +467,9 @@ private fun GalleryPreviewSection(
                             .fillMaxWidth()
                             .height(110.dp)
                             .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+                        error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel)
                     )
                 }
             }
@@ -488,7 +482,9 @@ private fun GalleryPreviewSection(
                         .weight(1f)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel),
+                    error = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.test_hotel)
                 )
             }
         }
@@ -513,17 +509,6 @@ private fun GalleryPreviewSection(
                 fontWeight = FontWeight.Bold
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HotelDetailErrorPreview() {
-    Travelin2026ProjectLabTheme {
-        HotelDetailError(
-            message = "Unable to load hotel details. Please try again.",
-            onRetry = {}
-        )
     }
 }
 

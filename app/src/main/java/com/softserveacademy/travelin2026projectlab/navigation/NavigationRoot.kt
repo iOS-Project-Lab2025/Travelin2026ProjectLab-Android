@@ -6,8 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
 
-//Onboarding Screen
+//Onboarding Screen.
 import com.softserveacademy.feature.onboarding.presentation.OnboardingScreen
 import com.softserveacademy.feature.onboarding.presentation.OnboardingViewModel
 
@@ -18,17 +21,19 @@ import com.softserveacademy.feature.auth.login.presentation.ForgotPasswordViewMo
 import com.softserveacademy.feature.auth.login.presentation.LoginScreen
 import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.toRoute
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
+import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
+// Profile screens.
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
 import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
 import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 
+// Home screens.
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
+// Booking screens.
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
 import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
@@ -191,15 +196,17 @@ fun NavGraphBuilder.mainGraph(
 
         composable<Routes.TravelHomeScreen> {
             RootHomeScreen(
-                onHotelClick = { hotel ->
-                    navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
-                },
-                onAccountClick = {
-                    navController.navigate(Routes.ProfileScreen) {
-                        popUpTo(Routes.TravelHomeScreen)
-                        launchSingleTop = true
+                actions = HomeNavigationActions(
+                    onHotelClick = { hotel ->
+                        navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
+                    },
+                    onAccountClick = {
+                        navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
                     }
-                }
+                )
             )
         }
 
@@ -236,7 +243,13 @@ fun NavGraphBuilder.mainGraph(
             )
         }
 
-        composable<Routes.TravelHotelDetailScreen> { backStackEntry ->
+        composable<Routes.TravelHotelDetailScreen>(
+            deepLinks = listOf(
+                navDeepLink<Routes.TravelHotelDetailScreen>(
+                    basePath = "https://travelin.softserveacademy.com/hotel"
+                )
+            )
+        ) { backStackEntry ->
             val route: Routes.TravelHotelDetailScreen = backStackEntry.toRoute()
             HotelDetailState(
                 hotelId = route.id, // Receive the ID
