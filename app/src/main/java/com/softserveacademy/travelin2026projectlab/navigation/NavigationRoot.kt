@@ -55,24 +55,46 @@ import com.softserveacademy.feature.booking.presentation.HotelBookingConfirmatio
 @Composable
 fun NavigationRoot(
     navController: NavHostController,
-    isFirstTime: Boolean, // Priority check: Is it the user's first time?
+    isFirstTime: Boolean,
     isLoggedIn: Boolean,
     loginViewModel: LoginViewModel,
     registerViewModel: RegisterViewModel,
     forgotPasswordViewModel: ForgotPasswordViewModel
 ) {
-
     NavHost(
         navController = navController,
-
-        // If it's the first time, go to Onboarding. Then checks if the user is logged in, if yes goes to mainGraph, otherwise go to Auth (AuthGraph).
         startDestination = when {
-            isFirstTime -> Routes.OnboardingScreen
+            isFirstTime -> Routes.OnboardingGraph // Changed from OnboardingScreen
             isLoggedIn -> Routes.MainGraph
             else -> Routes.AuthGraph
         }
     ) {
+        // Replace the existing composable<Routes.OnboardingScreen> block with this:
+        onboardingGraph(navController, isLoggedIn)
 
+        authGraph(
+            navController,
+            loginViewModel = loginViewModel,
+            registerViewModel = registerViewModel,
+            forgotPasswordViewModel = forgotPasswordViewModel
+        )
+
+        mainGraph(navController)
+        bookingGraph(navController)
+    }
+}
+
+
+/**
+ * Navigation graph that contains the onboarding flow.
+ *
+ * @param navController The navigation controller used for screen navigation.
+ * @param isLoggedIn Determines the destination after onboarding is completed.
+ */
+fun NavGraphBuilder.onboardingGraph(navController: NavHostController, isLoggedIn: Boolean) {
+    navigation<Routes.OnboardingGraph>(
+        startDestination = Routes.OnboardingScreen
+    ) {
         composable<Routes.OnboardingScreen> {
             val onboardingViewModel: OnboardingViewModel = hiltViewModel()
             OnboardingScreen(
@@ -80,7 +102,7 @@ fun NavigationRoot(
                     onboardingViewModel.onGetStartedClick {
                         navController.navigate(if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph) {
 
-                            popUpTo(Routes.OnboardingScreen) {
+                            popUpTo(Routes.OnboardingGraph) {
                                 inclusive = true
                             }
                         }
@@ -88,17 +110,8 @@ fun NavigationRoot(
                 }
             )
         }
-
-        authGraph(navController, loginViewModel = loginViewModel,
-            registerViewModel=registerViewModel,
-            forgotPasswordViewModel=forgotPasswordViewModel)
-
-
-        mainGraph(navController)
-        bookingGraph(navController)
     }
 }
-
 /**
  * Navigation graph that contains all authentication-related screens.
  *
@@ -253,7 +266,7 @@ fun NavGraphBuilder.mainGraph(
             val route: Routes.TravelHotelDetailScreen = backStackEntry.toRoute()
             HotelDetailState(
                 hotelId = route.id, // Receive the ID
-                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
+                onBackClick = { navController.popBackStack() },
                 onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
                 onBookClick = { navController.navigate(Routes.HotelBookingSearchScreen(hotelId = route.id)) }
             )

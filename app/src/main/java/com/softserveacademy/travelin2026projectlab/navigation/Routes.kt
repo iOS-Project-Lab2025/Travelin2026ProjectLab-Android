@@ -24,7 +24,8 @@ sealed interface Routes {
     @Serializable
     data object BookingGraph : Routes
 
-
+    @Serializable
+    data object OnboardingGraph : Routes
     // ---------------- AUTH ----------------
     @Serializable
     data object LoginScreen : Routes
