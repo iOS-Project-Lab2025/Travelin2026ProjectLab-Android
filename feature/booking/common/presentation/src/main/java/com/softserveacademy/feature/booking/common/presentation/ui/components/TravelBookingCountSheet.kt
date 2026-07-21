@@ -38,11 +38,13 @@ import com.softserveacademy.feature.booking.common.presentation.ui.components.ut
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TravelBookingCountBottomSheet(
+fun TravelBookingCountSheet(
     modifier: Modifier = Modifier,
     items: List<TravelBookingCountItem>,
     onAccept: () -> Unit,
     onDismissRequest: () -> Unit,
+    title: String? = null,
+    subtitle: String? = null,
     isErrorVisible: Boolean = false,
     errorMessage: String? = null,
     sheetState: SheetState = rememberModalBottomSheetState()
@@ -54,9 +56,11 @@ fun TravelBookingCountBottomSheet(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier,
     ) {
-        TravelBookingCountBottomSheetContent(
+        TravelBookingCountSheetContent(
             items = items,
             onAccept = onAccept,
+            title = title,
+            subtitle = subtitle,
             isErrorVisible = isErrorVisible,
             errorMessage = errorMessage
         )
@@ -73,10 +77,12 @@ fun TravelBookingCountBottomSheet(
  * @param errorMessage The error message to be displayed.
  */
 @Composable
-fun TravelBookingCountBottomSheetContent(
+fun TravelBookingCountSheetContent(
     modifier: Modifier = Modifier,
     items: List<TravelBookingCountItem>,
     onAccept: () -> Unit,
+    title: String? = null,
+    subtitle: String? = null,
     isErrorVisible: Boolean = false,
     errorMessage: String? = null,
 ) {
@@ -86,12 +92,12 @@ fun TravelBookingCountBottomSheetContent(
             .padding(TravelinDimens.PaddingExtraLarge)
     ) {
         Text(
-            text = stringResource(R.string.guest_title),
+            text = title ?: stringResource(R.string.booking_count_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = stringResource(R.string.guest_subtitle),
+            text = subtitle ?: stringResource(R.string.booking_count_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -139,9 +145,9 @@ fun TravelBookingCountBottomSheetContent(
 
 @Preview(showBackground = true)
 @Composable
-fun TravelBookingCountBottomSheetPreview() {
+fun TravelBookingCountSheetPreview() {
     Travelin2026ProjectLabTheme {
-        TravelBookingCountBottomSheetContent(
+        TravelBookingCountSheetContent(
             items = listOf(
                 TravelBookingCountItem.Counter(
                     label = "Adults",

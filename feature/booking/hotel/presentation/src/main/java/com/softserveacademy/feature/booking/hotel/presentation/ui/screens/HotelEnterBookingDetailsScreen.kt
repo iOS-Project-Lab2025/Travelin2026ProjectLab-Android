@@ -11,7 +11,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEn
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelEnterBookingDetailsScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
-import com.softserveacademy.feature.booking.common.presentation.R
+import com.softserveacademy.feature.booking.hotel.presentation.R
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -61,8 +61,8 @@ fun HotelEnterBookingDetailsScreen(
     )
 
     TravelEnterBookingDetailsScreen(
+        modifier = modifier,
         state = uiState,
-        bookingCountItems = bookingCountItems,
         onEvent = { event ->
             when (event) {
                 TravelEnterBookingDetailsEvent.OnBackClick -> onBackClick()
@@ -70,6 +70,8 @@ fun HotelEnterBookingDetailsScreen(
                 else -> viewModel.onEvent(event)
             }
         },
-        modifier = modifier
+        bookingCountItems = bookingCountItems,
+        bottomSheetTitle = stringResource(R.string.guest_count_title),
+        bottomSheetSubtitle = stringResource(R.string.guest_count_subtitle)
     )
 }

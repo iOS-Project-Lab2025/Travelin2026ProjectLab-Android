@@ -33,7 +33,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelCo
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelContactInfoState
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
-import com.softserveacademy.feature.booking.common.presentation.R
+import com.softserveacademy.feature.booking.hotel.presentation.R
 
 @Composable
 fun HotelContactInfoScreen(

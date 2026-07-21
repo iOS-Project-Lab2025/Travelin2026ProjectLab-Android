@@ -33,7 +33,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomS
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingLoadingScreen
-import com.softserveacademy.feature.booking.common.presentation.R
+import com.softserveacademy.feature.booking.hotel.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 
 @Composable

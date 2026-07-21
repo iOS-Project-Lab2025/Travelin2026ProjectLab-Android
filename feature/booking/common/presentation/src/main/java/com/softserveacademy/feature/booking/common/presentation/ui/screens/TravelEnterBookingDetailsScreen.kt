@@ -21,12 +21,13 @@ import com.softserveacademy.feature.booking.common.presentation.events.TravelEnt
 import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingDateRangePicker
-import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingCountBottomSheet
+import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingCountSheet
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
 import com.softserveacademy.feature.booking.common.presentation.R
 import androidx.compose.foundation.layout.fillMaxSize
 import java.util.Calendar
 import java.util.TimeZone
+import kotlin.collections.listOf
 
 /**
  * A stateless composable that represents the content of an enter booking details screen.
@@ -44,8 +45,10 @@ import java.util.TimeZone
 fun TravelEnterBookingDetailsScreen(
     modifier: Modifier = Modifier,
     state: TravelEnterBookingDetailsState,
-    bookingCountItems: List<TravelBookingCountItem> = emptyList(),
     onEvent: (TravelEnterBookingDetailsEvent) -> Unit,
+    bookingCountItems: List<TravelBookingCountItem> = emptyList(),
+    bottomSheetTitle: String? = null,
+    bottomSheetSubtitle: String? = null
 ) {
     val todayStartUtc = remember {
         Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
@@ -142,8 +145,10 @@ fun TravelEnterBookingDetailsScreen(
     }
 
     if (state.showGuestBottomSheet) {
-        TravelBookingCountBottomSheet(
+        TravelBookingCountSheet(
             items = bookingCountItems,
+            title = bottomSheetTitle,
+            subtitle = bottomSheetSubtitle,
             onAccept = { onEvent(TravelEnterBookingDetailsEvent.OnAcceptClick) },
             onDismissRequest = { onEvent(TravelEnterBookingDetailsEvent.OnDismissBottomSheet) },
             isErrorVisible = state.isGuestErrorVisible,
@@ -169,7 +174,26 @@ private fun TravelEnterBookingDetailsBottomSheetPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
         TravelEnterBookingDetailsScreen(
             state = TravelEnterBookingDetailsState(showGuestBottomSheet = true),
-            onEvent = {}
+            onEvent = {},
+            bookingCountItems = listOf(
+                TravelBookingCountItem.Counter(
+                        label = "Adults",
+                        count = 1,
+                        onCountChange = {},
+                        minCount = 1
+                    ),
+                TravelBookingCountItem.Counter(
+                    label = "Kids",
+                    subtitle = "0 - 17 years",
+                    count = 0,
+                    onCountChange = {}
+                ),
+                TravelBookingCountItem.Switch(
+                    label = "Do you travel with pets?",
+                    checked = false,
+                    onCheckedChange = {}
+                )
+            )
         )
     }
 }
