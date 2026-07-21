@@ -34,12 +34,12 @@ import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 // Booking screens.
-import com.softserveacademy.feature.booking.presentation.HotelEnterBookingDetailsScreen
-import com.softserveacademy.feature.booking.presentation.HotelEnterBookingDetailsViewModel
-import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
-import com.softserveacademy.feature.booking.presentation.HotelContactInfoScreen
-import com.softserveacademy.feature.booking.presentation.HotelContactInfoViewModel
-import com.softserveacademy.feature.booking.presentation.HotelBookingConfirmationScreen
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelEnterBookingDetailsScreen
+import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelEnterBookingDetailsViewModel
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelRoomSelectionScreen
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelContactInfoScreen
+import com.softserveacademy.feature.booking.common.presentation.viewmodel.HotelContactInfoViewModel
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.HotelBookingConfirmationScreen
 
 
 /**
