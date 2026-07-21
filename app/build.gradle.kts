@@ -70,7 +70,7 @@ dependencies {
     implementation(projects.feature.home.domain)
     implementation(projects.feature.home.data)
     implementation(projects.feature.home.presentation)
-    implementation(projects.feature.booking.presentation)
-    implementation(projects.feature.booking.data)
+    implementation(projects.feature.booking.common.presentation)
+    implementation(projects.feature.booking.common.data)
 
 }
