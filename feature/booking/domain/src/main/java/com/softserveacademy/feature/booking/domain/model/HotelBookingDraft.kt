@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  * @property amountOfAdults The number of adults for the booking.
  * @property amountOfChildren The number of children for the booking.
  * @property hasPets Whether the booking includes pets.
- * @property guest The guest information for the booking.
+ * @property contactInfo The contact information for the booking.
  */
 @Serializable
 data class HotelBookingDraft(
@@ -23,11 +23,11 @@ data class HotelBookingDraft(
     val amountOfAdults: Int = 1,
     val amountOfChildren: Int = 0,
     val hasPets: Boolean = false,
-    val guest: GuestInfo = GuestInfo()
+    val contactInfo: ContactInfo = ContactInfo()
 ) : java.io.Serializable
 
 /**
- * Data class representing the guest information for a booking.
+ * Data class representing the contact information for a booking.
  *
  * @property firstName The first name of the guest.
  * @property lastName The last name of the guest.
@@ -35,7 +35,7 @@ data class HotelBookingDraft(
  * @property phoneNumber The phone number of the guest.
  */
 @Serializable
-data class GuestInfo(
+data class ContactInfo(
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",

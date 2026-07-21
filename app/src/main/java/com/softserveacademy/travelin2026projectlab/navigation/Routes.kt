@@ -66,7 +66,11 @@ sealed interface Routes {
     data class HotelRoomSelectionScreen(val hotelId: Int) : Routes
 
     @Serializable
-    data class GuestInformationScreen(val hotelId: Int) : Routes
+    data class HotelContactInfoScreen(val hotelId: Int) : Routes
+
+    @Serializable
+    data class HotelBookingConfirmationScreen(val hotelId: Int) : Routes
+
 
 // ---------------- ONBOARDING ----------------
     /**
