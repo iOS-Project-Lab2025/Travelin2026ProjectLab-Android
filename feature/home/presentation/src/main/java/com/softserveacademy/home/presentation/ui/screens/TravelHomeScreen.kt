@@ -70,8 +70,10 @@ fun RootHomeScreen(
         state = state,
         onHotelClick = actions.onHotelClick,
         onAccountClick = actions.onAccountClick,
+        onProfileClick = actions.onProfileClick,
         onJourneySeeAllClick = actions.onJourneySeeAllClick,
         onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
+        onUpcomingTripClick = actions.onUpcomingTripClick,
         modifier = modifier
     )
 }
@@ -96,6 +98,7 @@ fun RootHomeScreen(
  *   section is tapped.
  * @param onHotelsSeeAllClick Action to perform when the "See all" button in the "Hotels
  *   recommendation for you" section is tapped.
+ * @param onProfileClick Action to perform when the user profile card is tapped.
  * @param modifier Modifier to be applied to the root layout.
  */
 @Composable
@@ -103,8 +106,10 @@ fun TravelHomeScreen(
     state: HomeUiState,
     onHotelClick: (Hotel) -> Unit,
     onAccountClick: () -> Unit,
+    onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
     onHotelsSeeAllClick: () -> Unit = {},
+    onUpcomingTripClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
@@ -132,7 +137,7 @@ fun TravelHomeScreen(
                 Column {
                     Spacer(Modifier.height(4.dp))
                     if (userProfile != null) {
-                        TravelUserProfileCard(userProfile = userProfile)
+                        TravelUserProfileCard(userProfile = userProfile, onClick = onProfileClick)
                         Spacer(Modifier.height(16.dp))
                     }
                     TravelTextField()
@@ -149,7 +154,10 @@ fun TravelHomeScreen(
                 ) {
                     if (upcomingTrip != null) {
                         Spacer(Modifier.height(16.dp))
-                        TravelUpcomingTripCard(trip = upcomingTrip)
+                        TravelUpcomingTripCard(
+                            trip = upcomingTrip,
+                            onClick = { onUpcomingTripClick(upcomingTrip.bookingId) }
+                        )
                         Spacer(Modifier.height(16.dp))
                     }
 

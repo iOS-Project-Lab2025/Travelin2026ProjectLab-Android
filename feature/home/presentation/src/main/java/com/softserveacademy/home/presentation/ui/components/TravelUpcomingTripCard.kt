@@ -179,7 +179,7 @@ fun TravelUpcomingTripCard(
  * @param text The status label to display inside the badge.
  */
 @Composable
-private fun StatusBadge(text: String) {
+internal fun StatusBadge(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyLarge,
@@ -212,7 +212,7 @@ private fun StatusBadge(text: String) {
  * (right-aligned) instead of the origin (left-aligned). Defaults to `false`.
  */
 @Composable
-private fun RoutePoint(
+internal fun RoutePoint(
     code: String,
     time: String,
     icon: ImageVector,
@@ -267,7 +267,7 @@ private fun RoutePoint(
  * RoutePoints via `Modifier.weight(1f)`.
  */
 @Composable
-private fun DurationConnector(duration: String, modifier: Modifier = Modifier) {
+internal fun DurationConnector(duration: String, modifier: Modifier = Modifier) {
     val lineColor = MaterialTheme.colorScheme.primary
     Column(
         modifier = modifier,
@@ -312,7 +312,7 @@ private fun DurationConnector(duration: String, modifier: Modifier = Modifier) {
  * automatically to light/dark theme.
  */
 @Composable
-private fun PerforatedDivider() {
+internal fun PerforatedDivider() {
     val dividerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
     Canvas(
         modifier = Modifier
@@ -345,7 +345,7 @@ private fun PerforatedDivider() {
  * `LocalDensity.current` rather than relying on the `density` parameter of
  * [createOutline], since the shape is `remember`-ed once per composition.
  */
-private class BoardingPassShape(
+internal class BoardingPassShape(
     private val cornerRadius: Dp,
     private val notchRadius: Dp,
     private val notchHeightFraction: Float,

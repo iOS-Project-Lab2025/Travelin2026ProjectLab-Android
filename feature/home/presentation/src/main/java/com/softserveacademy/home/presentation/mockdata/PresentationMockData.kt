@@ -21,6 +21,8 @@ object PresentationMockData {
         airline = "Garuda Indonesia",
         travelClass = "Economy",
         flightType = "Direct",
-        bookingId = "GA-880"
+        bookingId = "GA-880",
+        passengerCount = 2,
+        flightCount = 2
     )
 }
