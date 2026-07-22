@@ -2,6 +2,10 @@ package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,12 +36,20 @@ fun TravelPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    variant: PrimaryButtonVariant = PrimaryButtonVariant.CallToAction
+    variant: PrimaryButtonVariant = PrimaryButtonVariant.CallToAction,
+    debounceInterval: Long = 1000L
 ) {
     val colors = variant.colors()
+    var lastClickTime by remember { mutableStateOf(0L) }
 
     Button(
-        onClick = onClick,
+        onClick = {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > debounceInterval) {
+                lastClickTime = currentTime
+                onClick()
+            }
+        },
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth(),
