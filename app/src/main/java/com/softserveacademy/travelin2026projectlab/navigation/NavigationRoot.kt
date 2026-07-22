@@ -23,6 +23,7 @@ import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
 import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
+
 // Profile screens.
 import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
 import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
@@ -34,13 +35,14 @@ import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.RootUpcomingTripScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
+
 // Booking screens.
-import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
-import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
-import com.softserveacademy.feature.booking.presentation.HotelRoomSelectionScreen
-import com.softserveacademy.feature.booking.presentation.HotelContactInfoScreen
-import com.softserveacademy.feature.booking.presentation.HotelContactInfoViewModel
-import com.softserveacademy.feature.booking.presentation.HotelBookingConfirmationScreen
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelEnterBookingDetailsScreen
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelRoomSelectionScreen
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelContactInfoScreen
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelContactInfoViewModel
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmationScreen
 
 
 /**
@@ -278,7 +280,7 @@ fun NavGraphBuilder.mainGraph(
                 hotelId = route.id, // Receive the ID
                 onBackClick = { navController.popBackStack() },
                 onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
-                onBookClick = { navController.navigate(Routes.HotelBookingSearchScreen(hotelId = route.id)) }
+                onBookClick = { navController.navigate(Routes.HotelEnterBookingDetailsScreen(hotelId = route.id)) }
             )
         }
 
@@ -317,16 +319,16 @@ fun NavGraphBuilder.mainGraph(
 fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
     navigation<Routes.BookingGraph>(
-        startDestination = Routes.HotelBookingSearchScreen(hotelId = 0)
+        startDestination = Routes.HotelEnterBookingDetailsScreen(hotelId = 0)
     ) {
-        composable<Routes.HotelBookingSearchScreen> { backStackEntry ->
-            val route: Routes.HotelBookingSearchScreen = backStackEntry.toRoute()
+        composable<Routes.HotelEnterBookingDetailsScreen> { backStackEntry ->
+            val route: Routes.HotelEnterBookingDetailsScreen = backStackEntry.toRoute()
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Routes.BookingGraph)
             }
-            val viewModel: HotelBookingSearchViewModel = hiltViewModel(parentEntry)
+            val viewModel: HotelEnterBookingDetailsViewModel = hiltViewModel(parentEntry)
 
-            HotelBookingSearchScreen(
+            HotelEnterBookingDetailsScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToRoomSelection = {
                     navController.navigate(Routes.HotelRoomSelectionScreen(hotelId = route.hotelId)) 
