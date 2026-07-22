@@ -24,7 +24,8 @@ sealed interface Routes {
     @Serializable
     data object BookingGraph : Routes
 
-
+    @Serializable
+    data object OnboardingGraph : Routes
     // ---------------- AUTH ----------------
     @Serializable
     data object LoginScreen : Routes
@@ -56,6 +57,8 @@ sealed interface Routes {
     @Serializable
     data class HotelGalleryScreen(val id: Int) : Routes
 
+    @Serializable
+    data class TravelUpcomingTripScreen(val bookingId: String) : Routes
 
     // ---------------- BOOKING ----------------
 

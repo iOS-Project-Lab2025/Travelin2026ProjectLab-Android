@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -95,7 +96,8 @@ fun     TravelNavigationBar(
         modifier = Modifier.shadow(
             elevation = 12.dp,
             clip = false
-        )
+        ),
+        windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
         NavigationBarItem(
             selected = selectedTab == 0,
@@ -211,25 +213,20 @@ fun TravelBackground(modifier: Modifier = Modifier) {
             val width = size.width
             val height = size.height
 
-            // Capa 3 - más clara, la que llega hasta ~40%
             drawOval(
                 color = Color(0xFF4DA8B5),
-                topLeft = Offset(x = -width * 0.1f, y = -height * 0.3f),
-                size = Size(width * 1.2f, height * 0.7f)
+                topLeft = Offset(x = -width * 0.1f, y = -height * 0.5f),
+                size = Size(width * 1.2f, height * 0.69f)
             )
-
-            // Capa 2 - media
             drawOval(
                 color = Color(0xFF007A8C),
-                topLeft = Offset(x = -width * 0.1f, y = -height * 0.4f),
-                size = Size(width * 1.2f, height * 0.7f)
+                topLeft = Offset(x = -width * 0.1f, y = -height * 0.5f),
+                size = Size(width * 1.2f, height * 0.615f)
             )
-
-            // Capa 1 - más oscura, arriba del todo
             drawOval(
                 color = Color(0xFF005F6B),
                 topLeft = Offset(x = -width * 0.1f, y = -height * 0.5f),
-                size = Size(width * 1.2f, height * 0.7f)
+                size = Size(width * 1.2f, height * 0.55f)
             )
 
         }

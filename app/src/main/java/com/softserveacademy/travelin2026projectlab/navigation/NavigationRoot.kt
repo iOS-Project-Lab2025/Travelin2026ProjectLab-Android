@@ -33,6 +33,7 @@ import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 // Home screens.
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.RootUpcomingTripScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 
 // Booking screens.
@@ -57,24 +58,46 @@ import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelB
 @Composable
 fun NavigationRoot(
     navController: NavHostController,
-    isFirstTime: Boolean, // Priority check: Is it the user's first time?
+    isFirstTime: Boolean,
     isLoggedIn: Boolean,
     loginViewModel: LoginViewModel,
     registerViewModel: RegisterViewModel,
     forgotPasswordViewModel: ForgotPasswordViewModel
 ) {
-
     NavHost(
         navController = navController,
-
-        // If it's the first time, go to Onboarding. Then checks if the user is logged in, if yes goes to mainGraph, otherwise go to Auth (AuthGraph).
         startDestination = when {
-            isFirstTime -> Routes.OnboardingScreen
+            isFirstTime -> Routes.OnboardingGraph // Changed from OnboardingScreen
             isLoggedIn -> Routes.MainGraph
             else -> Routes.AuthGraph
         }
     ) {
+        // Replace the existing composable<Routes.OnboardingScreen> block with this:
+        onboardingGraph(navController, isLoggedIn)
 
+        authGraph(
+            navController,
+            loginViewModel = loginViewModel,
+            registerViewModel = registerViewModel,
+            forgotPasswordViewModel = forgotPasswordViewModel
+        )
+
+        mainGraph(navController)
+        bookingGraph(navController)
+    }
+}
+
+
+/**
+ * Navigation graph that contains the onboarding flow.
+ *
+ * @param navController The navigation controller used for screen navigation.
+ * @param isLoggedIn Determines the destination after onboarding is completed.
+ */
+fun NavGraphBuilder.onboardingGraph(navController: NavHostController, isLoggedIn: Boolean) {
+    navigation<Routes.OnboardingGraph>(
+        startDestination = Routes.OnboardingScreen
+    ) {
         composable<Routes.OnboardingScreen> {
             val onboardingViewModel: OnboardingViewModel = hiltViewModel()
             OnboardingScreen(
@@ -82,7 +105,7 @@ fun NavigationRoot(
                     onboardingViewModel.onGetStartedClick {
                         navController.navigate(if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph) {
 
-                            popUpTo(Routes.OnboardingScreen) {
+                            popUpTo(Routes.OnboardingGraph) {
                                 inclusive = true
                             }
                         }
@@ -90,17 +113,8 @@ fun NavigationRoot(
                 }
             )
         }
-
-        authGraph(navController, loginViewModel = loginViewModel,
-            registerViewModel=registerViewModel,
-            forgotPasswordViewModel=forgotPasswordViewModel)
-
-
-        mainGraph(navController)
-        bookingGraph(navController)
     }
 }
-
 /**
  * Navigation graph that contains all authentication-related screens.
  *
@@ -207,6 +221,15 @@ fun NavGraphBuilder.mainGraph(
                             popUpTo(Routes.TravelHomeScreen)
                             launchSingleTop = true
                         }
+                    },
+                    onProfileClick = {
+                        navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
+                    },
+                    onUpcomingTripClick = { bookingId ->
+                        navController.navigate(Routes.TravelUpcomingTripScreen(bookingId = bookingId))
                     }
                 )
             )
@@ -255,7 +278,7 @@ fun NavGraphBuilder.mainGraph(
             val route: Routes.TravelHotelDetailScreen = backStackEntry.toRoute()
             HotelDetailState(
                 hotelId = route.id, // Receive the ID
-                onBackClick = { navController.navigate(Routes.TravelHomeScreen) },
+                onBackClick = { navController.popBackStack() },
                 onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
                 onBookClick = { navController.navigate(Routes.HotelEnterBookingDetailsScreen(hotelId = route.id)) }
             )
@@ -264,8 +287,24 @@ fun NavGraphBuilder.mainGraph(
         composable<Routes.HotelGalleryScreen> { backStackEntry ->
             val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
             TravelHotelGalleryScreen(
-                hotelId = route.id, // Receive the ID
+                hotelId = route.id,
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable<Routes.TravelUpcomingTripScreen> { backStackEntry ->
+            val route: Routes.TravelUpcomingTripScreen = backStackEntry.toRoute()
+            RootUpcomingTripScreen(
+                onBackClick = { navController.popBackStack() },
+                onTabClick = { index ->
+                    when (index) {
+                        0 -> navController.popBackStack()
+                        3 -> navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
+                    }
+                }
             )
         }
     }

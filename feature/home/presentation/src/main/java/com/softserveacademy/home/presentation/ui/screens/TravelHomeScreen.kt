@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -72,8 +70,10 @@ fun RootHomeScreen(
         state = state,
         onHotelClick = actions.onHotelClick,
         onAccountClick = actions.onAccountClick,
+        onProfileClick = actions.onProfileClick,
         onJourneySeeAllClick = actions.onJourneySeeAllClick,
         onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
+        onUpcomingTripClick = actions.onUpcomingTripClick,
         modifier = modifier
     )
 }
@@ -81,10 +81,11 @@ fun RootHomeScreen(
 /**
  * Main home screen of the Travelin application.
  *
- * <p>Displays a user profile card at the top, followed by a search bar, an upcoming trip card,
- * an icons card for quick actions, a "Journey together" carousel of vertical hotel cards, and a
- * "Hotels recommendation for you" section with horizontal cards. A bottom navigation bar provides
- * access to different sections of the app.</p>
+ * <p>Has a fixed top section with the user profile card, search bar, and icons card.
+ * Below it, a scrollable section contains the upcoming trip card, a "Journey together"
+ * carousel of vertical hotel cards, and a "Hotels recommendation for you" section with
+ * cards arranged vertically. A bottom navigation bar provides access to different
+ * sections of the app.</p>
  *
  * <p>This composable is stateless — all data is provided through a [HomeUiState], making it
  * suitable for previews and unit testing. Each section independently reports its loading,
@@ -97,6 +98,7 @@ fun RootHomeScreen(
  *   section is tapped.
  * @param onHotelsSeeAllClick Action to perform when the "See all" button in the "Hotels
  *   recommendation for you" section is tapped.
+ * @param onProfileClick Action to perform when the user profile card is tapped.
  * @param modifier Modifier to be applied to the root layout.
  */
 @Composable
@@ -104,8 +106,10 @@ fun TravelHomeScreen(
     state: HomeUiState,
     onHotelClick: (Hotel) -> Unit,
     onAccountClick: () -> Unit,
+    onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
     onHotelsSeeAllClick: () -> Unit = {},
+    onUpcomingTripClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
@@ -122,80 +126,95 @@ fun TravelHomeScreen(
             )
         }
     ) { innerPadding ->
-        Box(modifier = modifier.fillMaxSize().padding(innerPadding)) {
+        Box(modifier = modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding())) {
             TravelBackground()
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
             ) {
-                Spacer(Modifier.height(16.dp))
-                if (userProfile != null) {
-                    TravelUserProfileCard(userProfile = userProfile)
+                // Fixed top section
+                Column {
+                    Spacer(Modifier.height(4.dp))
+                    if (userProfile != null) {
+                        TravelUserProfileCard(userProfile = userProfile, onClick = onProfileClick)
+                        Spacer(Modifier.height(16.dp))
+                    }
+                    TravelTextField()
                     Spacer(Modifier.height(16.dp))
+                    TravelIconsCard()
                 }
-                TravelTextField()
-                Spacer(Modifier.height(16.dp))
-                if (upcomingTrip != null) {
-                    TravelUpcomingTripCard(trip = upcomingTrip)
-                    Spacer(Modifier.height(16.dp))
-                    Spacer(Modifier.height(16.dp))
-                }
-                TravelIconsCard()
-                Spacer(Modifier.height(16.dp))
 
-                // "Journey together" section header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // Scrollable bottom section
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.journey_together_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    TravelTextActionButton(
-                        text = stringResource(id = R.string.see_all_label),
-                        onClick = onJourneySeeAllClick
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-                TravelCarousel(
-                    packages = hotels,
-                    onHotelClick = onHotelClick
-                )
-                Spacer(Modifier.height(16.dp))
+                    if (upcomingTrip != null) {
+                        Spacer(Modifier.height(16.dp))
+                        TravelUpcomingTripCard(
+                            trip = upcomingTrip,
+                            onClick = { onUpcomingTripClick(upcomingTrip.bookingId) }
+                        )
+                        Spacer(Modifier.height(16.dp))
+                    }
 
-                // "Hotels recommendation for you" section header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.hotels_recommendation_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                    // "Journey together" section header
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.journey_together_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        TravelTextActionButton(
+                            text = stringResource(id = R.string.see_all_label),
+                            onClick = onJourneySeeAllClick
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    TravelCarousel(
+                        packages = hotels,
+                        onHotelClick = onHotelClick
                     )
-                    TravelTextActionButton(
-                        text = stringResource(id = R.string.see_all_label),
-                        onClick = onHotelsSeeAllClick
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(hotels) { hotel ->
-                        Box(
-                            modifier = Modifier.clickable { onHotelClick(hotel) }
-                        ) {
-                            TravelCardHorizontal(hotel = hotel)
+                    Spacer(Modifier.height(16.dp))
+
+                    // "Hotels recommendation for you" section header
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.hotels_recommendation_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        TravelTextActionButton(
+                            text = stringResource(id = R.string.see_all_label),
+                            onClick = onHotelsSeeAllClick
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        hotels.forEach { hotel ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onHotelClick(hotel) }
+                            ) {
+                                TravelCardHorizontal(hotel = hotel)
+                            }
                         }
                     }
                 }
-                Spacer(Modifier.height(16.dp))
             }
         }
     }
