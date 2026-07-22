@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.screens
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,6 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 
 /**
  * A simple loading screen with a circular progress indicator in the center.
@@ -15,7 +17,7 @@ import androidx.compose.ui.Modifier
  * @param modifier The modifier to be applied to the loading screen.
  */
 @Composable
-fun TravelBookingLoadingScreen(
+fun TravelLoadingScreen(
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -25,5 +27,13 @@ fun TravelBookingLoadingScreen(
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
+    }
+}
+
+@Preview
+@Composable
+fun TravelLoadingScreenPreview(){
+    Travelin2026ProjectLabTheme () {
+        TravelLoadingScreen()
     }
 }
