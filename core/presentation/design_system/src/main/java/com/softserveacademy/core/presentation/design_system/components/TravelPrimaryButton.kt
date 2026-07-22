@@ -29,6 +29,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param modifier The modifier to apply to the button
  * @param enabled Whether the button is enabled or disabled
  * @param variant The variant of the button (`PrimaryButtonVariant.CallToAction`, `PrimaryButtonVariant.Neutral`)
+ * @param debounceInterval The time in milliseconds to wait before allowing another click.
  */
 @Composable
 fun TravelPrimaryButton(

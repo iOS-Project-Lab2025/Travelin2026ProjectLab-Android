@@ -36,7 +36,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param modifier The modifier to apply to the button
  * @param colorByTheme Whether to update the color of the icon based on the theme
  * @param contentDescription The content description for the icon
- * @param debounceInterval The time in milliseconds to wait before allowing another click
+ * @param debounceInterval The time in milliseconds to wait before allowing another click.
  */
 @Composable
 fun TravelSocialButton(
