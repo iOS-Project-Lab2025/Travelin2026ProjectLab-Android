@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="booking_date_picker_title">Available date</string>
+
+    <string name="back_button_label">Back</string>
+    <string name="next_button_label">Next</string>
+    <string name="accept_button_label">Accept</string>
+
+    <string name="booking_error_select_dates">Please select check-in and check-out dates</string>
+    <string name="booking_error_at_least_one_adult">At least one adult is required</string>
+
+    <string name="booking_count_title">Guests</string>
+    <string name="booking_count_subtitle">Add guests to your reservation</string>
+
+</resources>
