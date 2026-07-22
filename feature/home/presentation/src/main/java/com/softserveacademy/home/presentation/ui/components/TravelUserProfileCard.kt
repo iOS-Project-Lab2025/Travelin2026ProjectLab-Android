@@ -2,6 +2,7 @@ package com.softserveacademy.home.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,17 +41,19 @@ import java.text.NumberFormat
  * points value, and a circular avatar image aligned to the right.</p>
  *
  * @param userProfile The user profile data to display.
+ * @param onClick Callback invoked when the card is tapped.
  * @param modifier Modifier to be applied to the root layout.
  */
 @Composable
 fun TravelUserProfileCard(
     userProfile: UserProfileUi,
+    onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val pointsFormatted = NumberFormat.getIntegerInstance().format(userProfile.points)
 
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {

@@ -3,29 +3,20 @@ package com.softserveacademy.core.domain.model
 /**
  * Represents a user's flight reservation.
  *
- * A flight booking contains the reservation-specific information associated
- * with a flight, such as the ticket number, assigned seat, boarding details,
- * and current booking status.
+ * A flight booking contains one or more flights and tickets under a single
+ * confirmation code (PNR). For example, a round-trip booking with 3 passengers
+ * would have 2 flights and 3 tickets.
  *
  * @property bookingId Unique identifier of the booking.
- * @property flight Flight associated with this booking.
- * @property ticketNumber Electronic ticket number issued for the passenger.
+ * @property flights The list of flights included in this booking.
+ * @property tickets The list of tickets issued for the passengers.
  * @property confirmationCode Airline or booking confirmation code (PNR).
- * @property seat Assigned seat number, if available.
- * @property gate Departure gate, if assigned.
- * @property boardingGroup Passenger boarding group, if applicable.
  * @property status Current status of the booking.
  */
 data class FlightBooking(
     val bookingId: String,
-    val flight: Flight,
-
-    val ticketNumber: String,
+    val flights: List<Flight>,
+    val tickets: List<Ticket>,
     val confirmationCode: String,
-
-    val seat: String?,
-    val gate: String?,
-    val boardingGroup: String?,
-
     val status: BookingStatus
 )

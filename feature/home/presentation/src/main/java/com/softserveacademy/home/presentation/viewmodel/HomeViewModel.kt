@@ -121,22 +121,24 @@ class HomeViewModel @Inject constructor(
 
     private fun Trip.toUpcomingTripUi(): UpcomingTripUi? {
         val flightBooking = flights.firstOrNull() ?: return null
-        val flight = flightBooking.flight
+        val firstFlight = flightBooking.flights.firstOrNull() ?: return null
         val dateFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         return UpcomingTripUi(
             status = "Upcoming",
             date = dateFormat.format(Date(startDate)),
-            originCode = flight.origin.code,
-            originTime = timeFormat.format(Date(flight.departureTime)),
-            destinationCode = flight.destination.code,
-            destinationTime = timeFormat.format(Date(flight.arrivalTime)),
-            duration = formatDuration(flight.duration),
-            airline = flight.airline.name,
-            travelClass = flight.cabinClass.name.replace("_", " ").lowercase()
+            originCode = firstFlight.origin.code,
+            originTime = timeFormat.format(Date(firstFlight.departureTime)),
+            destinationCode = firstFlight.destination.code,
+            destinationTime = timeFormat.format(Date(firstFlight.arrivalTime)),
+            duration = formatDuration(firstFlight.duration),
+            airline = firstFlight.airline.name,
+            travelClass = firstFlight.cabinClass.name.replace("_", " ").lowercase()
                 .replaceFirstChar { it.uppercase() },
             flightType = "Direct",
-            bookingId = flightBooking.bookingId
+            bookingId = flightBooking.bookingId,
+            passengerCount = flightBooking.tickets.size,
+            flightCount = flightBooking.flights.size
         )
     }
 

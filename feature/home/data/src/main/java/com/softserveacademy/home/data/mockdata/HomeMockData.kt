@@ -9,6 +9,8 @@ import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelBooking
+import com.softserveacademy.core.domain.model.SeatClass
+import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
 import com.softserveacademy.core.domain.model.TourCategory
@@ -149,51 +151,77 @@ object HomeMockData {
         flights = listOf(
             FlightBooking(
                 bookingId = "flight_booking_001",
-
-                flight = Flight(
-                    id = "flight_001",
-
-                    airline = Airline(
-                        code = "LA",
-                        name = "LATAM Airlines",
-                        logoUrl = "https://picsum.photos/id/1/200"
+                flights = listOf(
+                    Flight(
+                        id = "flight_001",
+                        airline = Airline(
+                            code = "LA",
+                            name = "LATAM Airlines",
+                            logoUrl = "https://picsum.photos/id/1/200"
+                        ),
+                        flightNumber = "LA500",
+                        origin = Airport(
+                            code = "SCL",
+                            name = "Arturo Merino Benítez International Airport",
+                            city = "Santiago",
+                            country = "Chile"
+                        ),
+                        destination = Airport(
+                            code = "CDG",
+                            name = "Charles de Gaulle Airport",
+                            city = "Paris",
+                            country = "France"
+                        ),
+                        departureTime = dateTimeLong(2026, 8, 6, 10, 30),
+                        arrivalTime = dateTimeLong(2026, 8, 6, 23, 15),
+                        duration = 13.hours,
+                        cabinClass = CabinClass.ECONOMY
                     ),
-
-                    flightNumber = "LA500",
-
-                    origin = Airport(
-                        code = "SCL",
-                        name = "Arturo Merino Benítez International Airport",
-                        city = "Santiago",
-                        country = "Chile"
-                    ),
-
-                    destination = Airport(
-                        code = "CDG",
-                        name = "Charles de Gaulle Airport",
-                        city = "Paris",
-                        country = "France"
-                    ),
-
-                    departureTime = dateTimeLong(2026, 8, 6, 10, 30),
-
-                    arrivalTime = dateTimeLong(2026, 8, 6, 23, 15),
-
-                    duration = 13.hours,
-
-                    cabinClass = CabinClass.ECONOMY
+                    Flight(
+                        id = "flight_002",
+                        airline = Airline(
+                            code = "LA",
+                            name = "LATAM Airlines",
+                            logoUrl = "https://picsum.photos/id/1/200"
+                        ),
+                        flightNumber = "LA501",
+                        origin = Airport(
+                            code = "CDG",
+                            name = "Charles de Gaulle Airport",
+                            city = "Paris",
+                            country = "France"
+                        ),
+                        destination = Airport(
+                            code = "SCL",
+                            name = "Arturo Merino Benítez International Airport",
+                            city = "Santiago",
+                            country = "Chile"
+                        ),
+                        departureTime = dateTimeLong(2026, 8, 11, 14, 0),
+                        arrivalTime = dateTimeLong(2026, 8, 12, 5, 30),
+                        duration = 13.hours,
+                        cabinClass = CabinClass.ECONOMY
+                    )
                 ),
-
-                ticketNumber = "TK-987654321",
-
+                tickets = listOf(
+                    Ticket(
+                        ticketNumber = "TK-987654321",
+                        passengerName = "John Doe",
+                        seatNumber = "12A",
+                        gate = "B15",
+                        boardingGroup = "Group 2",
+                        seatClass = SeatClass.ECONOMY
+                    ),
+                    Ticket(
+                        ticketNumber = "TK-987654322",
+                        passengerName = "Jane Doe",
+                        seatNumber = "12B",
+                        gate = "B15",
+                        boardingGroup = "Group 2",
+                        seatClass = SeatClass.ECONOMY
+                    )
+                ),
                 confirmationCode = "ABC123",
-
-                seat = "12A",
-
-                gate = "B15",
-
-                boardingGroup = "Group 2",
-
                 status = BookingStatus.CONFIRMED
             )
         ),

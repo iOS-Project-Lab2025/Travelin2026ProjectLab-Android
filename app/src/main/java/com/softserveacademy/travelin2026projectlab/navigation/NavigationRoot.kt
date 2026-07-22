@@ -32,6 +32,7 @@ import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 // Home screens.
 import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
+import com.softserveacademy.home.presentation.ui.screens.RootUpcomingTripScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 // Booking screens.
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
@@ -218,6 +219,15 @@ fun NavGraphBuilder.mainGraph(
                             popUpTo(Routes.TravelHomeScreen)
                             launchSingleTop = true
                         }
+                    },
+                    onProfileClick = {
+                        navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
+                    },
+                    onUpcomingTripClick = { bookingId ->
+                        navController.navigate(Routes.TravelUpcomingTripScreen(bookingId = bookingId))
                     }
                 )
             )
@@ -275,8 +285,24 @@ fun NavGraphBuilder.mainGraph(
         composable<Routes.HotelGalleryScreen> { backStackEntry ->
             val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
             TravelHotelGalleryScreen(
-                hotelId = route.id, // Receive the ID
+                hotelId = route.id,
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable<Routes.TravelUpcomingTripScreen> { backStackEntry ->
+            val route: Routes.TravelUpcomingTripScreen = backStackEntry.toRoute()
+            RootUpcomingTripScreen(
+                onBackClick = { navController.popBackStack() },
+                onTabClick = { index ->
+                    when (index) {
+                        0 -> navController.popBackStack()
+                        3 -> navController.navigate(Routes.ProfileScreen) {
+                            popUpTo(Routes.TravelHomeScreen)
+                            launchSingleTop = true
+                        }
+                    }
+                }
             )
         }
     }
