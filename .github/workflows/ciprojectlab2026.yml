@@ -41,8 +41,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Create local.properties
-        run: echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" > local.properties
+      - name: Create local.properties for Android SDK
+        run: |
+          if [ -n "${ANDROID_SDK_ROOT:-}" ]; then
+            SDK_PATH="$ANDROID_SDK_ROOT"
+          elif [ -n "${ANDROID_HOME:-}" ]; then
+            SDK_PATH="$ANDROID_HOME"
+          else
+            SDK_PATH="/usr/local/lib/android/sdk"
+          fi
+          echo "sdk.dir=$SDK_PATH" > local.properties
 
       # Compila el proyecto en modo debug (verifica que no haya errores de compilación)
       - name: Build debug APK
