@@ -3,8 +3,8 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.repository.HotelRepo
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
 import io.mockk.coEvery
@@ -28,7 +28,7 @@ class HotelRoomSelectionViewModelTest {
 
     private lateinit var viewModel: HotelRoomSelectionViewModel
     private lateinit var hotelRepo: HotelRepo
-    private lateinit var bookingRepository: BookingRepository
+    private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
     private lateinit var savedStateHandle: SavedStateHandle
     private val testDispatcher = StandardTestDispatcher()
 
@@ -45,14 +45,14 @@ class HotelRoomSelectionViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         hotelRepo = mockk()
-        bookingRepository = mockk(relaxed = true)
+        hotelBookingDraftRepository = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
         coEvery { hotelRepo.getHotelRooms(hotelId, any(), any()) } returns mockRooms
-        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns HotelBookingDraft(
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns HotelBookingDraft(
             hotelId = hotelId.toString(),
-            checkInDate = checkIn,
-            checkOutDate = checkOut
+            checkIn = checkIn,
+            checkOut = checkOut
         )
     }
 
@@ -63,7 +63,7 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `init loads rooms and calculates night count`() = runTest {
-        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, bookingRepository)
+        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -75,7 +75,7 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `applyFilters filters by availability`() = runTest {
-        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, bookingRepository)
+        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.AVAILABLE))
@@ -85,7 +85,7 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `applyFilters filters by bed count`() = runTest {
-        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, bookingRepository)
+        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.TWO_BEDS))
@@ -95,7 +95,7 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `onRoomSelected updates state`() = runTest {
-        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, bookingRepository)
+        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
@@ -104,7 +104,7 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `onNextClick reserves room and updates draft`() = runTest {
-        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, bookingRepository)
+        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
@@ -115,6 +115,6 @@ class HotelRoomSelectionViewModelTest {
         advanceUntilIdle()
 
         coVerify { hotelRepo.reserveRoom(hotelId, 1, checkIn, checkOut) }
-        coVerify { bookingRepository.saveHotelBookingDraft(any()) }
+        coVerify { hotelBookingDraftRepository.saveDraft(any()) }
     }
 }

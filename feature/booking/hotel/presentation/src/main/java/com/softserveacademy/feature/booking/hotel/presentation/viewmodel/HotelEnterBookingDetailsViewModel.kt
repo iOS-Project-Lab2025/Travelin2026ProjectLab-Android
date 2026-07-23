@@ -3,8 +3,8 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
@@ -24,13 +24,13 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @property savedStateHandle The handle to saved state.
  * @property validateEnterBookingDetailsUseCase Use case for validating booking details input.
- * @property bookingRepository Repository for persisting booking drafts.
+ * @property hotelBookingDraftRepository Repository for persisting booking drafts.
  */
 @HiltViewModel
 class HotelEnterBookingDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase,
-    private val bookingRepository: BookingRepository
+    private val hotelBookingDraftRepository: HotelBookingDraftRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TravelEnterBookingDetailsState())
@@ -62,7 +62,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
             val hotelIdFromSavedState = savedStateHandle.get<Int>("hotelId") ?: savedStateHandle.get<String>("hotelId")?.toIntOrNull()
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
-                val repositoryDraft = hotelIdFromSavedState?.let { bookingRepository.getHotelBookingDraft(it.toString()) }
+                val repositoryDraft = hotelIdFromSavedState?.let { hotelBookingDraftRepository.getDraft(it.toString()) }
                 
                 hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelIdFromSavedState?.toString())
                 syncSavedState()
@@ -96,11 +96,11 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onDateRangeSelected(startDateMillis: Long?, endDateMillis: Long?) {
-        if (hotelBookingDraft.checkInDate == startDateMillis && hotelBookingDraft.checkOutDate == endDateMillis) return
+        if (hotelBookingDraft.checkIn == startDateMillis && hotelBookingDraft.checkOut == endDateMillis) return
 
         hotelBookingDraft = hotelBookingDraft.copy(
-            checkInDate = startDateMillis,
-            checkOutDate = endDateMillis
+            checkIn = startDateMillis,
+            checkOut = endDateMillis
         )
         _uiState.update {
             it.copy(
@@ -113,7 +113,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onAdultsCountChange(count: Int) {
-        hotelBookingDraft = hotelBookingDraft.copy(amountOfAdults = count)
+        hotelBookingDraft = hotelBookingDraft.copy(guests = hotelBookingDraft.guests.copy(adults = count))
         _uiState.update {
             it.copy(
                 adultsCount = count,
@@ -124,7 +124,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onChildrenCountChange(count: Int) {
-        hotelBookingDraft = hotelBookingDraft.copy(amountOfChildren = count)
+        hotelBookingDraft = hotelBookingDraft.copy(guests = hotelBookingDraft.guests.copy(children = count))
         _uiState.update {
             it.copy(childrenCount = count)
         }
@@ -132,7 +132,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onHasPetsChange(hasPets: Boolean) {
-        hotelBookingDraft = hotelBookingDraft.copy(hasPets = hasPets)
+        hotelBookingDraft = hotelBookingDraft.copy(guests = hotelBookingDraft.guests.copy(pets = hasPets))
         _uiState.update {
             it.copy(hasPets = hasPets)
         }
@@ -141,8 +141,8 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
 
     private fun onNextClick() {
         val validationResult = validateEnterBookingDetailsUseCase.validateDates(
-            hotelBookingDraft.checkInDate,
-            hotelBookingDraft.checkOutDate
+            hotelBookingDraft.checkIn,
+            hotelBookingDraft.checkOut
         )
 
         when (validationResult) {
@@ -171,7 +171,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onAcceptClick() {
-        val validationResult = validateEnterBookingDetailsUseCase.validateGuests(hotelBookingDraft.amountOfAdults)
+        val validationResult = validateEnterBookingDetailsUseCase.validateGuests(hotelBookingDraft.guests.adults)
 
         when (validationResult) {
             is ValidateEnterBookingDetailsUseCase.ValidationResult.Success -> {
@@ -199,11 +199,11 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private fun updateUiState() {
         _uiState.update {
             it.copy(
-                startDateMillis = hotelBookingDraft.checkInDate,
-                endDateMillis = hotelBookingDraft.checkOutDate,
-                adultsCount = hotelBookingDraft.amountOfAdults,
-                childrenCount = hotelBookingDraft.amountOfChildren,
-                hasPets = hotelBookingDraft.hasPets
+                startDateMillis = hotelBookingDraft.checkIn,
+                endDateMillis = hotelBookingDraft.checkOut,
+                adultsCount = hotelBookingDraft.guests.adults,
+                childrenCount = hotelBookingDraft.guests.children,
+                hasPets = hotelBookingDraft.guests.pets
             )
         }
     }
@@ -211,11 +211,11 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private fun syncSavedState() {
         savedStateHandle[KEY_BOOKING_DRAFT] = hotelBookingDraft
         viewModelScope.launch {
-            bookingRepository.saveHotelBookingDraft(hotelBookingDraft)
+            hotelBookingDraftRepository.saveDraft(hotelBookingDraft)
         }
     }
 
     companion object {
-        private const val KEY_BOOKING_DRAFT = "booking_draft"
+        private const val KEY_BOOKING_DRAFT = "hotel_booking_draft"
     }
 }

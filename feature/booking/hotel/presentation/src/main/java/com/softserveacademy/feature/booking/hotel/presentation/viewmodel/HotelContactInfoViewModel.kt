@@ -3,9 +3,9 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.feature.booking.common.domain.model.ContactInfo
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelContactInfoState
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HotelContactInfoViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val bookingRepository: BookingRepository,
+    private val hotelBookingDraftRepository: HotelBookingDraftRepository,
     private val validateContactInfoUseCase: ValidateContactInfoUseCase
 ) : ViewModel() {
 
@@ -48,7 +48,7 @@ class HotelContactInfoViewModel @Inject constructor(
 
     private fun loadBookingDraft() {
         viewModelScope.launch {
-            bookingDraft = bookingRepository.getHotelBookingDraft(hotelId.toString())
+            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
             bookingDraft?.let { draft ->
                 _uiState.update {
                     it.copy(
@@ -116,7 +116,7 @@ class HotelContactInfoViewModel @Inject constructor(
             val updatedDraft = (bookingDraft ?: HotelBookingDraft(hotelId = hotelId.toString())).copy(
                 contactInfo = updatedContactInfo
             )
-            bookingRepository.saveHotelBookingDraft(updatedDraft)
+            hotelBookingDraftRepository.saveDraft(updatedDraft)
             _validationSuccess.value = true
         }
     }

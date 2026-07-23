@@ -1,8 +1,9 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.model.Guests
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import io.mockk.coEvery
@@ -29,7 +30,7 @@ class HotelEnterBookingDetailsViewModelTest {
     private lateinit var viewModel: HotelEnterBookingDetailsViewModel
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase
-    private lateinit var bookingRepository: BookingRepository
+    private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -37,8 +38,8 @@ class HotelEnterBookingDetailsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle()
         validateEnterBookingDetailsUseCase = ValidateEnterBookingDetailsUseCase()
-        bookingRepository = mockk(relaxed = true)
-        viewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, bookingRepository)
+        hotelBookingDraftRepository = mockk(relaxed = true)
+        viewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
     }
 
     @After
@@ -59,10 +60,10 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `restores state from SavedStateHandle`() = runTest {
-        val draft = HotelBookingDraft(amountOfAdults = 3, checkInDate = 1000L)
+        val draft = HotelBookingDraft(guests = Guests(adults = 3), checkIn = 1000L)
         savedStateHandle["booking_draft"] = draft
         
-        val newViewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, bookingRepository)
+        val newViewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
         assertEquals(3, newViewModel.uiState.value.adultsCount)
         assertEquals(1000L, newViewModel.uiState.value.startDateMillis)
     }
@@ -70,11 +71,11 @@ class HotelEnterBookingDetailsViewModelTest {
     @Test
     fun `restores state from BookingRepository if SavedStateHandle is empty`() = runTest {
         val hotelIdInt = 123
-        val draft = HotelBookingDraft(hotelId = hotelIdInt.toString(), amountOfAdults = 4)
-        coEvery { bookingRepository.getHotelBookingDraft(any()) } returns draft
+        val draft = HotelBookingDraft(hotelId = hotelIdInt.toString(), guests = Guests(adults = 4))
+        coEvery { hotelBookingDraftRepository.getDraft(any()) } returns draft
         
         val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelIdInt))
-        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, bookingRepository)
+        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
         
         advanceUntilIdle()
         
@@ -90,10 +91,10 @@ class HotelEnterBookingDetailsViewModelTest {
         assertEquals(200L, state.endDateMillis)
         
         val savedDraft = savedStateHandle.get<HotelBookingDraft>("booking_draft")
-        assertEquals(100L, savedDraft?.checkInDate)
+        assertEquals(100L, savedDraft?.checkIn)
         
         advanceUntilIdle()
-        coVerify { bookingRepository.saveHotelBookingDraft(any()) }
+        coVerify { hotelBookingDraftRepository.saveDraft(any()) }
     }
 
     @Test

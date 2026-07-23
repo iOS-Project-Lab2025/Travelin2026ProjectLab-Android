@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.repository.HotelRepo
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
@@ -22,13 +22,13 @@ import javax.inject.Inject
  *
  * @property savedStateHandle The handle to saved state.
  * @property hotelRepo Repository for fetching hotel and room data.
- * @property bookingRepository Repository for managing booking drafts.
+ * @property hotelBookingDraftRepository Repository for managing booking drafts.
  */
 @HiltViewModel
 class HotelRoomSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val hotelRepo: HotelRepo,
-    private val bookingRepository: BookingRepository
+    private val hotelBookingDraftRepository: HotelBookingDraftRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HotelRoomSelectionState())
@@ -49,10 +49,10 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun loadRooms() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = bookingRepository.getHotelBookingDraft(hotelId.toString())
+            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
             val draft = bookingDraft
-            val checkIn = draft?.checkInDate ?: 0L
-            val checkOut = draft?.checkOutDate ?: 0L
+            val checkIn = draft?.checkIn ?: 0L
+            val checkOut = draft?.checkOut ?: 0L
 
             val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut)
             
@@ -105,8 +105,8 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun onNextClick() {
         val selectedRoomId = _uiState.value.selectedRoomId ?: return
         val draft = bookingDraft
-        val checkIn = draft?.checkInDate ?: 0L
-        val checkOut = draft?.checkOutDate ?: 0L
+        val checkIn = draft?.checkIn ?: 0L
+        val checkOut = draft?.checkOut ?: 0L
 
         viewModelScope.launch {
             // Real-time reservation considering dates
@@ -115,7 +115,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
             // Update booking draft
             draft?.let { 
                 val updatedDraft = it.copy(roomId = selectedRoomId.toString())
-                bookingRepository.saveHotelBookingDraft(updatedDraft)
+                hotelBookingDraftRepository.saveDraft(updatedDraft)
             }
         }
     }

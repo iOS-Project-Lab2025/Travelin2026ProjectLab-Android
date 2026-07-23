@@ -1,9 +1,9 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.feature.booking.common.domain.model.ContactInfo
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
 import io.mockk.coEvery
@@ -29,7 +29,7 @@ class HotelContactInfoViewModelTest {
 
     private lateinit var viewModel: HotelContactInfoViewModel
     private lateinit var savedStateHandle: SavedStateHandle
-    private lateinit var bookingRepository: BookingRepository
+    private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
     private lateinit var validateContactInfoUseCase: ValidateContactInfoUseCase
     private val testDispatcher = StandardTestDispatcher()
     private val hotelId = 123
@@ -38,14 +38,14 @@ class HotelContactInfoViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
-        bookingRepository = mockk(relaxed = true)
+        hotelBookingDraftRepository = mockk(relaxed = true)
         validateContactInfoUseCase = ValidateContactInfoUseCase()
         
-        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns null
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns null
         
         viewModel = HotelContactInfoViewModel(
             savedStateHandle = savedStateHandle,
-            bookingRepository = bookingRepository,
+            hotelBookingDraftRepository = hotelBookingDraftRepository,
             validateContactInfoUseCase = validateContactInfoUseCase
         )
     }
@@ -77,11 +77,11 @@ class HotelContactInfoViewModelTest {
                 phoneNumber = "123456789"
             )
         )
-        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns draft
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns draft
 
         val newViewModel = HotelContactInfoViewModel(
             savedStateHandle = savedStateHandle,
-            bookingRepository = bookingRepository,
+            hotelBookingDraftRepository = hotelBookingDraftRepository,
             validateContactInfoUseCase = validateContactInfoUseCase
         )
 
@@ -129,7 +129,7 @@ class HotelContactInfoViewModelTest {
         advanceUntilIdle()
         
         assertTrue(viewModel.validationSuccess.value)
-        coVerify { bookingRepository.saveHotelBookingDraft(any()) }
+        coVerify { hotelBookingDraftRepository.saveDraft(any()) }
     }
 
     @Test

@@ -3,19 +3,19 @@ package com.softserveacademy.feature.booking.common.domain.usecase
 import javax.inject.Inject
 
 /**
- * Use case to validate the hotel booking details input.
+ * Use case to validate the booking selected dates and guests.
  */
 class ValidateEnterBookingDetailsUseCase @Inject constructor() {
 
     /**
      * Validates if the selected dates are valid.
      *
-     * @param checkInDate The check-in date in milliseconds.
-     * @param checkOutDate The check-out date in milliseconds.
+     * @param checkIn The check-in date in milliseconds.
+     * @param checkOut The check-out date in milliseconds.
      * @return [ValidationResult] representing the result of the validation.
      */
-    fun validateDates(checkInDate: Long?, checkOutDate: Long?): ValidationResult {
-        if (checkInDate == null || checkOutDate == null) {
+    fun validateDates(checkIn: Long?, checkOut: Long?): ValidationResult {
+        if (checkIn == null || checkOut == null) {
             return ValidationResult.Invalid(ValidationError.EMPTY_DATES)
         }
         return ValidationResult.Success
