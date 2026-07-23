@@ -34,6 +34,7 @@ import com.softserveacademy.home.presentation.ui.screens.HotelDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.RootUpcomingTripScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelHotelListScreen
 // Booking screens.
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchScreen
 import com.softserveacademy.feature.booking.presentation.HotelBookingSearchViewModel
@@ -228,6 +229,9 @@ fun NavGraphBuilder.mainGraph(
                     },
                     onUpcomingTripClick = { bookingId ->
                         navController.navigate(Routes.TravelUpcomingTripScreen(bookingId = bookingId))
+                    },
+                    onHotelsSeeAllClick = {
+                        navController.navigate(Routes.TravelHotelListScreen)
                     }
                 )
             )
@@ -285,7 +289,7 @@ fun NavGraphBuilder.mainGraph(
         composable<Routes.HotelGalleryScreen> { backStackEntry ->
             val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
             TravelHotelGalleryScreen(
-                hotelId = route.id,
+                hotelId = route.id, // Receive the ID
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -302,6 +306,15 @@ fun NavGraphBuilder.mainGraph(
                             launchSingleTop = true
                         }
                     }
+                }
+            )
+        }
+
+        composable<Routes.TravelHotelListScreen> {
+            TravelHotelListScreen(
+                onBackClick = { navController.popBackStack() },
+                onHotelClick = { hotel ->
+                    navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
                 }
             )
         }

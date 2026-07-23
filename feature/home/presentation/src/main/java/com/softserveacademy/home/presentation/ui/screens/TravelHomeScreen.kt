@@ -26,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
+import com.softserveacademy.core.presentation.design_system.components.TravelCardVertical
 import com.softserveacademy.core.presentation.design_system.components.TravelCarousel
 import com.softserveacademy.core.presentation.design_system.components.TravelTextActionButton
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.mockdata.PresentationMockData
+import com.softserveacademy.home.presentation.model.TourUi
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 import com.softserveacademy.home.presentation.state.HomeUiState
 import com.softserveacademy.home.presentation.state.SectionState
@@ -114,6 +116,7 @@ fun TravelHomeScreen(
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
     val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
+    val tours = (state.journeyTogether as? SectionState.Success)?.data ?: emptyList()
     val hotels = (state.hotelsRecommended as? SectionState.Success)?.data ?: emptyList()
 
     Scaffold(
@@ -179,9 +182,18 @@ fun TravelHomeScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                     TravelCarousel(
-                        packages = hotels,
-                        onHotelClick = onHotelClick
-                    )
+                        items = tours
+                    ) { tour ->
+                        TravelCardVertical(
+                            title = tour.title,
+                            location = tour.location,
+                            rating = tour.rating.toString(),
+                            price = tour.price,
+                            duration = tour.duration,
+                            imageUrl = tour.imageUrl,
+                            onClick = { /* Handle tour click */ }
+                        )
+                    }
                     Spacer(Modifier.height(16.dp))
 
                     // "Hotels recommendation for you" section header
@@ -234,6 +246,28 @@ private fun TravelHomeScreenPreview() {
             state = HomeUiState(
                 userProfile = SectionState.Success(PresentationMockData.userProfile),
                 upcomingTrip = SectionState.Success(PresentationMockData.upcomingTrip),
+                journeyTogether = SectionState.Success(
+                    listOf(
+                        TourUi(
+                            id = "1",
+                            title = "Mount Bromo Sunrise",
+                            imageUrl = "https://picsum.photos/id/1015/800/600",
+                            location = "East Java",
+                            rating = 4.9f,
+                            price = "$ 150",
+                            duration = "1 day"
+                        ),
+                        TourUi(
+                            id = "2",
+                            title = "Bali Cultural Dance",
+                            imageUrl = "https://picsum.photos/id/1016/800/600",
+                            location = "Ubud, Bali",
+                            rating = 4.7f,
+                            price = "$ 45",
+                            duration = "4 hours"
+                        )
+                    )
+                ),
                 hotelsRecommended = SectionState.Success(
                     listOf(
                         Hotel(
