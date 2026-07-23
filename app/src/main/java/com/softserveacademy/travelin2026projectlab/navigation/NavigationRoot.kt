@@ -1,6 +1,5 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -40,9 +39,11 @@ import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScree
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelEnterBookingDetailsScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelRoomSelectionScreen
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelRoomSelectionViewModel
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelContactInfoScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelContactInfoViewModel
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 
 
 /**
@@ -323,10 +324,7 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
     ) {
         composable<Routes.HotelEnterBookingDetailsScreen> { backStackEntry ->
             val route: Routes.HotelEnterBookingDetailsScreen = backStackEntry.toRoute()
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Routes.BookingGraph)
-            }
-            val viewModel: HotelEnterBookingDetailsViewModel = hiltViewModel(parentEntry)
+            val viewModel: HotelEnterBookingDetailsViewModel = hiltViewModel()
 
             HotelEnterBookingDetailsScreen(
                 onBackClick = { navController.popBackStack() },
@@ -339,11 +337,13 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
         composable<Routes.HotelRoomSelectionScreen> { backStackEntry ->
             val route: Routes.HotelRoomSelectionScreen = backStackEntry.toRoute()
+            val viewModel: HotelRoomSelectionViewModel = hiltViewModel()
             HotelRoomSelectionScreen(
                 onBackClick = { navController.popBackStack() },
                 onRoomSelected = {
                     navController.navigate(Routes.HotelContactInfoScreen(hotelId = route.hotelId))
-                }
+                },
+                viewModel = viewModel
             )
         }
 
@@ -361,8 +361,10 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
         }
 
         composable<Routes.HotelBookingConfirmationScreen> {
+            val viewModel: HotelBookingConfirmViewModel = hiltViewModel()
             HotelBookingConfirmScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
     }

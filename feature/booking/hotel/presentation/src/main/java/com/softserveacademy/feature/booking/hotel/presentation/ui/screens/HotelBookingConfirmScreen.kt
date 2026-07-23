@@ -46,7 +46,7 @@ fun HotelBookingConfirmScreen(
     HotelBookingConfirmContent(
         uiState = uiState,
         onBackClick = onBackClick,
-        onBookNowClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnBookNowClick) }
+        onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) }
     )
 }
 
@@ -55,7 +55,7 @@ fun HotelBookingConfirmScreen(
 fun HotelBookingConfirmContent(
     uiState: HotelBookingConfirmState,
     onBackClick: () -> Unit,
-    onBookNowClick: () -> Unit
+    onConfirmClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -125,7 +125,7 @@ fun HotelBookingConfirmContent(
                     )
                     TravelPrimaryButton(
                         text = stringResource(R.string.booking_confirm_button_label),
-                        onClick = onBookNowClick,
+                        onClick = onConfirmClick,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -317,7 +317,7 @@ fun HotelBookingConfirmPreview() {
                 bookingDraft = sampleDraft
             ),
             onBackClick = {},
-            onBookNowClick = {}
+            onConfirmClick = {}
         )
     }
 }

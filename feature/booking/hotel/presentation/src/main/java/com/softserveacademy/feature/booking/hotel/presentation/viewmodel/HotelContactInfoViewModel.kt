@@ -84,6 +84,7 @@ class HotelContactInfoViewModel @Inject constructor(
             HotelContactInfoEvent.OnNextClick -> {
                 validateAndSave()
             }
+            HotelContactInfoEvent.OnBackClick -> { /* Handled by navigation */ }
         }
     }
 

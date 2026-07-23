@@ -10,4 +10,5 @@ sealed interface HotelContactInfoEvent {
     data class PhoneNumberChanged(val phoneNumber: String) : HotelContactInfoEvent
     data class CountryCodeChanged(val countryCode: String) : HotelContactInfoEvent
     data object OnNextClick : HotelContactInfoEvent
+    data object OnBackClick : HotelContactInfoEvent
 }

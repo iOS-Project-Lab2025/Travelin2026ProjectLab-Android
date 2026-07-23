@@ -59,12 +59,10 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
     fun onEvent(event: HotelBookingConfirmEvent) {
         when (event) {
-            HotelBookingConfirmEvent.OnBookNowClick -> {
+            HotelBookingConfirmEvent.OnConfirmClick -> {
                 // Handle booking confirmation (e.g., call repository to save booking)
             }
-            HotelBookingConfirmEvent.OnBackClick -> {
-                // Handled by navigation
-            }
+            HotelBookingConfirmEvent.OnBackClick -> { /* Handled by navigation */ }
         }
     }
 }
