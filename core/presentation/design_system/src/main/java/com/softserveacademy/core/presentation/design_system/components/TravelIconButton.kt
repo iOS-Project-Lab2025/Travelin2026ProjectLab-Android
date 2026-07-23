@@ -9,6 +9,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,6 +33,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param iconColor The color of the icon
  * @param backgroundColor The background color of the button
  * @param contentDescription The content description for the icon
+ * @param debounceInterval The time in milliseconds to wait before allowing another click
  */
 @Composable
 fun TravelIconButton(
@@ -39,9 +44,17 @@ fun TravelIconButton(
     iconColor : Color = MaterialTheme.colorScheme.onSurface,
     backgroundColor : Color = MaterialTheme.colorScheme.surface,
     contentDescription: String? = null,
+    debounceInterval: Long = 1000L
 ){
+    var lastClickTime by remember { mutableStateOf(0L) }
     IconButton (
-        onClick = onClick,
+        onClick = {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > debounceInterval) {
+                lastClickTime = currentTime
+                onClick()
+            }
+        },
         modifier = modifier,
         enabled = enabled,
         colors = IconButtonDefaults.iconButtonColors(
