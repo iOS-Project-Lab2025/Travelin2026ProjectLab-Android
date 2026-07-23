@@ -11,32 +11,25 @@ import com.softserveacademy.core.domain.model.Hotel
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
- * A horizontal carousel component that displays a list of travel packages (hotels).
+ * A horizontal carousel component that displays a list of travel items.
  *
- * This composable uses a [LazyRow] to efficiently display cards for each hotel.
- *
- * @param packages The list of [Hotel] objects to be displayed in the carousel.
+ * @param items The list of items to be displayed in the carousel.
  * @param modifier The modifier to be applied to the carousel layout.
- * @param onHotelClick Callback invoked when a specific hotel card is clicked.
+ * @param itemContent Callback to define the UI for each item.
  */
 @Composable
-fun TravelCarousel(
-    packages: List<Hotel>,
+fun <T> TravelCarousel(
+    items: List<T>,
     modifier: Modifier = Modifier,
-    onHotelClick: (Hotel) -> Unit = {}
+    itemContent: @Composable (T) -> Unit
 ) {
-    //This is the function that makes the carrousel
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        //Since the view if cards is ready here we only call that instance
-        items(packages) { hotelItem ->
-            TravelCardVertical(
-                hotel = hotelItem,
-                onClick = onHotelClick
-            )
+        items(items) { item ->
+            itemContent(item)
         }
     }
 }
@@ -71,5 +64,14 @@ fun TravelCarouselPreview() {
     )
 
     // This is the way we call the instance of carrousel
-    TravelCarousel(packages = exampleHotels)
+    TravelCarousel(items = exampleHotels) { hotelItem ->
+        TravelCardVertical(
+            title = hotelItem.name,
+            location = hotelItem.address,
+            rating = hotelItem.userRating.toString(),
+            price = "$ ${hotelItem.pricePerNight}/pax",
+            duration = "3D2N",
+            imageUrl = hotelItem.image.first()
+        )
+    }
 }

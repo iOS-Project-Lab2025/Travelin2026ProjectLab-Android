@@ -2,10 +2,9 @@ package com.softserveacademy.home.data.repository
 
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import com.softserveacademy.core.domain.repository.HotelRepo
-import com.softserveacademy.core.domain.model.Destination
+import com.softserveacademy.core.domain.repository.TourRepo
 import com.softserveacademy.core.domain.model.Hotel
-import com.softserveacademy.core.domain.model.HotelDetails
-import com.softserveacademy.core.domain.model.IncludedItem
+import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.domain.model.UserProfile
 import com.softserveacademy.home.data.mockdata.HomeMockData
@@ -19,34 +18,23 @@ import kotlin.time.Duration.Companion.milliseconds
  * Currently uses mock data.
  */
 class HomeRepositoryImpl @Inject constructor(
-    private val hotelRepo: HotelRepo
+    private val hotelRepo: HotelRepo,
+    private val tourRepo: TourRepo
 ) : HomeRepository {
 
     override suspend fun getUserProfile(): Result<UserProfile> {
-
         delay(500)
-
-        return Result.success(
-            HomeMockData.user
-        )
+        return Result.success(HomeMockData.user)
     }
 
     override suspend fun getUpcomingTrip(): Result<Trip?> {
-
         delay(700)
-
-        return Result.success(
-            HomeMockData.trip
-        )
+        return Result.success(HomeMockData.trip)
     }
 
-    override suspend fun getJourneyTogether(): Result<List<Destination>> {
-
+    override suspend fun getJourneyTogether(): Result<List<Tour>> {
         delay(700)
-
-        return Result.success(
-            HomeMockData.destinations
-        )
+        return Result.success(tourRepo.getTours())
     }
 
     override suspend fun getRecommendedHotels(): Result<List<Hotel>> {
