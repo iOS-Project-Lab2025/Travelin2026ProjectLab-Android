@@ -10,6 +10,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.softserveacademy.feature.booking.hotel.presentation.R
+import com.softserveacademy.feature.booking.common.presentation.R as CommonR
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import java.text.SimpleDateFormat
@@ -41,9 +44,15 @@ fun HotelBookingSummaryCard(
         shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(TravelinDimens.PaddingMedium)) {
-            BookingDateRow(label = "Check-in", date = checkIn)
+            BookingDateRow(
+                label = stringResource(CommonR.string.check_in_label),
+                date = checkIn
+            )
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-            BookingDateRow(label = "Check-out", date = checkOut)
+            BookingDateRow(
+                label = stringResource(CommonR.string.check_out_label),
+                date = checkOut
+            )
             
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
             
@@ -55,7 +64,11 @@ fun HotelBookingSummaryCard(
                     .padding(horizontal = TravelinDimens.PaddingMedium, vertical = TravelinDimens.PaddingSmall)
             ) {
                 Text(
-                    text = "$nights Nights, ${nights - 1} Days",
+                    text = stringResource(
+                        R.string.booking_confirm_nights_days_badge,
+                        nights,
+                        nights - 1
+                    ),
                     color = MaterialTheme.colorScheme.surface,
                     style = MaterialTheme.typography.labelLarge
                 )
@@ -64,7 +77,7 @@ fun HotelBookingSummaryCard(
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
             Text(
-                text = "Guests",
+                text = stringResource(CommonR.string.guests_label),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )

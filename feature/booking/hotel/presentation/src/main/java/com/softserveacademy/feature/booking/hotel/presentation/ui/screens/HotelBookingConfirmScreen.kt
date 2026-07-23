@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingLoadingScreen
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.feature.booking.common.presentation.R as CommonR
+import com.softserveacademy.feature.booking.hotel.presentation.R
 
 @Composable
 fun HotelBookingConfirmScreen(
@@ -61,19 +64,17 @@ fun HotelBookingConfirmContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Confirm Booking",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        text = stringResource(R.string.booking_confirm_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(TravelinDimens.PaddingMedium)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(imageVector = ArrowLeftIcon, contentDescription = "Back")
+                        Icon(imageVector = ArrowLeftIcon, contentDescription = stringResource(CommonR.string.back_button_label))
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                }
             )
         },
         bottomBar = {
@@ -108,7 +109,7 @@ fun HotelBookingConfirmContent(
                                     fontSize = 16.sp
                                 )
                             ) {
-                                append("Total: ")
+                                append(stringResource(R.string.booking_confirm_total_label))
                             }
                             withStyle(
                                 style = SpanStyle(
@@ -116,14 +117,14 @@ fun HotelBookingConfirmContent(
                                     fontWeight = FontWeight.Bold,
                                 )
                             ) {
-                                append("\$$totalPrice")
+                                append("$$totalPrice")
                             }
                         },
                         style = MaterialTheme.typography.displaySmall,
                         modifier = Modifier.weight(1f)
                     )
                     TravelPrimaryButton(
-                        text = "Confirm",
+                        text = stringResource(R.string.booking_confirm_button_label),
                         onClick = onBookNowClick,
                         modifier = Modifier.weight(1f)
                     )
@@ -154,7 +155,12 @@ fun HotelBookingConfirmContent(
                         checkIn = uiState.bookingDraft?.checkIn ?: 0L,
                         checkOut = uiState.bookingDraft?.checkOut ?: 0L,
                         guests = uiState.bookingDraft?.guests?.let {
-                            "${it.adults} adult, ${it.children} kids, ${if (it.pets) "pets" else "no pets"}"
+                            stringResource(
+                                R.string.booking_confirm_guests_format,
+                                it.adults,
+                                it.children,
+                                stringResource(if (it.pets) R.string.booking_confirm_pets_yes else R.string.booking_confirm_pets_no)
+                            )
                         } ?: ""
                     )
 
@@ -194,7 +200,7 @@ fun HotelBookingConfirmContent(
                         ) {
                             // Contact Information
                             Text(
-                                text = "Contact Information",
+                                text = stringResource(R.string.contact_info_title),
                                 style = MaterialTheme.typography.headlineLarge,
                                 fontWeight = FontWeight.Bold
                             )
@@ -202,28 +208,28 @@ fun HotelBookingConfirmContent(
 
                             // First Name
                             ContactField(
-                                label = "First name",
+                                label = stringResource(R.string.contact_info_first_name),
                                 value = uiState.bookingDraft?.contactInfo?.firstName ?: ""
                             )
                             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
                             // Last Name
                             ContactField(
-                                label = "Last name",
+                                label = stringResource(R.string.contact_info_last_name),
                                 value = uiState.bookingDraft?.contactInfo?.lastName ?: ""
                             )
                             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
                             // Phone
                             ContactField(
-                                label = "Phone",
+                                label = stringResource(R.string.contact_info_phone),
                                 value = uiState.bookingDraft?.contactInfo?.phoneNumber ?: ""
                             )
                             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
                             // Email
                             ContactField(
-                                label = "Email",
+                                label = stringResource(R.string.contact_info_email),
                                 value = uiState.bookingDraft?.contactInfo?.email ?: ""
                             )
                             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
@@ -253,7 +259,6 @@ fun ContactField(
         fontWeight = FontWeight.SemiBold
     )
     Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
-
     OutlinedTextField(
         value = value,
         onValueChange = {},

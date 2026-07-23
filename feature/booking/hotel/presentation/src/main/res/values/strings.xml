@@ -23,4 +23,12 @@
     <string name="contact_info_phone">Phone</string>
     <string name="contact_info_email">Email</string>
     <string name="contact_info_email_placeholder">john.doe@gmail.com</string>
+
+    <string name="booking_confirm_title">Confirm Booking</string>
+    <string name="booking_confirm_total_label">Total: </string>
+    <string name="booking_confirm_button_label">Confirm</string>
+    <string name="booking_confirm_nights_days_badge">%1$d Nights, %2$d Days</string>
+    <string name="booking_confirm_guests_format">%1$d adult, %2$d kids, %3$s</string>
+    <string name="booking_confirm_pets_yes">pets</string>
+    <string name="booking_confirm_pets_no">no pets</string>
 </resources>
