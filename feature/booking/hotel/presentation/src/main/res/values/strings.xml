@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guest_count_title">Guests</string>
+    <string name="guest_count_subtitle">Add guests to your reservation</string>
+    <string name="adults_label">Adults</string>
+    <string name="kids_label">Kids</string>
+    <string name="kids_subtitle">0 – 17 years</string>
+    <string name="pets_label">Do you travel with pets?</string>
+
+    <string name="room_selection_title">Choose your room</string>
+    <string name="filter_available">Available</string>
+    <string name="filter_all">All</string>
+    <string name="filter_1_bed">1 Bed</string>
+    <string name="filter_2_beds">2 Beds</string>
+    <string name="empty_rooms_message">No rooms available for the selected criteria.</string>
+
+    <string name="contact_info_title">Contact Information</string>
+    <string name="contact_info_who_check_in">Who\'s checking in?</string>
+    <string name="contact_info_first_name">First name</string>
+    <string name="contact_info_first_name_placeholder">John</string>
+    <string name="contact_info_last_name">Last name</string>
+    <string name="contact_info_last_name_placeholder">Doe</string>
+    <string name="contact_info_phone">Phone</string>
+    <string name="contact_info_email">Email</string>
+    <string name="contact_info_email_placeholder">john.doe@gmail.com</string>
+</resources>
