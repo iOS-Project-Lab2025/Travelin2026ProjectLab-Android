@@ -42,7 +42,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEn
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelRoomSelectionScreen
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelContactInfoScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelContactInfoViewModel
-import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmationScreen
+import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
 
 
 /**
@@ -361,7 +361,7 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
         }
 
         composable<Routes.HotelBookingConfirmationScreen> {
-            HotelBookingConfirmationScreen(
+            HotelBookingConfirmScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }

@@ -45,7 +45,8 @@ fun TravelHotelRoomCard(
     room: HotelRoom,
     nightCount: Int = 1,
     isSelected: Boolean = false,
-    onRoomSelected: (HotelRoom) -> Unit = {}
+    isClickable: Boolean = true,
+    onRoomSelected: (HotelRoom) -> Unit = {},
 ) {
     Card(
         modifier = Modifier
@@ -58,7 +59,7 @@ fun TravelHotelRoomCard(
                 )
                 else Modifier
             )
-            .clickable { onRoomSelected(room) },
+            .clickable(enabled = isClickable) { onRoomSelected(room) },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
