@@ -104,7 +104,9 @@ fun BookingDateRow(
     label: String,
     date: Long
 ) {
-    val dateFormat = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.ENGLISH)
+    val dateFormat = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.ENGLISH).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
