@@ -44,10 +44,14 @@ jobs:
       # Compila el proyecto en modo debug (verifica que no haya errores de compilación)
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
 
       # (Opcional) corre los tests unitarios también
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
 
 
       # Valida que el formato estético cumpla con Ktlint

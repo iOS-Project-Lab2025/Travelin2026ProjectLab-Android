@@ -12,7 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -47,7 +47,7 @@ fun TravelSocialButton(
     contentDescription: String? = null,
     debounceInterval: Long = 1000L
 ){
-    var lastClickTime by remember { mutableStateOf(0L) }
+    var lastClickTime by remember { mutableLongStateOf(0L) }
     Button(
         onClick = {
             val currentTime = System.currentTimeMillis()
