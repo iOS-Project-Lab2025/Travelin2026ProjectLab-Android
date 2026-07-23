@@ -30,6 +30,8 @@ data class HotelDetails(
     val rating: Double,
     val description: String,
     val includedItems: List<IncludedItem> = emptyList(),
+    val latitude: Double,
+    val longitude: Double,
     val rooms: List<HotelRoom> = emptyList()
 ) {
     /**
@@ -52,6 +54,9 @@ data class HotelDetails(
     }
 }
 
+/**
+ * Amenities included in the hotel.
+ */
 enum class IncludedItem{
     BuffetBreakfast,
     FreeWifi,

@@ -3,13 +3,13 @@ package com.softserveacademy.home.presentation.model
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.softserveacademy.core.presentation.design_system.theme.AcUnitIcon
 import com.softserveacademy.core.presentation.design_system.theme.BreakfastIcon
 import com.softserveacademy.core.presentation.design_system.theme.CleaningServicesIcon
 import com.softserveacademy.core.presentation.design_system.theme.FitnessCenterIcon
 import com.softserveacademy.core.presentation.design_system.theme.ParkingIcon
 import com.softserveacademy.core.presentation.design_system.theme.PoolIcon
 import com.softserveacademy.core.presentation.design_system.theme.RoomServiceIcon
-import com.softserveacademy.core.presentation.design_system.theme.TimeIcon
 import com.softserveacademy.core.presentation.design_system.theme.WifiIcon
 import com.softserveacademy.home.presentation.R
 
@@ -64,7 +64,7 @@ data class IncludedItemUi(
         val AcUnit: IncludedItemUi
             @Composable get() = IncludedItemUi(
                 title = R.string.ac_unit_label,
-                icon = TimeIcon,
+                icon = AcUnitIcon,
             )
     }
 }

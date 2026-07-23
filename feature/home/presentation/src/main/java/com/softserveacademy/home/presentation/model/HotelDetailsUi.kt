@@ -21,10 +21,13 @@ data class HotelDetailsUi (
     val numberOfImages: Int,
     val rating: Double,
     val description: String,
-    val includedItems: List<IncludedItemUi> = emptyList()
+    val includedItems: List<IncludedItemUi> = emptyList(),
+    val address: String,
+    val latitude: Double,
+    val longitude: Double
 ){
     val limitedReviews: String
-        get() = if (numberOfReviews > 100) "100+ reviews" else "$numberOfReviews reviews"
+        get() = if (numberOfReviews > 100) "999+ reviews" else "$numberOfReviews reviews"
     val limitedImages: String
         get() = if (numberOfImages > 400) "400+ Photos" else "${numberOfImages-1}+ Photos"
 }
