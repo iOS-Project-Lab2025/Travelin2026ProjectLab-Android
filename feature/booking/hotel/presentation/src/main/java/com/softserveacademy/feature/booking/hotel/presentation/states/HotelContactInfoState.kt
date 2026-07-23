@@ -1,5 +1,7 @@
 package com.softserveacademy.feature.booking.hotel.presentation.states
 
+import java.io.Serializable
+
 /**
  * State class for the Hotel Contact Information screen.
  */
@@ -13,4 +15,4 @@ data class HotelContactInfoState(
     val countryCode: String = "+855",
     val phoneNumber: String = "",
     val phoneNumberError: String? = null
-)
+) : Serializable

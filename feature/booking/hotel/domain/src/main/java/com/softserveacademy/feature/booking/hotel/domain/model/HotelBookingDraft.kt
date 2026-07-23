@@ -1,6 +1,7 @@
 package com.softserveacademy.feature.booking.hotel.domain.model
 
 import kotlinx.serialization.Serializable
+import java.io.Serializable as JavaSerializable
 
 /**
  * Data class representing a draft for a hotel booking.
@@ -24,7 +25,7 @@ data class HotelBookingDraft(
     val checkOut: Long? = null,
     val guests: Guests = Guests(),
     val contactInfo: ContactInfo = ContactInfo()
-) : java.io.Serializable
+) : JavaSerializable
 
 /**
  * Data class representing the guest information for a booking.
@@ -38,7 +39,7 @@ data class Guests(
     val adults: Int = 1,
     val children: Int = 0,
     val pets: Boolean = false
-)
+) : JavaSerializable
 
 /**
  * Data class representing the contact information for a booking.
@@ -54,4 +55,4 @@ data class ContactInfo(
     val lastName: String = "",
     val email: String = "",
     val phoneNumber: String = ""
-) : java.io.Serializable
+) : JavaSerializable

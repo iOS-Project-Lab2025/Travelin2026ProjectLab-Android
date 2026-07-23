@@ -26,7 +26,7 @@ class HotelContactInfoViewModel @Inject constructor(
 
     private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
 
-    private val _uiState = MutableStateFlow(HotelContactInfoState())
+    private val _uiState = MutableStateFlow(savedStateHandle.get<HotelContactInfoState>(KEY_STATE) ?: HotelContactInfoState())
     val uiState: StateFlow<HotelContactInfoState> = _uiState.asStateFlow()
 
     private val _validationSuccess = MutableStateFlow(false)
@@ -43,14 +43,16 @@ class HotelContactInfoViewModel @Inject constructor(
     private var bookingDraft: HotelBookingDraft? = null
 
     init {
-        loadBookingDraft()
+        if (savedStateHandle.get<HotelContactInfoState>(KEY_STATE) == null) {
+            loadBookingDraft()
+        }
     }
 
     private fun loadBookingDraft() {
         viewModelScope.launch {
             bookingDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
             bookingDraft?.let { draft ->
-                _uiState.update {
+                updateState {
                     it.copy(
                         firstName = draft.contactInfo.firstName,
                         lastName = draft.contactInfo.lastName,
@@ -65,24 +67,29 @@ class HotelContactInfoViewModel @Inject constructor(
     fun onEvent(event: HotelContactInfoEvent) {
         when (event) {
             is HotelContactInfoEvent.FirstNameChanged -> {
-                _uiState.update { it.copy(firstName = event.firstName, firstNameError = null) }
+                updateState { it.copy(firstName = event.firstName, firstNameError = null) }
             }
             is HotelContactInfoEvent.LastNameChanged -> {
-                _uiState.update { it.copy(lastName = event.lastName, lastNameError = null) }
+                updateState { it.copy(lastName = event.lastName, lastNameError = null) }
             }
             is HotelContactInfoEvent.EmailChanged -> {
-                _uiState.update { it.copy(email = event.email, emailError = null) }
+                updateState { it.copy(email = event.email, emailError = null) }
             }
             is HotelContactInfoEvent.PhoneNumberChanged -> {
-                _uiState.update { it.copy(phoneNumber = event.phoneNumber, phoneNumberError = null) }
+                updateState { it.copy(phoneNumber = event.phoneNumber, phoneNumberError = null) }
             }
             is HotelContactInfoEvent.CountryCodeChanged -> {
-                _uiState.update { it.copy(countryCode = event.countryCode) }
+                updateState { it.copy(countryCode = event.countryCode) }
             }
             HotelContactInfoEvent.OnNextClick -> {
                 validateAndSave()
             }
         }
+    }
+
+    private fun updateState(update: (HotelContactInfoState) -> HotelContactInfoState) {
+        _uiState.update(update)
+        savedStateHandle[KEY_STATE] = _uiState.value
     }
 
     private fun validateAndSave() {
@@ -119,5 +126,9 @@ class HotelContactInfoViewModel @Inject constructor(
             hotelBookingDraftRepository.saveDraft(updatedDraft)
             _validationSuccess.value = true
         }
+    }
+
+    companion object {
+        private const val KEY_STATE = "contact_info_state"
     }
 }

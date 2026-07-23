@@ -31,18 +31,21 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private val hotelBookingDraftRepository: HotelBookingDraftRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HotelRoomSelectionState())
+    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+
+    private val _uiState = MutableStateFlow(HotelRoomSelectionState(
+        selectedRoomId = savedStateHandle[KEY_SELECTED_ROOM_ID],
+        selectedFilter = savedStateHandle[KEY_SELECTED_FILTER] ?: RoomFilter.AVAILABLE
+    ))
 
     /**
      * The current state of the hotel room selection screen.
      */
     val uiState: StateFlow<HotelRoomSelectionState> = _uiState.asStateFlow()
 
-    private var hotelId: Int = 0
     private var bookingDraft: HotelBookingDraft? = null
 
     init {
-        hotelId = savedStateHandle.get<Int>("hotelId") ?: 0
         loadRooms()
     }
 
@@ -65,7 +68,8 @@ class HotelRoomSelectionViewModel @Inject constructor(
                 it.copy(
                     rooms = rooms,
                     nightCount = nightCount,
-                    isLoading = false
+                    isLoading = false,
+                    selectedRoomId = it.selectedRoomId ?: draft?.roomId?.toIntOrNull()
                 )
             }
             applyFilters()
@@ -81,13 +85,26 @@ class HotelRoomSelectionViewModel @Inject constructor(
         when (event) {
             is HotelRoomSelectionEvent.OnFilterSelected -> {
                 _uiState.update { it.copy(selectedFilter = event.filter) }
+                savedStateHandle[KEY_SELECTED_FILTER] = event.filter
                 applyFilters()
             }
             is HotelRoomSelectionEvent.OnRoomSelected -> {
                 _uiState.update { it.copy(selectedRoomId = event.roomId) }
+                savedStateHandle[KEY_SELECTED_ROOM_ID] = event.roomId
+                saveRoomToDraft(event.roomId)
             }
             HotelRoomSelectionEvent.OnNextClick -> onNextClick()
             HotelRoomSelectionEvent.OnBackClick -> { /* Handled by navigation */ }
+        }
+    }
+
+    private fun saveRoomToDraft(roomId: Int) {
+        viewModelScope.launch {
+            val currentDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+                ?: HotelBookingDraft(hotelId = hotelId.toString())
+            val updatedDraft = currentDraft.copy(roomId = roomId.toString())
+            hotelBookingDraftRepository.saveDraft(updatedDraft)
+            bookingDraft = updatedDraft
         }
     }
 
@@ -118,5 +135,10 @@ class HotelRoomSelectionViewModel @Inject constructor(
                 hotelBookingDraftRepository.saveDraft(updatedDraft)
             }
         }
+    }
+
+    companion object {
+        private const val KEY_SELECTED_ROOM_ID = "selected_room_id"
+        private const val KEY_SELECTED_FILTER = "selected_filter"
     }
 }
