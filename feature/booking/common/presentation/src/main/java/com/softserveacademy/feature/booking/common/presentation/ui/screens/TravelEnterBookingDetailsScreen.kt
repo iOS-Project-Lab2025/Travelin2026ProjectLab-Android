@@ -25,6 +25,7 @@ import com.softserveacademy.feature.booking.common.presentation.ui.components.Tr
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
 import com.softserveacademy.feature.booking.common.presentation.R
 import androidx.compose.foundation.layout.fillMaxSize
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.collections.listOf
@@ -116,7 +117,7 @@ fun TravelEnterBookingDetailsScreen(
     }
 
     if (state.isLoading) {
-        TravelBookingLoadingScreen()
+        TravelLoadingScreen()
     } else {
         Scaffold(
             bottomBar = {

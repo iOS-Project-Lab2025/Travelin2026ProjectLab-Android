@@ -32,7 +32,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomS
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
-import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingLoadingScreen
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.feature.booking.hotel.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 
@@ -66,7 +66,7 @@ fun HotelRoomSelectionScreenContent(
     modifier: Modifier = Modifier
 ) {
     if (state.isLoading) {
-        TravelBookingLoadingScreen()
+        TravelLoadingScreen()
     } else {
         Scaffold(
             topBar = {
