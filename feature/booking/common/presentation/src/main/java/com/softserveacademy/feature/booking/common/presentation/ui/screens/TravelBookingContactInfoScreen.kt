@@ -29,6 +29,7 @@ import com.softserveacademy.feature.booking.common.presentation.events.TravelBoo
 import com.softserveacademy.feature.booking.common.presentation.states.TravelBookingContactInfoState
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.common.presentation.R
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 
 @Composable
 fun TravelBookingContactInfoScreen(
@@ -38,111 +39,115 @@ fun TravelBookingContactInfoScreen(
     onBackClick: () -> Unit,
     subtitle: String? = null,
 ) {
-    Scaffold(
-        bottomBar = {
-            TravelBookingBottomBar(
-                onBackClick = onBackClick,
-                onNextClick = { onEvent(TravelBookingContactInfoEvent.OnNextClick) }
-            )
-        },
-        modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
+    if (state.isLoading) {
+        TravelLoadingScreen()
+    } else {
+        Scaffold(
+            bottomBar = {
+                TravelBookingBottomBar(
+                    onBackClick = onBackClick,
+                    onNextClick = { onEvent(TravelBookingContactInfoEvent.OnNextClick) }
+                )
+            },
+            modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
-        ) {
-            Column(
+                .statusBarsPadding()
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(TravelinDimens.PaddingMedium)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(paddingValues)
             ) {
-                Text(
-                    text = stringResource(id = R.string.contact_info_title),
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    text = subtitle?: stringResource(id = R.string.contact_info_subtitle),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-
-                // First Name
-                Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(TravelinDimens.PaddingMedium)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
+                ) {
                     Text(
-                        text = stringResource(id = R.string.contact_info_first_name),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
+                        text = stringResource(id = R.string.contact_info_title),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold
                     )
-                    AppTextInput(
-                        value = state.firstName,
-                        onValueChange = { onEvent(TravelBookingContactInfoEvent.FirstNameChanged(it)) },
-                        placeholder = stringResource(id = R.string.contact_info_first_name_placeholder),
-                        modifier = Modifier.fillMaxWidth(),
-                        state = if (state.firstNameError != null) AppInputState.Error else AppInputState.Normal,
-                        errorMessage = state.firstNameError
-                    )
-                }
 
-                // Last Name
-                Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
                     Text(
-                        text = stringResource(id = R.string.contact_info_last_name),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
+                        text = subtitle ?: stringResource(id = R.string.contact_info_subtitle),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    AppTextInput(
-                        value = state.lastName,
-                        onValueChange = { onEvent(TravelBookingContactInfoEvent.LastNameChanged(it)) },
-                        placeholder = stringResource(id = R.string.contact_info_last_name_placeholder),
-                        modifier = Modifier.fillMaxWidth(),
-                        state = if (state.lastNameError != null) AppInputState.Error else AppInputState.Normal,
-                        errorMessage = state.lastNameError
-                    )
-                }
 
-                // Phone
-                Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
-                    Text(
-                        text = stringResource(id = R.string.contact_info_phone),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    TravelPhoneNumberInput(
-                        countryCode = state.countryCode,
-                        onCountryCodeChange = { onEvent(TravelBookingContactInfoEvent.CountryCodeChanged(it)) },
-                        phoneNumber = state.phoneNumber,
-                        onPhoneNumberChange = { onEvent(TravelBookingContactInfoEvent.PhoneNumberChanged(it)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        state = if (state.phoneNumberError != null) AppInputState.Error else AppInputState.Normal,
-                        errorMessage = state.phoneNumberError
-                    )
-                }
+                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
-                // Email
-                Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
-                    Text(
-                        text = stringResource(id = R.string.contact_info_email),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    AppTextInput(
-                        value = state.email,
-                        onValueChange = { onEvent(TravelBookingContactInfoEvent.EmailChanged(it)) },
-                        placeholder = stringResource(id = R.string.contact_info_email_placeholder),
-                        modifier = Modifier.fillMaxWidth(),
-                        state = if (state.emailError != null) AppInputState.Error else AppInputState.Normal,
-                        errorMessage = state.emailError
-                    )
+                    // First Name
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
+                        Text(
+                            text = stringResource(id = R.string.contact_info_first_name),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        AppTextInput(
+                            value = state.firstName,
+                            onValueChange = { onEvent(TravelBookingContactInfoEvent.FirstNameChanged(it)) },
+                            placeholder = stringResource(id = R.string.contact_info_first_name_placeholder),
+                            modifier = Modifier.fillMaxWidth(),
+                            state = if (state.firstNameError != null) AppInputState.Error else AppInputState.Normal,
+                            errorMessage = state.firstNameError
+                        )
+                    }
+
+                    // Last Name
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
+                        Text(
+                            text = stringResource(id = R.string.contact_info_last_name),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        AppTextInput(
+                            value = state.lastName,
+                            onValueChange = { onEvent(TravelBookingContactInfoEvent.LastNameChanged(it)) },
+                            placeholder = stringResource(id = R.string.contact_info_last_name_placeholder),
+                            modifier = Modifier.fillMaxWidth(),
+                            state = if (state.lastNameError != null) AppInputState.Error else AppInputState.Normal,
+                            errorMessage = state.lastNameError
+                        )
+                    }
+
+                    // Phone
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
+                        Text(
+                            text = stringResource(id = R.string.contact_info_phone),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        TravelPhoneNumberInput(
+                            countryCode = state.countryCode,
+                            onCountryCodeChange = { onEvent(TravelBookingContactInfoEvent.CountryCodeChanged(it)) },
+                            phoneNumber = state.phoneNumber,
+                            onPhoneNumberChange = { onEvent(TravelBookingContactInfoEvent.PhoneNumberChanged(it)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            state = if (state.phoneNumberError != null) AppInputState.Error else AppInputState.Normal,
+                            errorMessage = state.phoneNumberError
+                        )
+                    }
+
+                    // Email
+                    Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)) {
+                        Text(
+                            text = stringResource(id = R.string.contact_info_email),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        AppTextInput(
+                            value = state.email,
+                            onValueChange = { onEvent(TravelBookingContactInfoEvent.EmailChanged(it)) },
+                            placeholder = stringResource(id = R.string.contact_info_email_placeholder),
+                            modifier = Modifier.fillMaxWidth(),
+                            state = if (state.emailError != null) AppInputState.Error else AppInputState.Normal,
+                            errorMessage = state.emailError
+                        )
+                    }
                 }
             }
         }

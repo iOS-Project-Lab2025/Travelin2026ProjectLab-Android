@@ -49,6 +49,7 @@ class HotelContactInfoViewModel @Inject constructor(
     }
 
     private fun loadBookingDraft() {
+        updateState { it.copy(isLoading = true) }
         viewModelScope.launch {
             bookingDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
             bookingDraft?.let { draft ->
@@ -66,6 +67,7 @@ class HotelContactInfoViewModel @Inject constructor(
                     )
                 }
             }
+            updateState { it.copy(isLoading = false) }
         }
     }
 

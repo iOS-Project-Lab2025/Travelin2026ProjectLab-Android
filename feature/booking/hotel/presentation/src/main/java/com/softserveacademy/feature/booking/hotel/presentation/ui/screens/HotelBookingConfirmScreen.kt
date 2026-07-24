@@ -26,7 +26,7 @@ import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.countries
-import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingLoadingScreen
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingConfirmBottomBar
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
@@ -94,7 +94,7 @@ fun HotelBookingConfirmContent(
         }
     ) { padding ->
         if (uiState.isLoading) {
-            TravelBookingLoadingScreen()
+            TravelLoadingScreen()
         } else if (uiState.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = uiState.error)

@@ -6,6 +6,7 @@ import java.io.Serializable
  * State class for the Booking Contact Information screen.
  */
 data class TravelBookingContactInfoState(
+    val isLoading: Boolean = false,
     val firstName: String = "",
     val firstNameError: String? = null,
     val lastName: String = "",
