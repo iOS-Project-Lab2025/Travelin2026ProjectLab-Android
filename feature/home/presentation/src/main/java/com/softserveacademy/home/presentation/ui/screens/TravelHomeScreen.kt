@@ -43,6 +43,9 @@ import com.softserveacademy.home.presentation.ui.components.TravelTextField
 import com.softserveacademy.home.presentation.ui.components.TravelUpcomingTripCard
 import com.softserveacademy.home.presentation.ui.components.TravelUserProfileCard
 import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 /**
  * Stateful wrapper for [TravelHomeScreen].
@@ -67,17 +70,29 @@ fun RootHomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var isSearchMode by remember { mutableStateOf(false) }
 
-    TravelHomeScreen(
-        state = state,
-        onHotelClick = actions.onHotelClick,
-        onAccountClick = actions.onAccountClick,
-        onProfileClick = actions.onProfileClick,
-        onJourneySeeAllClick = actions.onJourneySeeAllClick,
-        onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
-        onUpcomingTripClick = actions.onUpcomingTripClick,
-        modifier = modifier
-    )
+    if (isSearchMode) {
+        DestinationSearchScreen(
+            onBackClick = { isSearchMode = false },
+            onItemClick = { hotelId ->
+                // Aquí podrías navegar al detalle del hotel usando el ID
+                isSearchMode = false
+            }
+        )
+    } else {
+        TravelHomeScreen(
+            state = state,
+            onHotelClick = actions.onHotelClick,
+            onAccountClick = actions.onAccountClick,
+            onProfileClick = actions.onProfileClick,
+            onJourneySeeAllClick = actions.onJourneySeeAllClick,
+            onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
+            onUpcomingTripClick = actions.onUpcomingTripClick,
+            onSearchClick = { isSearchMode = true }, // Activamos el modo búsqueda
+            modifier = modifier
+        )
+    }
 }
 
 /**
@@ -111,6 +126,7 @@ fun TravelHomeScreen(
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
     onHotelsSeeAllClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
     onUpcomingTripClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -144,7 +160,14 @@ fun TravelHomeScreen(
                         TravelUserProfileCard(userProfile = userProfile, onClick = onProfileClick)
                         Spacer(Modifier.height(16.dp))
                     }
-                    TravelTextField()
+                    Box {
+                        TravelTextField()
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable { onSearchClick() }
+                        )
+                    }
                     Spacer(Modifier.height(16.dp))
                     TravelIconsCard()
                 }
