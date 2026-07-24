@@ -41,7 +41,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Create local.properties for Android SDK
+      - name: Create local.properties
         run: |
           if [ -n "${ANDROID_SDK_ROOT:-}" ]; then
             SDK_PATH="$ANDROID_SDK_ROOT"
@@ -51,15 +51,19 @@ jobs:
             SDK_PATH="/usr/local/lib/android/sdk"
           fi
           echo "sdk.dir=$SDK_PATH" > local.properties
+          echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> local.properties
 
       # Compila el proyecto en modo debug (verifica que no haya errores de compilación)
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
-
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
 
       # (Opcional) corre los tests unitarios también
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
 
 
       # Valida que el formato estético cumpla con Ktlint
