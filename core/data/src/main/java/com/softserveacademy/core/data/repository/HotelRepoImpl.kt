@@ -149,7 +149,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
                 pricePerNight = 170,
-                images = roomPreviewImages,
+                images = roomPreviewImages1,
                 totalRooms = 1,
                 availableRooms = 5,
                 isAvailable = true
@@ -163,7 +163,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
                 pricePerNight = 150,
-                images = roomPreviewImages,
+                images = roomPreviewImages2,
                 totalRooms = 3,
                 availableRooms = 3,
                 isAvailable = true
@@ -177,7 +177,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 bedCount = 2,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI, HotelRoomAmenity.AC),
                 pricePerNight = 250,
-                images = roomPreviewImages,
+                images = roomPreviewImages3,
                 totalRooms = 2,
                 availableRooms = 2,
                 isAvailable = true
@@ -209,10 +209,29 @@ private val previewImages1 = listOf(
     "https://picsum.photos/id/152/200/300"
 )
 
-private val roomPreviewImages = listOf(
-    "https://picsum.photos/id/137/200/300",
-    "https://picsum.photos/id/138/200/300",
+private val roomPreviewImages1 = listOf(
+    "https://images.unsplash.com/photo-1618773928121-c32242e63f39",
     "https://picsum.photos/id/20/800/600",
     "https://picsum.photos/id/937/200/300",
     "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
+)
+
+private val roomPreviewImages2 = listOf(
+    "https://thumbs.dreamstime.com/b/hotel-bed-room-21064950.jpg",
+    "https://picsum.photos/id/20/800/600",
+    "https://picsum.photos/id/937/200/300",
+    "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
+)
+
+private val roomPreviewImages3 = listOf(
+    "https://images.trvl-media.com/lodging/10000000/9290000/9281600/9281509/362ab1be.jpg",
+    "https://picsum.photos/id/20/800/600",
+    "https://picsum.photos/id/937/200/300",
+    "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
 )
