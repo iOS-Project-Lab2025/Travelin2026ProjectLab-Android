@@ -25,6 +25,7 @@ import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.countries
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
@@ -71,7 +72,8 @@ fun HotelBookingConfirmContent(
                     IconButton(onClick = onBackClick) {
                         Icon(imageVector = ArrowLeftIcon, contentDescription = stringResource(CommonR.string.back_button_label))
                     }
-                }
+                },
+                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
             )
         },
         bottomBar = {
