@@ -156,7 +156,8 @@ fun HotelBookingConfirmContent(
                         email = contactInfo?.email ?: "",
                         countryCode = countryCode,
                         countryFlag = countries.find { it.code == countryCode }?.flag ?: "",
-                        phoneNumber = contactInfo?.phoneNumber ?: ""
+                        phoneNumber = contactInfo?.phoneNumber ?: "",
+                        subtitle = stringResource(R.string.contact_info_who_check_in)
                     )
                 }
             }

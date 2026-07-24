@@ -27,23 +27,25 @@ import com.softserveacademy.feature.booking.common.presentation.R
  *
  * All fields are read-only and are not editable.
  *
+ * @param modifier The modifier to be applied to the card.
  * @param firstName The first name of the contact.
  * @param lastName The last name of the contact.
  * @param email The email address of the contact.
  * @param countryCode The country code for the phone number.
  * @param countryFlag The flag emoji for the country.
  * @param phoneNumber The phone number of the contact.
- * @param modifier The modifier to be applied to the card.
+ * @param subtitle An optional subtitle for the card.
  */
 @Composable
 fun TravelBookingContactInfoCard(
+    modifier: Modifier = Modifier,
     firstName: String,
     lastName: String,
     email: String,
     countryCode: String,
     countryFlag: String,
     phoneNumber: String,
-    modifier: Modifier = Modifier
+    subtitle: String? = null,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -56,7 +58,8 @@ fun TravelBookingContactInfoCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(TravelinDimens.PaddingMedium)
+            modifier = Modifier.padding(TravelinDimens.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
         ) {
             // Contact Information Title
             Text(
@@ -64,21 +67,25 @@ fun TravelBookingContactInfoCard(
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+            Text(
+                text = subtitle?: stringResource(id = R.string.contact_info_subtitle),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
 
             // First Name
             ContactField(
                 label = stringResource(R.string.contact_info_first_name),
                 value = firstName
             )
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
             // Last Name
             ContactField(
                 label = stringResource(R.string.contact_info_last_name),
                 value = lastName
             )
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
             // Phone
             Text(
@@ -86,7 +93,6 @@ fun TravelBookingContactInfoCard(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall),
@@ -109,14 +115,12 @@ fun TravelBookingContactInfoCard(
                     singleLine = true
                 )
             }
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
             // Email
             ContactField(
                 label = stringResource(R.string.contact_info_email),
                 value = email
             )
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
         }
     }
 }
@@ -137,7 +141,6 @@ private fun ContactField(
         style = MaterialTheme.typography.titleSmall,
         fontWeight = FontWeight.SemiBold
     )
-    Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
     OutlinedTextField(
         value = value,
         onValueChange = {},
