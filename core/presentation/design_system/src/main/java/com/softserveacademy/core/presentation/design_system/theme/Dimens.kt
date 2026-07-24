@@ -20,6 +20,7 @@ object TravelinDimens {
     val PaddingMedium = 16.dp
     val PaddingLarge = 20.dp
     val PaddingExtraLarge = 24.dp
+    val Padding2ExtraLarge = 36.dp
 
     // Elevations
     val ElevationSmall = 2.dp

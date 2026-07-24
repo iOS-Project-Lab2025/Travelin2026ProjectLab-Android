@@ -1,11 +1,15 @@
 package com.softserveacademy.home.presentation.viewmodel
 
+import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.domain.usecase.GetThemeUseCase
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -24,12 +28,14 @@ class HotelDetailsViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val hotelRepo = mockk<HotelRepo>()
+    private val getThemeUseCase = mockk<GetThemeUseCase>()
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = HotelDetailsViewModel(hotelRepo)
+        every { getThemeUseCase() } returns flowOf(AppTheme.SYSTEM)
+        viewModel = HotelDetailsViewModel(hotelRepo, getThemeUseCase)
     }
 
     @After

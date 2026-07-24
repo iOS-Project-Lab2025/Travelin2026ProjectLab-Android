@@ -3,18 +3,25 @@ package com.softserveacademy.home.presentation.ui.screens
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -30,7 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
@@ -45,21 +53,39 @@ import com.softserveacademy.home.presentation.model.IncludedItemUi
 import com.softserveacademy.home.presentation.ui.components.TravelBookingBar
 import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailsTopIcons
 import com.softserveacademy.home.presentation.ui.components.TravelIncludedItem
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
-import com.softserveacademy.home.presentation.R.string
-import com.softserveacademy.core.domain.model.IncludedItem
-import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerComposable
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.softserveacademy.home.presentation.R
+import com.softserveacademy.core.domain.model.IncludedItem
+import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
+import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
+import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
+import com.softserveacademy.core.presentation.design_system.theme.AngleRightIcon
+import com.softserveacademy.core.presentation.design_system.theme.AngleLeftIcon
+import com.softserveacademy.core.presentation.design_system.theme.Green70
+import com.softserveacademy.core.presentation.design_system.theme.LocationMarkerIcon
+import com.softserveacademy.core.presentation.design_system.theme.White100_Alpha70
 import com.softserveacademy.home.presentation.state.HotelDetailState
+import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.home.presentation.ui.components.HotelDetailLoading
 import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailError
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
@@ -85,7 +111,15 @@ fun HotelDetailState(
     viewModel: HotelDetailsViewModel = hiltViewModel(),
 ){
     val hotelDetailState by viewModel.hotelDetailState.collectAsState()
+    val appTheme by viewModel.appTheme.collectAsState()
     val context = LocalContext.current
+    val systemInDarkTheme = isSystemInDarkTheme()
+
+    val isDarkTheme = when (appTheme) {
+        AppTheme.LIGHT -> false
+        AppTheme.DARK -> true
+        AppTheme.SYSTEM -> systemInDarkTheme
+    }
 
     LaunchedEffect(Unit){
         viewModel.getHotelDetail(hotelId)
@@ -105,15 +139,18 @@ fun HotelDetailState(
                 numberOfImages = hotelInformation.imageList.size,
                 rating = hotelInformation.rating,
                 description = hotelInformation.description,
-                includedItems = hotelInformation.includedItems.map { it.toUi() }
+                includedItems = hotelInformation.includedItems.map { it.toUi() },
+                address = hotelInformation.address,
+                latitude = hotelInformation.latitude,
+                longitude = hotelInformation.longitude
             )
 
             val shareMessage = stringResource(
-                id = string.share_hotel_message,
+                id = R.string.share_hotel_message,
                 hotelInformation.name,
                 "https://travelin.softserveacademy.com/hotel/${hotelInformation.id}"
             )
-            val shareTitle = stringResource(id = string.share_hotel_title)
+            val shareTitle = stringResource(id = R.string.share_hotel_title)
 
             TravelHotelDetailScreen(
                 hotelInformation = hotelDetailsUi,
@@ -129,6 +166,7 @@ fun HotelDetailState(
                     val shareIntent = Intent.createChooser(sendIntent, shareTitle)
                     context.startActivity(shareIntent)
                 },
+                isDarkTheme = isDarkTheme,
                 modifier = modifier
             )
         }
@@ -175,6 +213,7 @@ private fun IncludedItem.toUi(): IncludedItemUi = when (this) {
 @Composable
 fun TravelHotelDetailScreen(
     hotelInformation: HotelDetailsUi,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onSeeAllPhotosClick: () -> Unit = {},
@@ -216,6 +255,14 @@ fun TravelHotelDetailScreen(
             }
             item {
                 IncludingSection(includedItems = hotelInformation.includedItems)
+            }
+            item {
+                HotelLocationSection(
+                    address = hotelInformation.address,
+                    latitude = hotelInformation.latitude,
+                    longitude = hotelInformation.longitude,
+                    isDarkTheme = isDarkTheme
+                )
             }
             item {
                 GalleryPreviewSection(
@@ -271,7 +318,11 @@ private fun HotelHeaderImage(
             verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall),
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(TravelinDimens.PaddingMedium)
+                .padding(
+                    start = TravelinDimens.PaddingMedium,
+                    end = TravelinDimens.PaddingMedium,
+                    bottom = TravelinDimens.Padding2ExtraLarge
+                )
         ) {
             Text(
                 text = name,
@@ -284,6 +335,7 @@ private fun HotelHeaderImage(
                 TravelRatingBar(rating = rating)
 
                 Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
+
                 Text(
                     text = limitedReviews,
                     style = MaterialTheme.typography.bodyMedium,
@@ -294,7 +346,11 @@ private fun HotelHeaderImage(
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(TravelinDimens.PaddingMedium),
+                .padding(
+                    start = TravelinDimens.PaddingMedium,
+                    end = TravelinDimens.PaddingMedium,
+                    bottom = TravelinDimens.Padding2ExtraLarge
+                ),
             color = BlueDark90_Alpha50,
             shape = MaterialTheme.shapes.small
         ) {
@@ -306,7 +362,8 @@ private fun HotelHeaderImage(
                         horizontal = TravelinDimens.PaddingSmall,
                         vertical = TravelinDimens.PaddingExtraSmall
                     ),
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -323,37 +380,60 @@ private fun HotelDescriptionSection(
     description: String
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    var hasOverflow by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .padding(TravelinDimens.PaddingLarge)
     ) {
         Text(
-            text = stringResource(id = string.about_label),
+            text = stringResource(id = R.string.about_label),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onPrimaryFixed,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
-        Text(
-            text = description,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = if (isExpanded) Int.MAX_VALUE else 6,
-        )
-        Text(
-            text =  if (isExpanded) stringResource(id = string.read_less_label)
-                    else stringResource(id = string.read_more_label),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .clickable { isExpanded = !isExpanded }
-                .padding(vertical = TravelinDimens.SpaceSmall)
-        )
+        Column {
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = if (isExpanded) Int.MAX_VALUE else 6,
+                overflow = TextOverflow.Ellipsis,
+                onTextLayout = { textLayoutResult ->
+                    if (!isExpanded) {
+                        hasOverflow = textLayoutResult.hasVisualOverflow
+                    }
+                }
+            )
+            if (hasOverflow || isExpanded) {
+                Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
+                Row(
+                    modifier = Modifier
+                        .clickable { isExpanded = !isExpanded }
+                        .padding(vertical = TravelinDimens.PaddingSmall),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isExpanded) stringResource(id = R.string.read_less_label)
+                        else stringResource(id = R.string.read_more_label),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(TravelinDimens.SpaceExtraSmall))
+                    Icon(
+                        imageVector = if (isExpanded) AngleLeftIcon else AngleRightIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(TravelinDimens.IconSizeExtraSmall)
+                    )
+                }
+            }
+        }
+
         HorizontalDivider(
             modifier = Modifier
                 .padding(
@@ -373,13 +453,25 @@ private fun IncludingSection(
     includedItems: List<IncludedItemUi>
 ) {
     if (includedItems.isEmpty()) return
+
+    var showAllAmenities by remember { mutableStateOf(false) }
+    val displayItems = includedItems.take(6)
+    val hasMore = includedItems.size > 6
+
+    if (showAllAmenities) {
+        AmenitiesDialog(
+            includedItems = includedItems,
+            onDismiss = { showAllAmenities = false }
+        )
+    }
     
     Column(modifier = Modifier
             .padding(
-                horizontal = TravelinDimens.PaddingLarge)
+                horizontal = TravelinDimens.PaddingLarge
+            )
     ) {
         Text(
-            text = stringResource(id = string.What_is_included_label),
+            text = stringResource(id = R.string.What_is_included_label),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onPrimaryFixed,
             fontWeight = FontWeight.Bold
@@ -387,7 +479,7 @@ private fun IncludingSection(
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
-        includedItems.chunked(2).forEach { rowItems ->
+        displayItems.chunked(2).forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
@@ -405,6 +497,18 @@ private fun IncludingSection(
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
         }
 
+        if (hasMore) {
+            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
+            TravelOutlinedButton(
+                text = stringResource(id = R.string.see_all_about_property),
+                onClick = { showAllAmenities = true },
+                contentPadding = PaddingValues(
+                    horizontal = TravelinDimens.PaddingLarge,
+                    vertical = TravelinDimens.PaddingSmall
+                )
+            )
+        }
+
         HorizontalDivider(
             modifier = Modifier
                 .padding(
@@ -412,6 +516,257 @@ private fun IncludingSection(
                     bottom = TravelinDimens.PaddingExtraLarge
                 )
         )
+    }
+}
+
+/**
+ * Dialog displaying all amenities included in the hotel.
+ *
+ * @param includedItems Full list of amenities.
+ * @param onDismiss Callback to close the dialog.
+ */
+@Composable
+private fun AmenitiesDialog(
+    includedItems: List<IncludedItemUi>,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .padding(TravelinDimens.PaddingLarge)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TravelIconButton(
+                        icon = ArrowLeftIcon,
+                        onClick = onDismiss,
+                        contentDescription = "Close",
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.What_is_included_label),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(includedItems.chunked(2)) { rowItems ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
+                        ) {
+                            rowItems.forEach { item ->
+                                TravelIncludedItem(
+                                    item = item,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            if (rowItems.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Displays the location section of the hotel, including the address and a Google Map.
+ * The map's theme automatically adjusts to match the system's dark or light mode.
+ *
+ * @param address The formatted address string of the hotel.
+ * @param latitude The latitude coordinate of the hotel.
+ * @param longitude The longitude coordinate of the hotel.
+ */
+@Composable
+private fun HotelLocationSection(
+    address : String,
+    latitude : Double,
+    longitude : Double,
+    isDarkTheme: Boolean
+){
+    var isMapFullScreen by remember { mutableStateOf(false) }
+    val hotelCoordinates = LatLng(latitude, longitude)
+    val context = LocalContext.current
+    val mapProperties = remember(isDarkTheme) {
+        MapProperties(
+            mapStyleOptions = if (isDarkTheme) {
+                MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.map_style_dark
+                )
+            } else {
+                null
+            }
+        )
+    }
+
+    if (isMapFullScreen) {
+        FullScreenMap(
+            hotelCoordinates = hotelCoordinates,
+            mapProperties = mapProperties,
+            onDismiss = { isMapFullScreen = false }
+        )
+    }
+
+    Column(modifier = Modifier
+        .padding(
+            horizontal = TravelinDimens.PaddingLarge
+        )
+    ) {
+        Text(
+            text = stringResource(id = R.string.Where_it_is_label),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onPrimaryFixed,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+
+        Text(
+            text = address,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(MaterialTheme.shapes.medium)
+                .shadow(TravelinDimens.ElevationSmall)
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.outline,
+                    MaterialTheme.shapes.medium
+                )
+                .clickable { isMapFullScreen = true }
+        ) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(hotelCoordinates, 16f)
+                },
+                properties = mapProperties,
+                uiSettings = MapUiSettings(
+                    scrollGesturesEnabled = false,
+                    zoomGesturesEnabled = false,
+                    tiltGesturesEnabled = false,
+                    rotationGesturesEnabled = false,
+                    zoomControlsEnabled = false
+                ),
+                onMapClick = { isMapFullScreen = true }
+            ) {
+                MarkerComposable(
+                    state = rememberUpdatedMarkerState(position = hotelCoordinates)
+                ) {
+                    Icon(
+                        imageVector = LocationMarkerIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(TravelinDimens.IconSizeExtraLarge)
+                    )
+                }
+            }
+        }
+        HorizontalDivider(
+            modifier = Modifier
+                .padding(
+                    top = TravelinDimens.PaddingLarge,
+                    bottom = TravelinDimens.PaddingExtraLarge
+                )
+        )
+    }
+}
+
+/**
+ * Displays a full-screen version of the map where the user can navigate and interact.
+ *
+ * @param hotelCoordinates The coordinates to center the map on.
+ * @param mapProperties Properties including style (dark/light mode).
+ * @param onDismiss Action to perform to close the full-screen view.
+ */
+@Composable
+private fun FullScreenMap(
+    hotelCoordinates: LatLng,
+    mapProperties: MapProperties,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(hotelCoordinates, 16f)
+            }
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = MapUiSettings(
+                    zoomControlsEnabled = true,
+                    compassEnabled = true
+                ),
+                contentPadding = PaddingValues(
+                    top = TravelinDimens.PaddingMedium,
+                    bottom = TravelinDimens.Padding2ExtraLarge
+                )
+            ) {
+                MarkerComposable(
+                    state = rememberUpdatedMarkerState(position = hotelCoordinates)
+                ) {
+                    Icon(
+                        imageVector = LocationMarkerIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(TravelinDimens.IconSizeExtraLarge)
+                    )
+                }
+            }
+
+            TravelIconButton(
+                icon = ArrowLeftIcon,
+                onClick = onDismiss,
+                iconColor = Green70,
+                backgroundColor = White100_Alpha70,
+                contentDescription = "Back button",
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(TravelinDimens.PaddingMedium)
+            )
+        }
     }
 }
 
@@ -491,24 +846,15 @@ private fun GalleryPreviewSection(
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
-        OutlinedButton(
+        TravelOutlinedButton(
+            text = "${stringResource(id = R.string.see_all_label)} ${numberOfImages - 1} " +
+                    stringResource(id = R.string.plus_photos_label),
             onClick = onSeeAllPhotosClick,
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline
+            contentPadding = PaddingValues(
+                horizontal = TravelinDimens.PaddingLarge,
+                vertical = TravelinDimens.PaddingSmall
             )
-        ) {
-            Text(
-                text = "${stringResource(id = string.see_all_label)} ${numberOfImages-1} " +
-                        stringResource(id = string.plus_photos_label),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        )
     }
 }
 
@@ -538,8 +884,12 @@ private fun TravelHotelDetailScreenPreview() {
                     IncludedItemUi.BuffetBreakfast,
                     IncludedItemUi.FreeWifi,
                     IncludedItemUi.Pool
-                )
-            )
+                ),
+                address = "Jalan Sunset Road No. 101, Kuta, Bali",
+                latitude = 1.35,
+                longitude = 103.87
+            ),
+            isDarkTheme = false
         )
     }
 }
