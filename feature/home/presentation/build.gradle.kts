@@ -27,6 +27,10 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+
     // Maps SDK for Android
     implementation(libs.maps.compose)
     implementation(libs.secrets.gradlePlugin)
