@@ -114,7 +114,9 @@ fun HotelSummaryCardPreview() {
                 image = listOf("https://picsum.photos/800/600"),
                 imageList = listOf("https://picsum.photos/800/600"),
                 minimumPrice = 150,
-                description = "A beautiful hotel in Kuta."
+                description = "A beautiful hotel in Kuta.",
+                latitude = 1.35,
+                longitude = 103.87,
             )
         )
     }
