@@ -56,8 +56,9 @@ class HotelRoomSelectionViewModel @Inject constructor(
             val draft = bookingDraft
             val checkIn = draft?.checkIn ?: 0L
             val checkOut = draft?.checkOut ?: 0L
+            val guestCount = (draft?.guests?.adults ?: 1) + (draft?.guests?.children ?: 0)
 
-            val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut)
+            val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut, guestCount)
             
             // Calculate night count
             val nightCount = if (checkIn != 0L && checkOut != 0L) {
@@ -98,11 +99,11 @@ class HotelRoomSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun saveRoomToDraft(roomId: Int) {
+    private fun saveRoomToDraft(roomId: Int?) {
         viewModelScope.launch {
             val currentDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
                 ?: HotelBookingDraft(hotelId = hotelId.toString())
-            val updatedDraft = currentDraft.copy(roomId = roomId.toString())
+            val updatedDraft = currentDraft.copy(roomId = roomId?.toString())
             hotelBookingDraftRepository.saveDraft(updatedDraft)
             bookingDraft = updatedDraft
         }
@@ -116,7 +117,20 @@ class HotelRoomSelectionViewModel @Inject constructor(
             RoomFilter.ONE_BED -> currentState.rooms.filter { it.bedCount == 1 }
             RoomFilter.TWO_BEDS -> currentState.rooms.filter { it.bedCount == 2 }
         }
-        _uiState.update { it.copy(filteredRooms = filtered) }
+
+        val selectionReset = filtered.isEmpty() && currentState.selectedRoomId != null
+
+        _uiState.update { 
+            it.copy(
+                filteredRooms = filtered,
+                selectedRoomId = if (filtered.isEmpty()) null else it.selectedRoomId
+            ) 
+        }
+
+        if (selectionReset) {
+            savedStateHandle[KEY_SELECTED_ROOM_ID] = null
+            saveRoomToDraft(null)
+        }
     }
 
     private fun onNextClick() {

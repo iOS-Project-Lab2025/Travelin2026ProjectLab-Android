@@ -20,7 +20,7 @@ data class HotelRoom(
     val id: Int? = null,
     val type: String,
     val description: String,
-    val maxOccupancy: String,
+    val maxOccupancy: Int,
     val bedType: String,
     val bedCount: Int = 1,
     val amenities: List<HotelRoomAmenity>,

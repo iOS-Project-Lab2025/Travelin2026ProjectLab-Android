@@ -114,20 +114,22 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
         return _hotels.value
     }
 
-    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long): List<HotelRoom> {
+    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): List<HotelRoom> {
         val baseRooms = _hotels.value.find { it.id == hotelId }?.rooms ?: emptyList()
-        return baseRooms.map { room ->
-            val bookedCount = _bookings.value.count { booking ->
-                booking.roomId == room.id && 
-                checkInDate < booking.checkOutDate && 
-                booking.checkInDate < checkOutDate
+        return baseRooms
+            .filter { it.maxOccupancy >= guestCount }
+            .map { room ->
+                val bookedCount = _bookings.value.count { booking ->
+                    booking.roomId == room.id && 
+                    checkInDate < booking.checkOutDate && 
+                    booking.checkInDate < checkOutDate
+                }
+                val available = (room.totalRooms - bookedCount).coerceAtLeast(0)
+                room.copy(
+                    availableRooms = available,
+                    isAvailable = available > 0
+                )
             }
-            val available = (room.totalRooms - bookedCount).coerceAtLeast(0)
-            room.copy(
-                availableRooms = available,
-                isAvailable = available > 0
-            )
-        }
     }
 
     override suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long) {
@@ -142,12 +144,12 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 1,
                 type = "Deluxe Suite, King Size Bed",
                 description = "Volcano in East Java",
-                maxOccupancy = "1-2 persons",
+                maxOccupancy = 2,
                 bedType = "1 King bed",
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
                 pricePerNight = 170,
-                images = roomPreviewImages,
+                images = roomPreviewImages1,
                 totalRooms = 1,
                 availableRooms = 5,
                 isAvailable = true
@@ -156,12 +158,12 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 2,
                 type = "Standard Suite, Queen Size Bed",
                 description = "Volcano in East Java",
-                maxOccupancy = "1-2 persons",
+                maxOccupancy = 2,
                 bedType = "1 Queen bed",
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
                 pricePerNight = 150,
-                images = roomPreviewImages,
+                images = roomPreviewImages2,
                 totalRooms = 3,
                 availableRooms = 3,
                 isAvailable = true
@@ -170,12 +172,12 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 3,
                 type = "Family Room, 2 Double Beds",
                 description = "Garden View",
-                maxOccupancy = "1-4 persons",
+                maxOccupancy = 4,
                 bedType = "2 Double beds",
                 bedCount = 2,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI, HotelRoomAmenity.AC),
                 pricePerNight = 250,
-                images = roomPreviewImages,
+                images = roomPreviewImages3,
                 totalRooms = 2,
                 availableRooms = 2,
                 isAvailable = true
@@ -207,10 +209,29 @@ private val previewImages1 = listOf(
     "https://picsum.photos/id/152/200/300"
 )
 
-private val roomPreviewImages = listOf(
-    "https://picsum.photos/id/137/200/300",
-    "https://picsum.photos/id/138/200/300",
+private val roomPreviewImages1 = listOf(
+    "https://images.unsplash.com/photo-1618773928121-c32242e63f39",
     "https://picsum.photos/id/20/800/600",
     "https://picsum.photos/id/937/200/300",
     "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
+)
+
+private val roomPreviewImages2 = listOf(
+    "https://thumbs.dreamstime.com/b/hotel-bed-room-21064950.jpg",
+    "https://picsum.photos/id/20/800/600",
+    "https://picsum.photos/id/937/200/300",
+    "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
+)
+
+private val roomPreviewImages3 = listOf(
+    "https://images.trvl-media.com/lodging/10000000/9290000/9281600/9281509/362ab1be.jpg",
+    "https://picsum.photos/id/20/800/600",
+    "https://picsum.photos/id/937/200/300",
+    "https://picsum.photos/id/324/200/300",
+    "https://picsum.photos/id/643/200/300",
+    "https://picsum.photos/id/682/200/300",
 )

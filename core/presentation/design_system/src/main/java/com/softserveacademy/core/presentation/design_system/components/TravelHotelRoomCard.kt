@@ -109,7 +109,7 @@ fun TravelHotelRoomCard(
                 ) {
                     TravelAmenityChip(
                         icon = PersonsIcon,
-                        text = room.maxOccupancy,
+                        text = "1-${room.maxOccupancy} persons",
                         contentColor = MaterialTheme.colorScheme.secondary,
                         outlineColor = MaterialTheme.colorScheme.secondary
                     )
@@ -181,7 +181,7 @@ private fun TravelHotelRoomCardPreview() {
     val sampleRoom = HotelRoom(
         type = "Deluxe Suite, King Size Bed",
         description = "Spacious suite with a king-size bed and a private balcony.",
-        maxOccupancy = "1-5 persons",
+        maxOccupancy = 5,
         bedType = "1 King bed",
         amenities = listOf(
             HotelRoomAmenity.WIFI,
@@ -212,7 +212,7 @@ private fun TravelHotelRoomCardPreview() {
                 room = sampleRoom.copy(
                     type = "Standard Suite, Queen Size Bed",
                     description = "Cozy suite with a queen-size bed and a shared bathroom.",
-                    maxOccupancy = "1-4 persons",
+                    maxOccupancy = 4,
                     bedType = "1 Queen bed",
                 ),
                 nightCount = 3,

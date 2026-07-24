@@ -28,9 +28,10 @@ interface HotelRepo{
      * @param hotelId The ID of the hotel.
      * @param checkInDate The check-in date in milliseconds.
      * @param checkOutDate The check-out date in milliseconds.
+     * @param guestCount The number of guests for the booking.
      * @return A list of rooms for the hotel.
      */
-    suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long): List<HotelRoom>
+    suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): List<HotelRoom>
 
     /**
      * Reserve a room in a hotel.
