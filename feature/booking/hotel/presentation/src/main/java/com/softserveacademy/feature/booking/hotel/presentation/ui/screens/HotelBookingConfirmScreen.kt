@@ -57,110 +57,115 @@ fun HotelBookingConfirmContent(
 ) {
     val scrollState = rememberScrollState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.booking_confirm_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(TravelinDimens.PaddingMedium)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(imageVector = ArrowLeftIcon, contentDescription = stringResource(CommonR.string.back_button_label))
-                    }
-                },
-                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
-            )
-        },
-        bottomBar = {
-            val totalPrice = uiState.selectedRoom?.let { room ->
-                val nights = uiState.bookingDraft?.let { draft ->
-                    val checkIn = draft.checkIn
-                    val checkOut = draft.checkOut
-                    if (checkIn != null && checkOut != null) {
-                        ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
-                    } else 1
-                } ?: 1
-                room.pricePerNight * nights
-            } ?: 0
-
-            TravelBookingConfirmBottomBar(
-                totalPrice = totalPrice,
-                buttonText = stringResource(R.string.booking_confirm_button_label),
-                onButtonClick = onConfirmClick
-            )
-        }
-    ) { padding ->
-        if (uiState.isLoading) {
-            TravelLoadingScreen()
-        } else if (uiState.error != null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = uiState.error)
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .verticalScroll(scrollState)
-                    .padding(TravelinDimens.PaddingMedium)
-            ) {
-                uiState.hotelDetails?.let { hotel ->
-                    HotelSummaryCard(hotel = hotel)
-
-                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
-
-                    // Booking Details Section
-                    HotelBookingSummaryCard(
-                        checkIn = uiState.bookingDraft?.checkIn ?: 0L,
-                        checkOut = uiState.bookingDraft?.checkOut ?: 0L,
-                        guests = uiState.bookingDraft?.guests?.let {
-                            stringResource(
-                                R.string.booking_confirm_guests_format,
-                                it.adults,
-                                it.children,
-                                stringResource(if (it.pets) R.string.booking_confirm_pets_yes else R.string.booking_confirm_pets_no)
+    if (uiState.isLoading) {
+        TravelLoadingScreen()
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.booking_confirm_title),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(TravelinDimens.PaddingMedium)
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = ArrowLeftIcon,
+                                contentDescription = stringResource(CommonR.string.back_button_label)
                             )
-                        } ?: ""
-                    )
+                        }
+                    },
+                    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+                )
+            },
+            bottomBar = {
+                val totalPrice = uiState.selectedRoom?.let { room ->
+                    val nights = uiState.bookingDraft?.let { draft ->
+                        val checkIn = draft.checkIn
+                        val checkOut = draft.checkOut
+                        if (checkIn != null && checkOut != null) {
+                            ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
+                        } else 1
+                    } ?: 1
+                    room.pricePerNight * nights
+                } ?: 0
 
-                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+                TravelBookingConfirmBottomBar(
+                    totalPrice = totalPrice,
+                    buttonText = stringResource(R.string.booking_confirm_button_label),
+                    onButtonClick = onConfirmClick
+                )
+            }
+        ) { padding ->
+            if (uiState.error != null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = uiState.error)
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                        .verticalScroll(scrollState)
+                        .padding(TravelinDimens.PaddingMedium)
+                ) {
+                    uiState.hotelDetails?.let { hotel ->
+                        HotelSummaryCard(hotel = hotel)
 
-                    // Room Selection
-                    uiState.selectedRoom?.let { room ->
-                        val nights = uiState.bookingDraft?.let { draft ->
-                            val checkIn = draft.checkIn
-                            val checkOut = draft.checkOut
-                            if (checkIn != null && checkOut != null) {
-                                ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt()
-                                    .coerceAtLeast(1)
-                            } else 1
-                        } ?: 1
-                        TravelHotelRoomCard(
-                            room = room,
-                            nightCount = nights,
-                            isSelected = false,
-                            isClickable = false
+                        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+                        // Booking Details Section
+                        HotelBookingSummaryCard(
+                            checkIn = uiState.bookingDraft?.checkIn ?: 0L,
+                            checkOut = uiState.bookingDraft?.checkOut ?: 0L,
+                            guests = uiState.bookingDraft?.guests?.let {
+                                stringResource(
+                                    R.string.booking_confirm_guests_format,
+                                    it.adults,
+                                    it.children,
+                                    stringResource(if (it.pets) R.string.booking_confirm_pets_yes else R.string.booking_confirm_pets_no)
+                                )
+                            } ?: ""
+                        )
+
+                        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+                        // Room Selection
+                        uiState.selectedRoom?.let { room ->
+                            val nights = uiState.bookingDraft?.let { draft ->
+                                val checkIn = draft.checkIn
+                                val checkOut = draft.checkOut
+                                if (checkIn != null && checkOut != null) {
+                                    ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt()
+                                        .coerceAtLeast(1)
+                                } else 1
+                            } ?: 1
+                            TravelHotelRoomCard(
+                                room = room,
+                                nightCount = nights,
+                                isSelected = false,
+                                isClickable = false
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+                        // Contact Information
+                        val contactInfo = uiState.bookingDraft?.contactInfo
+                        val countryCode = contactInfo?.countryCode ?: ""
+                        TravelBookingContactInfoCard(
+                            firstName = contactInfo?.firstName ?: "",
+                            lastName = contactInfo?.lastName ?: "",
+                            email = contactInfo?.email ?: "",
+                            countryCode = countryCode,
+                            countryFlag = countries.find { it.code == countryCode }?.flag ?: "",
+                            phoneNumber = contactInfo?.phoneNumber ?: "",
+                            subtitle = stringResource(R.string.contact_info_who_check_in)
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
-
-                    // Contact Information
-                    val contactInfo = uiState.bookingDraft?.contactInfo
-                    val countryCode = contactInfo?.countryCode ?: ""
-                    TravelBookingContactInfoCard(
-                        firstName = contactInfo?.firstName ?: "",
-                        lastName = contactInfo?.lastName ?: "",
-                        email = contactInfo?.email ?: "",
-                        countryCode = countryCode,
-                        countryFlag = countries.find { it.code == countryCode }?.flag ?: "",
-                        phoneNumber = contactInfo?.phoneNumber ?: "",
-                        subtitle = stringResource(R.string.contact_info_who_check_in)
-                    )
                 }
             }
         }

@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 import javax.inject.Inject
 
 /**
@@ -64,7 +66,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
             val nightCount = if (checkIn != 0L && checkOut != 0L) {
                 ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
             } else 1
-
+            delay(1.seconds) // Simulate API delay
             _uiState.update {
                 it.copy(
                     rooms = rooms,
