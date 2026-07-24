@@ -2,15 +2,15 @@ package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.domain.model.UserProfile
 import com.softserveacademy.home.domain.usecases.GetJourneyTogetherUseCase
 import com.softserveacademy.home.domain.usecases.GetRecommendedHotelsUseCase
 import com.softserveacademy.home.domain.usecases.GetUpcomingTripUseCase
 import com.softserveacademy.home.domain.usecases.GetUserProfileUseCase
-import com.softserveacademy.home.presentation.model.DestinationUi
+import com.softserveacademy.home.presentation.model.TourUi
 import com.softserveacademy.home.presentation.model.UpcomingTripUi
 import com.softserveacademy.home.presentation.model.UserProfileUi
 import com.softserveacademy.home.presentation.state.HomeUiState
@@ -88,13 +88,13 @@ class HomeViewModel @Inject constructor(
     private fun loadJourneyTogether() {
         viewModelScope.launch {
             getJourneyTogetherUseCase()
-                .onSuccess { destinations ->
+                .onSuccess { tours ->
                     _state.update {
-                        it.copy(journeyTogether = SectionState.Success(destinations.map { d -> d.toDestinationUi() }))
+                        it.copy(journeyTogether = SectionState.Success(tours.map { t -> t.toTourUi() }))
                     }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(journeyTogether = SectionState.Error(error.message ?: "Failed to load destinations")) }
+                    _state.update { it.copy(journeyTogether = SectionState.Error(error.message ?: "Failed to load tours")) }
                 }
         }
     }
@@ -142,14 +142,14 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private fun Destination.toDestinationUi(): DestinationUi = DestinationUi(
+    private fun Tour.toTourUi(): TourUi = TourUi(
         id = id,
+        title = title,
         imageUrl = imageUrl,
-        name = name,
         location = location,
         rating = rating,
-        priceFrom = "$ $pricePerPax",
-        duration = durationLabel
+        price = "$ $price",
+        duration = formatDuration(duration)
     )
 
     private fun formatDuration(duration: Duration): String = buildString {

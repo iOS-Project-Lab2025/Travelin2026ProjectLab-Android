@@ -26,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
+import com.softserveacademy.core.presentation.design_system.components.TravelCardVertical
 import com.softserveacademy.core.presentation.design_system.components.TravelCarousel
 import com.softserveacademy.core.presentation.design_system.components.TravelTextActionButton
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.mockdata.PresentationMockData
+import com.softserveacademy.home.presentation.model.TourUi
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 import com.softserveacademy.home.presentation.state.HomeUiState
 import com.softserveacademy.home.presentation.state.SectionState
@@ -114,6 +116,7 @@ fun TravelHomeScreen(
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
     val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
+    val tours = (state.journeyTogether as? SectionState.Success)?.data ?: emptyList()
     val hotels = (state.hotelsRecommended as? SectionState.Success)?.data ?: emptyList()
 
     Scaffold(
@@ -131,10 +134,11 @@ fun TravelHomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp)
             ) {
                 // Fixed top section
-                Column {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
                     Spacer(Modifier.height(4.dp))
                     if (userProfile != null) {
                         TravelUserProfileCard(userProfile = userProfile, onClick = onProfileClick)
@@ -152,67 +156,87 @@ fun TravelHomeScreen(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (upcomingTrip != null) {
-                        Spacer(Modifier.height(16.dp))
-                        TravelUpcomingTripCard(
-                            trip = upcomingTrip,
-                            onClick = { onUpcomingTripClick(upcomingTrip.bookingId) }
-                        )
-                        Spacer(Modifier.height(16.dp))
-                    }
-
-                    // "Journey together" section header
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.journey_together_title),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        TravelTextActionButton(
-                            text = stringResource(id = R.string.see_all_label),
-                            onClick = onJourneySeeAllClick
-                        )
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    TravelCarousel(
-                        packages = hotels,
-                        onHotelClick = onHotelClick
-                    )
-                    Spacer(Modifier.height(16.dp))
-
-                    // "Hotels recommendation for you" section header
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.hotels_recommendation_title),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        TravelTextActionButton(
-                            text = stringResource(id = R.string.see_all_label),
-                            onClick = onHotelsSeeAllClick
-                        )
-                    }
-                    Spacer(Modifier.height(8.dp))
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp)
                     ) {
-                        hotels.forEach { hotel ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onHotelClick(hotel) }
-                            ) {
-                                TravelCardHorizontal(hotel = hotel)
+                        if (upcomingTrip != null) {
+                            Spacer(Modifier.height(16.dp))
+                            TravelUpcomingTripCard(
+                                trip = upcomingTrip,
+                                onClick = { onUpcomingTripClick(upcomingTrip.bookingId) }
+                            )
+                            Spacer(Modifier.height(16.dp))
+                        }
+
+                        // "Journey together" section header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.journey_together_title),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            TravelTextActionButton(
+                                text = stringResource(id = R.string.see_all_label),
+                                onClick = onJourneySeeAllClick
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                    }
+
+                    TravelCarousel(
+                        items = tours
+                    ) { tour ->
+                        TravelCardVertical(
+                            title = tour.title,
+                            location = tour.location,
+                            rating = tour.rating.toString(),
+                            price = tour.price,
+                            duration = tour.duration,
+                            imageUrl = tour.imageUrl,
+                            onClick = { /* Handle tour click */ }
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    ) {
+                        Spacer(Modifier.height(16.dp))
+
+                        // "Hotels recommendation for you" section header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.hotels_recommendation_title),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            TravelTextActionButton(
+                                text = stringResource(id = R.string.see_all_label),
+                                onClick = onHotelsSeeAllClick
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            hotels.forEach { hotel ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onHotelClick(hotel) }
+                                ) {
+                                    TravelCardHorizontal(hotel = hotel)
+                                }
                             }
                         }
+                        Spacer(Modifier.height(16.dp))
                     }
                 }
             }
@@ -234,6 +258,28 @@ private fun TravelHomeScreenPreview() {
             state = HomeUiState(
                 userProfile = SectionState.Success(PresentationMockData.userProfile),
                 upcomingTrip = SectionState.Success(PresentationMockData.upcomingTrip),
+                journeyTogether = SectionState.Success(
+                    listOf(
+                        TourUi(
+                            id = "1",
+                            title = "Mount Bromo Sunrise",
+                            imageUrl = "https://picsum.photos/id/1015/800/600",
+                            location = "East Java",
+                            rating = 4.9f,
+                            price = "$ 150",
+                            duration = "1 day"
+                        ),
+                        TourUi(
+                            id = "2",
+                            title = "Bali Cultural Dance",
+                            imageUrl = "https://picsum.photos/id/1016/800/600",
+                            location = "Ubud, Bali",
+                            rating = 4.7f,
+                            price = "$ 45",
+                            duration = "4 hours"
+                        )
+                    )
+                ),
                 hotelsRecommended = SectionState.Success(
                     listOf(
                         Hotel(

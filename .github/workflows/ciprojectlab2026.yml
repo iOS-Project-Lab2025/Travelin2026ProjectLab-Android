@@ -41,9 +41,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Create local.properties
+        run: echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" > local.properties
+
       # Compila el proyecto en modo debug (verifica que no haya errores de compilación)
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
+
 
       # (Opcional) corre los tests unitarios también
       - name: Run unit tests
