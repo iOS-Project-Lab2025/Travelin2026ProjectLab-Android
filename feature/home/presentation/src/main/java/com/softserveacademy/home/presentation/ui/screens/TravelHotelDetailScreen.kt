@@ -244,6 +244,7 @@ fun TravelHotelDetailScreen(
                     limitedReviews = hotelInformation.limitedReviews,
                     limitedImages = hotelInformation.limitedImages,
                     onBackClick = onBackClick,
+                    onSeeAllPhotosClick = onSeeAllPhotosClick,
                     onShareClick = onShareClick,
                     onFavoriteClick = onFavoriteClick
                 )
@@ -285,6 +286,7 @@ fun TravelHotelDetailScreen(
  * @param limitedReviews Formatted string representing the number of reviews.
  * @param limitedImages Formatted string representing the number of images.
  * @param onBackClick Action to perform when the back button is clicked.
+ * @param onSeeAllPhotosClick Action to perform when the images button is clicked.
  * @param onShareClick Action to perform when the share button is clicked.
  * @param onFavoriteClick Action to perform when the favorite button is clicked.
  */
@@ -296,6 +298,7 @@ private fun HotelHeaderImage(
     limitedReviews : String,
     limitedImages : String,
     onBackClick: () -> Unit,
+    onSeeAllPhotosClick: () -> Unit,
     onShareClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
@@ -350,7 +353,8 @@ private fun HotelHeaderImage(
                     start = TravelinDimens.PaddingMedium,
                     end = TravelinDimens.PaddingMedium,
                     bottom = TravelinDimens.Padding2ExtraLarge
-                ),
+                )
+                .clickable { onSeeAllPhotosClick() },
             color = BlueDark90_Alpha50,
             shape = MaterialTheme.shapes.small
         ) {
