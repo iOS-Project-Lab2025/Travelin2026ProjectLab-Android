@@ -3,7 +3,7 @@ package com.softserveacademy.feature.booking.common.domain.usecase
 import javax.inject.Inject
 
 /**
- * Use case to validate the contact information for a hotel booking.
+ * Use case to validate the contact information for a booking.
  */
 class ValidateContactInfoUseCase @Inject constructor() {
 

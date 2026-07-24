@@ -1,7 +1,9 @@
 package com.softserveacademy.home.data.di
 
 import com.softserveacademy.home.data.repository.HomeRepositoryImpl
+import com.softserveacademy.home.data.repository.SearchRepositoryImpl
 import com.softserveacademy.home.domain.repository.HomeRepository
+import com.softserveacademy.home.domain.repository.SearchRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -23,4 +25,10 @@ abstract class HomeDataModule {
     abstract fun bindHotelRepo(
         homeRepositoryImpl: HomeRepositoryImpl
     ): HomeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSearchRepo(
+        searchRepositoryImpl: SearchRepositoryImpl
+    ): SearchRepository
 }

@@ -1,11 +1,11 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.feature.booking.common.domain.model.ContactInfo
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
-import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
+import com.softserveacademy.feature.booking.common.presentation.events.TravelBookingContactInfoEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -29,7 +29,7 @@ class HotelContactInfoViewModelTest {
 
     private lateinit var viewModel: HotelContactInfoViewModel
     private lateinit var savedStateHandle: SavedStateHandle
-    private lateinit var bookingRepository: BookingRepository
+    private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
     private lateinit var validateContactInfoUseCase: ValidateContactInfoUseCase
     private val testDispatcher = StandardTestDispatcher()
     private val hotelId = 123
@@ -38,14 +38,14 @@ class HotelContactInfoViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
-        bookingRepository = mockk(relaxed = true)
+        hotelBookingDraftRepository = mockk(relaxed = true)
         validateContactInfoUseCase = ValidateContactInfoUseCase()
         
-        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns null
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns null
         
         viewModel = HotelContactInfoViewModel(
             savedStateHandle = savedStateHandle,
-            bookingRepository = bookingRepository,
+            hotelBookingDraftRepository = hotelBookingDraftRepository,
             validateContactInfoUseCase = validateContactInfoUseCase
         )
     }
@@ -77,11 +77,12 @@ class HotelContactInfoViewModelTest {
                 phoneNumber = "123456789"
             )
         )
-        coEvery { bookingRepository.getHotelBookingDraft(hotelId.toString()) } returns draft
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns draft
 
+        val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
         val newViewModel = HotelContactInfoViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingRepository = bookingRepository,
+            savedStateHandle = freshSavedStateHandle,
+            hotelBookingDraftRepository = hotelBookingDraftRepository,
             validateContactInfoUseCase = validateContactInfoUseCase
         )
 
@@ -96,21 +97,21 @@ class HotelContactInfoViewModelTest {
 
     @Test
     fun `onEvent FirstNameChanged updates state and clears error`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged("Jane"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged("Jane"))
         assertEquals("Jane", viewModel.uiState.value.firstName)
         assertNull(viewModel.uiState.value.firstNameError)
     }
 
     @Test
     fun `onEvent CountryCodeChanged updates state`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.CountryCodeChanged("+380"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.CountryCodeChanged("+380"))
         assertEquals("+380", viewModel.uiState.value.countryCode)
     }
 
     @Test
     fun `onNextClick with invalid data sets errors and does not set validationSuccess`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged(""))
-        viewModel.onEvent(HotelContactInfoEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged(""))
+        viewModel.onEvent(TravelBookingContactInfoEvent.OnNextClick)
 
         val state = viewModel.uiState.value
         assertEquals("First name is required", state.firstNameError)
@@ -119,27 +120,27 @@ class HotelContactInfoViewModelTest {
 
     @Test
     fun `onNextClick with valid data saves draft and sets validationSuccess`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged("John"))
-        viewModel.onEvent(HotelContactInfoEvent.LastNameChanged("Doe"))
-        viewModel.onEvent(HotelContactInfoEvent.EmailChanged("john.doe@example.com"))
-        viewModel.onEvent(HotelContactInfoEvent.PhoneNumberChanged("123456789"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged("John"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.LastNameChanged("Doe"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.EmailChanged("john.doe@example.com"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.PhoneNumberChanged("123456789"))
         
-        viewModel.onEvent(HotelContactInfoEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingContactInfoEvent.OnNextClick)
         
         advanceUntilIdle()
         
         assertTrue(viewModel.validationSuccess.value)
-        coVerify { bookingRepository.saveHotelBookingDraft(any()) }
+        coVerify { hotelBookingDraftRepository.saveDraft(any()) }
     }
 
     @Test
     fun `resetValidationStatus sets validationSuccess to false`() = runTest {
         // First set it to true
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged("John"))
-        viewModel.onEvent(HotelContactInfoEvent.LastNameChanged("Doe"))
-        viewModel.onEvent(HotelContactInfoEvent.EmailChanged("john.doe@example.com"))
-        viewModel.onEvent(HotelContactInfoEvent.PhoneNumberChanged("123456789"))
-        viewModel.onEvent(HotelContactInfoEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged("John"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.LastNameChanged("Doe"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.EmailChanged("john.doe@example.com"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.PhoneNumberChanged("123456789"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.OnNextClick)
         advanceUntilIdle()
         
         assertTrue(viewModel.validationSuccess.value)
