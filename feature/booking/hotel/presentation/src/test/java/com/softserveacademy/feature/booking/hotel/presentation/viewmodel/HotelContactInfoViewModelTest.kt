@@ -79,8 +79,9 @@ class HotelContactInfoViewModelTest {
         )
         coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns draft
 
+        val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
         val newViewModel = HotelContactInfoViewModel(
-            savedStateHandle = savedStateHandle,
+            savedStateHandle = freshSavedStateHandle,
             hotelBookingDraftRepository = hotelBookingDraftRepository,
             validateContactInfoUseCase = validateContactInfoUseCase
         )
