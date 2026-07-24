@@ -8,6 +8,7 @@ import com.softserveacademy.core.domain.usecase.GetThemeUseCase
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +33,8 @@ class HotelDetailsViewModel @Inject constructor(
                 HotelDetailState.IsLoading(true)
             }
             try {
+
+                delay(5000)
                 val hotelDetails = hotelRepo.getHotelById(id)
                 _hotelDetailState.update {
                     HotelDetailState.Data(hotelDetails)
