@@ -3,7 +3,6 @@ package com.softserveacademy.home.presentation.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.presentation.design_system.components.HotelGalleryScreen
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPhotoViewer
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailsTopIcons
@@ -74,9 +74,7 @@ fun TravelHotelGalleryScreen(
                     )
                 }
                 is HotelDetailState.IsLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    TravelLoadingScreen()
                 }
             }
             

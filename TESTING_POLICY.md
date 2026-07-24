@@ -1,50 +1,49 @@
-# Manual de Estrategia de Testing y Calidad de Código
+# Testing Strategy and Code Quality Manual
 
-Este documento establece las directrices obligatorias de desarrollo, arquitectura de pruebas y automatización para nuestro flujo Trunk-based Development, bajo arquitectura Clean Architecture + MVVM con Jetpack Compose. Todos los desarrolladores del equipo deben seguir la misma estructura.
+This document establishes the mandatory development guidelines, testing architecture, and automation for our Trunk-based Development workflow, under Clean Architecture + MVVM with Jetpack Compose. All team developers must follow the same structure.
 
 ---
 
-## 1. El Flujo de Trabajo Obligatorio (Local + CI)
+## 1. The Mandatory Workflow (Local + CI)
 
-Para mantener la rama main siempre estable e integrar código de forma rápida y segura, el ciclo de vida de cada tarea es el siguiente:
+To keep the `main` branch always stable and integrate code quickly and safely, the lifecycle of each task is as follows:
 
-[Leer Criterios de Aceptación (CA)] -> [Escribir Código + KDocs] -> [Escribir Tests en carpeta test/] -> [Ejecutar Validación Local] -> [Abrir PR e Integración en GitHub]
+[Read Acceptance Criteria (AC)] -> [Write Code + KDocs] -> [Write Tests in test/ folder] -> [Execute Local Validation] -> [Open PR and GitHub Integration]
 
-### Comandos obligatorios antes de cada git push
-Abre la pestaña Terminal abajo en Android Studio y ejecuta estos tres comandos. Si alguno falla, el servidor de GitHub Actions rechazará tu código en la nube (puedes ver formas manuales en android studio de ejecutar esto):
+### Mandatory commands before every git push
+Open the Terminal tab at the bottom of Android Studio and run these three commands. If any fails, the GitHub Actions server will reject your code in the cloud (you can also find manual ways to run these in Android Studio):
 
 ```bash
-# 1. Da formato automático a tu código (estética visual)
+# 1. Automatically format your code (visual aesthetics)
 ./gradlew ktlintFormat
 
-# 2. Analiza la semántica y obliga a documentar en KDoc
+# 2. Analyze semantics and enforce KDoc documentation
 ./gradlew detekt
 
-# 3. Corre todas las pruebas unitarias y de UI locales
+# 3. Run all local unit and UI tests
 ./gradlew testDebugUnitTest
 ```
 
-### Como funciona GitHub Actions arriba? (Costo 0)
-Dado que nuestro repositorio es PUBLICO y EDUCATIVO, disponemos de servidores con minutos gratuitos e ilimitados. Al abrir una Pull Request (PR):
-
-1. Descarga: El servidor simula de forma transparente la fusión de tu rama con main.
-2. Configuración: Descarga el entorno de Android usando caché para compilar en menos de 4 minutos.
-3. Evaluación: Ejecuta de forma estricta los comandos de revisión de arriba.
-4. Reporte: Si todo pasa, la PR obtiene el check verde. Si algo falla, se bloquea con una X roja y publica un informe interactivo con la línea exacta del error. No es necesario descargar la rama de un compañero para validar si compila.
+### How does GitHub Actions work? (Zero Cost)
+Since our repository is PUBLIC and EDUCATIONAL, we have servers with free and unlimited minutes. When opening a Pull Request (PR):
+1. Download: The server transparently simulates the merging of your branch with main.
+2. Setup: It downloads the Android environment using cache to compile in less than 4 minutes.
+3. Evaluation: It strictly executes the review commands mentioned above.
+4. Report: If everything passes, the PR gets a green check. If something fails, it is blocked with a red X and publishes an interactive report with the exact line of the error. It is not necessary to download a teammate's branch to validate if it compiles.
 
 ---
 
-## 2. Arquitectura y Ubicación de Dependencias
-
-Para evitar que cada desarrollador altere las versiones de Gradle de forma caótica, el stack de herramientas se administra de manera centralizada.
-
-* Herramientas Globales (ktlint y detekt): Deben inyectarse masivamente desde el archivo raíz. No necesitamos agregar a submódulos.
-* Librerías de Pruebas: Las versiones viven en el archivo único gradle/libs.versions.toml. 
+## 2. Architecture and Dependency Location
+To prevent every developer from altering Gradle versions in a chaotic way, the tool stack is managed centrally.
+•
+Global Tools (ktlint and detekt): These should be injected in bulk from the root file. We do not need to add them to submodules.
+•
+Testing Libraries: Versions live in the single gradle/libs.versions.toml file.
 
 ```toml
 [versions]
-mockk = "1.13.13" #referenciales, se deben actualizar
-robolectric = "4.14.1" #referenciales, se deben actualizar
+mockk = "1.13.13" # referential, must be updated
+robolectric = "4.14.1" # referential, must be updated
 
 [libraries]
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
@@ -53,70 +52,66 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 [bundles]
 testing-stack = ["junit", "mockk", "robolectric"]
 ```
-* Para utilizarlas en un módulo, solo debes llamar al paquete agrupado (bundle) en las dependencias de tu archivo build.gradle.kts:
+* To use them in a module, you only need to call the grouped package (bundle) in the dependencies of your build.gradle.kts file:
 
 ```kotlin
 dependencies {
-    // Inyecta JUnit, MockK y Robolectric en un solo comando
-    testImplementation(libs.bundles.testing.stack)
-    
-    // Si tu módulo maneja pantallas con Jetpack Compose, añade la regla de UI:
-    testImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
-    debugImplementation(libs.test.compose.manifest)
+     // Inject JUnit, MockK, and Robolectric in a single command
+     testImplementation(libs.bundles.testing.stack)
+
+     // If your module handles screens with Jetpack Compose, add the UI rule:
+     testImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+     debugImplementation(libs.test.compose.manifest)
 }
 ```
 
 ---
 
-## 3. Estructura de Carpetas de Prueba por Módulo
+## 3. Test Folder Structure per Module
 
-Los archivos de prueba deben clonar exactamente la misma estructura de paquetes de la capa de producción (main), pero dentro del directorio test/java/.
-
-Observa este mapa de un módulo de funcionalidad típico (ej: :feature:login):
+Test files must mirror exactly the same package structure as the production layer (main), but within the test/java/ directory.
+Observe this map of a typical feature module (e.g., :feature:login):
 
 ```text
 feature/login/src/
-├── main/java/com/tuproyecto/login/
+├── main/java/com/yourproject/login/
 │   ├── domain/
-│   │   └── LoginUseCase.kt             <-- Código de producción
+│   │   └── LoginUseCase.kt             <-- Production code
 │   ├── data/
 │   │   └── LoginRepositoryImpl.kt
 │   └── presentation/
-│       ├── LoginViewModel.kt           <-- Código de producción
-│       └── LoginScreen.kt              <-- Vista en Compose
+│       ├── LoginViewModel.kt           <-- Production code
+│       └── LoginScreen.kt              <-- Compose View
 │
-└── test/java/com/tuproyecto/login/     <-- AQUÍ VAN TUS TESTS
+└── test/java/com/yourproject/login/     <-- YOUR TESTS GO HERE
     ├── domain/
-    │   └── LoginUseCaseTest.kt         <-- Usa Plantilla A (MockK)
+    │   └── LoginUseCaseTest.kt         <-- Uses Template A (MockK)
     ├── data/
     │   └── LoginRepositoryImplTest.kt
     └── presentation/
-        ├── LoginViewModelTest.kt       <-- Usa Plantilla B (MockK)
-        └── LoginScreenTest.kt          <-- Usa Plantilla C (Robolectric)
+        ├── LoginViewModelTest.kt       <-- Uses Template B (MockK)
+        └── LoginScreenTest.kt          <-- Uses Template C (Robolectric)
 ```
 
-Regla de Oro: El archivo de prueba debe llamarse exactamente igual al componente original, agregando el sufijo Test. Ejemplo: LoginViewModel.kt -> LoginViewModelTest.kt.
+Golden Rule: The test file must be named exactly the same as the original component, adding the Test suffix. Example: LoginViewModel.kt -> LoginViewModelTest.kt.
 
 ---
 
-## 4. Como asociar los Unit Tests a los Criterios de Aceptación (CA)
-
-No inventamos los casos de prueba. Cada método @Test debe ser el reflejo técnico directo de un Criterio de Aceptación detallado en tu tarjeta de la tarea.
-
-### Estructura Semántica: Given - When - Then
-Cada función de prueba debe nombrarse e internacionalizarse bajo la estructura de comportamiento del usuario:
-
-* given (Dado): El escenario base inicial y la preparación de datos simulados con MockK (como opcion).
-* when (Cuando): La acción ejecutable del usuario o la llamada al método de la arquitectura.  (ej: viewModel.onLoginClick())
-* then (Entonces): La aserción o resultado esperado (lo que dicta el Criterio de Aceptación). (ej: assertTrue(result.isSuccess)
+## How to associate Unit Tests with Acceptance Criteria (AC)
+We don't invent test cases. Each @Test method must be the direct technical reflection of an Acceptance Criterion detailed in your task card.
+Semantic Structure: Given - When - Then
+Each test function should be named and internationalized under the user behavior structure:
+* given: The initial base scenario and the preparation of simulated data with MockK (as an option).
+* when: The executable user action or the architecture method call (e.g., viewModel.onLoginClick()).
+* then: The assertion or expected result (as dictated by the Acceptance Criterion) (e.g., assertTrue(result.isSuccess)).
 
 ---
 
-## 5. Plantillas de Código Ejemplo (Templates)
+## Sample Code Templates
 
-### Plantilla A: Capa de Dominio (Casos de Uso / Use Cases)
-* Ubicación: Módulos de lógica pura Kotlin (sin librerías de Android).
-* Enfoque: Probar las reglas de cálculo o condiciones del negocio.
+### Template A: Domain Layer (Use Cases)
+* Location: Pure Kotlin modules (without Android libraries).
+* Focus: Testing calculation rules or business conditions.
 
 ```kotlin
 package com.softserveacademy.feature.auth.login.domain
@@ -128,8 +123,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Pruebas unitarias vinculadas a los CA de la US-Auth.
- * Verifica la lógica de negocio del inicio de sesión.
+ * Unit tests linked to the AC of the US-Auth.
+ * Verifies the business logic of the login process.
  */
 class LoginUseCaseTest {
 
@@ -138,21 +133,21 @@ class LoginUseCaseTest {
 
     @Test
     fun `given valid credentials when login then returns success result`() = runTest {
-        // GIVEN: El repositorio devuelve éxito
+        // GIVEN: The repository returns success
         coEvery { repository.login("test@mail.com", "pass123") } returns Result.success(Unit)
 
-        // WHEN: Ejecutamos el UseCase
+        // WHEN: We execute the UseCase
         val result = useCase("test@mail.com", "pass123")
 
-        // THEN: El resultado debe ser exitoso según el CA-1
+        // THEN: The result should be successful according to AC-1
         assertTrue(result.isSuccess)
     }
 }
 ```
 
-### Plantilla B: Capa de Presentación (ViewModels / MVVM)
-* Ubicación: Módulos que exponen estados de carga, éxito o error a la vista.
-* Enfoque: Validar que los flujos y datos reactivos modifiquen el estado visual correctamente.
+### Template B: Presentation Layer (ViewModels / MVVM)
+* Location: Modules that expose loading, success, or error states to the UI.
+* Focus: Validating that the flows and reactive data correctly update the visual state.
 
 ```kotlin
 package com.softserveacademy.feature.auth.login.presentation
@@ -165,8 +160,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
- * Pruebas de estados vinculados a la US-Login.
- * Verifica que la UI reaccione correctamente ante errores.
+ * Unit tests linked to the AC of the US-Login.
+ * Verifies that the UI reacts correctly to errors.
  */
 class LoginViewModelTest {
 
@@ -174,22 +169,22 @@ class LoginViewModelTest {
 
     @Test
     fun `given network error when login is clicked then error state is updated`() = runTest {
-        // GIVEN: El loginUseCase falla con un mensaje de red
+        // GIVEN: The loginUseCase fails with a network error message
         coEvery { loginUseCase(any(), any()) } returns Result.failure(Exception("Network Error"))
 
-        // WHEN: El usuario intenta loguearse en el ViewModel
+        // WHEN: The user attempts to log in the ViewModel
         val viewModel = LoginViewModel(loginUseCase)
         viewModel.onLoginClick()
 
-        // THEN: El estado de 'error' del ViewModel debe capturar el mensaje
+        // THEN: The 'error' state of the ViewModel should capture the message
         assertEquals("Network Error", viewModel.error)
     }
 }
 ```
 
-### Plantilla C: Capa de Interfaz (Componentes Compose SIN Emulador)
-* Ubicación: Pantallas y componentes reutilizables de Jetpack Compose.
-* Enfoque: Probar flujos visuales y clicks simulando Android en la PC vía Robolectric (Costo 0 y alta velocidad).
+### Template C: Presentation Layer (Compose Components WITHOUT Emulator)
+* Location: Screens and reusable components of Jetpack Compose.
+* Focus: Testing visual flows and clicks simulating Android on the PC via Robolectric (Cost 0 and high speed).
 
 ```kotlin
 package com.softserveacademy.core.presentation.design_system.components
@@ -205,71 +200,71 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Validación de componentes del Design System usando Robolectric.
+ * Validation of Design System components using Robolectric.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [37]) // Creo estamos usando esta
+@Config(sdk = [37])
 class TravelPrimaryButtonTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+     @get:Rule
+     val composeTestRule = createComposeRule()
 
-    @Test
-    fun `given enabled button when clicked then action lambda is executed`() {
-        var isClicked = false
+     @Test
+     fun `given enabled button when clicked then action lambda is executed`() {
+          var isClicked = false
 
-        // GIVEN: El botón del Design System habilitado
-        composeTestRule.setContent {
-            Travelin2026ProjectLabTheme {
-                TravelPrimaryButton(
-                    text = "Confirm",
-                    onClick = { isClicked = true }
-                )
-            }
-        }
+          // GIVEN: Enabled Design System button
+          composeTestRule.setContent {
+               Travelin2026ProjectLabTheme {
+                    TravelPrimaryButton(
+                         text = "Confirm",
+                         onClick = { isClicked = true }
+                    )
+               }
+          }
 
-        // WHEN: El usuario hace clic físicamente
-        composeTestRule.onNodeWithText("Confirm").performClick()
+          // WHEN: User physically clicks
+          composeTestRule.onNodeWithText("Confirm").performClick()
 
-        // THEN: Verificamos el efecto colateral (el cambio de la variable)
-        assert(isClicked)
-    }
+          // THEN: Verify the side effect (variable change)
+          assert(isClicked)
+     }
 }
 ```
 
 ---
 
-## 6. Contexto de Prompts para Inteligencia Artificial (Copilot / ChatGPT / Cursor / Claudio / Gepeto / ETC)
+## 6. Prompt Context for Artificial Intelligence (Copilot / ChatGPT / Cursor / etc.)
 
-Para asegurar que la IA genere resultados útiles y estandarizados, utiliza este flujo de dos pasos. Esto garantiza que no solo escriba código, sino que "entienda" nuestro estándar de documentación y pruebas.
+To ensure the AI generates useful and standardized results, use this two-step flow. This ensures it doesn't just write code, but "understands" our documentation and testing standard.
 
-### Paso 1: Establecer el Rol (System Prompt)
-Copia esto al iniciar tu chat para configurar la "mente" de la IA:
+### Step 1: Establish the Role (System Prompt)
+Copy this when starting your chat to configure the AI's "mind":
 
-> "Actúa como un Desarrollador Android Senior para el proyecto **Travelin2026**. Tu misión es generar código, documentación KDoc y pruebas unitarias bajo las siguientes reglas:
-> 1. Arquitectura: Clean Architecture + MVVM + Modularización.
-> 2. Testing: MockK, Coroutines Test y Robolectric.
-> 3. Naming: Estructura Given-When-Then para tests.
-> 4. Paquete base: `com.softserveacademy`.
-     > Confirma si estás listo para recibir el código."
+> "Act as a Senior Android Developer for the Travelin2026 project. Your mission is to generate code, KDoc documentation, and unit tests under the following rules:
+> 1. Architecture: Clean Architecture + MVVM + Modularization.
+> 2. Testing: MockK, Coroutines Test, and Robolectric.
+> 3. Naming: Given-When-Then structure for tests.
+> 4. Base package: `com.softserveacademy`.
+     > Confirm if you are ready to receive the code."
 
-### Paso 2: Ejecutar la Tarea (Task Prompt)
-Una vez que la IA confirme, usa este formato para solicitar el trabajo sobre tu archivo actual:
+### Step 2: Execute the Task (Task Prompt)
+Once the AI confirms, use this format to request the work on your current file:
 
-> "Basándote en el código de este archivo/funcionalidad:
-> **[PEGA AQUÍ TU CÓDIGO O EXPLICA LA FUNCIÓN]**
+> "Based on the code in this file/functionality:
+> **[PASTE YOUR CODE OR EXPLAIN THE FUNCTIONALITY]**
 >
-> Por favor, genera:
-> 1. **Documentación:** Agrega KDocs descriptivos en inglés a todas las clases y funciones.
-> 2. **Pruebas Unitarias:** Crea el archivo de Test correspondiente siguiendo el estándar del proyecto (Given-When-Then).
-> 3. **Validación:** Asegúrate de que los tests cubran los flujos de éxito y error."
+> Please generate:
+> 1. **Documentation:** Add descriptive KDocs in English to all classes and functions.
+> 2. **Unit Tests:** Create the corresponding Test file following the project standard (Given-When-Then).
+> 3. **Validation:** Ensure the tests cover both success and error flows."
 
 ---
 
-## 7. Criterios de Aceptación para la Pull Request (PR)
+## 7. Acceptance Criteria for the Pull Request (PR)
 
-Para que tu código sea aprobado, debe cumplir con:
-1. **Compilación:** Pasa `./gradlew assembleDebug`.
-2. **Calidad:** Pasa `./gradlew detekt` y `./gradlew ktlintCheck`.
-3. **Tests:** Cada nueva funcionalidad tiene su espejo en la carpeta `test/` con cobertura lógica.
-4. **Docs:** El código generado contiene KDocs que explican el "por qué" y no solo el "qué".
+For your code to be approved, it must meet the following criteria:
+1. **Compilation:** Passes `./gradlew assembleDebug`.
+2. **Quality:** Passes `./gradlew detekt` and `./gradlew ktlintCheck`.
+3. **Tests:** Each new functionality has its counterpart in the `test/` folder with logical coverage.
+4. **Docs:** The generated code contains KDocs that explain the "why" and not just the "what".

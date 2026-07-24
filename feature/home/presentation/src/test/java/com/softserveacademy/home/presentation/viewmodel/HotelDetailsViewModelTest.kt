@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -52,6 +53,7 @@ class HotelDetailsViewModelTest {
         // WHEN: getHotelDetail is called
         viewModel.getHotelDetail(1)
 
+        advanceUntilIdle()
         // THEN: The state should be Error with the expected message
         val currentState = viewModel.hotelDetailState.value
         assertTrue("State should be HotelDetailState.Error", currentState is HotelDetailState.Error)
@@ -66,6 +68,7 @@ class HotelDetailsViewModelTest {
         // WHEN: getHotelDetail is called
         viewModel.getHotelDetail(1)
 
+        advanceUntilIdle()
         // THEN: The state should be Error
         val currentState = viewModel.hotelDetailState.value
         assertTrue(currentState is HotelDetailState.Error)
