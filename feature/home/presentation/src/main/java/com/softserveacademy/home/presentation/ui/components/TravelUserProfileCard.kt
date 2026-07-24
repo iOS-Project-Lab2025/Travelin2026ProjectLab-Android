@@ -59,6 +59,7 @@ fun TravelUserProfileCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = userProfile.name,
+                modifier = Modifier.padding(top = TravelinDimens.SpaceExtraSmall),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
