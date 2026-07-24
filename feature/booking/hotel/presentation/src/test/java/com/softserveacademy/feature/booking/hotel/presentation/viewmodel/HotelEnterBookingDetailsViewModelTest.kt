@@ -1,10 +1,12 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.feature.booking.common.domain.repository.BookingRepository
-import com.softserveacademy.feature.booking.common.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
+import com.softserveacademy.feature.booking.hotel.domain.model.Guests
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
+import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -29,16 +31,18 @@ class HotelEnterBookingDetailsViewModelTest {
     private lateinit var viewModel: HotelEnterBookingDetailsViewModel
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase
-    private lateinit var bookingRepository: BookingRepository
+    private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
     private val testDispatcher = StandardTestDispatcher()
+    private val hotelId = 123
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle = SavedStateHandle()
+        savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
         validateEnterBookingDetailsUseCase = ValidateEnterBookingDetailsUseCase()
-        bookingRepository = mockk(relaxed = true)
-        viewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, bookingRepository)
+        hotelBookingDraftRepository = mockk(relaxed = true)
+        coEvery { hotelBookingDraftRepository.getDraft(any()) } returns null
+        viewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
     }
 
     @After
@@ -48,6 +52,7 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `initial state is default`() = runTest {
+        advanceUntilIdle()
         val state = viewModel.uiState.value
         assertEquals(1, state.adultsCount)
         assertEquals(0, state.childrenCount)
@@ -59,10 +64,13 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `restores state from SavedStateHandle`() = runTest {
-        val draft = HotelBookingDraft(amountOfAdults = 3, checkInDate = 1000L)
-        savedStateHandle["booking_draft"] = draft
+        val state = TravelEnterBookingDetailsState(adultsCount = 3, startDateMillis = 1000L)
+        val freshSavedStateHandle = SavedStateHandle(mapOf(
+            "hotelId" to hotelId,
+            "booking_details_state" to state
+        ))
         
-        val newViewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, bookingRepository)
+        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
         assertEquals(3, newViewModel.uiState.value.adultsCount)
         assertEquals(1000L, newViewModel.uiState.value.startDateMillis)
     }
@@ -70,11 +78,11 @@ class HotelEnterBookingDetailsViewModelTest {
     @Test
     fun `restores state from BookingRepository if SavedStateHandle is empty`() = runTest {
         val hotelIdInt = 123
-        val draft = HotelBookingDraft(hotelId = hotelIdInt.toString(), amountOfAdults = 4)
-        coEvery { bookingRepository.getHotelBookingDraft(any()) } returns draft
+        val draft = HotelBookingDraft(hotelId = hotelIdInt.toString(), guests = Guests(adults = 4))
+        coEvery { hotelBookingDraftRepository.getDraft(any()) } returns draft
         
         val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelIdInt))
-        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, bookingRepository)
+        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
         
         advanceUntilIdle()
         
@@ -83,21 +91,23 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `onDateRangeSelected updates state and savedState and repository`() = runTest {
+        advanceUntilIdle()
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnDateRangeSelected(100L, 200L))
         
         val state = viewModel.uiState.value
         assertEquals(100L, state.startDateMillis)
         assertEquals(200L, state.endDateMillis)
         
-        val savedDraft = savedStateHandle.get<HotelBookingDraft>("booking_draft")
-        assertEquals(100L, savedDraft?.checkInDate)
+        val savedDraft = savedStateHandle.get<HotelBookingDraft>("hotel_booking_draft")
+        assertEquals(100L, savedDraft?.checkIn)
         
         advanceUntilIdle()
-        coVerify { bookingRepository.saveHotelBookingDraft(any()) }
+        coVerify { hotelBookingDraftRepository.saveDraft(any()) }
     }
 
     @Test
     fun `onNextClick shows error when dates are missing`() = runTest {
+        advanceUntilIdle()
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnNextClick)
         
         val state = viewModel.uiState.value
@@ -107,6 +117,7 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `onNextClick shows bottom sheet when dates are selected`() = runTest {
+        advanceUntilIdle()
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnDateRangeSelected(100L, 200L))
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnNextClick)
         
@@ -117,6 +128,7 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `onAcceptClick shows error when adults count is less than 1`() = runTest {
+        advanceUntilIdle()
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnDateRangeSelected(100L, 200L))
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnNextClick)
         
@@ -130,6 +142,7 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `onAcceptClick dismisses sheet and sets validation success on success`() = runTest {
+        advanceUntilIdle()
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnDateRangeSelected(100L, 200L))
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnNextClick)
         
@@ -144,6 +157,7 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `resetValidationStatus sets validation success to false`() = runTest {
+        advanceUntilIdle()
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnDateRangeSelected(100L, 200L))
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnNextClick)
         viewModel.onEvent(TravelEnterBookingDetailsEvent.OnAdultsCountChange(2))

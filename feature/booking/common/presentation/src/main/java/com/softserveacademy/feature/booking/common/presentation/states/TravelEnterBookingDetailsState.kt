@@ -1,5 +1,7 @@
 package com.softserveacademy.feature.booking.common.presentation.states
 
+import java.io.Serializable
+
 /**
  * Data class representing the state of an enter booking details screen.
  * Decoupled from specific booking types.
@@ -27,4 +29,4 @@ data class TravelEnterBookingDetailsState(
     val guestErrorMessage: Int? = null,
     val showGuestBottomSheet: Boolean = false,
     val isLoading: Boolean = false,
-)
+) : Serializable
