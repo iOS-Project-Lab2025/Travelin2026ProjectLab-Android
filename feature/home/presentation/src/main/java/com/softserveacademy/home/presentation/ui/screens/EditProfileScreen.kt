@@ -3,7 +3,6 @@ package com.softserveacademy.home.presentation.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,7 +14,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
+import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.core.presentation.design_system.components.*
+import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.home.presentation.state.EditProfileState
 import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
@@ -38,6 +39,55 @@ fun EditProfileScreen(
         }
     }
 
+    EditProfileContent(
+        state = state,
+        firstName = viewModel.firstName,
+        onFirstNameChange = { viewModel.firstName = it },
+        lastName = viewModel.lastName,
+        onLastNameChange = { viewModel.lastName = it },
+        countryCode = viewModel.countryCode,
+        onCountryCodeChange = { viewModel.countryCode = it },
+        phone = viewModel.phone,
+        onPhoneChange = { viewModel.phone = it },
+        age = viewModel.age,
+        onAgeChange = { viewModel.age = it },
+        location = viewModel.location,
+        onLocationChange = { viewModel.location = it },
+        password = viewModel.password,
+        onPasswordChange = { viewModel.password = it },
+        confirmPassword = viewModel.confirmPassword,
+        onConfirmPasswordChange = { viewModel.confirmPassword = it },
+        hasChanges = viewModel.hasChanges(),
+        onSaveChanges = viewModel::onSaveChanges,
+        onClearError = viewModel::clearError,
+        onNavigateBack = onNavigateBack
+    )
+}
+
+@Composable
+fun EditProfileContent(
+    state: EditProfileState,
+    firstName: String,
+    onFirstNameChange: (String) -> Unit,
+    lastName: String,
+    onLastNameChange: (String) -> Unit,
+    countryCode: String,
+    onCountryCodeChange: (String) -> Unit,
+    phone: String,
+    onPhoneChange: (String) -> Unit,
+    age: String,
+    onAgeChange: (String) -> Unit,
+    location: String,
+    onLocationChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    confirmPassword: String,
+    onConfirmPasswordChange: (String) -> Unit,
+    hasChanges: Boolean,
+    onSaveChanges: () -> Unit,
+    onClearError: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             Column(
@@ -65,13 +115,13 @@ fun EditProfileScreen(
                 shadowElevation = TravelinDimens.ElevationLarge
             ) {
                 Button(
-                    onClick = viewModel::onSaveChanges,
+                    onClick = onSaveChanges,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(TravelinDimens.PaddingLarge)
                         .height(TravelinDimens.ButtonHeightLarge),
                     shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
-                    enabled = viewModel.hasChanges() && state !is EditProfileState.Loading,
+                    enabled = hasChanges && state !is EditProfileState.Loading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Teal40,
                         contentColor = Color.White,
@@ -107,83 +157,64 @@ fun EditProfileScreen(
                     .padding(horizontal = TravelinDimens.PaddingLarge),
                 verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)
             ) {
-                EditProfileTextField(
-                    value = viewModel.firstName,
-                    onValueChange = { viewModel.firstName = it },
-                    label = "First name"
-                )
-
-                EditProfileTextField(
-                    value = viewModel.lastName,
-                    onValueChange = { viewModel.lastName = it },
-                    label = "Last name"
-                )
-
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Phone",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Gray80,
-                        modifier = Modifier.padding(bottom = TravelinDimens.PaddingExtraSmall)
+                LabeledInput(label = "First name") {
+                    AppTextInput(
+                        value = firstName,
+                        onValueChange = onFirstNameChange,
+                        placeholder = "First name"
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
-                    ) {
-                        EditProfileTextField(
-                            value = viewModel.countryCode,
-                            onValueChange = { viewModel.countryCode = it },
-                            label = "",
-                            modifier = Modifier.width(100.dp)
-                        )
-                        EditProfileTextField(
-                            value = viewModel.phone,
-                            onValueChange = { viewModel.phone = it },
-                            label = "",
-                            modifier = Modifier.weight(1f),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-                        )
-                    }
                 }
 
-                EditProfileTextField(
-                    value = viewModel.age,
-                    onValueChange = { viewModel.age = it },
-                    label = "Age",
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
+                LabeledInput(label = "Last name") {
+                    AppTextInput(
+                        value = lastName,
+                        onValueChange = onLastNameChange,
+                        placeholder = "Last name"
+                    )
+                }
 
-                EditProfileTextField(
-                    value = viewModel.location,
-                    onValueChange = { viewModel.location = it },
-                    label = "Direction"
-                )
+                LabeledInput(label = "Phone") {
+                    TravelPhoneNumberInput(
+                        countryCode = countryCode,
+                        onCountryCodeChange = onCountryCodeChange,
+                        phoneNumber = phone,
+                        onPhoneNumberChange = onPhoneChange,
+                        placeholder = "Phone number"
+                    )
+                }
 
-                var passwordVisible by remember { mutableStateOf(false) }
-                EditProfileTextField(
-                    value = viewModel.password,
-                    onValueChange = { viewModel.password = it },
-                    label = "Password",
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                imageVector = EyeIcon,
-                                contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                            )
-                        }
-                    }
-                )
+                LabeledInput(label = "Age") {
+                    AppNumberInput(
+                        value = age,
+                        onValueChange = onAgeChange,
+                        placeholder = "Age"
+                    )
+                }
 
-                EditProfileTextField(
-                    value = viewModel.confirmPassword,
-                    onValueChange = { viewModel.confirmPassword = it },
-                    label = "Confirm password",
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-                
+                LabeledInput(label = "Direction") {
+                    AppTextInput(
+                        value = location,
+                        onValueChange = onLocationChange,
+                        placeholder = "Direction"
+                    )
+                }
+
+                LabeledInput(label = "Password") {
+                    AppPasswordInput(
+                        value = password,
+                        onValueChange = onPasswordChange,
+                        placeholder = "Password"
+                    )
+                }
+
+                LabeledInput(label = "Confirm password") {
+                    AppPasswordInput(
+                        value = confirmPassword,
+                        onValueChange = onConfirmPasswordChange,
+                        placeholder = "Confirm password"
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
             }
 
@@ -193,7 +224,7 @@ fun EditProfileScreen(
                         .align(Alignment.BottomCenter)
                         .padding(TravelinDimens.PaddingLarge),
                     action = {
-                        TextButton(onClick = viewModel::clearError) {
+                        TextButton(onClick = onClearError) {
                             Text("Dismiss", color = MaterialTheme.colorScheme.inversePrimary)
                         }
                     }
@@ -218,37 +249,48 @@ fun EditProfileScreen(
 }
 
 @Composable
-fun EditProfileTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+fun LabeledInput(
     label: String,
     modifier: Modifier = Modifier,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    trailingIcon: @Composable (() -> Unit)? = null
+    content: @Composable () -> Unit
 ) {
-    Column(modifier = modifier) {
-        if (label.isNotEmpty()) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Gray80,
-                modifier = Modifier.padding(bottom = TravelinDimens.PaddingExtraSmall)
-            )
-        }
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(TravelinDimens.SpaceMedium),
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions,
-            trailingIcon = trailingIcon,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Teal40,
-                unfocusedBorderColor = Gray40,
-                cursorColor = Teal40
-            )
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Gray80,
+            modifier = Modifier.padding(bottom = TravelinDimens.PaddingExtraSmall)
+        )
+        content()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EditProfileContentPreview() {
+    Travelin2026ProjectLabTheme {
+        EditProfileContent(
+            state = EditProfileState.UpdateSuccess,
+            firstName = "John",
+            onFirstNameChange = {},
+            lastName = "Doe",
+            onLastNameChange = {},
+            countryCode = "+1",
+            onCountryCodeChange = {},
+            phone = "1234567890",
+            onPhoneChange = {},
+            age = "25",
+            onAgeChange = {},
+            location = "New York",
+            onLocationChange = {},
+            password = "password123",
+            onPasswordChange = {},
+            confirmPassword = "password123",
+            onConfirmPasswordChange = {},
+            hasChanges = true,
+            onSaveChanges = {},
+            onClearError = {},
+            onNavigateBack = {}
         )
     }
 }
