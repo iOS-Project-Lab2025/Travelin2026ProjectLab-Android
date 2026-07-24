@@ -132,7 +132,7 @@ fun HotelDetailLoading(
                 Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
                 
                 // Included items
-                repeat(2) {
+                repeat(3) {
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -176,15 +176,6 @@ fun HotelDetailLoading(
                         .shimmerEffect()
                 )
 
-                Spacer(modifier = Modifier.width(TravelinDimens.SpaceMedium))
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(TravelinDimens.ImageSizeLarge)
-                        .clip(MaterialTheme.shapes.small)
-                        .shimmerEffect()
-                )
             }
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
