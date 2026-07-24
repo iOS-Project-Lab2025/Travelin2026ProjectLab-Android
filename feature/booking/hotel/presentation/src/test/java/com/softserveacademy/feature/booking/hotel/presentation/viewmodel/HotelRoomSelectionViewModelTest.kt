@@ -103,6 +103,33 @@ class HotelRoomSelectionViewModelTest {
     }
 
     @Test
+    fun `applyFilters resets selectedRoomId when filteredRooms is empty and persists it`() = runTest {
+        // Mock repository to return rooms that will be filtered out by ONE_BED
+        val specialRooms = listOf(
+            HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100, isAvailable = true)
+        )
+        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns specialRooms
+        
+        viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
+        advanceUntilIdle()
+
+        // Select a room first
+        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
+        advanceUntilIdle()
+        assertEquals(1, viewModel.uiState.value.selectedRoomId)
+
+        // Apply filter that results in empty list
+        viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.ONE_BED))
+        advanceUntilIdle()
+        
+        assertEquals(0, viewModel.uiState.value.filteredRooms.size)
+        assertEquals(null, viewModel.uiState.value.selectedRoomId)
+        
+        // Verify persistence reset
+        coVerify { hotelBookingDraftRepository.saveDraft(match { it.roomId == null }) }
+    }
+
+    @Test
     fun `onNextClick reserves room and updates draft`() = runTest {
         viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
