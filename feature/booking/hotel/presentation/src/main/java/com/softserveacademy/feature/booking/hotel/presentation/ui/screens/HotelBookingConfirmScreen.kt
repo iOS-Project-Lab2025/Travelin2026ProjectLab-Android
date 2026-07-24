@@ -190,7 +190,7 @@ fun HotelBookingConfirmPreview() {
         id = 1,
         type = "Standard Suite, Queen Size Bed",
         description = "Volcano in East Java",
-        maxOccupancy = "1-5 persons",
+        maxOccupancy = 5,
         bedType = "1 Queen bed",
         amenities = emptyList(),
         pricePerNight = 150,

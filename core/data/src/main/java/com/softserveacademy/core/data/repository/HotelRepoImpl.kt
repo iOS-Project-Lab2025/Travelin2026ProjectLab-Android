@@ -114,20 +114,22 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
         return _hotels.value
     }
 
-    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long): List<HotelRoom> {
+    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): List<HotelRoom> {
         val baseRooms = _hotels.value.find { it.id == hotelId }?.rooms ?: emptyList()
-        return baseRooms.map { room ->
-            val bookedCount = _bookings.value.count { booking ->
-                booking.roomId == room.id && 
-                checkInDate < booking.checkOutDate && 
-                booking.checkInDate < checkOutDate
+        return baseRooms
+            .filter { it.maxOccupancy >= guestCount }
+            .map { room ->
+                val bookedCount = _bookings.value.count { booking ->
+                    booking.roomId == room.id && 
+                    checkInDate < booking.checkOutDate && 
+                    booking.checkInDate < checkOutDate
+                }
+                val available = (room.totalRooms - bookedCount).coerceAtLeast(0)
+                room.copy(
+                    availableRooms = available,
+                    isAvailable = available > 0
+                )
             }
-            val available = (room.totalRooms - bookedCount).coerceAtLeast(0)
-            room.copy(
-                availableRooms = available,
-                isAvailable = available > 0
-            )
-        }
     }
 
     override suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long) {
@@ -142,7 +144,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 1,
                 type = "Deluxe Suite, King Size Bed",
                 description = "Volcano in East Java",
-                maxOccupancy = "1-2 persons",
+                maxOccupancy = 2,
                 bedType = "1 King bed",
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
@@ -156,7 +158,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 2,
                 type = "Standard Suite, Queen Size Bed",
                 description = "Volcano in East Java",
-                maxOccupancy = "1-2 persons",
+                maxOccupancy = 2,
                 bedType = "1 Queen bed",
                 bedCount = 1,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
@@ -170,7 +172,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
                 id = hotelId * 10 + 3,
                 type = "Family Room, 2 Double Beds",
                 description = "Garden View",
-                maxOccupancy = "1-4 persons",
+                maxOccupancy = 4,
                 bedType = "2 Double beds",
                 bedCount = 2,
                 amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI, HotelRoomAmenity.AC),

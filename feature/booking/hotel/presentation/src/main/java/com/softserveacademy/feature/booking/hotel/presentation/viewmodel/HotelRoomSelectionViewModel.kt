@@ -56,8 +56,9 @@ class HotelRoomSelectionViewModel @Inject constructor(
             val draft = bookingDraft
             val checkIn = draft?.checkIn ?: 0L
             val checkOut = draft?.checkOut ?: 0L
+            val guestCount = (draft?.guests?.adults ?: 1) + (draft?.guests?.children ?: 0)
 
-            val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut)
+            val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut, guestCount)
             
             // Calculate night count
             val nightCount = if (checkIn != 0L && checkOut != 0L) {

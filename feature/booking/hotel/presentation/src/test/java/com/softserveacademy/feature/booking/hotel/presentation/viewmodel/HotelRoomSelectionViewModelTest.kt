@@ -34,8 +34,8 @@ class HotelRoomSelectionViewModelTest {
 
     private val hotelId = 1
     private val mockRooms = listOf(
-        HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = "", bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
-        HotelRoom(id = 2, type = "Room 2", description = "", maxOccupancy = "", bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
+        HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
+        HotelRoom(id = 2, type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
     )
 
     private val checkIn = 1000L
@@ -48,7 +48,7 @@ class HotelRoomSelectionViewModelTest {
         hotelBookingDraftRepository = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
-        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any()) } returns mockRooms
+        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns mockRooms
         coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns HotelBookingDraft(
             hotelId = hotelId.toString(),
             checkIn = checkIn,
