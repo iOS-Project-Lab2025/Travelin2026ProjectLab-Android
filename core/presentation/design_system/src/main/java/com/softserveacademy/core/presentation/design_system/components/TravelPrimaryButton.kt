@@ -3,7 +3,6 @@ package com.softserveacademy.core.presentation.design_system.components
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.ui.Modifier
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.colors
@@ -41,7 +41,7 @@ fun TravelPrimaryButton(
     debounceInterval: Long = 1000L
 ) {
     val colors = variant.colors()
-    var lastClickTime by remember { mutableStateOf(0L) }
+    var lastClickTime by remember { mutableLongStateOf(0L) }
 
     Button(
         onClick = {

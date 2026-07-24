@@ -3,6 +3,7 @@ plugins {
     id("com.softserveacademy.android.hilt")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.secrets)
 }
 
 android {

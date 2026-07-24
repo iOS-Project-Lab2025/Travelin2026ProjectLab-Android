@@ -6,8 +6,10 @@ import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.model.HotelRoomAmenity
 import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.domain.repository.HotelRepo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -66,7 +68,14 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             numberOfReviews = 120,
             rating = 4.5,
             description = "Experience luxury in the heart of Bali with world-class amenities and breathtaking views.",
-            includedItems = listOf(IncludedItem.BuffetBreakfast, IncludedItem.FreeWifi, IncludedItem.Pool, IncludedItem.AcUnit),
+            includedItems = listOf(
+                IncludedItem.BuffetBreakfast,
+                IncludedItem.FreeWifi,
+                IncludedItem.Pool,
+                IncludedItem.AcUnit
+            ),
+            latitude = 1.35,
+            longitude = 103.87,
             rooms = createMockRooms(1)
         ),
         HotelDetails(
@@ -79,13 +88,24 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             image = previewImages1,
             numberOfReviews = 340,
             rating = 1.5,
-            description = "Premier beachfront resort offering exceptional service and stunning ocean views.",
-            includedItems = listOf(IncludedItem.FreeWifi, IncludedItem.FitnessCenter, IncludedItem.Pool, IncludedItem.RoomService, IncludedItem.BuffetBreakfast),
+            description = "Premier beachfront resort offering exceptional service and stunning ocean views. Our resort features multiple infinity pools, a world-class spa, and fine dining options that cater to every palate. Each room is meticulously designed with local artistic touches and modern comforts to ensure a truly unforgettable stay in paradise. Guests can enjoy a wide array of activities, from water sports on the private beach to yoga sessions at sunrise. Our dedicated concierge team is always on hand to curate personalized experiences, ensuring that every moment of your vacation is perfect. Whether you're seeking a romantic getaway or a fun-filled family holiday, our resort provides the ultimate sanctuary for relaxation and adventure alike.",
+            includedItems = listOf(
+                IncludedItem.FreeWifi,
+                IncludedItem.FitnessCenter,
+                IncludedItem.Pool,
+                IncludedItem.RoomService,
+                IncludedItem.BuffetBreakfast,
+                IncludedItem.SelfParking,
+                IncludedItem.AcUnit
+            ),
+            latitude = 1.35,
+            longitude = 103.87,
             rooms = createMockRooms(2)
         )
     ))
 
     override suspend fun getHotelById(id: Int): HotelDetails {
+        delay(1.seconds)
         return _hotelDetails.value.find { it.id == id } ?: throw NoSuchElementException("Hotel with id $id not found")
     }
 

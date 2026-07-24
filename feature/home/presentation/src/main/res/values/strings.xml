@@ -28,11 +28,14 @@
     <string name="hotels_recommendation_title">Hotels recommendation for you</string>
 
     <!-- TravelHotelDetailScreen -->
-    <string name="about_label">About</string>
+    <string name="about_label">Description</string>
     <string name="read_more_label">Read more</string>
     <string name="read_less_label">Read less</string>
-    <string name="What_is_included_label">What is included</string>
+    <string name="show_more_label">Show more</string>
+    <string name="What_is_included_label">About this property</string>
+    <string name="Where_it_is_label">Where it is</string>
     <string name="see_all_label">See all</string>
+    <string name="see_all_about_property">See all about this property</string>
     <string name="plus_photos_label">+ photos</string>
     <string name="share_hotel_title">Share Hotel</string>
     <string name="share_hotel_message">Check out %1$s on Travelin! \n\n%2$s</string>
@@ -40,7 +43,7 @@
     <!-- Include items -->
     <string name="buffet_breakfast_label">Buffet breakfast</string>
     <string name="free_wifi_label">Free wifi</string>
-    <string name="fitness_center_label">On-site fitness center</string>
+    <string name="fitness_center_label">Fitness center</string>
     <string name="pool_label">Pool</string>
     <string name="cleaning_services_label">Cleaning services</string>
     <string name="parking_label">Self-parking</string>
