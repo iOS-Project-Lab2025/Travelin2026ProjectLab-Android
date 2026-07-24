@@ -47,6 +47,7 @@ data class Guests(
  * @property firstName The first name of the guest.
  * @property lastName The last name of the guest.
  * @property email The email address of the guest.
+ * @property countryCode The country code of the guest's phone number.
  * @property phoneNumber The phone number of the guest.
  */
 @Serializable
@@ -54,5 +55,6 @@ data class ContactInfo(
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
+    val countryCode: String = "",
     val phoneNumber: String = ""
 ) : JavaSerializable

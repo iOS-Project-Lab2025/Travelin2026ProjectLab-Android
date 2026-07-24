@@ -14,15 +14,7 @@
     <string name="filter_2_beds">2 Beds</string>
     <string name="empty_rooms_message">No rooms available for the selected criteria.</string>
 
-    <string name="contact_info_title">Contact Information</string>
     <string name="contact_info_who_check_in">Who\'s checking in?</string>
-    <string name="contact_info_first_name">First name</string>
-    <string name="contact_info_first_name_placeholder">John</string>
-    <string name="contact_info_last_name">Last name</string>
-    <string name="contact_info_last_name_placeholder">Doe</string>
-    <string name="contact_info_phone">Phone</string>
-    <string name="contact_info_email">Email</string>
-    <string name="contact_info_email_placeholder">john.doe@gmail.com</string>
 
     <string name="booking_confirm_title">Confirm Booking</string>
     <string name="booking_confirm_total_label">Total: </string>

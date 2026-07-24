@@ -10,11 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelRoomCard
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
@@ -29,9 +25,10 @@ import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.core.presentation.design_system.components.countries
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingLoadingScreen
+import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
+import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingConfirmBottomBar
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.common.presentation.R as CommonR
 import com.softserveacademy.feature.booking.hotel.presentation.R
@@ -78,65 +75,29 @@ fun HotelBookingConfirmContent(
             )
         },
         bottomBar = {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shadowElevation = 8.dp,
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(TravelinDimens.PaddingMedium)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val totalPrice = uiState.selectedRoom?.let { room ->
-                        val nights = uiState.bookingDraft?.let { draft ->
-                            val checkIn = draft.checkIn
-                            val checkOut = draft.checkOut
-                            if (checkIn != null && checkOut != null) {
-                                ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
-                            } else 1
-                        } ?: 1
-                        room.pricePerNight * nights
-                    } ?: 0
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 16.sp
-                                )
-                            ) {
-                                append(stringResource(R.string.booking_confirm_total_label))
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            ) {
-                                append("$$totalPrice")
-                            }
-                        },
-                        style = MaterialTheme.typography.displaySmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    TravelPrimaryButton(
-                        text = stringResource(R.string.booking_confirm_button_label),
-                        onClick = onConfirmClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+            val totalPrice = uiState.selectedRoom?.let { room ->
+                val nights = uiState.bookingDraft?.let { draft ->
+                    val checkIn = draft.checkIn
+                    val checkOut = draft.checkOut
+                    if (checkIn != null && checkOut != null) {
+                        ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
+                    } else 1
+                } ?: 1
+                room.pricePerNight * nights
+            } ?: 0
+
+            TravelBookingConfirmBottomBar(
+                totalPrice = totalPrice,
+                buttonText = stringResource(R.string.booking_confirm_button_label),
+                onButtonClick = onConfirmClick
+            )
         }
     ) { padding ->
         if (uiState.isLoading) {
             TravelBookingLoadingScreen()
         } else if (uiState.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = uiState.error ?: "Unknown error")
+                Text(text = uiState.error)
             }
         } else {
             Column(
@@ -185,87 +146,22 @@ fun HotelBookingConfirmContent(
                     }
 
                     Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.large,
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = TravelinDimens.ElevationSmall
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(TravelinDimens.PaddingMedium)
-                        ) {
-                            // Contact Information
-                            Text(
-                                text = stringResource(R.string.contact_info_title),
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
-                            // First Name
-                            ContactField(
-                                label = stringResource(R.string.contact_info_first_name),
-                                value = uiState.bookingDraft?.contactInfo?.firstName ?: ""
-                            )
-                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-
-                            // Last Name
-                            ContactField(
-                                label = stringResource(R.string.contact_info_last_name),
-                                value = uiState.bookingDraft?.contactInfo?.lastName ?: ""
-                            )
-                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-
-                            // Phone
-                            ContactField(
-                                label = stringResource(R.string.contact_info_phone),
-                                value = uiState.bookingDraft?.contactInfo?.phoneNumber ?: ""
-                            )
-                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-
-                            // Email
-                            ContactField(
-                                label = stringResource(R.string.contact_info_email),
-                                value = uiState.bookingDraft?.contactInfo?.email ?: ""
-                            )
-                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-                        }
-                    }
+                    // Contact Information
+                    val contactInfo = uiState.bookingDraft?.contactInfo
+                    val countryCode = contactInfo?.countryCode ?: ""
+                    TravelBookingContactInfoCard(
+                        firstName = contactInfo?.firstName ?: "",
+                        lastName = contactInfo?.lastName ?: "",
+                        email = contactInfo?.email ?: "",
+                        countryCode = countryCode,
+                        countryFlag = countries.find { it.code == countryCode }?.flag ?: "",
+                        phoneNumber = contactInfo?.phoneNumber ?: ""
+                    )
                 }
             }
         }
     }
-}
-
-
-/**
- * Composable to display a contact field with a label and value (Read-only).
- *
- * @param label The label text for the contact field.
- * @param value The value text for the contact field.
- */
-@Composable
-fun ContactField(
-    label: String,
-    value: String
-) {
-    Text(
-        text = label,
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.SemiBold
-    )
-    Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
-    OutlinedTextField(
-        value = value,
-        onValueChange = {},
-        readOnly = true,
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium
-    )
 }
 
 
@@ -305,11 +201,12 @@ fun HotelBookingConfirmPreview() {
             firstName = "John",
             lastName = "Doe",
             email = "john.doe@gmail.com",
+            countryCode = "+1",
             phoneNumber = "123 456 789"
         )
     )
 
-    Travelin2026ProjectLabTheme() {
+    Travelin2026ProjectLabTheme {
         HotelBookingConfirmContent(
             uiState = HotelBookingConfirmState(
                 hotelDetails = sampleHotel,

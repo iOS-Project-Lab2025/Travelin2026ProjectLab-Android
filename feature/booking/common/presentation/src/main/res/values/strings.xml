@@ -12,8 +12,19 @@
     <string name="booking_count_title">Guests</string>
     <string name="booking_count_subtitle">Add guests to your reservation</string>
 
+    <string name="contact_info_title">Contact Information</string>
+    <string name="contact_info_subtitle">Who\'s checking in?</string>
+    <string name="contact_info_first_name">First name</string>
+    <string name="contact_info_first_name_placeholder">John</string>
+    <string name="contact_info_last_name">Last name</string>
+    <string name="contact_info_last_name_placeholder">Doe</string>
+    <string name="contact_info_phone">Phone</string>
+    <string name="contact_info_email">Email</string>
+    <string name="contact_info_email_placeholder">john.doe@gmail.com</string>
+
     <string name="check_in_label">Check-in</string>
     <string name="check_out_label">Check-out</string>
     <string name="guests_label">Guests</string>
 
+    <string name="booking_confirm_total_label">Total: </string>
 </resources>

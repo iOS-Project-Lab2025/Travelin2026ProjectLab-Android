@@ -5,7 +5,7 @@ import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
-import com.softserveacademy.feature.booking.hotel.presentation.events.HotelContactInfoEvent
+import com.softserveacademy.feature.booking.common.presentation.events.TravelBookingContactInfoEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -96,21 +96,21 @@ class HotelContactInfoViewModelTest {
 
     @Test
     fun `onEvent FirstNameChanged updates state and clears error`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged("Jane"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged("Jane"))
         assertEquals("Jane", viewModel.uiState.value.firstName)
         assertNull(viewModel.uiState.value.firstNameError)
     }
 
     @Test
     fun `onEvent CountryCodeChanged updates state`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.CountryCodeChanged("+380"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.CountryCodeChanged("+380"))
         assertEquals("+380", viewModel.uiState.value.countryCode)
     }
 
     @Test
     fun `onNextClick with invalid data sets errors and does not set validationSuccess`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged(""))
-        viewModel.onEvent(HotelContactInfoEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged(""))
+        viewModel.onEvent(TravelBookingContactInfoEvent.OnNextClick)
 
         val state = viewModel.uiState.value
         assertEquals("First name is required", state.firstNameError)
@@ -119,12 +119,12 @@ class HotelContactInfoViewModelTest {
 
     @Test
     fun `onNextClick with valid data saves draft and sets validationSuccess`() = runTest {
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged("John"))
-        viewModel.onEvent(HotelContactInfoEvent.LastNameChanged("Doe"))
-        viewModel.onEvent(HotelContactInfoEvent.EmailChanged("john.doe@example.com"))
-        viewModel.onEvent(HotelContactInfoEvent.PhoneNumberChanged("123456789"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged("John"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.LastNameChanged("Doe"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.EmailChanged("john.doe@example.com"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.PhoneNumberChanged("123456789"))
         
-        viewModel.onEvent(HotelContactInfoEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingContactInfoEvent.OnNextClick)
         
         advanceUntilIdle()
         
@@ -135,11 +135,11 @@ class HotelContactInfoViewModelTest {
     @Test
     fun `resetValidationStatus sets validationSuccess to false`() = runTest {
         // First set it to true
-        viewModel.onEvent(HotelContactInfoEvent.FirstNameChanged("John"))
-        viewModel.onEvent(HotelContactInfoEvent.LastNameChanged("Doe"))
-        viewModel.onEvent(HotelContactInfoEvent.EmailChanged("john.doe@example.com"))
-        viewModel.onEvent(HotelContactInfoEvent.PhoneNumberChanged("123456789"))
-        viewModel.onEvent(HotelContactInfoEvent.OnNextClick)
+        viewModel.onEvent(TravelBookingContactInfoEvent.FirstNameChanged("John"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.LastNameChanged("Doe"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.EmailChanged("john.doe@example.com"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.PhoneNumberChanged("123456789"))
+        viewModel.onEvent(TravelBookingContactInfoEvent.OnNextClick)
         advanceUntilIdle()
         
         assertTrue(viewModel.validationSuccess.value)
