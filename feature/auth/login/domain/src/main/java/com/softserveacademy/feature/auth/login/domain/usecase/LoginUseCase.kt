@@ -1,4 +1,6 @@
-package com.softserveacademy.feature.auth.login.domain
+package com.softserveacademy.feature.auth.login.domain.usecase
+
+import com.softserveacademy.feature.auth.login.domain.repository.LoginRepository
 
 class LoginUseCase(
     private val repository: LoginRepository

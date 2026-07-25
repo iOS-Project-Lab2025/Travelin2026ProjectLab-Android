@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.auth.login.domain
+package com.softserveacademy.feature.auth.login.domain.repository
 
 interface LoginRepository {
     suspend fun login(email: String, password: String): Result<Unit>

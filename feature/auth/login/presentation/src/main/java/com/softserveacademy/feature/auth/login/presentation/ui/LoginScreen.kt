@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.auth.login.presentation
+package com.softserveacademy.feature.auth.login.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.feature.auth.login.presentation.viewmodel.LoginViewModel
 import com.softserveacademy.core.presentation.design_system.components.AppPasswordInput
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton

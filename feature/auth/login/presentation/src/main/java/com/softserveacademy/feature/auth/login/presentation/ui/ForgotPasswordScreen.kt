@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.auth.login.presentation
+package com.softserveacademy.feature.auth.login.presentation.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.feature.auth.login.presentation.viewmodel.ForgotPasswordViewModel
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton

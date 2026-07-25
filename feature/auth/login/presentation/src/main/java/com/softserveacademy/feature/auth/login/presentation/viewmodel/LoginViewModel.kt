@@ -1,11 +1,11 @@
-package com.softserveacademy.feature.auth.login.presentation
+package com.softserveacademy.feature.auth.login.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.feature.auth.login.domain.LoginUseCase
+import com.softserveacademy.feature.auth.login.domain.usecase.LoginUseCase
 import kotlinx.coroutines.launch
 
 class LoginViewModel(

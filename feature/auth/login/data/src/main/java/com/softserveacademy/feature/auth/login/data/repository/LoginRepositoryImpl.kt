@@ -1,10 +1,10 @@
-package com.softserveacademy.feature.auth.login.data
+package com.softserveacademy.feature.auth.login.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.softserveacademy.feature.auth.login.domain.LoginRepository
+import com.softserveacademy.feature.auth.login.domain.repository.LoginRepository
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
