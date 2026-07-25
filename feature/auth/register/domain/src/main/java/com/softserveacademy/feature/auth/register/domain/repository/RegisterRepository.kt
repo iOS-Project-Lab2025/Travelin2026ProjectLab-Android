@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.auth.register.domain
+package com.softserveacademy.feature.auth.register.domain.repository
 
 import com.softserveacademy.core.domain.model.User
 

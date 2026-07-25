@@ -1,4 +1,4 @@
-package com.softserveacademy.feature.auth.register.presentation
+package com.softserveacademy.feature.auth.register.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.User
-import com.softserveacademy.feature.auth.register.domain.RegisterUseCase
+import com.softserveacademy.feature.auth.register.domain.usecase.RegisterUseCase
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(

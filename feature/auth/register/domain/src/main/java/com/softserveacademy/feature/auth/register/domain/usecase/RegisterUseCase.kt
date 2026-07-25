@@ -1,6 +1,7 @@
-package com.softserveacademy.feature.auth.register.domain
+package com.softserveacademy.feature.auth.register.domain.usecase
 
 import com.softserveacademy.core.domain.model.User
+import com.softserveacademy.feature.auth.register.domain.repository.RegisterRepository
 
 class RegisterUseCase(
     private val repository: RegisterRepository
