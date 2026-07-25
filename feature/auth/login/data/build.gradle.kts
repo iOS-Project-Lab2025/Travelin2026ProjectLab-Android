@@ -14,4 +14,6 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(libs.androidx.datastore.preferences)
+
+    testImplementation(libs.bundles.testing.stack)
 }
