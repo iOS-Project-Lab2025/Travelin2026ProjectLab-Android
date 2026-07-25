@@ -1,5 +1,6 @@
-package com.softserveacademy.feature.auth.common.domain
+package com.softserveacademy.feature.auth.common.domain.repository
 
+import com.softserveacademy.feature.auth.common.domain.model.AuthToken
 import kotlinx.coroutines.flow.Flow
 
 interface SessionRepository {

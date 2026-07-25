@@ -14,13 +14,13 @@ import com.softserveacademy.feature.onboarding.presentation.OnboardingScreen
 import com.softserveacademy.feature.onboarding.presentation.OnboardingViewModel
 
 //Screens of Authgraph
-import com.softserveacademy.feature.auth.common.presentation.SuccessScreen
-import com.softserveacademy.feature.auth.login.presentation.ForgotPasswordScreen
-import com.softserveacademy.feature.auth.login.presentation.ForgotPasswordViewModel
-import com.softserveacademy.feature.auth.login.presentation.LoginScreen
-import com.softserveacademy.feature.auth.login.presentation.LoginViewModel
-import com.softserveacademy.feature.auth.register.presentation.RegisterScreen
-import com.softserveacademy.feature.auth.register.presentation.RegisterViewModel
+import com.softserveacademy.feature.auth.common.presentation.ui.SuccessScreen
+import com.softserveacademy.feature.auth.login.presentation.ui.ForgotPasswordScreen
+import com.softserveacademy.feature.auth.login.presentation.viewmodel.ForgotPasswordViewModel
+import com.softserveacademy.feature.auth.login.presentation.ui.LoginScreen
+import com.softserveacademy.feature.auth.login.presentation.viewmodel.LoginViewModel
+import com.softserveacademy.feature.auth.register.presentation.ui.RegisterScreen
+import com.softserveacademy.feature.auth.register.presentation.viewmodel.RegisterViewModel
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 
 // Profile screens.

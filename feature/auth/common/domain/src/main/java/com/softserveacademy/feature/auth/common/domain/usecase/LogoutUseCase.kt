@@ -1,6 +1,6 @@
 package com.softserveacademy.feature.auth.common.domain.usecase
 
-import com.softserveacademy.feature.auth.common.domain.SessionRepository
+import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
 
 /**
  * Use case to handle user logout.

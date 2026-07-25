@@ -1,5 +1,6 @@
-package com.softserveacademy.feature.auth.common.domain
+package com.softserveacademy.feature.auth.common.domain.usecase
 
+import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 
 class CheckSessionUseCase(

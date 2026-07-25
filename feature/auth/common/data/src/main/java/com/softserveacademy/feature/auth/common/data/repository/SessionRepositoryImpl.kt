@@ -1,11 +1,11 @@
-package com.softserveacademy.feature.auth.common.data
+package com.softserveacademy.feature.auth.common.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.softserveacademy.feature.auth.common.domain.AuthToken
-import com.softserveacademy.feature.auth.common.domain.SessionRepository
+import com.softserveacademy.feature.auth.common.domain.model.AuthToken
+import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
