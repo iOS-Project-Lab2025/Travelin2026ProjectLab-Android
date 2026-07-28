@@ -13,6 +13,5 @@ dependencies {
     implementation(projects.core.data)
     implementation(libs.androidx.datastore.preferences)
 
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.testing.stack)
 }

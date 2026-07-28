@@ -2,9 +2,9 @@ package com.softserveacademy.feature.auth.common.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.softserveacademy.feature.auth.common.data.SessionRepositoryImpl
-import com.softserveacademy.feature.auth.common.domain.CheckSessionUseCase
-import com.softserveacademy.feature.auth.common.domain.SessionRepository
+import com.softserveacademy.feature.auth.common.data.repository.SessionRepositoryImpl
+import com.softserveacademy.feature.auth.common.domain.usecase.CheckSessionUseCase
+import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

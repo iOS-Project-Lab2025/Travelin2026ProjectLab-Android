@@ -1,7 +1,7 @@
 package com.softserveacademy.home.presentation.di
 
 import com.softserveacademy.feature.auth.common.domain.usecase.LogoutUseCase
-import com.softserveacademy.feature.auth.common.domain.SessionRepository
+import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
 import com.softserveacademy.home.domain.repository.ProfileRepository
 import com.softserveacademy.home.domain.usecases.GetProfileUseCase
 import com.softserveacademy.home.domain.usecases.UpdateProfileUseCase
