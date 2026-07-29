@@ -3,8 +3,13 @@ package com.softserveacademycore.presentation.ui.splash
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import com.softserveacademy.core.domain.model.splash.SplashDestination
 import com.softserveacademy.core.domain.repository.CorePreferencesRepository
+import com.softserveacademy.core.domain.usecase.splash.GetSplashDestinationUseCase
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademycore.presentation.ui.splash.ui.SplashScreen
+import com.softserveacademycore.presentation.ui.splash.viewmodels.SplashViewModel
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
@@ -25,13 +30,13 @@ class SplashScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val repository = mockk<CorePreferencesRepository>()
+    private val useCase = mockk<GetSplashDestinationUseCase>()
 
     @Test
     fun `given splash screen when displayed then brand logo is visible`() {
         // GIVEN
-        every { repository.isFirstTimeUser() } returns flowOf(true)
-        val viewModel = SplashViewModel(repository)
+        coEvery { useCase() } returns SplashDestination.Onboarding
+        val viewModel = SplashViewModel(useCase)
 
         // WHEN
         composeTestRule.setContent {

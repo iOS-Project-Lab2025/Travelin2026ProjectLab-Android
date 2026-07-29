@@ -1,11 +1,13 @@
 package com.softserveacademycore.presentation.ui.splash
 
-import com.softserveacademy.core.domain.repository.CorePreferencesRepository
-import io.mockk.every
+import com.softserveacademy.core.domain.model.splash.SplashDestination
+import com.softserveacademy.core.domain.usecase.splash.GetSplashDestinationUseCase
+import com.softserveacademycore.presentation.ui.splash.events.SplashEvent
+import com.softserveacademycore.presentation.ui.splash.viewmodels.SplashViewModel
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -20,7 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(ExperimentalCoroutinesApi::class)
 class SplashViewModelTest {
 
-    private val repository = mockk<CorePreferencesRepository>()
+    private val useCase = mockk<GetSplashDestinationUseCase>()
     private lateinit var viewModel: SplashViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -37,26 +39,29 @@ class SplashViewModelTest {
     @Test
     fun `given first time user when delay finishes then destination is Onboarding`() = runTest {
         // GIVEN
-        every { repository.isFirstTimeUser() } returns flowOf(true)
+        coEvery { useCase() } returns SplashDestination.Onboarding
 
         // WHEN
-        viewModel = SplashViewModel(repository)
-        advanceTimeBy(5001.milliseconds) // Jump past the 5s delay
+        viewModel = SplashViewModel(useCase)
+        viewModel.onEvent(SplashEvent.OnViewReady)
+
+        advanceTimeBy(3001.milliseconds) // Jump past the 5s delay
 
         // THEN
-        assertEquals(SplashDestination.Onboarding, viewModel.destination.value)
+        assertEquals(SplashDestination.Onboarding, viewModel.uiState.value.destination)
     }
 
     @Test
     fun `given returning user when delay finishes then destination is Home`() = runTest {
         // GIVEN
-        every { repository.isFirstTimeUser() } returns flowOf(false)
+        coEvery { useCase() } returns SplashDestination.Login
 
         // WHEN
-        viewModel = SplashViewModel(repository)
-        advanceTimeBy(5001.milliseconds)
+        viewModel = SplashViewModel(useCase)
+        viewModel.onEvent(SplashEvent.OnViewReady)
+        advanceTimeBy(3001.milliseconds)
 
         // THEN
-        assertEquals(SplashDestination.Login, viewModel.destination.value)
+        assertEquals(SplashDestination.Login, viewModel.uiState.value.destination)
     }
 }
