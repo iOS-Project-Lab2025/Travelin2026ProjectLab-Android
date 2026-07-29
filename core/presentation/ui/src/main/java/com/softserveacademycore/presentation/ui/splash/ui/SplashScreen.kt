@@ -1,9 +1,10 @@
-package com.softserveacademycore.presentation.ui.splash
+package com.softserveacademycore.presentation.ui.splash.ui
 
-import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,8 +21,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.domain.model.splash.SplashDestination
 import com.softserveacademy.core.presentation.design_system.components.TravelinLogo
 import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademycore.presentation.ui.splash.viewmodels.SplashViewModel
+import com.softserveacademycore.presentation.ui.splash.events.SplashEvent
 import com.softserveacademycore.presentation.ui.util.LockScreenOrientation
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -37,8 +41,8 @@ fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
-    LockScreenOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-    val destination by viewModel.destination.collectAsState()
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    val state by viewModel.uiState.collectAsState()
     var startAnimation by remember { mutableStateOf(false) }
 
     // 1. Main alpha animation
@@ -79,10 +83,13 @@ fun SplashScreen(
         label = "glowScale"
     )
 
-    LaunchedEffect(Unit) { startAnimation = true }
+    LaunchedEffect(Unit) {
+        startAnimation = true
+        viewModel.onEvent(SplashEvent.OnViewReady)
+    }
 
-    LaunchedEffect(destination) {
-        if (destination != null) {
+    LaunchedEffect(state.destination) {
+        state.destination?.let { destination ->
             startAnimation = false
             delay(300.milliseconds)
             when (destination) {
@@ -107,7 +114,7 @@ fun SplashScreen(
                 .graphicsLayer(scaleX = glowScale, scaleY = glowScale, alpha = alphaAnim * 0.3f)
                 .background(
                     Color.White.copy(alpha = 0.2f),
-                    shape = androidx.compose.foundation.shape.CircleShape
+                    shape = CircleShape
                 )
                 .blur(80.dp)
         )

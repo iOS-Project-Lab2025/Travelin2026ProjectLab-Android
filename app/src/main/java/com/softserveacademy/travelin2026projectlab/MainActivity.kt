@@ -15,11 +15,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.softserveacademy.core.domain.usecase.splash.GetSplashDestinationUseCase
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.softserveacademycore.presentation.ui.splash.SplashScreen
+import com.softserveacademycore.presentation.ui.splash.ui.SplashScreen
 import com.softserveacademy.feature.auth.common.data.repository.SessionRepositoryImpl
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.core.domain.usecase.GetThemeUseCase
@@ -38,7 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.getValue
 import com.softserveacademy.core.data.repository.CorePreferencesRepositoryImpl
-import com.softserveacademycore.presentation.ui.splash.SplashViewModel
+import com.softserveacademycore.presentation.ui.splash.viewmodels.SplashViewModel
 
 /**
  * The main entry point of the application.
@@ -67,8 +67,8 @@ class MainActivity : ComponentActivity() {
     private val corePreferencesRepository by lazy { CorePreferencesRepositoryImpl(dataStore) }
 
     // Create the "splash screen brain" and decides where to go
-    private val splashViewModel by lazy { SplashViewModel(corePreferencesRepository) }
-    private val sessionRepository by lazy { SessionRepositoryImpl(dataStore) }
+    private val getSplashDestinationUseCase by lazy { GetSplashDestinationUseCase(corePreferencesRepository) }
+    private val splashViewModel by lazy { SplashViewModel(getSplashDestinationUseCase) }
     private val loginRepository by lazy { LoginRepositoryImpl(dataStore) }
     private val registerRepository by lazy { RegisterRepositoryImpl(dataStore) }
 
