@@ -2,9 +2,12 @@ package com.softserveacademy.feature.onboarding.presentation
 
 
 import com.softserveacademy.feature.onboarding.domain.usecase.CompleteOnboardingUseCase
+import com.softserveacademy.feature.onboarding.presentation.events.OnboardingEvent
+import com.softserveacademy.feature.onboarding.presentation.viewmodels.OnboardingViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -16,7 +19,7 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * Unit tests for [OnboardingViewModel].
+ * Unit tests for [com.softserveacademy.feature.onboarding.presentation.viewmodels.OnboardingViewModel].
  * This class tests the presentation logic of the onboarding flow.
  * It uses a [StandardTestDispatcher] to control the execution of coroutines
  * and verify that operations happen in the correct order.
@@ -46,20 +49,24 @@ class OnboardingViewModelTest {
      * Test case: Ensures that the "Get Started" flow executes the use case
      * and only then triggers the navigation to the next screen.
      */
+    /**
+     * Verifies that when the [OnboardingEvent.OnGetStartedClick] event is processed,
+     * the [CompleteOnboardingUseCase] is executed and the UI state is updated
+     * to reflect that onboarding is completed.
+     */
     @Test
-    fun `when onGetStartedClick is called, it should execute use case and then navigate`() = runTest {
-        // Given
-        var callbackExecuted = false
-        val onFinished = { callbackExecuted = true }
+    fun `when OnGetStartedClick event is processed, then state updates to completed`() = runTest {
+        // When: The user interacts with the "Get Started" action
+        viewModel.onEvent(OnboardingEvent.OnGetStartedClick)
 
-        // When
-        viewModel.onGetStartedClick(onFinished)
-
-        // Fast-forward coroutines
+        // Fast-forward coroutines to ensure all state updates are processed
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then: Use case must be called and the navigation callback must be true
+        // Then:
+        // 1. Verify business logic was triggered exactly once
         coVerify(exactly = 1) { completeOnboardingUseCase() }
-        assert(callbackExecuted)
+
+        // 2. Verify the state transition matches the expected outcome
+        assertTrue("State should be marked as completed", viewModel.uiState.value.isCompleted)
     }
 }

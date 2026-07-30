@@ -1,5 +1,6 @@
-package com.softserveacademy.feature.onboarding.presentation
+package com.softserveacademy.feature.onboarding.presentation.ui
 
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +8,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -25,21 +29,47 @@ import com.softserveacademy.core.presentation.design_system.components.TravelinL
 import com.softserveacademy.core.presentation.design_system.theme.AngleRightIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.onboarding.presentation.events.OnboardingEvent
+import com.softserveacademy.feature.onboarding.presentation.states.OnboardingState
+import com.softserveacademy.feature.onboarding.presentation.viewmodels.OnboardingViewModel
 import com.softserveacademycore.presentation.ui.util.LockScreenOrientation
 import com.softserveacademy.core.presentation.design_system.R as DesignR
 
 /**
- * Onboarding Screen component.
- * Displays the introductory brand identity and a call to action to start the user journey.
- * Supports both Light and Dark themes via MaterialTheme color schemes.
- *
- * @param onGetStarted Callback triggered when the user clicks the "Get Started" button.
+ * Stateful version of the Onboarding screen.
+ * Connects the UI with the ViewModel and handles side effects like navigation.
  */
 @Composable
 fun OnboardingScreen(
-    onGetStarted: () -> Unit
+    viewModel: OnboardingViewModel,
+    onFinished: () -> Unit
 ) {
-    LockScreenOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    val state by viewModel.uiState.collectAsState()
+
+    // Navigation Side-Effect: Reacts when the state changes to 'completed'
+    LaunchedEffect(state.isCompleted) {
+        if (state.isCompleted) {
+            onFinished()
+        }
+    }
+
+    OnboardingContent(
+        state = state,
+        onEvent = viewModel::onEvent
+    )
+}
+
+/**
+ * Stateless version of the Onboarding screen.
+ * Renders the UI based on the provided state and reports events.
+ */
+@Composable
+fun OnboardingContent(
+    state: OnboardingState,
+    onEvent: (OnboardingEvent) -> Unit
+) {
+
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     Box(modifier = Modifier.fillMaxSize()) {
         // 1. Background Image
         Image(
@@ -141,7 +171,7 @@ fun OnboardingScreen(
 
                 // Action Button
                 Button(
-                    onClick = onGetStarted,
+                    onClick = { onEvent(OnboardingEvent.OnGetStartedClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -177,7 +207,10 @@ fun OnboardingScreen(
 @Composable
 fun OnboardingScreenPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        OnboardingScreen(onGetStarted = {})
+        OnboardingContent(
+            state = OnboardingState(),
+            onEvent = {}
+        )
     }
 }
 
@@ -188,6 +221,9 @@ fun OnboardingScreenPreview() {
 @Composable
 fun OnboardingScreenDarkPreview() {
     Travelin2026ProjectLabTheme(darkTheme = true) {
-        OnboardingScreen(onGetStarted = {})
+        OnboardingContent(
+            state = OnboardingState(),
+            onEvent = {}
+        )
     }
 }
