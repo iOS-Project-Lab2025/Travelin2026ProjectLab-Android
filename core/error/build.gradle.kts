@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    api(projects.core.error)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
 }

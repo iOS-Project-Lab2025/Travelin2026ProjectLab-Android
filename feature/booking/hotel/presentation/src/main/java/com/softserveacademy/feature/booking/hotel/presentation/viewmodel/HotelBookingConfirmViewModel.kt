@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.error.extension.onFailure
+import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
@@ -34,25 +36,25 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun loadBookingDetails() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            try {
-                val draft = hotelBookingDraftRepository.getDraft(hotelId.toString())
-                if (draft != null) {
-                    val hotelDetails = hotelRepo.getHotelById(hotelId)
-                    val selectedRoom = hotelDetails.rooms.find { it.id.toString() == draft.roomId }
-                    
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            bookingDraft = draft,
-                            hotelDetails = hotelDetails,
-                            selectedRoom = selectedRoom
-                        )
+            val draft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+            if (draft != null) {
+                hotelRepo.getHotelById(hotelId)
+                    .onSuccess { hotelDetails ->
+                        val selectedRoom = hotelDetails.rooms.find { it.id.toString() == draft.roomId }
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                bookingDraft = draft,
+                                hotelDetails = hotelDetails,
+                                selectedRoom = selectedRoom
+                            )
+                        }
                     }
-                } else {
-                    _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
+                    .onFailure { e ->
+                        _uiState.update { it.copy(isLoading = false, error = e.toString()) }
+                    }
+            } else {
+                _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
             }
         }
     }

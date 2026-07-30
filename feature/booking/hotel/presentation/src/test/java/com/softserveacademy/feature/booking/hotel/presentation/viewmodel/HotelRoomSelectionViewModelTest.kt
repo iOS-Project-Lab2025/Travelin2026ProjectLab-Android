@@ -3,6 +3,7 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
@@ -48,7 +49,7 @@ class HotelRoomSelectionViewModelTest {
         hotelBookingDraftRepository = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
-        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns mockRooms
+        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns AppResult.Success(mockRooms)
         coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns HotelBookingDraft(
             hotelId = hotelId.toString(),
             checkIn = checkIn,
@@ -108,7 +109,7 @@ class HotelRoomSelectionViewModelTest {
         val specialRooms = listOf(
             HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100, isAvailable = true)
         )
-        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns specialRooms
+        coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns AppResult.Success(specialRooms)
         
         viewModel = HotelRoomSelectionViewModel(savedStateHandle, hotelRepo, hotelBookingDraftRepository)
         advanceUntilIdle()
@@ -136,7 +137,7 @@ class HotelRoomSelectionViewModelTest {
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
         
-        coEvery { hotelRepo.reserveRoom(hotelId, 1, any(), any()) } returns Unit
+        coEvery { hotelRepo.reserveRoom(hotelId, 1, any(), any()) } returns AppResult.Success(Unit)
         
         viewModel.onEvent(HotelRoomSelectionEvent.OnNextClick)
         advanceUntilIdle()
