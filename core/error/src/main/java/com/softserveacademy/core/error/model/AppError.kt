@@ -1,5 +1,6 @@
 package com.softserveacademy.core.error.model
 
+/** Domain-level model that classifies every application failure into a typed hierarchy. */
 sealed interface AppError {
 
     sealed interface Network : AppError {

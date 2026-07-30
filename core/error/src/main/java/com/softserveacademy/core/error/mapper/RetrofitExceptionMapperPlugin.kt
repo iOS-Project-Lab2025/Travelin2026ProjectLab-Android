@@ -4,6 +4,7 @@ import com.softserveacademy.core.error.model.AppError
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** [ExceptionMapperPlugin] that maps [retrofit2.HttpException] to [AppError] using reflection. */
 @Singleton
 class RetrofitExceptionMapperPlugin @Inject constructor() : ExceptionMapperPlugin {
 

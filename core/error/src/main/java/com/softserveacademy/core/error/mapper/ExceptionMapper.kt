@@ -6,6 +6,7 @@ import java.net.SocketTimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Central engine that converts exceptions into domain-level [AppError] values using registered plugins. */
 @Singleton
 class ExceptionMapper @Inject constructor(
     private val customMappers: Set<@JvmSuppressWildcards ExceptionMapperPlugin>

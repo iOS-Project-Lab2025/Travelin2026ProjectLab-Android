@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Singleton that collects global-level errors (e.g. auth/session) and exposes them as a [Flow]. */
 @Singleton
 class GlobalErrorHandler @Inject constructor() {
 
