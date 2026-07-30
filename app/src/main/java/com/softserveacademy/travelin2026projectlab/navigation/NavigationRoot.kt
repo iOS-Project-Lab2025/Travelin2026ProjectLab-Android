@@ -10,8 +10,8 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 
 //Onboarding Screen.
-import com.softserveacademy.feature.onboarding.presentation.OnboardingScreen
-import com.softserveacademy.feature.onboarding.presentation.OnboardingViewModel
+import com.softserveacademy.feature.onboarding.presentation.ui.OnboardingScreen
+import com.softserveacademy.feature.onboarding.presentation.viewmodels.OnboardingViewModel
 
 //Screens of Authgraph
 import com.softserveacademy.feature.auth.common.presentation.ui.SuccessScreen
@@ -103,15 +103,14 @@ fun NavGraphBuilder.onboardingGraph(navController: NavHostController, isLoggedIn
         composable<Routes.OnboardingScreen> {
             val onboardingViewModel: OnboardingViewModel = hiltViewModel()
             OnboardingScreen(
-                onGetStarted = {
-                    onboardingViewModel.onGetStartedClick {
-                        navController.navigate(if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph) {
-
-                            popUpTo(Routes.OnboardingGraph) {
-                                inclusive = true
-                            }
+                viewModel = onboardingViewModel,
+                onFinished = {
+                    navController.navigate(if (isLoggedIn) Routes.MainGraph else Routes.AuthGraph) {
+                        popUpTo(Routes.OnboardingGraph) {
+                            inclusive = true
                         }
                     }
+
                 }
             )
         }
