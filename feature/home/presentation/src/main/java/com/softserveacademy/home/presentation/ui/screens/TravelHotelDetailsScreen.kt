@@ -10,8 +10,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
+import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.core.presentation.design_system.components.HotelDetailLoading
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 import com.softserveacademy.core.presentation.design_system.components.TravelDetailsScreen
@@ -43,9 +47,38 @@ fun HotelDetailState(
     val context = LocalContext.current
     val isDark = LocalIsDarkTheme.current
     val hotelDetails = hotelDetailState.hotelDetails
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit){
         viewModel.onEvent(HotelDetailsEvent.Load(hotelId))
+    }
+
+    val shareTitle = stringResource(id = R.string.share_hotel_title)
+    val shareMessageTemplate = stringResource(id = R.string.share_hotel_message)
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effect.collect { effect ->
+                when (effect) {
+                    HotelDetailsEventEffect.NavigateBack -> onBackClick()
+                    is HotelDetailsEventEffect.NavigateToBooking -> onBookClick()
+                    is HotelDetailsEventEffect.NavigateToGallery -> onSeeAllPhotosClick()
+                    is HotelDetailsEventEffect.ShareHotel -> {
+                        val shareMessage = shareMessageTemplate.format(
+                            effect.hotel.name,
+                            effect.hotel.id.toString()
+                        )
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, shareMessage)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, shareTitle)
+                        context.startActivity(shareIntent)
+                    }
+                }
+            }
+        }
     }
 
     when {
@@ -59,32 +92,23 @@ fun HotelDetailState(
             )
         }
         hotelDetails != null -> {
-            val shareMessage = stringResource(
-                id = R.string.share_hotel_message,
-                hotelDetails.name,
-                hotelDetails.id
-            )
-            val shareTitle = stringResource(id = R.string.share_hotel_title)
-
-
-
             TravelDetailsScreen(
                 destinationDetails = hotelDetails.toDestinationDetails(),
                 isDarkTheme = isDark,
                 isDescriptionExpanded = hotelDetailState.isDescriptionExpanded,
                 showAmenitiesDialog = hotelDetailState.showAmenitiesDialog,
                 showFullMap = hotelDetailState.showFullMap,
-                onBackClick = onBackClick,
-                onSeeAllPhotosClick = onSeeAllPhotosClick,
-                onBookClick = onBookClick,
+                onBackClick = {
+                    viewModel.onEvent(HotelDetailsEvent.NavigateBack)
+                },
+                onSeeAllPhotosClick = {
+                    viewModel.onEvent(HotelDetailsEvent.ViewGallery)
+                },
+                onBookClick = {
+                    viewModel.onEvent(HotelDetailsEvent.BookNow)
+                },
                 onShareClick = {
-                    val sendIntent: Intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, shareMessage)
-                        type = "text/plain"
-                    }
-                    val shareIntent = Intent.createChooser(sendIntent, shareTitle)
-                    context.startActivity(shareIntent)
+                    viewModel.onEvent(HotelDetailsEvent.Share)
                 },
                 onFavoriteClick = {
                     viewModel.onEvent(HotelDetailsEvent.ToggleFavorite)

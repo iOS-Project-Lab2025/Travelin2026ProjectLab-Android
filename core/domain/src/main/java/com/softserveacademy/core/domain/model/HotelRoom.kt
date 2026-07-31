@@ -1,5 +1,7 @@
 package com.softserveacademy.core.domain.model
 
+import java.io.Serializable
+
 /**
  * Data class representing a hotel room.
  *
@@ -29,4 +31,4 @@ data class HotelRoom(
     val totalRooms: Int = 5,
     val availableRooms: Int = 5,
     val isAvailable: Boolean = true
-)
+) : Serializable

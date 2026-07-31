@@ -16,12 +16,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.softserveacademy.core.presentation.design_system.components.HotelGalleryScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPhotoViewer
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelHotelDetailsTopIcons
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
+import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 
 /**
  * Screen that displays the full gallery of a hotel's photos.
@@ -38,9 +42,21 @@ fun TravelHotelGalleryScreen(
     val state by viewModel.hotelDetailState.collectAsState()
     var isPhotoViewerOpen by remember { mutableStateOf(false) }
     var selectedImageIndex by remember { mutableIntStateOf(0) }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(HotelDetailsEvent.Load(hotelId))
+    }
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effect.collect { effect ->
+                when (effect) {
+                    HotelDetailsEventEffect.NavigateBack -> onBackClick()
+                    else -> { /* Other effects not relevant for gallery */ }
+                }
+            }
+        }
     }
 
     Scaffold { padding ->
@@ -80,7 +96,13 @@ fun TravelHotelGalleryScreen(
             
             // Reusing the top icons for consistency, primarily for the back button.
             TravelHotelDetailsTopIcons(
-                onBackClick = onBackClick,
+                onBackClick = {
+                    if (isPhotoViewerOpen) {
+                        isPhotoViewerOpen = false
+                    } else {
+                        viewModel.onEvent(HotelDetailsEvent.NavigateBack)
+                    }
+                },
                 onShareClick = {},
                 onFavoriteClick = {}
             )
