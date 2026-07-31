@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.domain.usecase.GetThemeUseCase
+import com.softserveacademy.core.error.extension.onFailure
+import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -32,18 +34,18 @@ class HotelDetailsViewModel @Inject constructor(
             _hotelDetailState.update{
                 HotelDetailState.IsLoading(true)
             }
-            try {
-
-                delay(5000)
-                val hotelDetails = hotelRepo.getHotelById(id)
-                _hotelDetailState.update {
-                    HotelDetailState.Data(hotelDetails)
+            delay(5000)
+            hotelRepo.getHotelById(id)
+                .onSuccess { hotelDetails ->
+                    _hotelDetailState.update {
+                        HotelDetailState.Data(hotelDetails)
+                    }
                 }
-            } catch (e: Exception) {
-                _hotelDetailState.update {
-                    HotelDetailState.Error(e.message)
+                .onFailure { error ->
+                    _hotelDetailState.update {
+                        HotelDetailState.Error(error.toString())
+                    }
                 }
-            }
         }
     }
 }

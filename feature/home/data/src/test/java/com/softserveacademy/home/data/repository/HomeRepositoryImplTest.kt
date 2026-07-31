@@ -4,6 +4,7 @@ import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.error.model.AppResult
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -43,7 +44,7 @@ class HomeRepositoryImplTest {
             mockk<Tour>(),
             mockk<Tour>()
         )
-        coEvery { tourRepo.getTours() } returns tours
+        coEvery { tourRepo.getTours() } returns AppResult.Success(tours)
 
         val result = repository.getJourneyTogether()
 
@@ -58,7 +59,7 @@ class HomeRepositoryImplTest {
             mockk<Hotel>(),
             mockk<Hotel>()
         )
-        coEvery { hotelRepo.getHotels() } returns hotels
+        coEvery { hotelRepo.getHotels() } returns AppResult.Success(hotels)
 
         val result = repository.getRecommendedHotels()
 

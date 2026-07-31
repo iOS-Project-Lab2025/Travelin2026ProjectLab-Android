@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.error)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.appcompat)
 }

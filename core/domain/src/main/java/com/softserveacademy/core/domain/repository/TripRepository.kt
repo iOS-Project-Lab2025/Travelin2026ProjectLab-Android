@@ -1,15 +1,16 @@
 package com.softserveacademy.core.domain.repository
 
 import com.softserveacademy.core.domain.model.Trip
+import com.softserveacademy.core.error.model.AppResult
 
 interface TripRepository {
 
-    suspend fun getUpcomingTrip(): Result<Trip?>
+    suspend fun getUpcomingTrip(): AppResult<Trip?>
 
-    suspend fun getPastTrips(): Result<List<Trip>>
+    suspend fun getPastTrips(): AppResult<List<Trip>>
 
-    suspend fun getTrip(id: String): Result<Trip>
+    suspend fun getTrip(id: String): AppResult<Trip>
 
-    suspend fun cancelTrip(id: String): Result<Unit>
+    suspend fun cancelTrip(id: String): AppResult<Unit>
 
 }

@@ -3,6 +3,9 @@ package com.softserveacademy.core.data.repository
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.error.mapper.ExceptionMapper
+import com.softserveacademy.core.error.model.AppResult
+import com.softserveacademy.core.error.util.safeCall
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +16,9 @@ import kotlin.time.Duration.Companion.hours
  * Test implementation of the [TourRepo] interface that provides mock data.
  */
 @Singleton
-class TourRepoImpl @Inject constructor() : TourRepo {
+class TourRepoImpl @Inject constructor(
+    private val mapper: ExceptionMapper
+) : TourRepo {
 
     private val _tours = MutableStateFlow(listOf(
         Tour(
@@ -73,11 +78,11 @@ class TourRepoImpl @Inject constructor() : TourRepo {
         )
     ))
 
-    override suspend fun getTours(): List<Tour> {
-        return _tours.value
+    override suspend fun getTours(): AppResult<List<Tour>> {
+        return AppResult.Success(_tours.value)
     }
 
-    override suspend fun getTourById(id: String): Tour {
-        return _tours.value.find { it.id == id } ?: throw NoSuchElementException("Tour with id $id not found")
+    override suspend fun getTourById(id: String): AppResult<Tour> = safeCall(mapper) {
+        _tours.value.find { it.id == id } ?: throw NoSuchElementException("Tour with id $id not found")
     }
 }

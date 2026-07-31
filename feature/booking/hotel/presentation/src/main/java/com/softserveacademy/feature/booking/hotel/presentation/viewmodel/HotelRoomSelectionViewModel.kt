@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.error.extension.onFailure
+import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
@@ -60,22 +62,27 @@ class HotelRoomSelectionViewModel @Inject constructor(
             val checkOut = draft?.checkOut ?: 0L
             val guestCount = (draft?.guests?.adults ?: 1) + (draft?.guests?.children ?: 0)
 
-            val rooms = hotelRepo.getHotelRooms(hotelId, checkIn, checkOut, guestCount)
-            
             // Calculate night count
             val nightCount = if (checkIn != 0L && checkOut != 0L) {
                 ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
             } else 1
-            delay(1.seconds) // Simulate API delay
-            _uiState.update {
-                it.copy(
-                    rooms = rooms,
-                    nightCount = nightCount,
-                    isLoading = false,
-                    selectedRoomId = it.selectedRoomId ?: draft?.roomId?.toIntOrNull()
-                )
-            }
-            applyFilters()
+
+            hotelRepo.getHotelRooms(hotelId, checkIn, checkOut, guestCount)
+                .onSuccess { rooms ->
+                    delay(1.seconds)
+                    _uiState.update {
+                        it.copy(
+                            rooms = rooms,
+                            nightCount = nightCount,
+                            isLoading = false,
+                            selectedRoomId = it.selectedRoomId ?: draft?.roomId?.toIntOrNull()
+                        )
+                    }
+                    applyFilters()
+                }
+                .onFailure {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
         }
     }
 
@@ -142,14 +149,13 @@ class HotelRoomSelectionViewModel @Inject constructor(
         val checkOut = draft?.checkOut ?: 0L
 
         viewModelScope.launch {
-            // Real-time reservation considering dates
             hotelRepo.reserveRoom(hotelId, selectedRoomId, checkIn, checkOut)
-            
-            // Update booking draft
-            draft?.let { 
-                val updatedDraft = it.copy(roomId = selectedRoomId.toString())
-                hotelBookingDraftRepository.saveDraft(updatedDraft)
-            }
+                .onSuccess {
+                    draft?.let {
+                        val updatedDraft = it.copy(roomId = selectedRoomId.toString())
+                        hotelBookingDraftRepository.saveDraft(updatedDraft)
+                    }
+                }
         }
     }
 

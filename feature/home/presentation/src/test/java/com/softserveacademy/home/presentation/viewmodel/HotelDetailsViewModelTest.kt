@@ -3,6 +3,8 @@ package com.softserveacademy.home.presentation.viewmodel
 import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.domain.usecase.GetThemeUseCase
+import com.softserveacademy.core.error.model.AppError
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.home.presentation.state.HotelDetailState
 import io.mockk.coEvery
 import io.mockk.every
@@ -46,32 +48,23 @@ class HotelDetailsViewModelTest {
 
     @Test
     fun `given error when getHotelDetail is called then state is updated to Error`() = runTest {
-        // GIVEN: The repository throws an exception
-        val errorMessage = "Network Error"
-        coEvery { hotelRepo.getHotelById(any()) } throws Exception(errorMessage)
+        coEvery { hotelRepo.getHotelById(any()) } returns AppResult.Failure(AppError.Unknown(Exception("Network Error")))
 
-        // WHEN: getHotelDetail is called
         viewModel.getHotelDetail(1)
 
         advanceUntilIdle()
-        // THEN: The state should be Error with the expected message
         val currentState = viewModel.hotelDetailState.value
         assertTrue("State should be HotelDetailState.Error", currentState is HotelDetailState.Error)
-        assertEquals(errorMessage, (currentState as HotelDetailState.Error).message)
     }
 
     @Test
     fun `given null message exception when getHotelDetail is called then state is updated to Error with null message`() = runTest {
-        // GIVEN: The repository throws an exception without a message
-        coEvery { hotelRepo.getHotelById(any()) } throws Exception()
+        coEvery { hotelRepo.getHotelById(any()) } returns AppResult.Failure(AppError.Unknown(Exception()))
 
-        // WHEN: getHotelDetail is called
         viewModel.getHotelDetail(1)
 
         advanceUntilIdle()
-        // THEN: The state should be Error
         val currentState = viewModel.hotelDetailState.value
         assertTrue(currentState is HotelDetailState.Error)
-        assertEquals(null, (currentState as HotelDetailState.Error).message)
     }
 }

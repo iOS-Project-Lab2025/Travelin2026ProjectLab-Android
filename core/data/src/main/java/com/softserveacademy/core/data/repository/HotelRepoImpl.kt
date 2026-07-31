@@ -6,6 +6,9 @@ import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.model.HotelRoomAmenity
 import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.error.mapper.ExceptionMapper
+import com.softserveacademy.core.error.model.AppResult
+import com.softserveacademy.core.error.util.safeCall
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -29,7 +32,9 @@ data class Booking(
  * Test implementation of the HotelRepo interface that mock fetch data.
  */
 @Singleton
-class HotelRepoImpl @Inject constructor() : HotelRepo {
+class HotelRepoImpl @Inject constructor(
+    private val mapper: ExceptionMapper
+) : HotelRepo {
     private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
     private val _hotels = MutableStateFlow(listOf(
         Hotel(
@@ -104,19 +109,18 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
         )
     ))
 
-    override suspend fun getHotelById(id: Int): HotelDetails {
+    override suspend fun getHotelById(id: Int): AppResult<HotelDetails> = safeCall(mapper) {
         delay(1.seconds)
-        return _hotelDetails.value.find { it.id == id } ?: throw NoSuchElementException("Hotel with id $id not found")
+        _hotelDetails.value.find { it.id == id } ?: throw NoSuchElementException("Hotel with id $id not found")
     }
 
-
-    override suspend fun getHotels(): List<Hotel> {
-        return _hotels.value
+    override suspend fun getHotels(): AppResult<List<Hotel>> {
+        return AppResult.Success(_hotels.value)
     }
 
-    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): List<HotelRoom> {
+    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>> = safeCall(mapper) {
         val baseRooms = _hotels.value.find { it.id == hotelId }?.rooms ?: emptyList()
-        return baseRooms
+        baseRooms
             .filter { it.maxOccupancy >= guestCount }
             .map { room ->
                 val bookedCount = _bookings.value.count { booking ->
@@ -132,7 +136,7 @@ class HotelRepoImpl @Inject constructor() : HotelRepo {
             }
     }
 
-    override suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long) {
+    override suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit> = safeCall(mapper) {
         _bookings.update { currentBookings ->
             currentBookings + Booking(roomId, checkInDate, checkOutDate)
         }
