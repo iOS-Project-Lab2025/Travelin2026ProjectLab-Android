@@ -26,6 +26,7 @@ fun TravelBookingConfirmScreen(
     onBackClick: () -> Unit,
     onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isConfirmLoading: Boolean = false,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -54,7 +55,8 @@ fun TravelBookingConfirmScreen(
         bottomBar = {
             TravelBookingConfirmBottomBar(
                 totalPrice = totalPrice,
-                onButtonClick = onConfirmClick
+                onButtonClick = onConfirmClick,
+                isLoading = isConfirmLoading
             )
         }
     ) { padding ->
@@ -66,7 +68,8 @@ fun TravelBookingConfirmScreen(
 fun TravelBookingConfirmBottomBar(
     totalPrice: Int,
     onButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -108,6 +111,7 @@ fun TravelBookingConfirmBottomBar(
             TravelPrimaryButton(
                 text = stringResource(R.string.booking_confirm_button_label),
                 onClick = onButtonClick,
+                isLoading = isLoading,
                 modifier = Modifier.weight(1f)
             )
         }

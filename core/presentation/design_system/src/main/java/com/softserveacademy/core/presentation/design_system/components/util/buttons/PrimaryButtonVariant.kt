@@ -13,6 +13,7 @@ enum class PrimaryButtonVariant {
     CallToAction,
     Neutral,
     SecondaryAction,
+    BackToHome,
 }
 
 /**
@@ -39,6 +40,11 @@ internal fun PrimaryButtonVariant.colors(): PrimaryButtonColors {
             PrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.onBackground,
+            )
+        PrimaryButtonVariant.BackToHome ->
+            PrimaryButtonColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = MaterialTheme.colorScheme.primary,
             )
     }
 }

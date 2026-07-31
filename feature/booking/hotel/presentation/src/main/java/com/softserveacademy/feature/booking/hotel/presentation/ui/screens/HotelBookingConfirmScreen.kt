@@ -38,6 +38,7 @@ import com.stripe.android.paymentsheet.rememberPaymentSheet
 @Composable
 fun HotelBookingConfirmScreen(
     onBackClick: () -> Unit,
+    onPaymentSuccess: () -> Unit,
     viewModel: HotelBookingConfirmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,6 +66,12 @@ fun HotelBookingConfirmScreen(
         }
     }
 
+    LaunchedEffect(uiState.isPaymentSuccessful) {
+        if (uiState.isPaymentSuccessful) {
+            onPaymentSuccess()
+        }
+    }
+
     HotelBookingConfirmContent(
         uiState = uiState,
         onBackClick = onBackClick,
@@ -87,7 +94,8 @@ fun HotelBookingConfirmContent(
         TravelBookingConfirmScreen(
             totalPrice = uiState.totalPrice,
             onBackClick = onBackClick,
-            onConfirmClick = onConfirmClick
+            onConfirmClick = onConfirmClick,
+            isConfirmLoading = uiState.isPaymentSheetLoading
         ) { padding ->
             if (uiState.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

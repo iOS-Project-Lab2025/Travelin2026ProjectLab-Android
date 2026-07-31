@@ -92,18 +92,24 @@ class HotelBookingConfirmViewModel @Inject constructor(
             _uiState.update { it.copy(error = "Invalid price calculation") }
             return
         }
+        _uiState.update { it.copy(isPaymentSheetLoading = true) }
         viewModelScope.launch {
             createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
                 .onSuccess { secret ->
-                    _uiState.update { it.copy(clientSecret = secret) }
+                    _uiState.update { it.copy(clientSecret = secret, isPaymentSheetLoading = false) }
                 }
                 .onFailure { error ->
-                    _uiState.update { it.copy(error = error.message ?: "Failed to create payment intent") }
+                    _uiState.update {
+                        it.copy(
+                            error = error.message ?: "Failed to create payment intent",
+                            isPaymentSheetLoading = false
+                        )
+                    }
                 }
         }
     }
 
     private fun finalizeBooking() {
-        // Implement final booking logic here
+        _uiState.update { it.copy(isPaymentSuccessful = true) }
     }
 }
