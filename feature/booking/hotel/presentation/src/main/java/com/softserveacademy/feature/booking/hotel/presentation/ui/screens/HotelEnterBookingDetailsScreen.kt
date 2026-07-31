@@ -14,16 +14,20 @@ import com.softserveacademy.feature.booking.common.presentation.ui.components.ut
 import com.softserveacademy.feature.booking.hotel.presentation.R
 import kotlinx.coroutines.flow.collectLatest
 
+import com.softserveacademy.core.domain.model.TravelItemType
+
 /**
- * Stateful wrapper for [TravelEnterBookingDetailsScreen] used for the hotel booking flow.
+ * Stateful wrapper for [TravelEnterBookingDetailsScreen] used for the hotel or tour booking flow.
  *
+ * @param type The type of item being booked.
  * @param modifier The modifier to be applied to the screen.
  * @param onBackClick The callback to be invoked when the back button is clicked.
  * @param onNavigateToRoomSelection The callback to be invoked to navigate to the room selection screen.
- * @param viewModel The view model for the enter hotel booking details screen.
+ * @param viewModel The view model for the enter booking details screen.
  */
 @Composable
 fun HotelEnterBookingDetailsScreen(
+    type: TravelItemType,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onNavigateToRoomSelection: () -> Unit = {},

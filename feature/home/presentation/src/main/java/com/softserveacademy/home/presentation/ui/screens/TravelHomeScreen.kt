@@ -84,6 +84,7 @@ fun RootHomeScreen(
         TravelHomeScreen(
             state = state,
             onHotelClick = actions.onHotelClick,
+            onTourClick = actions.onTourClick,
             onAccountClick = actions.onAccountClick,
             onProfileClick = actions.onProfileClick,
             onJourneySeeAllClick = actions.onJourneySeeAllClick,
@@ -122,6 +123,7 @@ fun RootHomeScreen(
 fun TravelHomeScreen(
     state: HomeUiState,
     onHotelClick: (Hotel) -> Unit,
+    onTourClick: (TourUi) -> Unit = {},
     onAccountClick: () -> Unit,
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
@@ -220,7 +222,7 @@ fun TravelHomeScreen(
                             price = tour.price,
                             duration = tour.duration,
                             imageUrl = tour.imageUrl,
-                            onClick = { /* Handle tour click */ }
+                            onClick = { onTourClick(tour) }
                         )
                     }
 

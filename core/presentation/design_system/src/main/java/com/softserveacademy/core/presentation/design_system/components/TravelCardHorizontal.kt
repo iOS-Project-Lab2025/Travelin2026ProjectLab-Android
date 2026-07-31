@@ -31,9 +31,16 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @see Hotel
  */
 @Composable
-fun TravelCardHorizontal(hotel: Hotel){
+fun TravelCardHorizontal(
+    title: String,
+    location: String,
+    rating: String,
+    price: String,
+    imageUrl: String,
+    modifier: Modifier = Modifier
+){
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .height(TravelinDimens.ImageSizeLarge)
                 .shadow(elevation = TravelinDimens.ElevationMedium, shape = MaterialTheme.shapes.medium)
@@ -41,7 +48,7 @@ fun TravelCardHorizontal(hotel: Hotel){
                 .clip(MaterialTheme.shapes.medium)
         ) {
             TravelImageHandler(
-                image = hotel.image.first(),
+                image = imageUrl,
                 imageWidth = TravelinDimens.ImageSizeLarge,
                 imageHeight = TravelinDimens.ImageSizeLarge,
                 shape = MaterialTheme.shapes.medium
@@ -58,14 +65,14 @@ fun TravelCardHorizontal(hotel: Hotel){
                     .fillMaxWidth(),
             ) {
                 Text(
-                    text = hotel.name,
+                    text = title,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    text = hotel.address,
+                    text = location,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(
@@ -82,7 +89,7 @@ fun TravelCardHorizontal(hotel: Hotel){
                 ) {
                     Icon(
                         imageVector = StarIcon,
-                        contentDescription = "hotel star",
+                        contentDescription = "rating star",
                         tint = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .size(TravelinDimens.IconSizeExtraSmall)
@@ -90,7 +97,7 @@ fun TravelCardHorizontal(hotel: Hotel){
                     )
 
                     Text(
-                        text = "${hotel.star}-star hotel",
+                        text = rating,
                         modifier = Modifier.padding(
                             start = TravelinDimens.PaddingExtraSmall
                         ),
@@ -99,7 +106,7 @@ fun TravelCardHorizontal(hotel: Hotel){
                     )
                 }
                 Text(
-                    text = "$ ${hotel.pricePerNight}/night",
+                    text = price,
                     modifier = Modifier.align(Alignment.End),
                     color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.bodyMedium
@@ -107,6 +114,18 @@ fun TravelCardHorizontal(hotel: Hotel){
             }
         }
     }
+
+@Composable
+fun TravelCardHorizontal(hotel: Hotel, modifier: Modifier = Modifier) {
+    TravelCardHorizontal(
+        title = hotel.name,
+        location = hotel.address,
+        rating = "${hotel.star}-star hotel",
+        price = "$ ${hotel.pricePerNight}/night",
+        imageUrl = hotel.image.firstOrNull() ?: "",
+        modifier = modifier
+    )
+}
 
 
 

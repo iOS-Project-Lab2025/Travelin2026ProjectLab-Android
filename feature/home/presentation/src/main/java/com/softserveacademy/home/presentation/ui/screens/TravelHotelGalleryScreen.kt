@@ -40,7 +40,7 @@ fun TravelHotelGalleryScreen(
     var selectedImageIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        viewModel.getHotelDetail(hotelId)
+        viewModel.getHotelDetail(hotelId.toString())
     }
 
     Scaffold { padding ->

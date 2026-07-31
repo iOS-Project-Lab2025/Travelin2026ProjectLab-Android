@@ -24,33 +24,38 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.TravelItemType
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Green70
-import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.White100_Alpha70
 import com.softserveacademy.home.presentation.R
+import com.softserveacademy.home.presentation.model.TourUi
 import com.softserveacademy.home.presentation.state.SectionState
 import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
 
 /**
- * Screen that displays a vertical list of all available hotels.
+ * Screen that displays a vertical list of travel items (Hotels or Tours).
  *
- * This screen provides users with a comprehensive view of the hotel catalog, allowing
- * them to scroll through available options and navigate to detailed views for specific hotels.
- *
+ * @param type The type of items to display.
  * @param onBackClick Callback invoked when the back button is clicked.
- * @param onHotelClick Callback invoked when a hotel item is selected.
- * @param viewModel The ViewModel providing hotel data. Defaults to a Hilt-injected instance.
+ * @param onItemClick Callback invoked when an item is selected.
+ * @param viewModel The ViewModel providing data.
  */
 @Composable
-fun TravelHotelListScreen(
+fun TravelListScreen(
+    type: TravelItemType,
     onBackClick: () -> Unit,
-    onHotelClick: (Hotel) -> Unit,
+    onItemClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    val titleRes = when (type) {
+        TravelItemType.HOTEL -> R.string.hotels_recommendation_title
+        TravelItemType.TOUR -> R.string.journey_together_title
+    }
 
     Scaffold(
         topBar = {
@@ -58,7 +63,7 @@ fun TravelHotelListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(id = R.string.hotels_recommendation_title),
+                        text = stringResource(id = titleRes),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -84,7 +89,12 @@ fun TravelHotelListScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (val hotelState = state.hotelsRecommended) {
+            val sectionState = when (type) {
+                TravelItemType.HOTEL -> state.hotelsRecommended
+                TravelItemType.TOUR -> state.journeyTogether
+            }
+
+            when (sectionState) {
                 is SectionState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
@@ -92,7 +102,7 @@ fun TravelHotelListScreen(
                 }
                 is SectionState.Error -> {
                     Text(
-                        text = hotelState.message,
+                        text = sectionState.message,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center)
@@ -100,7 +110,7 @@ fun TravelHotelListScreen(
                 }
                 is SectionState.Empty -> {
                     Text(
-                        text = "No hotels found",
+                        text = "No items found",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.align(Alignment.Center)
@@ -112,11 +122,29 @@ fun TravelHotelListScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(hotelState.data) { hotel ->
+                        items(sectionState.data) { item ->
                             Box(
-                                modifier = Modifier.clickable { onHotelClick(hotel) }
+                                modifier = Modifier.clickable { 
+                                    val id = when (item) {
+                                        is Hotel -> item.id?.toString() ?: ""
+                                        is TourUi -> item.id
+                                        else -> ""
+                                    }
+                                    onItemClick(id) 
+                                }
                             ) {
-                                TravelCardHorizontal(hotel = hotel)
+                                when (item) {
+                                    is Hotel -> TravelCardHorizontal(hotel = item)
+                                    is TourUi -> {
+                                        TravelCardHorizontal(
+                                            title = item.title,
+                                            location = item.location,
+                                            rating = item.rating.toString(),
+                                            price = item.price,
+                                            imageUrl = item.imageUrl
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

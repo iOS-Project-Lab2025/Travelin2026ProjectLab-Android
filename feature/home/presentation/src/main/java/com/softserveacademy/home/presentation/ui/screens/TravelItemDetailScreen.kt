@@ -75,7 +75,6 @@ import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.softserveacademy.home.presentation.R
-import com.softserveacademy.core.domain.model.IncludedItem
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
@@ -84,14 +83,16 @@ import com.softserveacademy.core.presentation.design_system.theme.AngleLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Green70
 import com.softserveacademy.core.presentation.design_system.theme.LocationMarkerIcon
 import com.softserveacademy.core.presentation.design_system.theme.White100_Alpha70
-import com.softserveacademy.home.presentation.state.HotelDetailState
 import com.softserveacademy.core.domain.model.AppTheme
+import com.softserveacademy.core.domain.model.IncludedItem
+import com.softserveacademy.core.domain.model.TravelItemType
+import com.softserveacademy.home.presentation.state.HotelDetailState
 import com.softserveacademy.home.presentation.ui.components.HotelDetailLoading
 import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailError
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
 /**
- * Stateful wrapper for the [TravelHotelDetailScreen].
+ * Stateful wrapper for the [TravelItemDetailScreen].
  *
  * This composable handles the connection between the UI and the [HotelDetailsViewModel].
  * It collects the state from the ViewModel and displays the appropriate UI (Loading, Error,
@@ -99,11 +100,12 @@ import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
  *
  * @param onBackClick Action to perform when the back button is clicked.
  * @param modifier The modifier to be applied to the layout.
- * @param viewModel The ViewModel that provides the hotel detail data.
+ * @param viewModel The ViewModel that provides the travel item detail data.
  */
 @Composable
-fun HotelDetailState(
-    hotelId: Int,
+fun TravelItemDetailState(
+    itemId: String,
+    type: TravelItemType = TravelItemType.HOTEL,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
     onBookClick: () -> Unit,
@@ -122,7 +124,7 @@ fun HotelDetailState(
     }
 
     LaunchedEffect(Unit){
-        viewModel.getHotelDetail(hotelId)
+        viewModel.getHotelDetail(itemId, type)
     }
 
     when(hotelDetailState){
@@ -152,8 +154,8 @@ fun HotelDetailState(
             )
             val shareTitle = stringResource(id = R.string.share_hotel_title)
 
-            TravelHotelDetailScreen(
-                hotelInformation = hotelDetailsUi,
+            TravelItemDetailScreen(
+                itemInformation = hotelDetailsUi,
                 onBackClick = onBackClick,
                 onSeeAllPhotosClick = onSeeAllPhotosClick,
                 onBookClick = onBookClick,
@@ -161,19 +163,20 @@ fun HotelDetailState(
                     val sendIntent: Intent = Intent().apply {
                         action = Intent.ACTION_SEND
                         putExtra(Intent.EXTRA_TEXT, shareMessage)
-                        type = "text/plain"
+                        this.type = "text/plain"
                     }
                     val shareIntent = Intent.createChooser(sendIntent, shareTitle)
                     context.startActivity(shareIntent)
                 },
                 isDarkTheme = isDarkTheme,
-                modifier = modifier
+                modifier = modifier,
+                showBookingBar = type == TravelItemType.HOTEL
             )
         }
         is HotelDetailState.Error -> {
             TravelHotelDetailError(
                 message = (hotelDetailState as HotelDetailState.Error).message,
-                onRetry = { viewModel.getHotelDetail(hotelId) }
+                onRetry = { viewModel.getHotelDetail(itemId) }
             )
         }
         is HotelDetailState.IsLoading -> {
@@ -203,7 +206,7 @@ private fun IncludedItem.toUi(): IncludedItemUi = when (this) {
  * A detail screen for a hotel or travel destination.
  * Displays information such as image carousel, description, what's included, and a gallery.
  *
- * @param hotelInformation The data model containing all the information to be displayed.
+ * @param itemInformation The data model containing all the information to be displayed.
  * @param modifier The modifier to be applied to the screen.
  * @param onBackClick The action to perform when the back button is clicked.
  * @param onShareClick The action to perform when the share button is clicked.
@@ -211,23 +214,26 @@ private fun IncludedItem.toUi(): IncludedItemUi = when (this) {
  * @param onBookClick The action to perform when the "Book Now" button is clicked.
  */
 @Composable
-fun TravelHotelDetailScreen(
-    hotelInformation: HotelDetailsUi,
+fun TravelItemDetailScreen(
+    itemInformation: HotelDetailsUi,
     isDarkTheme: Boolean,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onSeeAllPhotosClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {},
-    onBookClick: () -> Unit = {}
+    onBookClick: () -> Unit = {},
+    showBookingBar: Boolean = true
 ) {
     Scaffold(
         bottomBar = {
-            Surface(shadowElevation = 8.dp) {
-                TravelBookingBar(
-                    price = hotelInformation.minimumPrice,
-                    onBookClick = onBookClick
-                )
+            if (showBookingBar) {
+                Surface(shadowElevation = 8.dp) {
+                    TravelBookingBar(
+                        price = itemInformation.minimumPrice,
+                        onBookClick = onBookClick
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -238,11 +244,11 @@ fun TravelHotelDetailScreen(
         ) {
             item {
                 HotelHeaderImage(
-                    imageList = hotelInformation.imageList,
-                    name = hotelInformation.name,
-                    rating = hotelInformation.rating,
-                    limitedReviews = hotelInformation.limitedReviews,
-                    limitedImages = hotelInformation.limitedImages,
+                    imageList = itemInformation.imageList,
+                    name = itemInformation.name,
+                    rating = itemInformation.rating,
+                    limitedReviews = itemInformation.limitedReviews,
+                    limitedImages = itemInformation.limitedImages,
                     onBackClick = onBackClick,
                     onSeeAllPhotosClick = onSeeAllPhotosClick,
                     onShareClick = onShareClick,
@@ -251,25 +257,18 @@ fun TravelHotelDetailScreen(
             }
             item {
                 HotelDescriptionSection(
-                    description = hotelInformation.description
+                    description = itemInformation.description
                 )
             }
             item {
-                IncludingSection(includedItems = hotelInformation.includedItems)
+                IncludingSection(includedItems = itemInformation.includedItems)
             }
             item {
                 HotelLocationSection(
-                    address = hotelInformation.address,
-                    latitude = hotelInformation.latitude,
-                    longitude = hotelInformation.longitude,
+                    address = itemInformation.address,
+                    latitude = itemInformation.latitude,
+                    longitude = itemInformation.longitude,
                     isDarkTheme = isDarkTheme
-                )
-            }
-            item {
-                GalleryPreviewSection(
-                    imageList = hotelInformation.imageList,
-                    numberOfImages = hotelInformation.imageList.size,
-                    onSeeAllPhotosClick = onSeeAllPhotosClick
                 )
             }
         }
@@ -359,7 +358,7 @@ private fun HotelHeaderImage(
             shape = MaterialTheme.shapes.small
         ) {
             Text(
-                text = limitedImages,
+                text = "View all photos",
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(
@@ -851,8 +850,7 @@ private fun GalleryPreviewSection(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
         TravelOutlinedButton(
-            text = "${stringResource(id = R.string.see_all_label)} ${numberOfImages - 1} " +
-                    stringResource(id = R.string.plus_photos_label),
+            text = "Click here to view all ${numberOfImages - 1} photos",
             onClick = onSeeAllPhotosClick,
             contentPadding = PaddingValues(
                 horizontal = TravelinDimens.PaddingLarge,
@@ -864,10 +862,10 @@ private fun GalleryPreviewSection(
 
 @Preview(showBackground = true)
 @Composable
-private fun TravelHotelDetailScreenPreview() {
+private fun TravelItemDetailScreenPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelHotelDetailScreen(
-            hotelInformation = HotelDetailsUi(
+        TravelItemDetailScreen(
+            itemInformation = HotelDetailsUi(
                 id = 1,
                 minimumPrice = 400,
                 imageList = listOf(
