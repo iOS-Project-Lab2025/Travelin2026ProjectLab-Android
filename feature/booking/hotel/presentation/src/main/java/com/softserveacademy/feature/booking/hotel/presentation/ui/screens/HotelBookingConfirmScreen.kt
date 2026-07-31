@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelRoomCard
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
@@ -18,21 +17,23 @@ import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBooki
 import com.softserveacademy.feature.booking.hotel.presentation.ui.components.HotelBookingSummaryCard
 import com.softserveacademy.feature.booking.hotel.presentation.ui.components.HotelSummaryCard
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
-import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.countries
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
-import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingConfirmBottomBar
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
-import com.softserveacademy.feature.booking.common.presentation.R as CommonR
 import com.softserveacademy.feature.booking.hotel.presentation.R
+
+import androidx.compose.runtime.LaunchedEffect
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingConfirmScreen
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.rememberPaymentSheet
 
 @Composable
 fun HotelBookingConfirmScreen(
@@ -40,7 +41,30 @@ fun HotelBookingConfirmScreen(
     viewModel: HotelBookingConfirmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
+    val paymentSheet = rememberPaymentSheet { result ->
+        when (result) {
+            is PaymentSheetResult.Completed -> {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentSuccess)
+            }
+            is PaymentSheetResult.Canceled -> {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentReset)
+            }
+            is PaymentSheetResult.Failed -> {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentReset)
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.clientSecret) {
+        uiState.clientSecret?.let { secret ->
+            paymentSheet.presentWithPaymentIntent(
+                secret,
+                PaymentSheet.Configuration("Travelin 2026")
+            )
+        }
+    }
+
     HotelBookingConfirmContent(
         uiState = uiState,
         onBackClick = onBackClick,
@@ -60,50 +84,14 @@ fun HotelBookingConfirmContent(
     if (uiState.isLoading) {
         TravelLoadingScreen()
     } else {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.booking_confirm_title),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(TravelinDimens.PaddingMedium)
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                imageVector = ArrowLeftIcon,
-                                contentDescription = stringResource(CommonR.string.back_button_label)
-                            )
-                        }
-                    },
-                    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
-                )
-            },
-            bottomBar = {
-                val totalPrice = uiState.selectedRoom?.let { room ->
-                    val nights = uiState.bookingDraft?.let { draft ->
-                        val checkIn = draft.checkIn
-                        val checkOut = draft.checkOut
-                        if (checkIn != null && checkOut != null) {
-                            ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
-                        } else 1
-                    } ?: 1
-                    room.pricePerNight * nights
-                } ?: 0
-
-                TravelBookingConfirmBottomBar(
-                    totalPrice = totalPrice,
-                    buttonText = stringResource(R.string.booking_confirm_button_label),
-                    onButtonClick = onConfirmClick
-                )
-            }
+        TravelBookingConfirmScreen(
+            totalPrice = uiState.totalPrice,
+            onBackClick = onBackClick,
+            onConfirmClick = onConfirmClick
         ) { padding ->
             if (uiState.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = uiState.error)
+                    Text(text = uiState.error ?: "")
                 }
             } else {
                 Column(

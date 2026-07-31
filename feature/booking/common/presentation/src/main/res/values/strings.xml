@@ -26,5 +26,7 @@
     <string name="check_out_label">Check-out</string>
     <string name="guests_label">Guests</string>
 
+    <string name="booking_confirm_screen_title">Booking Confirmation</string>
+    <string name="booking_confirm_button_label">Confirm and Pay</string>
     <string name="booking_confirm_total_label">Total: </string>
 </resources>

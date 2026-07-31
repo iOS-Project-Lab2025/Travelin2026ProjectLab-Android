@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class HotelBookingConfirmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val hotelBookingDraftRepository: HotelBookingDraftRepository,
-    private val hotelRepo: HotelRepo
+    private val hotelRepo: HotelRepo,
+    private val createPaymentIntentUseCase: CreatePaymentIntentUseCase
 ) : ViewModel() {
 
     private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
@@ -41,12 +43,21 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 hotelRepo.getHotelById(hotelId)
                     .onSuccess { hotelDetails ->
                         val selectedRoom = hotelDetails.rooms.find { it.id.toString() == draft.roomId }
+
+                        val checkIn = draft.checkIn
+                        val checkOut = draft.checkOut
+                        val nights = if (checkIn != null && checkOut != null) {
+                            ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
+                        } else 1
+                        val totalPrice = (selectedRoom?.pricePerNight ?: 0) * nights
+
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 bookingDraft = draft,
                                 hotelDetails = hotelDetails,
-                                selectedRoom = selectedRoom
+                                selectedRoom = selectedRoom,
+                                totalPrice = totalPrice
                             )
                         }
                     }
@@ -62,9 +73,37 @@ class HotelBookingConfirmViewModel @Inject constructor(
     fun onEvent(event: HotelBookingConfirmEvent) {
         when (event) {
             HotelBookingConfirmEvent.OnConfirmClick -> {
-                // Handle booking confirmation (e.g., call repository to save booking)
+                createPaymentIntent()
             }
             HotelBookingConfirmEvent.OnBackClick -> { /* Handled by navigation */ }
+            HotelBookingConfirmEvent.OnPaymentSuccess -> {
+                // Finalize booking after successful payment
+                finalizeBooking()
+            }
+            HotelBookingConfirmEvent.OnPaymentReset -> {
+                _uiState.update { it.copy(clientSecret = null) }
+            }
         }
+    }
+
+    private fun createPaymentIntent() {
+        val amount = _uiState.value.totalPrice.toLong()
+        if (amount <= 0) {
+            _uiState.update { it.copy(error = "Invalid price calculation") }
+            return
+        }
+        viewModelScope.launch {
+            createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
+                .onSuccess { secret ->
+                    _uiState.update { it.copy(clientSecret = secret) }
+                }
+                .onFailure { error ->
+                    _uiState.update { it.copy(error = error.message ?: "Failed to create payment intent") }
+                }
+        }
+    }
+
+    private fun finalizeBooking() {
+        // Implement final booking logic here
     }
 }

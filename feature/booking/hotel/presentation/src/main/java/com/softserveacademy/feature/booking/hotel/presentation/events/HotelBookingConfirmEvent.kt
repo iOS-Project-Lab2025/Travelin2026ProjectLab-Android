@@ -6,4 +6,6 @@ package com.softserveacademy.feature.booking.hotel.presentation.events
 sealed interface HotelBookingConfirmEvent {
     data object OnConfirmClick : HotelBookingConfirmEvent
     data object OnBackClick : HotelBookingConfirmEvent
+    data object OnPaymentSuccess : HotelBookingConfirmEvent
+    data object OnPaymentReset : HotelBookingConfirmEvent
 }

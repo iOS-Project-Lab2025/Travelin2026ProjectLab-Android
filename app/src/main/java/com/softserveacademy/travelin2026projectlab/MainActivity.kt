@@ -34,6 +34,8 @@ import com.softserveacademy.feature.auth.login.presentation.viewmodel.ForgotPass
 import com.softserveacademy.feature.auth.login.presentation.viewmodel.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.viewmodel.RegisterViewModel
 import com.softserveacademy.travelin2026projectlab.navigation.NavigationRoot
+import com.stripe.android.PaymentConfiguration
+import com.softserveacademy.feature.booking.common.data.BuildConfig
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.getValue
@@ -82,6 +84,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        if (BuildConfig.STRIPE_PUBLISHABLE_KEY.isNotEmpty()){ // Initialize Stripe
+            PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_PUBLISHABLE_KEY)
+        }
+
         enableEdgeToEdge()
         setContent {
 

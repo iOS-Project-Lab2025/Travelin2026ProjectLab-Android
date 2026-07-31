@@ -13,5 +13,7 @@ data class HotelBookingConfirmState(
     val hotelDetails: HotelDetails? = null,
     val selectedRoom: HotelRoom? = null,
     val bookingDraft: HotelBookingDraft? = null,
+    val clientSecret: String? = null,
+    val totalPrice: Int = 0,
     val error: String? = null
 ) : Serializable

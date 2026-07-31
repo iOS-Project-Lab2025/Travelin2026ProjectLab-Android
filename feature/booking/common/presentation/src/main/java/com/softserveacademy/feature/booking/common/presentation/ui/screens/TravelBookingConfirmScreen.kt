@@ -1,12 +1,7 @@
-package com.softserveacademy.feature.booking.common.presentation.ui.components
+package com.softserveacademy.feature.booking.common.presentation.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,25 +10,61 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.common.presentation.R
 
-/**
- * A common bottom bar component for booking confirmation screens.
- * Displays a total price section on the left and a primary action button on the right.
- *
- * @param totalPrice The total price value to display.
- * @param buttonText The text to display on the primary action button.
- * @param onButtonClick Callback to be invoked when the button is clicked.
- * @param modifier The modifier to be applied to the bottom bar.
- */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TravelBookingConfirmScreen(
+    totalPrice: Int,
+    onBackClick: () -> Unit,
+    onConfirmClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.booking_confirm_screen_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(TravelinDimens.PaddingMedium)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = ArrowLeftIcon,
+                            contentDescription = stringResource(R.string.back_button_label)
+                        )
+                    }
+                },
+                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+            )
+        },
+        bottomBar = {
+            TravelBookingConfirmBottomBar(
+                totalPrice = totalPrice,
+                onButtonClick = onConfirmClick
+            )
+        }
+    ) { padding ->
+        content(padding)
+    }
+}
+
 @Composable
 fun TravelBookingConfirmBottomBar(
     totalPrice: Int,
-    buttonText: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,7 +96,7 @@ fun TravelBookingConfirmBottomBar(
                         fontWeight = FontWeight.Bold,
                     )
                 ) {
-                    append("$$totalPrice")
+                    append(" $$totalPrice")
                 }
             }
 
@@ -75,10 +106,26 @@ fun TravelBookingConfirmBottomBar(
                 modifier = Modifier.weight(1f)
             )
             TravelPrimaryButton(
-                text = buttonText,
+                text = stringResource(R.string.booking_confirm_button_label),
                 onClick = onButtonClick,
                 modifier = Modifier.weight(1f)
             )
         }
+    }
+}
+
+
+@Composable
+@Preview
+fun TravelBookingConfirmScreenPreview() {
+    Travelin2026ProjectLabTheme() {
+        TravelBookingConfirmScreen(
+            totalPrice = 100,
+            onBackClick = {},
+            onConfirmClick = {},
+            content = {
+                Text(text = "Content")
+            }
+        )
     }
 }
