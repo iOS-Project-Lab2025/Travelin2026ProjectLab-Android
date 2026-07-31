@@ -40,6 +40,9 @@ uiTestJunit4 = "1.11.4"
 maps-compose = "6.12.0"
 secretsGradlePlugin = "2.0.1"
 
+##Added for retrofit implementation
+retrofit = "2.11.0"
+
 [libraries]
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -55,6 +58,9 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
 
+##Added for retrofit implementation
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-kotlin-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
 
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 

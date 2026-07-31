@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flight_search_title">Choose Your Destination</string>
+    <string name="flight_search_from">From</string>
+    <string name="flight_search_to">To</string>
+    <string name="flight_search_date">Choose Your Dates</string>
+    <string name="flight_results_title">Choose your flight</string>
+    <string name="flight_search_button">Search Flights</string>
+    <string name="flight_error_message">Something went wrong. Please try again.</string>
+    <string name="flight_error_invalid_origin">Use 3-letter IATA code (e.g. SCL)</string>
+    <string name="flight_error_invalid_destination">Use 3-letter IATA code (e.g. LIM)</string>
+    <string name="flight_error_same_location">Origin and Destination cannot be the same</string>
+    <string name="flight_error_invalid_date">Please select a future travel date</string>
+    <string name="flight_error_no_adults">At least one adult is required</string>
+    <string name="flight_error_generic">Invalid search criteria</string>
+    <string name="flight_search_button_label">Search Flights</string>
+    <string name="flight_empty_results">No flights found for this route.</string>
+    <string name="flight_error_occurred">An error occurred while fetching flights.</string>
+    <string name="flight_retry_button">Retry</string>
+    <string name="flight_passengers_title">Passengers</string>
+    <string name="flight_passengers_subtitle">Add passengers to this flight</string>
+    <string name="flight_search_description">Enter your flight details to find the best available flights.</string>
+    <string name="flight_label_adults">Adults</string>
+    <string name="flight_subtitle_adults">Over 12 years</string>
+    <string name="flight_label_children">Children</string>
+    <string name="flight_subtitle_children">2 - 12 years</string>
+    <string name="flight_label_infants">Infants</string>
+    <string name="flight_subtitle_infants">Under 2 years</string>
+</resources>

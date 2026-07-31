@@ -10,4 +10,7 @@ android {
 dependencies {
     implementation(projects.feature.booking.flight.domain)
     implementation(projects.core.presentation.designSystem)
+    implementation(projects.feature.booking.common.presentation)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.coil.compose)
 }

@@ -1,5 +1,6 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,6 +22,8 @@ import com.softserveacademy.feature.auth.login.presentation.ui.LoginScreen
 import com.softserveacademy.feature.auth.login.presentation.viewmodel.LoginViewModel
 import com.softserveacademy.feature.auth.register.presentation.ui.RegisterScreen
 import com.softserveacademy.feature.auth.register.presentation.viewmodel.RegisterViewModel
+import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightResultsViewModel
+import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightSearchViewModel
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 
 // Profile screens.
@@ -46,6 +49,9 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelCo
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 
+// FlightBooking screens.
+import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightSearchScreen
+import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightResultsScreen
 
 /**
  * Root navigation host for the application.
@@ -86,6 +92,7 @@ fun NavigationRoot(
 
         mainGraph(navController)
         bookingGraph(navController)
+        flightGraph(navController)
     }
 }
 
@@ -216,6 +223,9 @@ fun NavGraphBuilder.mainGraph(
                 actions = HomeNavigationActions(
                     onHotelClick = { hotel ->
                         navController.navigate(Routes.TravelHotelDetailScreen(id = hotel.id ?: 1))
+                    },
+                    onFlightsClick = {
+                        navController.navigate(Routes.FlightSearchScreen)
                     },
                     onAccountClick = {
                         navController.navigate(Routes.ProfileScreen) {
@@ -376,6 +386,43 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
             val viewModel: HotelBookingConfirmViewModel = hiltViewModel()
             HotelBookingConfirmScreen(
                 onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
+            )
+        }
+    }
+}
+
+/**
+ * Navigation graph for Flight Booking.
+ * Follows the same pattern as bookingGraph for Hotels.
+ */
+fun NavGraphBuilder.flightGraph(navController: NavHostController) {
+    navigation<Routes.FlightBookingGraph>(
+        startDestination = Routes.FlightSearchScreen
+    ) {
+        composable<Routes.FlightSearchScreen> {
+            val viewModel: FlightSearchViewModel = hiltViewModel()
+
+            LaunchedEffect(Unit) {
+                viewModel.navigationEvent.collect {
+                    navController.navigate(Routes.FlightResultsScreen)
+                }
+            }
+
+            FlightSearchScreen(
+                onBack = { navController.popBackStack() },
+                onSearchExecuted = {
+                    navController.navigate(Routes.FlightResultsScreen)
+                },
+                viewModel = viewModel
+            )
+        }
+
+        composable<Routes.FlightResultsScreen> {
+            val viewModel: FlightResultsViewModel = hiltViewModel()
+            FlightResultsScreen(
+                onNext = { /* Próximo US3: Passengers */ },
+                onBack = { navController.popBackStack() },
                 viewModel = viewModel
             )
         }

@@ -34,6 +34,20 @@ data class Flight(
     val cabinClass: CabinClass
 )
 
+
+/**
+ * Represents a specific flight offer with pricing information.
+ * Used primarily for search results and booking initialization.
+ * @property id Unique identifier of the flight offer.
+ * @property flight The flight associated with this offer.
+ * @property basePrice Base price of the flight offer.
+ */
+data class FlightOffer(
+    val id: String,
+    val flight: Flight,
+    val basePrice: Double
+)
+
 /**
  * Represents an airline operating commercial flights.
  *
@@ -70,4 +84,18 @@ enum class CabinClass {
     PREMIUM_ECONOMY,
     BUSINESS,
     FIRST
+}
+
+/**
+ * Standard Airline Passenger Type Codes (PTC).
+ * @property ADU Adult, Over 12 years old
+ * @property CHD Child, Between 2 and 12 years old
+ * @property INF Infant, Under 2 years old, usually sitting on lap
+ */
+enum class PassengerType {
+    ADU,
+    CHD,
+    INF
+
+
 }

@@ -84,6 +84,7 @@ fun RootHomeScreen(
         TravelHomeScreen(
             state = state,
             onHotelClick = actions.onHotelClick,
+            onFlightClick = actions.onFlightsClick,
             onAccountClick = actions.onAccountClick,
             onProfileClick = actions.onProfileClick,
             onJourneySeeAllClick = actions.onJourneySeeAllClick,
@@ -122,6 +123,7 @@ fun RootHomeScreen(
 fun TravelHomeScreen(
     state: HomeUiState,
     onHotelClick: (Hotel) -> Unit,
+    onFlightClick: () -> Unit = {},
     onAccountClick: () -> Unit,
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
@@ -169,7 +171,7 @@ fun TravelHomeScreen(
                         )
                     }
                     Spacer(Modifier.height(16.dp))
-                    TravelIconsCard()
+                    TravelIconsCard(onFlightsClick = onFlightClick)
                 }
 
                 // Scrollable bottom section
