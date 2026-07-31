@@ -1,5 +1,7 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.Serializable
+
 /**
  * Data class representing a hotel.
  *
@@ -14,6 +16,7 @@ package com.softserveacademy.core.domain.model
  * have to give it a list of images to compile.
  * @param rooms The list of rooms available in the hotel.
  */
+@Serializable
 data class Hotel(
     val id: Int? = null,
     val name: String,

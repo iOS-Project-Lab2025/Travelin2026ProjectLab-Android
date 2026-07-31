@@ -75,7 +75,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
                             rooms = rooms,
                             nightCount = nightCount,
                             isLoading = false,
-                            selectedRoomId = it.selectedRoomId ?: draft?.roomId?.toIntOrNull()
+                            selectedRoomId = it.selectedRoomId ?: draft?.roomId
                         )
                     }
                     applyFilters()
@@ -111,8 +111,8 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun saveRoomToDraft(roomId: Int?) {
         viewModelScope.launch {
             val currentDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
-                ?: HotelBookingDraft(hotelId = hotelId.toString())
-            val updatedDraft = currentDraft.copy(roomId = roomId?.toString())
+                ?: HotelBookingDraft(hotelId = hotelId)
+            val updatedDraft = currentDraft.copy(roomId = roomId)
             hotelBookingDraftRepository.saveDraft(updatedDraft)
             bookingDraft = updatedDraft
         }
@@ -152,7 +152,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
             hotelRepo.reserveRoom(hotelId, selectedRoomId, checkIn, checkOut)
                 .onSuccess {
                     draft?.let {
-                        val updatedDraft = it.copy(roomId = selectedRoomId.toString())
+                        val updatedDraft = it.copy(roomId = selectedRoomId)
                         hotelBookingDraftRepository.saveDraft(updatedDraft)
                     }
                 }

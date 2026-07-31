@@ -130,7 +130,7 @@ class HotelContactInfoViewModel @Inject constructor(
                 countryCode = _uiState.value.countryCode,
                 phoneNumber = _uiState.value.phoneNumber
             )
-            val updatedDraft = (repositoryDraft ?: HotelBookingDraft(hotelId = hotelId.toString())).copy(
+            val updatedDraft = (repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)).copy(
                 contactInfo = updatedContactInfo
             )
             hotelBookingDraftRepository.saveDraft(updatedDraft)

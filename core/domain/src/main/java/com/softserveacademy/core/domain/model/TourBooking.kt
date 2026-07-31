@@ -1,5 +1,7 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.Serializable
+
 /**
  * Represents a user's tour reservation.
  *
@@ -36,6 +38,7 @@ data class TourBooking(
  * @property CANCELLED The booking has been cancelled.
  * @property COMPLETED The booked service has been completed.
  */
+@Serializable
 enum class BookingStatus {
     CONFIRMED,
     PENDING,

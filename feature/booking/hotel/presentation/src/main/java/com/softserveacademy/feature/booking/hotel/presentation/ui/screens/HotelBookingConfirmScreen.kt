@@ -199,8 +199,8 @@ fun HotelBookingConfirmPreview() {
     )
 
     val sampleDraft = HotelBookingDraft(
-        hotelId = "1",
-        roomId = "1",
+        hotelId = 1,
+        roomId = 1,
         checkIn = 1782115200000L, // Thursday, July 23, 2026
         checkOut = 1782374400000L, // Sunday, July 26, 2026
         contactInfo = ContactInfo(

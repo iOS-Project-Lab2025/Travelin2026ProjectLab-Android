@@ -57,7 +57,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
             viewModelScope.launch {
                 val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
 
-                hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelId.toString())
+                hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)
                 syncSavedState()
                 updateUiState()
                 delay(500.milliseconds) // Small delay for smooth transition
