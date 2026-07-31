@@ -3,7 +3,8 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
+import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
@@ -24,13 +25,15 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @property savedStateHandle The handle to saved state.
  * @property validateEnterBookingDetailsUseCase Use case for validating booking details input.
- * @property hotelBookingDraftRepository Repository for persisting booking drafts.
+ * @property getHotelBookingDraftUseCase Use case for retrieving booking drafts.
+ * @property saveHotelBookingDraftUseCase Use case for saving booking drafts.
  */
 @HiltViewModel
 class HotelEnterBookingDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase,
-    private val hotelBookingDraftRepository: HotelBookingDraftRepository
+    private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
+    private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
 ) : ViewModel() {
 
     private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
@@ -55,7 +58,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         if (savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) == null) {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
-                val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+                val repositoryDraft = getHotelBookingDraftUseCase(hotelId.toString())
 
                 hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)
                 syncSavedState()
@@ -210,7 +213,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private fun syncSavedState() {
         savedStateHandle[KEY_BOOKING_DRAFT] = hotelBookingDraft
         viewModelScope.launch {
-            hotelBookingDraftRepository.saveDraft(hotelBookingDraft)
+            saveHotelBookingDraftUseCase(hotelBookingDraft)
         }
     }
 

@@ -8,12 +8,14 @@ import com.softserveacademy.core.domain.model.BookingGuests
 import com.softserveacademy.core.domain.model.BookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.HotelBooking
-import com.softserveacademy.core.domain.repository.HotelBookingRepository
-import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
-import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
+import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
+import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,9 +30,11 @@ import javax.inject.Inject
 @HiltViewModel
 class HotelBookingConfirmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val hotelBookingDraftRepository: HotelBookingDraftRepository,
-    private val hotelRepo: HotelRepo,
-    private val hotelBookingRepository: HotelBookingRepository,
+    private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
+    private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase,
+    private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
+    private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
+    private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase
 ) : ViewModel() {
 
@@ -47,9 +51,9 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun loadBookingDetails() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val draft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+            val draft = getHotelBookingDraftUseCase(hotelId.toString())
             if (draft != null) {
-                hotelRepo.getHotelById(hotelId)
+                getHotelDetailsUseCase(hotelId)
                     .onSuccess { hotelDetails ->
                         val selectedRoom = hotelDetails.rooms.find { it.id == draft.roomId }
 
@@ -109,7 +113,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
             val booking = createBookingFromState(BookingStatus.PENDING)
             if (booking != null) {
                 currentBookingId = booking.bookingId
-                hotelBookingRepository.saveBooking(booking)
+                saveHotelBookingUseCase(booking)
             }
 
             createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
@@ -130,9 +134,9 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun finalizeBooking() {
         viewModelScope.launch {
             currentBookingId?.let { id ->
-                hotelBookingRepository.updateBookingStatus(id, BookingStatus.CONFIRMED)
+                updateHotelBookingStatusUseCase(id, BookingStatus.CONFIRMED)
             }
-            hotelBookingDraftRepository.clearDraft(hotelId.toString())
+            clearHotelBookingDraftUseCase(hotelId.toString())
             _uiState.update { it.copy(isPaymentSuccessful = true) }
         }
     }

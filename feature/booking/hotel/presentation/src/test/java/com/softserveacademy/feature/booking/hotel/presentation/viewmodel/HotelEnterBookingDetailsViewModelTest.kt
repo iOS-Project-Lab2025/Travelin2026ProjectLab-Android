@@ -1,7 +1,8 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
+import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.model.Guests
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
@@ -31,7 +32,8 @@ class HotelEnterBookingDetailsViewModelTest {
     private lateinit var viewModel: HotelEnterBookingDetailsViewModel
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase
-    private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
+    private lateinit var getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase
+    private lateinit var saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
     private val testDispatcher = StandardTestDispatcher()
     private val hotelId = 123
 
@@ -40,9 +42,15 @@ class HotelEnterBookingDetailsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
         validateEnterBookingDetailsUseCase = ValidateEnterBookingDetailsUseCase()
-        hotelBookingDraftRepository = mockk(relaxed = true)
-        coEvery { hotelBookingDraftRepository.getDraft(any()) } returns null
-        viewModel = HotelEnterBookingDetailsViewModel(savedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
+        getHotelBookingDraftUseCase = mockk(relaxed = true)
+        saveHotelBookingDraftUseCase = mockk(relaxed = true)
+        coEvery { getHotelBookingDraftUseCase(any()) } returns null
+        viewModel = HotelEnterBookingDetailsViewModel(
+            savedStateHandle,
+            validateEnterBookingDetailsUseCase,
+            getHotelBookingDraftUseCase,
+            saveHotelBookingDraftUseCase
+        )
     }
 
     @After
@@ -70,7 +78,12 @@ class HotelEnterBookingDetailsViewModelTest {
             "booking_details_state" to state
         ))
         
-        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
+        val newViewModel = HotelEnterBookingDetailsViewModel(
+            freshSavedStateHandle,
+            validateEnterBookingDetailsUseCase,
+            getHotelBookingDraftUseCase,
+            saveHotelBookingDraftUseCase
+        )
         assertEquals(3, newViewModel.uiState.value.adultsCount)
         assertEquals(1000L, newViewModel.uiState.value.startDateMillis)
     }
@@ -78,11 +91,16 @@ class HotelEnterBookingDetailsViewModelTest {
     @Test
     fun `restores state from BookingRepository if SavedStateHandle is empty`() = runTest {
         val hotelIdInt = 123
-        val draft = HotelBookingDraft(hotelId = hotelIdInt.toString(), guests = Guests(adults = 4))
-        coEvery { hotelBookingDraftRepository.getDraft(any()) } returns draft
+        val draft = HotelBookingDraft(hotelId = hotelIdInt, guests = Guests(adults = 4))
+        coEvery { getHotelBookingDraftUseCase(any()) } returns draft
         
         val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelIdInt))
-        val newViewModel = HotelEnterBookingDetailsViewModel(freshSavedStateHandle, validateEnterBookingDetailsUseCase, hotelBookingDraftRepository)
+        val newViewModel = HotelEnterBookingDetailsViewModel(
+            freshSavedStateHandle,
+            validateEnterBookingDetailsUseCase,
+            getHotelBookingDraftUseCase,
+            saveHotelBookingDraftUseCase
+        )
         
         advanceUntilIdle()
         
@@ -102,7 +120,7 @@ class HotelEnterBookingDetailsViewModelTest {
         assertEquals(100L, savedDraft?.checkIn)
         
         advanceUntilIdle()
-        coVerify { hotelBookingDraftRepository.saveDraft(any()) }
+        coVerify { saveHotelBookingDraftUseCase(any()) }
     }
 
     @Test
