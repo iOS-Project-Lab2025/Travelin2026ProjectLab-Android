@@ -19,8 +19,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.presentation.design_system.components.HotelGalleryScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPhotoViewer
-import com.softserveacademy.home.presentation.state.HotelDetailState
-import com.softserveacademy.home.presentation.ui.components.TravelHotelDetailsTopIcons
+import com.softserveacademy.home.presentation.events.HotelDetailsEvent
+import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelHotelDetailsTopIcons
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
 /**
@@ -40,7 +40,7 @@ fun TravelHotelGalleryScreen(
     var selectedImageIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        viewModel.getHotelDetail(hotelId)
+        viewModel.onEvent(HotelDetailsEvent.Load(hotelId))
     }
 
     Scaffold { padding ->
@@ -49,9 +49,18 @@ fun TravelHotelGalleryScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            when (state) {
-                is HotelDetailState.Data -> {
-                    val images = (state as HotelDetailState.Data).hotelDetail.imageList
+            when {
+                state.isLoading -> {
+                    TravelLoadingScreen()
+                }
+                state.errorMessage != null -> {
+                    Text(
+                        text = "Error: ${state.errorMessage}",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                state.hotelDetails != null -> {
+                    val images = state.hotelDetails!!.imageList
                     HotelGalleryScreen(
                         images = images,
                         onImageClick = { index ->
@@ -66,15 +75,6 @@ fun TravelHotelGalleryScreen(
                             initialIndex = selectedImageIndex
                         )
                     }
-                }
-                is HotelDetailState.Error -> {
-                    Text(
-                        text = "Error: ${(state as HotelDetailState.Error).message}",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                is HotelDetailState.IsLoading -> {
-                    TravelLoadingScreen()
                 }
             }
             

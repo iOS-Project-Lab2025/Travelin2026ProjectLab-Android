@@ -1,5 +1,7 @@
 package com.softserveacademy.core.domain.model
 
+import java.io.Serializable
+
 /**
  * Domain model representing the full details of a hotel.
  *
@@ -29,11 +31,11 @@ data class HotelDetails(
     val numberOfReviews: Int,
     val rating: Double,
     val description: String,
-    val includedItems: List<IncludedItem> = emptyList(),
+    val includedItems: List<IncludedItems> = emptyList(),
     val latitude: Double,
     val longitude: Double,
     val rooms: List<HotelRoom> = emptyList()
-) {
+) : Serializable {
     /**
      * Converts the detailed hotel model into a simplified summary model.
      *
@@ -57,7 +59,7 @@ data class HotelDetails(
 /**
  * Amenities included in the hotel.
  */
-enum class IncludedItem{
+enum class IncludedItems : Serializable {
     BuffetBreakfast,
     FreeWifi,
     FitnessCenter,
