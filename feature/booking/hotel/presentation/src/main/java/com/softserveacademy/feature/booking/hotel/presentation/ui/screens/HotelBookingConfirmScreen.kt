@@ -28,8 +28,16 @@ import com.softserveacademy.core.presentation.design_system.components.TravelLoa
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.hotel.presentation.R
+import com.softserveacademy.core.presentation.design_system.R as coreR
 
 import androidx.compose.runtime.LaunchedEffect
+import com.softserveacademy.core.presentation.design_system.theme.BlueDark80
+import com.softserveacademy.core.presentation.design_system.theme.Gray40
+import com.softserveacademy.core.presentation.design_system.theme.Gray80
+import com.softserveacademy.core.presentation.design_system.theme.GrayLight20
+import com.softserveacademy.core.presentation.design_system.theme.Red50
+import com.softserveacademy.core.presentation.design_system.theme.Teal40
+import com.softserveacademy.core.presentation.design_system.theme.White100
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingConfirmScreen
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -61,7 +69,51 @@ fun HotelBookingConfirmScreen(
         uiState.clientSecret?.let { secret ->
             paymentSheet.presentWithPaymentIntent(
                 secret,
-                PaymentSheet.Configuration("Travelin 2026")
+                PaymentSheet.Configuration(
+                    merchantDisplayName = "Travelin 2026",
+                    appearance = PaymentSheet.Appearance(
+                        colorsLight = PaymentSheet.Colors(
+                            primary = Teal40,
+                            surface = White100,
+                            component = White100,
+                            componentBorder = Gray40,
+                            componentDivider = Gray40,
+                            onComponent = Gray80,
+                            subtitle = Gray40,
+                            placeholderText = Gray40,
+                            onSurface = Gray80,
+                            appBarIcon = Gray80,
+                            error = Red50,
+                        ),
+                        colorsDark = PaymentSheet.Colors(
+                            primary = Teal40,
+                            surface = BlueDark80,
+                            component = BlueDark80,
+                            componentBorder = Gray80,
+                            componentDivider = Gray40,
+                            onComponent = GrayLight20,
+                            subtitle = Gray40,
+                            placeholderText = Gray40,
+                            onSurface = GrayLight20,
+                            appBarIcon = GrayLight20,
+                            error = Red50,
+                        ),
+                        shapes = PaymentSheet.Shapes(
+                            cornerRadiusDp = 10f,
+                            borderStrokeWidthDp = 1f
+                        ),
+                        typography = PaymentSheet.Typography(
+                            sizeScaleFactor = 1f,
+                            fontResId = coreR.font.inter_medium,
+                        ),
+                        primaryButton = PaymentSheet.PrimaryButton(
+                            shape = PaymentSheet.PrimaryButtonShape(
+                                cornerRadiusDp = 15f,
+                                heightDp = 56f
+                            ),
+                        )
+                    )
+                )
             )
         }
     }
