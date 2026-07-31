@@ -197,6 +197,10 @@ val WifiIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_wifi)
 
+val SwapVerticalIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_swap_vertical_circle)
+
 // -------------------------------------------------------------------------------------------------
 // Social Icons
 // -------------------------------------------------------------------------------------------------

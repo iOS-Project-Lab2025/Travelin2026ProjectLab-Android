@@ -60,6 +60,14 @@ class FlightSearchViewModel @Inject constructor(
             is FlightSearchEvent.OnChildrenChanged -> _uiState.update { it.copy(children = event.count) }
             is FlightSearchEvent.OnInfantsChanged -> _uiState.update { it.copy(infants = event.count) }
             is FlightSearchEvent.InternalBookingEvent -> handleInternalEvent(event.event)
+            is FlightSearchEvent.OnSwapLocations -> {
+                _uiState.update { current ->
+                    current.copy(
+                        originQuery = current.destinationQuery,
+                        destinationQuery = current.originQuery
+                    )
+                }
+            }
             FlightSearchEvent.OnPerformSearch -> saveDraftAndNavigate() // 2. VALIDACIÓN AQUÍ (Línea 56)
         }
     }

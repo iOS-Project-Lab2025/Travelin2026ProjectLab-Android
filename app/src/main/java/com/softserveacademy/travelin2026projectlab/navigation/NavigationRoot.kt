@@ -403,12 +403,6 @@ fun NavGraphBuilder.flightGraph(navController: NavHostController) {
         composable<Routes.FlightSearchScreen> {
             val viewModel: FlightSearchViewModel = hiltViewModel()
 
-            LaunchedEffect(Unit) {
-                viewModel.navigationEvent.collect {
-                    navController.navigate(Routes.FlightResultsScreen)
-                }
-            }
-
             FlightSearchScreen(
                 onBack = { navController.popBackStack() },
                 onSearchExecuted = {
@@ -420,6 +414,7 @@ fun NavGraphBuilder.flightGraph(navController: NavHostController) {
 
         composable<Routes.FlightResultsScreen> {
             val viewModel: FlightResultsViewModel = hiltViewModel()
+
             FlightResultsScreen(
                 onNext = { /* Próximo US3: Passengers */ },
                 onBack = { navController.popBackStack() },

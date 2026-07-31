@@ -17,5 +17,6 @@ sealed interface FlightSearchEvent {
     data class InternalBookingEvent(val event: TravelEnterBookingDetailsEvent) : FlightSearchEvent
     object OnPerformSearch : FlightSearchEvent
     object OnShowPassengerSheet : FlightSearchEvent
+    object OnSwapLocations : FlightSearchEvent
 
 }
