@@ -1,5 +1,8 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 /**
  * Domain model representing the full details of a hotel.
  *
@@ -18,6 +21,7 @@ package com.softserveacademy.core.domain.model
  * @property includedItems A list of booleans representing the availability of standard amenities.
  * @property rooms The list of rooms available in the hotel.
  */
+@Serializable
 data class HotelDetails(
     val id: Int,
     val minimumPrice: Int,
@@ -26,12 +30,12 @@ data class HotelDetails(
     val address: String = "",
     val star: Int = 0,
     val image: List<String> = emptyList(),
-    val numberOfReviews: Int,
+    val numberOfReviews: Int = 0,
     val rating: Double,
-    val description: String,
+    val description: String = "",
     val includedItems: List<IncludedItem> = emptyList(),
-    val latitude: Double,
-    val longitude: Double,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val rooms: List<HotelRoom> = emptyList()
 ) {
     /**
@@ -57,6 +61,7 @@ data class HotelDetails(
 /**
  * Amenities included in the hotel.
  */
+@Serializable
 enum class IncludedItem{
     BuffetBreakfast,
     FreeWifi,
