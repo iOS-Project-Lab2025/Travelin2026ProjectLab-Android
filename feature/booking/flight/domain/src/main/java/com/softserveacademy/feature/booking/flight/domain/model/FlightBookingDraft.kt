@@ -1,5 +1,7 @@
 package com.softserveacademy.feature.booking.flight.domain.model
 
+import com.softserveacademy.core.domain.model.CabinClass
+import com.softserveacademy.core.domain.model.FlightType
 import kotlinx.serialization.Serializable
 
 /**
@@ -15,5 +17,7 @@ data class FlightBookingDraft(
     val adults: Int = 1,
     val children: Int = 0,
     val infants: Int = 0,
-    val selectedFlightId: String? = null
+    val selectedFlightId: String? = null,
+    val flightType: FlightType = FlightType.ROUND_TRIP,
+    val cabinClass: CabinClass = CabinClass.ECONOMY
 )

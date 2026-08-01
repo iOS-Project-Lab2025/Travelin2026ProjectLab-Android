@@ -39,7 +39,7 @@ class FlightSearchViewModel @Inject constructor(
     fun onEvent(event: FlightSearchEvent) {
         when (event) {
             is FlightSearchEvent.OnOriginQueryChanged -> {
-                // Limpiamos error al escribir
+
                 _uiState.update { it.copy(originQuery = event.query, errorMessage = null) }
                 searchAirports(event.query, isOrigin = true)
             }
@@ -56,6 +56,10 @@ class FlightSearchViewModel @Inject constructor(
             is FlightSearchEvent.OnShowPassengerSheet -> {
                 _uiState.update { it.copy(bookingDetailsState = it.bookingDetailsState.copy(showGuestBottomSheet = true)) }
             }
+            is FlightSearchEvent.OnFlightTypeSelected -> _uiState.update { it.copy(selectedFlightType = event.flightType) }
+            is FlightSearchEvent.OnCabinClassSelected -> _uiState.update { it.copy(selectedCabinClass = event.cabinClass, showCabinSheet = false) }
+            is FlightSearchEvent.OnShowCabinSheet -> _uiState.update { it.copy(showCabinSheet = true) }
+            is FlightSearchEvent.OnDismissCabinSheet -> _uiState.update { it.copy(showCabinSheet = false) }
             is FlightSearchEvent.OnAdultsChanged -> _uiState.update { it.copy(adults = event.count) }
             is FlightSearchEvent.OnChildrenChanged -> _uiState.update { it.copy(children = event.count) }
             is FlightSearchEvent.OnInfantsChanged -> _uiState.update { it.copy(infants = event.count) }
@@ -101,6 +105,7 @@ class FlightSearchViewModel @Inject constructor(
             destination = currentState.destinationQuery,
             startDate = currentState.bookingDetailsState.startDateMillis,
             adults = currentState.adults
+
         )
 
         when (validationResult) {

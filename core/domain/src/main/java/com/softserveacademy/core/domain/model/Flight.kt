@@ -76,6 +76,12 @@ data class Airport(
     val country: String
 )
 
+data class FlightSegment(
+    val origin: String = "",
+    val destination: String = "",
+    val dateMillis: Long? = null
+)
+
 /**
  * Represents the available travel cabin classes for a flight.
  */
@@ -96,6 +102,6 @@ enum class PassengerType {
     ADU,
     CHD,
     INF
-
-
 }
+
+enum class FlightType { ROUND_TRIP, ONE_WAY, MULTI_CITY }

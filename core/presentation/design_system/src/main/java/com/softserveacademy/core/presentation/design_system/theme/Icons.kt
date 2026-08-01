@@ -201,6 +201,10 @@ val SwapVerticalIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_swap_vertical_circle)
 
+val SeatedWindowIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_seat_window)
+
 // -------------------------------------------------------------------------------------------------
 // Social Icons
 // -------------------------------------------------------------------------------------------------

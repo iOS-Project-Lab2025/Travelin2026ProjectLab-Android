@@ -26,6 +26,10 @@ import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightSearchEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightSearchState
 import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightSearchViewModel
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import com.softserveacademy.core.domain.model.FlightType
+import com.softserveacademy.core.domain.model.CabinClass
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -72,7 +76,10 @@ fun FlightCriteriaContent(
         }
     )
 
-    LaunchedEffect(state.bookingDetailsState.startDateMillis, state.bookingDetailsState.endDateMillis) {
+    LaunchedEffect(
+        state.bookingDetailsState.startDateMillis,
+        state.bookingDetailsState.endDateMillis
+    ) {
         val currentStart = state.bookingDetailsState.startDateMillis
         val currentEnd = state.bookingDetailsState.endDateMillis
         if (currentStart != dateRangePickerState.selectedStartDateMillis ||
@@ -82,7 +89,10 @@ fun FlightCriteriaContent(
         }
     }
 
-    LaunchedEffect(dateRangePickerState.selectedStartDateMillis, dateRangePickerState.selectedEndDateMillis) {
+    LaunchedEffect(
+        dateRangePickerState.selectedStartDateMillis,
+        dateRangePickerState.selectedEndDateMillis
+    ) {
         onEvent(
             FlightSearchEvent.InternalBookingEvent(
                 TravelEnterBookingDetailsEvent.OnDateRangeSelected(
@@ -129,12 +139,43 @@ fun FlightCriteriaContent(
                         )
                         Spacer(Modifier.height(16.dp))
 
+                        // --- SELECTOR DE TIPO DE VUELO ---
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
+                        ) {
+                            FlightType.entries.forEach { type ->
+                                FilterChip(
+                                    selected = state.selectedFlightType == type,
+                                    onClick = { onEvent(FlightSearchEvent.OnFlightTypeSelected(type)) },
+                                    label = {
+                                        Text(
+                                            text = type.name.lowercase().replace("_", " ")
+                                                .capitalize(),
+                                            style = MaterialTheme.typography.labelLarge
+                                        )
+                                    },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(TravelinDimens.SpaceSmall))
+
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            Column{
+                            Column {
                                 // Origin Input
                                 AppTextInput(
                                     value = state.originQuery,
-                                    onValueChange = { onEvent(FlightSearchEvent.OnOriginQueryChanged(it)) },
+                                    onValueChange = {
+                                        onEvent(
+                                            FlightSearchEvent.OnOriginQueryChanged(
+                                                it
+                                            )
+                                        )
+                                    },
                                     placeholder = stringResource(R.string.flight_search_from),
                                     leadingIcon = {
                                         Icon(
@@ -145,12 +186,18 @@ fun FlightCriteriaContent(
                                     }
                                 )
 
-                                Spacer(Modifier.height(8.dp))
+                                Spacer(Modifier.height(TravelinDimens.SpaceExtraSmall))
 
                                 // Destination Input
                                 AppTextInput(
                                     value = state.destinationQuery,
-                                    onValueChange = { onEvent(FlightSearchEvent.OnDestinationQueryChanged(it)) },
+                                    onValueChange = {
+                                        onEvent(
+                                            FlightSearchEvent.OnDestinationQueryChanged(
+                                                it
+                                            )
+                                        )
+                                    },
                                     placeholder = stringResource(R.string.flight_search_to),
                                     leadingIcon = {
                                         Icon(
@@ -160,34 +207,65 @@ fun FlightCriteriaContent(
                                         )
                                     }
                                 )
+                                Spacer(Modifier.height(TravelinDimens.SpaceSmall))
 
-                                Spacer(Modifier.height(16.dp))
+                                // --- SELECTOR DE CABINA ---
+                                Surface(
+                                    onClick = { onEvent(FlightSearchEvent.OnShowCabinSheet) },
+                                    shape = MaterialTheme.shapes.medium,
+                                    border = BorderStroke(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outlineVariant
+                                    ),
+                                    color = MaterialTheme.colorScheme.surface
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(TravelinDimens.PaddingMedium)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            SeatedWindowIcon,
+                                            null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                        Spacer(Modifier.width(12.dp))
+                                        Text(
+                                            text = state.selectedCabinClass.name.lowercase()
+                                                .replace("_", " ").capitalize(),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+
+                                Spacer(Modifier.height(TravelinDimens.SpaceSmall))
 
                             }
 
                             IconButton(
-                                    onClick = { onEvent(FlightSearchEvent.OnSwapLocations) },
+                                onClick = { onEvent(FlightSearchEvent.OnSwapLocations) },
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .padding(end = 8.dp)
+                                    .offset(y = (-35).dp)
+                                    .zIndex(1f)
+                            ) {
+                                Icon(
+                                    imageVector = SwapVerticalIcon, // O el icono que prefieras
+                                    contentDescription = "Swap",
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .padding(end = 8.dp)
-                                        .offset(y = (-10).dp)
-                                        .zIndex(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = SwapVerticalIcon, // O el icono que prefieras
-                                        contentDescription = "Swap",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier
-                                            .size(TravelinDimens.IconSizeExtraLarge)
-                                            .background(MaterialTheme.colorScheme.surface, shape = CircleShape) // 5. Fondo sólido para tapar los bordes traseros
-                                            .padding(4.dp)
-                                    )
-                                }
-                            
-
+                                        .size(TravelinDimens.IconSizeExtraLarge)
+                                        .background(
+                                            MaterialTheme.colorScheme.surface,
+                                            shape = CircleShape
+                                        ) // 5. Fondo sólido para tapar los bordes traseros
+                                        .padding(4.dp)
+                                )
+                            }
                         }
-
-
 
                         // Passenger Selection Card
                         Surface(

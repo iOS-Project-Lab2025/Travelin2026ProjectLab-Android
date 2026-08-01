@@ -1,6 +1,8 @@
 package com.softserveacademy.feature.booking.flight.presentation.states
 
 import com.softserveacademy.core.domain.model.Airport
+import com.softserveacademy.core.domain.model.CabinClass
+import com.softserveacademy.core.domain.model.FlightType
 import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
 
 /**
@@ -17,5 +19,8 @@ data class FlightSearchState(
     val infants: Int = 0,
     val bookingDetailsState: TravelEnterBookingDetailsState = TravelEnterBookingDetailsState(),
     val minSelectableDate: Long = System.currentTimeMillis(),
-    val errorMessage: Int? = null
+    val errorMessage: Int? = null,
+    val selectedFlightType: FlightType = FlightType.ROUND_TRIP,
+    val selectedCabinClass: CabinClass = CabinClass.ECONOMY,
+    val showCabinSheet: Boolean = false // Para controlar el selector de cabina
 )
