@@ -1,16 +1,17 @@
 package com.softserveacademy.home.presentation.state
 
 import com.softserveacademy.core.domain.model.HotelDetails
+import java.io.Serializable
 
 /**
- * Represents the various states of the Hotel Detail screen.
- *
- * This sealed class is used to manage the UI state in a predictable way,
- * allowing the UI to react to different scenarios like loading, success, or error.
+ * State class for the Hotel Detail screen.
  */
-sealed class HotelDetailState {
-
-    data class Error(val message: String?) : HotelDetailState()
-    data class Data(val hotelDetail: HotelDetails) : HotelDetailState()
-    data class IsLoading(val state: Boolean = false) : HotelDetailState()
-}
+data class HotelDetailState(
+    val isLoading: Boolean = false,
+    val hotelDetails: HotelDetails? = null,
+    val errorMessage: String? = null,
+    val isDescriptionExpanded: Boolean = false,
+    val isFavorite: Boolean = false,
+    val showAmenitiesDialog: Boolean = false,
+    val showFullMap: Boolean = false
+) : Serializable

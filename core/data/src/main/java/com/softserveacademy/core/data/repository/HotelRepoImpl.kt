@@ -4,7 +4,7 @@ import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.model.HotelRoomAmenity
-import com.softserveacademy.core.domain.model.IncludedItem
+import com.softserveacademy.core.domain.model.IncludedItems
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.core.error.model.AppResult
@@ -74,10 +74,10 @@ class HotelRepoImpl @Inject constructor(
             rating = 4.5,
             description = "Experience luxury in the heart of Bali with world-class amenities and breathtaking views.",
             includedItems = listOf(
-                IncludedItem.BuffetBreakfast,
-                IncludedItem.FreeWifi,
-                IncludedItem.Pool,
-                IncludedItem.AcUnit
+                IncludedItems.BuffetBreakfast,
+                IncludedItems.FreeWifi,
+                IncludedItems.Pool,
+                IncludedItems.AcUnit
             ),
             latitude = 1.35,
             longitude = 103.87,
@@ -95,13 +95,13 @@ class HotelRepoImpl @Inject constructor(
             rating = 1.5,
             description = "Premier beachfront resort offering exceptional service and stunning ocean views. Our resort features multiple infinity pools, a world-class spa, and fine dining options that cater to every palate. Each room is meticulously designed with local artistic touches and modern comforts to ensure a truly unforgettable stay in paradise. Guests can enjoy a wide array of activities, from water sports on the private beach to yoga sessions at sunrise. Our dedicated concierge team is always on hand to curate personalized experiences, ensuring that every moment of your vacation is perfect. Whether you're seeking a romantic getaway or a fun-filled family holiday, our resort provides the ultimate sanctuary for relaxation and adventure alike.",
             includedItems = listOf(
-                IncludedItem.FreeWifi,
-                IncludedItem.FitnessCenter,
-                IncludedItem.Pool,
-                IncludedItem.RoomService,
-                IncludedItem.BuffetBreakfast,
-                IncludedItem.SelfParking,
-                IncludedItem.AcUnit
+                IncludedItems.FreeWifi,
+                IncludedItems.FitnessCenter,
+                IncludedItems.Pool,
+                IncludedItems.RoomService,
+                IncludedItems.BuffetBreakfast,
+                IncludedItems.SelfParking,
+                IncludedItems.AcUnit
             ),
             latitude = 1.35,
             longitude = 103.87,
@@ -110,7 +110,7 @@ class HotelRepoImpl @Inject constructor(
     ))
 
     override suspend fun getHotelById(id: Int): AppResult<HotelDetails> = safeCall(mapper) {
-        delay(1.seconds)
+        delay(0.5.seconds)
         _hotelDetails.value.find { it.id == id } ?: throw NoSuchElementException("Hotel with id $id not found")
     }
 
