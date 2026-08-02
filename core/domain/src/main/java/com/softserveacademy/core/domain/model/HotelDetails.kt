@@ -37,7 +37,7 @@ data class HotelDetails(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val rooms: List<HotelRoom> = emptyList()
-) {
+) : Serializable {
     /**
      * Converts the detailed hotel model into a simplified summary model.
      *

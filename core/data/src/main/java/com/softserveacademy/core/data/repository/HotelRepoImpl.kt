@@ -4,6 +4,8 @@ import com.softserveacademy.core.data.api.HotelApiService
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
+import com.softserveacademy.core.domain.model.HotelRoomAmenity
+import com.softserveacademy.core.domain.model.IncludedItems
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.core.error.model.AppResult

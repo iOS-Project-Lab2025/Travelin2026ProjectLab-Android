@@ -16,6 +16,7 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
@@ -25,6 +26,10 @@ dependencies {
     // Necessary to Compose "draw" on tests
     testImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Maps SDK for Android
+    implementation(libs.maps.compose)
+    implementation(libs.secrets.gradlePlugin)
 }
 
 

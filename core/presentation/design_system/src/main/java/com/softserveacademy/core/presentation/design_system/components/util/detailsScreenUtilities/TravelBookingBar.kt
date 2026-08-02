@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.components
+package com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
