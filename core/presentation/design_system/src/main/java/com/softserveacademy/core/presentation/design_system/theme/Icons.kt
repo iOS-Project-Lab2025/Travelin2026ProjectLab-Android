@@ -205,6 +205,22 @@ val SeatedWindowIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_seat_window)
 
+val EconomyClassIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_economy_class)
+
+val PremiumEconomyClassIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_premium_economy_class)
+
+val BusinessClassIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_business_class)
+
+val FirstClassIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_first_class)
+
 // -------------------------------------------------------------------------------------------------
 // Social Icons
 // -------------------------------------------------------------------------------------------------

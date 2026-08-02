@@ -1,6 +1,7 @@
 package com.softserveacademy.feature.booking.flight.domain.model
 
 import com.softserveacademy.core.domain.model.CabinClass
+import com.softserveacademy.core.domain.model.FlightSegment
 import com.softserveacademy.core.domain.model.FlightType
 import kotlinx.serialization.Serializable
 
@@ -12,6 +13,8 @@ import kotlinx.serialization.Serializable
 data class FlightBookingDraft(
     val origin: String = "",
     val destination: String = "",
+    val segments: List<FlightSegment> = listOf(FlightSegment()),
+    val returnDateMillis: Long? = null, // Solo para Round Trip
     val startDateMillis: Long? = null,
     val endDateMillis: Long? = null,
     val adults: Int = 1,

@@ -12,6 +12,9 @@ import com.softserveacademy.feature.booking.common.presentation.states.TravelEnt
 data class FlightSearchState(
     val originQuery: String = "",
     val destinationQuery: String = "",
+    val segments: List<com.softserveacademy.core.domain.model.FlightSegment> = listOf(com.softserveacademy.core.domain.model.FlightSegment()),
+    val activeSegmentIndex: Int = 0,
+    val returnDateMillis: Long? = null,
     val originSuggestions: List<Airport> = emptyList(),
     val destinationSuggestions: List<Airport> = emptyList(),
     val adults: Int = 1,
@@ -22,5 +25,6 @@ data class FlightSearchState(
     val errorMessage: Int? = null,
     val selectedFlightType: FlightType = FlightType.ROUND_TRIP,
     val selectedCabinClass: CabinClass = CabinClass.ECONOMY,
-    val showCabinSheet: Boolean = false // Para controlar el selector de cabina
+    val showCabinSheet: Boolean = false,
+    val showDatePicker: Boolean = false
 )

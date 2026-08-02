@@ -39,40 +39,69 @@ class FlightSearchViewModel @Inject constructor(
     fun onEvent(event: FlightSearchEvent) {
         when (event) {
             is FlightSearchEvent.OnOriginQueryChanged -> {
-
-                _uiState.update { it.copy(originQuery = event.query, errorMessage = null) }
-                searchAirports(event.query, isOrigin = true)
+                updateSegment(event.index) { it.copy(origin = event.query) }
+                searchAirports(event.query, isOrigin = true, index = event.index)
             }
             is FlightSearchEvent.OnDestinationQueryChanged -> {
-                _uiState.update { it.copy(destinationQuery = event.query, errorMessage = null) }
-                searchAirports(event.query, isOrigin = false)
+                updateSegment(event.index) { it.copy(destination = event.query) }
+                searchAirports(event.query, isOrigin = false, index = event.index)
             }
             is FlightSearchEvent.OnOriginSelected -> {
-                _uiState.update { it.copy(originQuery = event.airport.code, originSuggestions = emptyList()) }
+                updateSegment(event.index) { it.copy(origin = event.airport.code) }
+                _uiState.update { it.copy(originSuggestions = emptyList()) }
             }
             is FlightSearchEvent.OnDestinationSelected -> {
-                _uiState.update { it.copy(destinationQuery = event.airport.code, destinationSuggestions = emptyList()) }
+                updateSegment(event.index) { it.copy(destination = event.airport.code) }
+                _uiState.update { it.copy(destinationSuggestions = emptyList()) }
             }
+
+            is FlightSearchEvent.OnDateSelected -> {
+                updateSegment(event.index) { it.copy(dateMillis = event.dateMillis) }
+                // SI ES EL PRIMER VUELO, sincronizamos con el calendario global
+                if (event.index == 0) {
+                    _uiState.update { current ->
+                        current.copy(
+                            bookingDetailsState = current.bookingDetailsState.copy(
+                                startDateMillis = event.dateMillis
+                            )
+                        )
+                    }
+                }
+            }
+
             is FlightSearchEvent.OnShowPassengerSheet -> {
                 _uiState.update { it.copy(bookingDetailsState = it.bookingDetailsState.copy(showGuestBottomSheet = true)) }
             }
-            is FlightSearchEvent.OnFlightTypeSelected -> _uiState.update { it.copy(selectedFlightType = event.flightType) }
-            is FlightSearchEvent.OnCabinClassSelected -> _uiState.update { it.copy(selectedCabinClass = event.cabinClass, showCabinSheet = false) }
+            is FlightSearchEvent.OnFlightTypeSelected -> {
+                _uiState.update { it.copy(
+                    selectedFlightType = event.flightType,
+                    // Si pasa a Multi-city, aseguramos al menos 2 tramos
+                    segments = if (event.flightType == com.softserveacademy.core.domain.model.FlightType.MULTI_CITY && it.segments.size < 2)
+                        listOf(it.segments[0], com.softserveacademy.core.domain.model.FlightSegment())
+                    else it.segments.take(1) // Si vuelve a One Way/Round Trip, dejamos solo el primero
+                )}
+            }
+            is FlightSearchEvent.OnCabinClassSelected -> {
+                _uiState.update { it.copy(selectedCabinClass = event.cabinClass, showCabinSheet = false) }
+            }
             is FlightSearchEvent.OnShowCabinSheet -> _uiState.update { it.copy(showCabinSheet = true) }
             is FlightSearchEvent.OnDismissCabinSheet -> _uiState.update { it.copy(showCabinSheet = false) }
             is FlightSearchEvent.OnAdultsChanged -> _uiState.update { it.copy(adults = event.count) }
             is FlightSearchEvent.OnChildrenChanged -> _uiState.update { it.copy(children = event.count) }
             is FlightSearchEvent.OnInfantsChanged -> _uiState.update { it.copy(infants = event.count) }
             is FlightSearchEvent.InternalBookingEvent -> handleInternalEvent(event.event)
-            is FlightSearchEvent.OnSwapLocations -> {
-                _uiState.update { current ->
-                    current.copy(
-                        originQuery = current.destinationQuery,
-                        destinationQuery = current.originQuery
-                    )
-                }
+            is FlightSearchEvent.OnSwapSegmentLocations -> {
+                updateSegment(event.index) { it.copy(origin = it.destination, destination = it.origin) }
             }
-            FlightSearchEvent.OnPerformSearch -> saveDraftAndNavigate() // 2. VALIDACIÓN AQUÍ (Línea 56)
+            is FlightSearchEvent.OnPerformSearch -> saveDraftAndNavigate()
+            FlightSearchEvent.OnAddSegment -> {
+                _uiState.update { it.copy(segments = it.segments + com.softserveacademy.core.domain.model.FlightSegment()) }
+            }
+            is FlightSearchEvent.OnRemoveSegment -> {
+                _uiState.update { it.copy(segments = it.segments.filterIndexed { i, _ -> i != event.index }) }
+            }
+            is FlightSearchEvent.OnShowDatePicker -> _uiState.update { it.copy(showDatePicker = true) }
+            is FlightSearchEvent.OnDismissDatePicker -> _uiState.update { it.copy(showDatePicker = false) }
         }
     }
 
@@ -98,27 +127,38 @@ class FlightSearchViewModel @Inject constructor(
      */
     private fun saveDraftAndNavigate() {
         val currentState = _uiState.value
+        val firstSegment = currentState.segments.firstOrNull() ?: com.softserveacademy.core.domain.model.FlightSegment()
 
-        // 3. EJECUTAR VALIDACIÓN DE SEGURIDAD Y NEGOCIO
         val validationResult = validateFlightSearchUseCase.validate(
-            origin = currentState.originQuery,
-            destination = currentState.destinationQuery,
-            startDate = currentState.bookingDetailsState.startDateMillis,
+            origin = firstSegment.origin,
+            destination = firstSegment.destination,
+            startDate = firstSegment.dateMillis ?: currentState.bookingDetailsState.startDateMillis,
             adults = currentState.adults
-
         )
 
         when (validationResult) {
             is FlightValidationResult.Success -> {
                 viewModelScope.launch {
+                    val finalSegments = if (currentState.selectedFlightType != com.softserveacademy.core.domain.model.FlightType.MULTI_CITY) {
+                        // For One Way / Round Trip, we sincronize the calendar date to first segment
+                        listOf(firstSegment.copy(
+                            dateMillis = currentState.bookingDetailsState.startDateMillis
+                        ))
+                    } else {
+                        currentState.segments
+                    }
                     val draft = FlightBookingDraft(
-                        origin = currentState.originQuery.trim().uppercase(),
-                        destination = currentState.destinationQuery.trim().uppercase(),
-                        startDateMillis = currentState.bookingDetailsState.startDateMillis,
+                        origin = firstSegment.origin.trim().uppercase(), // Para compatibilidad
+                        destination = firstSegment.destination.trim().uppercase(),
+                        segments = finalSegments,
+                        startDateMillis = firstSegment.dateMillis ?: currentState.bookingDetailsState.startDateMillis,
                         endDateMillis = currentState.bookingDetailsState.endDateMillis,
                         adults = currentState.adults,
                         children = currentState.children,
-                        infants = currentState.infants
+                        infants = currentState.infants,
+                        flightType = currentState.selectedFlightType,
+                        cabinClass = currentState.selectedCabinClass,
+                        returnDateMillis = currentState.bookingDetailsState.endDateMillis
                     )
                     draftRepository.saveDraft(draft)
                     _navigationEvent.emit(Unit)
@@ -142,14 +182,27 @@ class FlightSearchViewModel @Inject constructor(
         }
     }
 
-    private fun searchAirports(query: String, isOrigin: Boolean) {
+    private fun searchAirports(query: String, isOrigin: Boolean, index: Int) {
         viewModelScope.launch {
             searchAirportsUseCase(query).collect { list ->
                 _uiState.update {
-                    if (isOrigin) it.copy(originSuggestions = list)
-                    else it.copy(destinationSuggestions = list)
+                    it.copy(
+                        originSuggestions = if (isOrigin) list else it.originSuggestions,
+                        destinationSuggestions = if (!isOrigin) list else it.destinationSuggestions,
+                        activeSegmentIndex = index // Guardamos qué vuelo estamos editando
+                    )
                 }
             }
+        }
+    }
+
+    private fun updateSegment(index: Int, block: (com.softserveacademy.core.domain.model.FlightSegment) -> com.softserveacademy.core.domain.model.FlightSegment) {
+        _uiState.update { current ->
+            val newList = current.segments.toMutableList()
+            if (index in newList.indices) {
+                newList[index] = block(newList[index])
+            }
+            current.copy(segments = newList, activeSegmentIndex = index)
         }
     }
 }

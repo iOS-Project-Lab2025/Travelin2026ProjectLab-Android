@@ -26,4 +26,19 @@
     <string name="flight_subtitle_children">2 - 12 years</string>
     <string name="flight_label_infants">Infants</string>
     <string name="flight_subtitle_infants">Under 2 years</string>
+    <string name="flight_label_flight">Flight %1$d</string>
+    <string name="flight_action_add_flight">Add Flight</string>
+    <string name="flight_action_delete_flight">Delete flight</string>
+    <string name="flight_cabin_class_title">Cabin type</string>
+    <string name="flight_select_cabin_class">Select Cabin Class</string>
+    <string name="flight_select_date">Select date</string>
+    <string name="flight_date_selected">Date selected</string>
+    <plurals name="flight_passenger_count">
+        <item quantity="one">%d Passenger</item>
+        <item quantity="other">%d Passengers</item>
+    </plurals>
+    <string name="flight_cabin_economy">Economy</string>
+    <string name="flight_cabin_premium_economy">Premium Economy</string>
+    <string name="flight_cabin_business">Business</string>
+    <string name="flight_cabin_first">First Class</string>
 </resources>

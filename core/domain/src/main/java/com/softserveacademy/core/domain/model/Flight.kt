@@ -1,5 +1,6 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 /**
@@ -75,7 +76,7 @@ data class Airport(
     val city: String,
     val country: String
 )
-
+@Serializable
 data class FlightSegment(
     val origin: String = "",
     val destination: String = "",
@@ -85,6 +86,7 @@ data class FlightSegment(
 /**
  * Represents the available travel cabin classes for a flight.
  */
+@Serializable
 enum class CabinClass {
     ECONOMY,
     PREMIUM_ECONOMY,
@@ -103,5 +105,5 @@ enum class PassengerType {
     CHD,
     INF
 }
-
+@Serializable
 enum class FlightType { ROUND_TRIP, ONE_WAY, MULTI_CITY }
