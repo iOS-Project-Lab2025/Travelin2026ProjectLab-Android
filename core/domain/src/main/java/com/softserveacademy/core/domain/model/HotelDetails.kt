@@ -33,11 +33,11 @@ data class HotelDetails(
     val numberOfReviews: Int = 0,
     val rating: Double,
     val description: String = "",
-    val includedItems: List<IncludedItem> = emptyList(),
+    val includedItems: List<IncludedItems> = emptyList(),
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val rooms: List<HotelRoom> = emptyList()
-) : Serializable {
+) : java.io.Serializable {
     /**
      * Converts the detailed hotel model into a simplified summary model.
      *
@@ -62,7 +62,7 @@ data class HotelDetails(
  * Amenities included in the hotel.
  */
 @Serializable
-enum class IncludedItem{
+enum class IncludedItems{
     BuffetBreakfast,
     FreeWifi,
     FitnessCenter,
