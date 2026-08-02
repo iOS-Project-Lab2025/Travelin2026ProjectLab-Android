@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.components
+package com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -10,14 +10,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
-import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
-import com.softserveacademy.core.presentation.design_system.theme.HeartLineIcon
-import com.softserveacademy.core.presentation.design_system.theme.ShareIcon
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIcon
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelFavoriteIcon
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelShareIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.core.presentation.design_system.theme.White100_Alpha70
-import com.softserveacademy.core.presentation.design_system.theme.Green70
 
 @Composable
 fun TravelHotelDetailsTopIcons(
@@ -34,31 +31,14 @@ fun TravelHotelDetailsTopIcons(
             ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TravelIconButton(
-            icon = ArrowLeftIcon,
-            onClick = onBackClick,
-            iconColor = Green70,
-            backgroundColor = White100_Alpha70,
-            contentDescription = "Back button"
-        )
+        TravelArrowIcon(onClick = onBackClick)
+
         Row {
-            TravelIconButton(
-                icon = ShareIcon,
-                onClick = onShareClick,
-                iconColor = Green70,
-                backgroundColor = White100_Alpha70,
-                contentDescription = "Share button"
-            )
+            TravelShareIcon(onClick = onShareClick)
 
             Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
 
-            TravelIconButton(
-                icon = HeartLineIcon,
-                onClick = onFavoriteClick,
-                iconColor = Green70,
-                backgroundColor = White100_Alpha70,
-                contentDescription = "Favorite button"
-            )
+            TravelFavoriteIcon(onClick = onFavoriteClick)
         }
     }
 }
