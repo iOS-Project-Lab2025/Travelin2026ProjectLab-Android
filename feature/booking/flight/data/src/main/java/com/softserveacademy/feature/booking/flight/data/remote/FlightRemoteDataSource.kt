@@ -16,7 +16,10 @@ interface FlightRemoteDataSource {
     suspend fun getFlightOffers(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>
+        passengerCounts: Map<PassengerType, Int>,
+        cabinClass: com.softserveacademy.core.domain.model.CabinClass,
+        departureDate: Long?,
+        returnDate: Long?
     ): List<FlightOffer>
 
     suspend fun searchAirports(query: String): List<Airport>

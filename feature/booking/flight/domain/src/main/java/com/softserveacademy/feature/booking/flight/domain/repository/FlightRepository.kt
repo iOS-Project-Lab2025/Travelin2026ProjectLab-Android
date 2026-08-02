@@ -21,7 +21,10 @@ interface FlightRepository {
     fun searchFlights(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>
+        passengerCounts: Map<PassengerType, Int>,
+        cabinClass: com.softserveacademy.core.domain.model.CabinClass,
+        departureDate: Long?,
+        returnDate: Long?
     ): Flow<List<FlightOffer>>
 
     /**

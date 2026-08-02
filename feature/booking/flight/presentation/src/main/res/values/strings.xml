@@ -14,7 +14,7 @@
     <string name="flight_error_no_adults">At least one adult is required</string>
     <string name="flight_error_generic">Invalid search criteria</string>
     <string name="flight_search_button_label">Search Flights</string>
-    <string name="flight_empty_results">No flights found for this route.</string>
+    <string name="flight_empty_results">No flights found. \nPlease try a different search.</string>
     <string name="flight_error_missing_return_date">Please select departure and return dates</string>
     <string name="flight_error_occurred">An error occurred while fetching flights.</string>
     <string name="flight_retry_button">Retry</string>
@@ -42,4 +42,6 @@
     <string name="flight_cabin_premium_economy">Premium Economy</string>
     <string name="flight_cabin_business">Business</string>
     <string name="flight_cabin_first">First Class</string>
+    <string name="flight_error_network">No internet connection.\nPlease check your network and try again.</string>
+    <string name="flight_error_date_sequence">Flight must be after the previous one</string>
 </resources>

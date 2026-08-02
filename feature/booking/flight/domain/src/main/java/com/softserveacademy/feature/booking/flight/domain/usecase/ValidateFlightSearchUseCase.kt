@@ -14,17 +14,22 @@ class ValidateFlightSearchUseCase @Inject constructor() {
         var globalDateError: FlightError? = null
 
         segments.forEachIndexed { index, segment ->
-            val origin = segment.origin.trim().uppercase()
-            val dest = segment.destination.trim().uppercase()
+            var dateSeqErr: FlightError? = null
+            if (index > 0) {
+                val previousDate = segments[index - 1].dateMillis
+                if (previousDate != null && segment.dateMillis != null && segment.dateMillis!! < previousDate) {
+                    dateSeqErr = FlightError.INVALID_DATE_SEQUENCE
+                }
+            }
 
             val originErr = when {
-                origin.isBlank() || !iataRegex.matches(origin) -> FlightError.INVALID_ORIGIN
+                segment.origin.isBlank() || !iataRegex.matches(segment.origin) -> FlightError.INVALID_ORIGIN
                 else -> null
             }
 
             val destErr = when {
-                dest.isBlank() || !iataRegex.matches(dest) -> FlightError.INVALID_DESTINATION
-                origin == dest && origin.isNotEmpty() -> FlightError.SAME_LOCATION
+                segment.destination.isBlank() || !iataRegex.matches(segment.destination) -> FlightError.INVALID_DESTINATION
+                segment.origin == segment.destination && segment.origin.isNotEmpty() -> FlightError.SAME_LOCATION
                 else -> null
             }
 
@@ -33,8 +38,10 @@ class ValidateFlightSearchUseCase @Inject constructor() {
                 else -> null
             }
 
-            if (originErr != null || destErr != null || dateErr != null) {
-                segmentErrors[index] = SegmentError(originErr, destErr, dateErr)
+            val finalDateErr = dateErr ?: dateSeqErr
+
+            if (originErr != null || destErr != null || finalDateErr != null) {
+                segmentErrors[index] = SegmentError(originErr, destErr, finalDateErr)
             }
         }
 
@@ -47,7 +54,7 @@ class ValidateFlightSearchUseCase @Inject constructor() {
         )
     }
 
-    enum class FlightError { INVALID_ORIGIN, INVALID_DESTINATION, SAME_LOCATION, INVALID_DATE, MISSING_RETURN_DATE }
+    enum class FlightError { INVALID_ORIGIN, INVALID_DESTINATION, SAME_LOCATION, INVALID_DATE, MISSING_RETURN_DATE, INVALID_DATE_SEQUENCE }
     data class SegmentError(val originError: FlightError? = null, val destinationError: FlightError? = null, val dateError: FlightError? = null)
     data class FlightValidationResult(val segmentErrors: Map<Int, SegmentError> = emptyMap(), val globalDateError: FlightError? = null, val isValid: Boolean)
 }

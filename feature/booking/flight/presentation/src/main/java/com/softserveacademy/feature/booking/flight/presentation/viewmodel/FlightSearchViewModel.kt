@@ -7,7 +7,6 @@ import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDra
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightBookingDraftRepository
 import com.softserveacademy.feature.booking.flight.domain.usecase.SearchAirportsUseCase
 import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
-import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightSearchEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightSearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -89,11 +88,24 @@ class FlightSearchViewModel @Inject constructor(
                 updateSegment(event.index) { it.copy(dateMillis = event.dateMillis) }
 
                 _uiState.update { current ->
+                    // 1. Convertimos el mapa de errores a mutable para editarlo
                     val newErrors = current.errors.toMutableMap()
+
+                    // 2. Limpiamos el error específico del campo que acabamos de tocar
                     newErrors.remove(event.index)
+
+                    // 3. LIMPIEZA DE DEPENDENCIAS:
+                    // Si cambió una fecha, los errores de "Secuencia" de otros vuelos podrían ya no aplicar.
+                    // Recorremos el mapa y quitamos cualquier error de secuencia previo.
+                    current.errors.forEach { (idx, error) ->
+                        if (error.dateError == ValidateFlightSearchUseCase.FlightError.INVALID_DATE_SEQUENCE) {
+                            newErrors[idx] = error.copy(dateError = null)
+                        }
+                    }
+
                     current.copy(
                         errors = newErrors,
-                        globalDateError = if (event.index == 0) null else current.globalDateError,
+                        globalDateError = null, // También limpiamos el error global (Round Trip)
                         bookingDetailsState = if (event.index == 0)
                             current.bookingDetailsState.copy(startDateMillis = event.dateMillis)
                         else current.bookingDetailsState

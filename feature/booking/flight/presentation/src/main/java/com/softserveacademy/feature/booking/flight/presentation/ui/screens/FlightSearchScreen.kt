@@ -84,10 +84,17 @@ fun FlightCriteriaContent(
     }
 
     val singleDatePickerState = key(state.activeSegmentIndex) {
+        // Calculamos el mínimo permitido: hoy O la fecha del vuelo anterior
+        val minDateAllowed = if (state.activeSegmentIndex > 0) {
+            state.segments.getOrNull(state.activeSegmentIndex - 1)?.dateMillis ?: todayStartUtc
+        } else {
+            todayStartUtc
+        }
+
         rememberDatePickerState(
             initialSelectedDateMillis = state.segments.getOrNull(state.activeSegmentIndex)?.dateMillis,
             selectableDates = object : SelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis >= todayStartUtc
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis >= minDateAllowed
             }
         )
     }
@@ -719,7 +726,7 @@ private fun CabinClass.toIcon(): ImageVector {
  * Maps a CabinClass to its localized display name.
  */
 @Composable
-private fun CabinClass.toDisplayName(): String {
+fun CabinClass.toDisplayName(): String {
     return when (this) {
         CabinClass.ECONOMY -> stringResource(R.string.flight_cabin_economy)
         CabinClass.PREMIUM_ECONOMY -> stringResource(R.string.flight_cabin_premium_economy)
@@ -739,6 +746,7 @@ private fun ValidateFlightSearchUseCase.FlightError.toMessage(): String {
         ValidateFlightSearchUseCase.FlightError.SAME_LOCATION -> R.string.flight_error_same_location
         ValidateFlightSearchUseCase.FlightError.INVALID_DATE -> R.string.flight_error_invalid_date
         ValidateFlightSearchUseCase.FlightError.MISSING_RETURN_DATE -> R.string.flight_error_missing_return_date
+        ValidateFlightSearchUseCase.FlightError.INVALID_DATE_SEQUENCE -> R.string.flight_error_date_sequence
     }
     return stringResource(id)
 }

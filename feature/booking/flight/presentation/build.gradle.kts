@@ -12,5 +12,5 @@ dependencies {
     implementation(projects.core.presentation.designSystem)
     implementation(projects.feature.booking.common.presentation)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.coil.compose)
+    implementation(libs.glide.compose)
 }

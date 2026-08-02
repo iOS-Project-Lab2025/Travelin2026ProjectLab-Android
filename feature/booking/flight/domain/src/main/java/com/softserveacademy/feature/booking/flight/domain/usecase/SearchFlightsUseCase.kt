@@ -21,9 +21,12 @@ class SearchFlightsUseCase @Inject constructor(
     operator fun invoke(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>
+        passengerCounts: Map<PassengerType, Int>,
+        cabinClass: com.softserveacademy.core.domain.model.CabinClass,
+        departureDate: Long?,
+        returnDate: Long?
     ): Flow<List<FlightOffer>> {
         // Here we could add validation logic (e.g., origin != destination)
-        return repository.searchFlights(origin, destination, passengerCounts)
+        return repository.searchFlights(origin, destination, passengerCounts, cabinClass, departureDate, returnDate)
     }
 }

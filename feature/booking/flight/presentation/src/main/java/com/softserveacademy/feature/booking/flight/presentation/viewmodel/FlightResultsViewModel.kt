@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightBookingDraftRepository
 import com.softserveacademy.feature.booking.flight.domain.usecase.SearchFlightsUseCase
+import com.softserveacademy.feature.booking.flight.presentation.R
+import com.softserveacademy.feature.booking.flight.presentation.events.FlightResultsEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightResultsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -22,54 +24,87 @@ class FlightResultsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FlightResultsState())
-
-    /**
-     * Exposes the current UI state to the Results screen.
-     */
     val uiState: StateFlow<FlightResultsState> = _uiState.asStateFlow()
 
+    init {
+        loadDraftAndSearch()
+    }
+
+    fun onEvent(event: FlightResultsEvent) {
+        when (event) {
+            is FlightResultsEvent.OnRetryClick -> loadDraftAndSearch()
 
 
-    init { loadDraftAndSearch() }
+            is FlightResultsEvent.OnFlightSelected -> {
+                // Aquí actualizaremos el draft con el ID seleccionado
+                viewModelScope.launch {
+                    val currentDraft = draftRepository.getDraft().first()
+                    currentDraft?.let {
+                        draftRepository.saveDraft(it.copy(selectedFlightId = event.flightId))
+                    }
+                }
+            }
+            is FlightResultsEvent.OnLoadMore -> {
+                _uiState.update { current ->
+                    val nextCount = current.visibleOffers.size + 5
+                    current.copy(
+                        visibleOffers = current.offers.take(nextCount),
+                    )
+                }
+            }
+        }
+    }
 
     /**
-     * Loads the booking criteria from the local draft and triggers the remote search.
-     * Ensures the UI is consistent with the user's previous selection.
+     * Public function to manually trigger a retry.
      */
+    fun retrySearch() {
+        loadDraftAndSearch()
+    }
+
     private fun loadDraftAndSearch() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
-            // 1. Wait for the first valid draft from the DataStore
+            // 1. Get the draft from DataStore
             val draft = draftRepository.getDraft()
                 .filterNotNull()
                 .first()
 
-            // 2. Update state with criteria to maintain visual context
+            // 2. Extract criteria from the new segments structure
+            val firstSegment = draft.segments.firstOrNull() ?: com.softserveacademy.core.domain.model.FlightSegment()
+
             _uiState.update { it.copy(
-                origin = draft.origin,
-                destination = draft.destination,
+                origin = firstSegment.origin,
+                destination = firstSegment.destination,
                 totalPassengers = draft.adults + draft.children + draft.infants
             )}
 
-            // 3. Map passenger counts to the Domain/GDS standard (ADU, CHD, INF)
             val passengers = mapOf(
-                PassengerType.ADU to draft.adults,
-                PassengerType.CHD to draft.children,
-                PassengerType.INF to draft.infants
+                com.softserveacademy.core.domain.model.PassengerType.ADU to draft.adults,
+                com.softserveacademy.core.domain.model.PassengerType.CHD to draft.children,
+                com.softserveacademy.core.domain.model.PassengerType.INF to draft.infants
             )
 
-            // 4. Call the search service
-            searchFlightsUseCase(draft.origin, draft.destination, passengers)
+            // 3. Trigger the search and handle errors
+            searchFlightsUseCase(
+                firstSegment.origin,
+                firstSegment.destination,
+                passengers,
+                cabinClass = draft.cabinClass,
+                departureDate = firstSegment.dateMillis,
+                returnDate = draft.returnDateMillis)
                 .catch { e ->
-                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "Network error") }
+                    // Handles network or server errors
+                    _uiState.update { it.copy(isLoading = false, error = R.string.flight_error_network, offers = emptyList()) }
                 }
                 .collect { results ->
                     _uiState.update { it.copy(
                         isLoading = false,
                         offers = results,
-                        // Simulate that there are 20 flights in total for the "Show more" logic
-                        totalAvailableCount = 20
+                        visibleOffers = results.take(5), //how many results we show
+                        error = null,
+                        totalAvailableCount = results.size
                     )}
                 }
         }

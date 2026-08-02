@@ -3,6 +3,7 @@ package com.softserveacademy.feature.booking.flight.data.repository
 import com.softserveacademy.core.domain.model.FlightOffer
 import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.core.domain.model.Airport
+import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.feature.booking.flight.data.remote.FlightRemoteDataSource
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightRepository
 import kotlinx.coroutines.flow.Flow
@@ -20,10 +21,14 @@ class FlightRepositoryImpl @Inject constructor(
     override fun searchFlights(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>
+        passengerCounts: Map<PassengerType, Int>,
+        cabinClass: CabinClass,
+        departureDate: Long?,
+        returnDate: Long?
     ): Flow<List<FlightOffer>> = flow {
-
-        val results = remoteDataSource.getFlightOffers(origin, destination, passengerCounts)
+        val results = remoteDataSource.getFlightOffers(
+            origin, destination, passengerCounts, cabinClass, departureDate, returnDate
+        )
         emit(results)
     }
 
