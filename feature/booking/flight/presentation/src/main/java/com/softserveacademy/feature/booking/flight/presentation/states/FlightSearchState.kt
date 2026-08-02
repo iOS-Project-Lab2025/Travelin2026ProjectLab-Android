@@ -4,6 +4,7 @@ import com.softserveacademy.core.domain.model.Airport
 import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.FlightType
 import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
+import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
 
 /**
  * UI State for the Flight Search screen.
@@ -26,5 +27,8 @@ data class FlightSearchState(
     val selectedFlightType: FlightType = FlightType.ROUND_TRIP,
     val selectedCabinClass: CabinClass = CabinClass.ECONOMY,
     val showCabinSheet: Boolean = false,
-    val showDatePicker: Boolean = false
+    val showDatePicker: Boolean = false,
+    val errors: Map<Int, ValidateFlightSearchUseCase.SegmentError> = emptyMap(),
+    val dateError: Int? = null,
+    val globalDateError: ValidateFlightSearchUseCase.FlightError? = null
 )

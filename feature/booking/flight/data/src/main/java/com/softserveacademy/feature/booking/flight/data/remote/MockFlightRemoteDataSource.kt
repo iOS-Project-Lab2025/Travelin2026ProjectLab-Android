@@ -20,7 +20,10 @@ class MockFlightRemoteDataSource @Inject constructor() : FlightRemoteDataSource 
         Airport("JFK", "John F. Kennedy", "New York", "USA"),
         Airport("MAD", "Adolfo Suárez Barajas", "Madrid", "Spain"),
         Airport("EZE", "Ezeiza", "Buenos Aires", "Argentina"),
-        Airport("GRU", "Guarulhos", "Sao Paulo", "Brazil")
+        Airport("GRU", "Guarulhos", "Sao Paulo", "Brazil"),
+        Airport("SAN", "San Diego", "SAN", "USA"),
+        Airport("SAP", "San Pedro Sula", "SAP", "Honduras")
+
     )
 
     // 2. Database of real airlines with branding

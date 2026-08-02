@@ -2,54 +2,52 @@ package com.softserveacademy.feature.booking.flight.domain.usecase
 
 import javax.inject.Inject
 
-/**
- * Professional validator for Flight Search.
- * Acts as a security and business logic gatekeeper.
- */
 class ValidateFlightSearchUseCase @Inject constructor() {
-
-    // Regex: Only letters, exactly 3 characters (IATA Standard)
     private val iataRegex = Regex("^[A-Z]{3}$")
 
-    /**
-     * Comprehensive validation of the search criteria.
-     */
     fun validate(
-        origin: String,
-        destination: String,
-        startDate: Long?,
-        adults: Int
+        segments: List<com.softserveacademy.core.domain.model.FlightSegment>,
+        isRoundTrip: Boolean,
+        endDate: Long?
     ): FlightValidationResult {
+        val segmentErrors = mutableMapOf<Int, SegmentError>()
+        var globalDateError: FlightError? = null
 
-        // 1. Security & Format: Origin
-        val cleanOrigin = origin.trim().uppercase()
-        if (cleanOrigin.isEmpty()) return FlightValidationResult.InvalidOrigin("Origin is required")
-        if (!iataRegex.matches(cleanOrigin)) return FlightValidationResult.InvalidOrigin("Use 3-letter IATA code (e.g. SCL)")
+        segments.forEachIndexed { index, segment ->
+            val origin = segment.origin.trim().uppercase()
+            val dest = segment.destination.trim().uppercase()
 
-        // 2. Security & Format: Destination
-        val cleanDest = destination.trim().uppercase()
-        if (cleanDest.isEmpty()) return FlightValidationResult.InvalidDestination("Destination is required")
-        if (!iataRegex.matches(cleanDest)) return FlightValidationResult.InvalidDestination("Use 3-letter IATA code (e.g. LIM)")
+            val originErr = when {
+                origin.isBlank() || !iataRegex.matches(origin) -> FlightError.INVALID_ORIGIN
+                else -> null
+            }
 
-        // 3. Business Rule: Same Location
-        if (cleanOrigin == cleanDest) return FlightValidationResult.SameLocation
+            val destErr = when {
+                dest.isBlank() || !iataRegex.matches(dest) -> FlightError.INVALID_DESTINATION
+                origin == dest && origin.isNotEmpty() -> FlightError.SAME_LOCATION
+                else -> null
+            }
 
-        // 4. Business Rule: Dates
-        if (startDate == null) return FlightValidationResult.InvalidDate("Please select a travel date")
-        if (startDate < System.currentTimeMillis() - 86400000) return FlightValidationResult.InvalidDate("Cannot book flights in the past")
+            val dateErr = when {
+                segment.dateMillis == null || segment.dateMillis!! < (System.currentTimeMillis() - 86400000) -> FlightError.INVALID_DATE
+                else -> null
+            }
 
-        // 5. Business Rule: Passengers
-        if (adults < 1) return FlightValidationResult.InvalidPassengers("At least one adult is required")
+            if (originErr != null || destErr != null || dateErr != null) {
+                segmentErrors[index] = SegmentError(originErr, destErr, dateErr)
+            }
+        }
 
-        return FlightValidationResult.Success
+        if (isRoundTrip && endDate == null) globalDateError = FlightError.MISSING_RETURN_DATE
+
+        return FlightValidationResult(
+            segmentErrors = segmentErrors,
+            globalDateError = globalDateError,
+            isValid = segmentErrors.isEmpty() && globalDateError == null
+        )
     }
 
-    sealed interface FlightValidationResult {
-        object Success : FlightValidationResult
-        data class InvalidOrigin(val reason: String) : FlightValidationResult
-        data class InvalidDestination(val reason: String) : FlightValidationResult
-        data class InvalidDate(val reason: String) : FlightValidationResult
-        data class InvalidPassengers(val reason: String) : FlightValidationResult
-        object SameLocation : FlightValidationResult
-    }
+    enum class FlightError { INVALID_ORIGIN, INVALID_DESTINATION, SAME_LOCATION, INVALID_DATE, MISSING_RETURN_DATE }
+    data class SegmentError(val originError: FlightError? = null, val destinationError: FlightError? = null, val dateError: FlightError? = null)
+    data class FlightValidationResult(val segmentErrors: Map<Int, SegmentError> = emptyMap(), val globalDateError: FlightError? = null, val isValid: Boolean)
 }

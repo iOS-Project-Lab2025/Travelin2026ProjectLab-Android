@@ -32,6 +32,7 @@ import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.common.presentation.ui.components.*
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
+import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
 import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightSearchEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightSearchState
@@ -338,6 +339,7 @@ private fun FlightSegmentItem(
     state: FlightSearchState,
     onEvent: (FlightSearchEvent) -> Unit
 ) {
+    val segmentError = state.errors[index]
     Box(modifier = Modifier.fillMaxWidth()) {
         Column {
             Box {
@@ -345,6 +347,8 @@ private fun FlightSegmentItem(
                     value = segment.origin,
                     onValueChange = { onEvent(FlightSearchEvent.OnOriginQueryChanged(index, it)) },
                     placeholder = stringResource(R.string.flight_search_from),
+                    state = if (segmentError?.originError != null) com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState.Error else com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState.Normal,
+                    errorMessage = segmentError?.originError?.toMessage(),
                     leadingIcon = { Icon(PlaneTakeoffIcon, null, tint = MaterialTheme.colorScheme.primary) }
                 )
                 if (state.activeSegmentIndex == index && state.originSuggestions.isNotEmpty()) {
@@ -363,6 +367,8 @@ private fun FlightSegmentItem(
                     value = segment.destination,
                     onValueChange = { onEvent(FlightSearchEvent.OnDestinationQueryChanged(index, it)) },
                     placeholder = stringResource(R.string.flight_search_to),
+                    state = if (segmentError?.destinationError != null) com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState.Error else com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState.Normal,
+                    errorMessage = segmentError?.destinationError?.toMessage(),
                     leadingIcon = { Icon(PlaneLandIcon, null, tint = MaterialTheme.colorScheme.primary) }
                 )
                 if (state.activeSegmentIndex == index && state.destinationSuggestions.isNotEmpty()) {
@@ -399,6 +405,7 @@ private fun FlightSegmentItem(
         DatePickerField(
             label = stringResource(R.string.flight_select_date),
             dateMillis = segment.dateMillis,
+            isError = segmentError?.dateError != null,
             onClick = {
                 // we update the active index so modal will know to wich flight put the date
                 onEvent(FlightSearchEvent.OnOriginQueryChanged(index, segment.origin))
@@ -406,6 +413,14 @@ private fun FlightSegmentItem(
                 onEvent(FlightSearchEvent.OnShowDatePicker)
             }
         )
+        if (segmentError?.dateError != null) {
+            Text(
+                text = segmentError.dateError!!.toMessage(),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+            )
+        }
     }
 }
 
@@ -414,6 +429,8 @@ private fun FlightSegmentItem(
  */
 @Composable
 private fun FlightPreferencesSection(state: FlightSearchState, onEvent: (FlightSearchEvent) -> Unit) {
+    val dateErrorEnum = state.globalDateError ?: state.errors[0]?.dateError
+    val hasDateError = dateErrorEnum != null
     Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)) {
         Surface(
             onClick = { onEvent(FlightSearchEvent.OnShowCabinSheet) },
@@ -425,8 +442,8 @@ private fun FlightPreferencesSection(state: FlightSearchState, onEvent: (FlightS
                 modifier = Modifier.padding(TravelinDimens.PaddingMedium).fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(state.selectedCabinClass.toIcon(), null, tint = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.width(TravelinDimens.SpaceMedium))
+                Icon(state.selectedCabinClass.toIcon(), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(TravelinDimens.IconSizeLarge))
+                Spacer(Modifier.width(TravelinDimens.SpaceExtraSmall))
                 Text(
                     text = state.selectedCabinClass.toDisplayName(),
                     style = MaterialTheme.typography.bodyLarge,
@@ -461,41 +478,67 @@ private fun FlightPreferencesSection(state: FlightSearchState, onEvent: (FlightS
         }
         // --- DATE SELECTION CARD ---
         if (state.selectedFlightType != FlightType.MULTI_CITY) {
-            Surface(
-                onClick = { onEvent(FlightSearchEvent.OnShowDatePicker) },
-                shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Row(
-                    modifier = Modifier.padding(TravelinDimens.PaddingMedium).fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(CalendarIcon, null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(12.dp))
-                    val formatter = rememberDateFormatter()
-                    // Leemos la fecha del primer segmento para One Way y Multi-city
-                    val segmentDate = state.segments.getOrNull(0)?.dateMillis
-                    val startDate = if (state.selectedFlightType == FlightType.ROUND_TRIP) state.bookingDetailsState.startDateMillis else segmentDate
-                    val endDate = state.bookingDetailsState.endDateMillis
 
-                    val dateText = when {
-                        state.selectedFlightType == FlightType.ROUND_TRIP && startDate != null && endDate != null -> {
-                            "${formatter.format(Date(startDate))} - ${formatter.format(Date(endDate))}"
+            Column {
+                Surface(
+                    onClick = { onEvent(FlightSearchEvent.OnShowDatePicker) },
+                    shape = MaterialTheme.shapes.medium,
+                    border = BorderStroke(
+                        width = if (hasDateError) 2.dp else 1.dp,
+                        color = if (hasDateError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outlineVariant
+                    ),
+                    color = MaterialTheme.colorScheme.surface
+                ) {
+                    Row(
+                        modifier = Modifier.padding(TravelinDimens.PaddingMedium).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(CalendarIcon, null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.width(12.dp))
+                        val formatter = rememberDateFormatter()
+                        // Leemos la fecha del primer segmento para One Way y Multi-city
+                        val segmentDate = state.segments.getOrNull(0)?.dateMillis
+                        val startDate =
+                            if (state.selectedFlightType == FlightType.ROUND_TRIP) state.bookingDetailsState.startDateMillis else segmentDate
+                        val endDate = state.bookingDetailsState.endDateMillis
+
+                        val dateText = when {
+                            state.selectedFlightType == FlightType.ROUND_TRIP && startDate != null && endDate != null -> {
+                                "${formatter.format(Date(startDate))} - ${
+                                    formatter.format(
+                                        Date(
+                                            endDate
+                                        )
+                                    )
+                                }"
+                            }
+
+                            startDate != null -> formatter.format(Date(startDate))
+                            else -> stringResource(R.string.flight_search_date)
                         }
 
-                        startDate != null -> formatter.format(Date(startDate))
-                        else -> stringResource(R.string.flight_search_date)
+                        Text(
+                            text = dateText,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (hasDateError) MaterialTheme.colorScheme.error
+                            else if (startDate != null) MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-
-                    Text(
-                        text = dateText,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = if (startDate != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
+
             }
+            if (hasDateError) {
+                Text(
+                    text = dateErrorEnum!!.toMessage(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+                )
+            }
+
         }
+
     }
 }
 
@@ -539,7 +582,7 @@ private fun CabinClassBottomSheet(state: FlightSearchState, onEvent: (FlightSear
                                 imageVector = cabin.toIcon(),
                                 contentDescription = null,
                                 tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(TravelinDimens.IconSizeMedium)
+                                modifier = Modifier.size(TravelinDimens.IconSizeLarge)
                             )
                             Spacer(Modifier.width(TravelinDimens.SpaceMedium))
                             Text(
@@ -619,16 +662,19 @@ private fun AirportSuggestions(list: List<Airport>, onSelected: (Airport) -> Uni
  * Styled text field that acts as a button to trigger a date picker.
  */
 @Composable
-fun DatePickerField(label: String, dateMillis: Long?, onClick: () -> Unit) {
+fun DatePickerField(label: String, dateMillis: Long?, isError: Boolean = false, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(
+            width = if (isError) 2.dp else 1.dp,
+            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outlineVariant
+        ),
         color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxWidth().padding(vertical = TravelinDimens.Padding2ExtraSmall)
     ) {
         Row(modifier = Modifier.padding(TravelinDimens.PaddingMedium), verticalAlignment = Alignment.CenterVertically) {
-            Icon(CalendarIcon, null, tint = MaterialTheme.colorScheme.primary)
+            Icon(CalendarIcon, null, tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(TravelinDimens.SpaceMedium))
             val formatter = rememberDateFormatter()
 
@@ -637,7 +683,11 @@ fun DatePickerField(label: String, dateMillis: Long?, onClick: () -> Unit) {
                     formatter.format(Date(dateMillis))
                 } else label,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (dateMillis != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                color = when {
+                    isError -> MaterialTheme.colorScheme.error
+                    dateMillis != null -> MaterialTheme.colorScheme.onSurface
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
         }
     }
@@ -676,6 +726,21 @@ private fun CabinClass.toDisplayName(): String {
         CabinClass.BUSINESS -> stringResource(R.string.flight_cabin_business)
         CabinClass.FIRST -> stringResource(R.string.flight_cabin_first)
     }
+}
+
+/**
+ * Maps a validation error enum to its localized string resource.
+ */
+@Composable
+private fun ValidateFlightSearchUseCase.FlightError.toMessage(): String {
+    val id = when (this) {
+        ValidateFlightSearchUseCase.FlightError.INVALID_ORIGIN -> R.string.flight_error_invalid_origin
+        ValidateFlightSearchUseCase.FlightError.INVALID_DESTINATION -> R.string.flight_error_invalid_destination
+        ValidateFlightSearchUseCase.FlightError.SAME_LOCATION -> R.string.flight_error_same_location
+        ValidateFlightSearchUseCase.FlightError.INVALID_DATE -> R.string.flight_error_invalid_date
+        ValidateFlightSearchUseCase.FlightError.MISSING_RETURN_DATE -> R.string.flight_error_missing_return_date
+    }
+    return stringResource(id)
 }
 
 // --- PREVIEWS (LIGHT & DARK MODES) ---
