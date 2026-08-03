@@ -224,7 +224,7 @@ object HomeMockData {
                     )
                 ),
                 confirmationCode = "ABC123",
-                status = BookingStatus.CONFIRMED
+                status = BookingStatus.COMPLETED
             )
         ),
 
@@ -249,7 +249,7 @@ object HomeMockData {
 
             confirmationCode = "HOTEL456",
 
-            status = BookingStatus.CONFIRMED,
+            status = BookingStatus.COMPLETED,
 
             createdAt = dateLong(2026, 7, 31)
         ),
@@ -276,7 +276,7 @@ object HomeMockData {
 
                 confirmationCode = "TOUR789",
 
-                status = BookingStatus.CONFIRMED
+                status = BookingStatus.COMPLETED
             )
         )
     )

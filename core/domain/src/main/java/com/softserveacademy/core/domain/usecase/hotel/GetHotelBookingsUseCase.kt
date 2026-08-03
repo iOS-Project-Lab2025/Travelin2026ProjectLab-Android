@@ -2,6 +2,7 @@ package com.softserveacademy.core.domain.usecase.hotel
 
 import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.repository.HotelBookingRepository
+import com.softserveacademy.core.error.model.AppResult
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -11,7 +12,7 @@ import javax.inject.Inject
 class GetHotelBookingsUseCase @Inject constructor(
     private val repository: HotelBookingRepository,
 ) {
-    operator fun invoke(): Flow<List<HotelBooking>> {
+    operator fun invoke(): Flow<AppResult<List<HotelBooking>>> {
         return repository.getBookings()
     }
 }

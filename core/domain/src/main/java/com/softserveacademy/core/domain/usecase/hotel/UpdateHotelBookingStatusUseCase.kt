@@ -2,6 +2,7 @@ package com.softserveacademy.core.domain.usecase.hotel
 
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.repository.HotelBookingRepository
+import com.softserveacademy.core.error.model.AppResult
 import javax.inject.Inject
 
 /**
@@ -10,7 +11,7 @@ import javax.inject.Inject
 class UpdateHotelBookingStatusUseCase @Inject constructor(
     private val repository: HotelBookingRepository
 ) {
-    suspend operator fun invoke(bookingId: String, status: BookingStatus) {
-        repository.updateBookingStatus(bookingId, status)
+    suspend operator fun invoke(bookingId: String, status: BookingStatus): AppResult<Unit> {
+        return repository.updateBookingStatus(bookingId, status)
     }
 }

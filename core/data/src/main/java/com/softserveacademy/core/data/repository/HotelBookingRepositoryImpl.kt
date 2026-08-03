@@ -9,6 +9,11 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.repository.HotelBookingRepository
+import com.softserveacademy.core.error.extension.map
+import com.softserveacademy.core.error.mapper.ExceptionMapper
+import com.softserveacademy.core.error.model.AppResult
+import com.softserveacademy.core.error.util.safeCall
+import com.softserveacademy.core.error.util.safeFlow
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,12 +26,13 @@ private val Context.hotelBookingDataStore: DataStore<Preferences> by preferences
 
 @Singleton
 class HotelBookingRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val mapper: ExceptionMapper
 ) : HotelBookingRepository {
 
     private val bookingsKey = stringPreferencesKey("hotel_bookings")
 
-    override suspend fun saveBooking(booking: HotelBooking) {
+    override suspend fun saveBooking(booking: HotelBooking): AppResult<Unit> = safeCall(mapper) {
         context.hotelBookingDataStore.edit { preferences ->
             val currentBookings = getBookingsList(preferences)
             val updatedBookings = if (currentBookings.any { it.bookingId == booking.bookingId }) {
@@ -38,19 +44,19 @@ class HotelBookingRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getBookings(): Flow<List<HotelBooking>> {
-        return context.hotelBookingDataStore.data.map { preferences ->
-            getBookingsList(preferences)
+    override fun getBookings(): Flow<AppResult<List<HotelBooking>>> {
+        return context.hotelBookingDataStore.data
+            .map { preferences -> getBookingsList(preferences) }
+            .safeFlow(mapper)
+    }
+
+    override fun getBookingById(bookingId: String): Flow<AppResult<HotelBooking?>> {
+        return getBookings().map { result ->
+            result.map { list -> list.find { it.bookingId == bookingId } }
         }
     }
 
-    override fun getBookingById(bookingId: String): Flow<HotelBooking?> {
-        return getBookings().map { list ->
-            list.find { it.bookingId == bookingId }
-        }
-    }
-
-    override suspend fun updateBookingStatus(bookingId: String, status: BookingStatus) {
+    override suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): AppResult<Unit> = safeCall(mapper) {
         context.hotelBookingDataStore.edit { preferences ->
             val currentBookings = getBookingsList(preferences)
             val updatedBookings = currentBookings.map {

@@ -70,7 +70,7 @@ class HomeViewModelTest {
         flights = listOf(flight),
         tickets = listOf(ticket),
         confirmationCode = "ABC123",
-        status = BookingStatus.CONFIRMED
+        status = BookingStatus.COMPLETED
     )
 
     private val destination = Destination(

@@ -1,5 +1,6 @@
 package com.softserveacademy.feature.booking.common.data.di
 
+import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.feature.booking.common.data.remote.StripeApi
 import com.softserveacademy.feature.booking.common.data.repository.PaymentRepositoryImpl
 import com.softserveacademy.feature.booking.common.domain.repository.PaymentRepository
@@ -27,7 +28,10 @@ object PaymentDataModule {
 
     @Provides
     @Singleton
-    fun providePaymentRepository(stripeApi: StripeApi): PaymentRepository {
-        return PaymentRepositoryImpl(stripeApi)
+    fun providePaymentRepository(
+        stripeApi: StripeApi,
+        mapper: ExceptionMapper
+    ): PaymentRepository {
+        return PaymentRepositoryImpl(stripeApi, mapper)
     }
 }

@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation(projects.feature.booking.common.domain)
+    implementation(projects.core.error)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
 

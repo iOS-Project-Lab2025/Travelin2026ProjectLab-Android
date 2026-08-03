@@ -75,7 +75,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                         }
                     }
                     .onFailure { e ->
-                        _uiState.update { it.copy(isLoading = false, error = e.toString()) }
+                        _uiState.update { it.copy(isLoading = false, error = "Failed to load details") }
                     }
             } else {
                 _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
@@ -109,24 +109,35 @@ class HotelBookingConfirmViewModel @Inject constructor(
         _uiState.update { it.copy(isPaymentSheetLoading = true) }
         
         viewModelScope.launch {
-            // Save initial PENDING booking
-            val booking = createBookingFromState(BookingStatus.PENDING)
+            // Save initial CREATED booking
+            val booking = createBookingFromState(BookingStatus.CREATED)
             if (booking != null) {
                 currentBookingId = booking.bookingId
                 saveHotelBookingUseCase(booking)
+                    .onFailure { _ ->
+                        _uiState.update { it.copy(error = "Failed to save booking", isPaymentSheetLoading = false) }
+                        updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
+                        return@launch
+                    }
+            } else {
+                _uiState.update { it.copy(error = "Failed to create booking data", isPaymentSheetLoading = false) }
+                return@launch
             }
 
             createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
                 .onSuccess { secret ->
                     _uiState.update { it.copy(clientSecret = secret, isPaymentSheetLoading = false) }
+                    // Update status to PENDING as we are now awaiting payment
+                    updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.PENDING)
                 }
-                .onFailure { error ->
+                .onFailure { _ ->
                     _uiState.update {
                         it.copy(
-                            error = error.message ?: "Failed to create payment intent",
+                            error = "Failed to create payment intent",
                             isPaymentSheetLoading = false
                         )
                     }
+                    updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
                 }
         }
     }
@@ -134,7 +145,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun finalizeBooking() {
         viewModelScope.launch {
             currentBookingId?.let { id ->
-                updateHotelBookingStatusUseCase(id, BookingStatus.CONFIRMED)
+                updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
             }
             clearHotelBookingDraftUseCase(hotelId.toString())
             _uiState.update { it.copy(isPaymentSuccessful = true) }
