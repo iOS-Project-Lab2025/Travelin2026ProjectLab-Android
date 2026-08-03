@@ -1,5 +1,7 @@
 package com.softserveacademy.core.domain.model
 
+import com.softserveacademy.core.domain.util.DurationSerializer
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 /**
@@ -18,6 +20,7 @@ import kotlin.time.Duration
  * @property rating Average user rating of the tour.
  * @property category Category of the tour.
  */
+@Serializable
 data class Tour(
     val id: String,
 
@@ -29,6 +32,7 @@ data class Tour(
 
     val imageUrl: String,
 
+    @Serializable(with = DurationSerializer::class)
     val duration: Duration,
 
     val price: Double,
@@ -48,6 +52,7 @@ data class Tour(
  * @property CITY City sightseeing and urban exploration.
  * @property FAMILY Activities suitable for families and children.
  */
+@Serializable
 enum class TourCategory {
     ADVENTURE,
     CULTURE,
