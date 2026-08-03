@@ -1,5 +1,7 @@
-package com.softserveacademy.core.data.repository
+package com.softserveacademy.core.data.di
 
+import com.softserveacademy.core.data.repository.HotelBookingRepositoryImpl
+import com.softserveacademy.core.data.repository.HotelRepoImpl
 import com.softserveacademy.core.domain.repository.HotelBookingRepository
 import com.softserveacademy.core.domain.repository.HotelRepo
 import dagger.Binds

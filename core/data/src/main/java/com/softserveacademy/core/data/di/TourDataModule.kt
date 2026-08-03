@@ -1,5 +1,6 @@
-package com.softserveacademy.core.data.repository
+package com.softserveacademy.core.data.di
 
+import com.softserveacademy.core.data.repository.TourRepoImpl
 import com.softserveacademy.core.domain.repository.TourRepo
 import dagger.Binds
 import dagger.Module
