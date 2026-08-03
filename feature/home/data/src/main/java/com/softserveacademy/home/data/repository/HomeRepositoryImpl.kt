@@ -32,14 +32,14 @@ class HomeRepositoryImpl @Inject constructor(
         delay(700)
         return when (val result = tourRepo.getTours()) {
             is AppResult.Success -> Result.success(result.data)
-            is AppResult.Failure -> Result.failure(Exception("Failed to load tours"))
+            is AppResult.Failure -> Result.failure(Exception("Tours error: ${result.error}"))
         }
     }
 
     override suspend fun getRecommendedHotels(): Result<List<Hotel>> {
         return when (val result = hotelRepo.getHotels()) {
             is AppResult.Success -> Result.success(result.data)
-            is AppResult.Failure -> Result.failure(Exception("Failed to load hotels"))
+            is AppResult.Failure -> Result.failure(Exception("Hotels error: ${result.error}"))
         }
     }
 }

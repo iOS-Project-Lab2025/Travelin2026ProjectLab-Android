@@ -1,6 +1,6 @@
 package com.softserveacademy.core.domain.model
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
 /**
  * Data class representing a hotel room.
@@ -18,6 +18,7 @@ import java.io.Serializable
  * @param availableRooms The number of rooms currently available.
  * @param isAvailable Whether the room is currently available.
  */
+@Serializable
 data class HotelRoom(
     val id: Int? = null,
     val type: String,
@@ -31,4 +32,4 @@ data class HotelRoom(
     val totalRooms: Int = 5,
     val availableRooms: Int = 5,
     val isAvailable: Boolean = true
-) : Serializable
+) : java.io.Serializable

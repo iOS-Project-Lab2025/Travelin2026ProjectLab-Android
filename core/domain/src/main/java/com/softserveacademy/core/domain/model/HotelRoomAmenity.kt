@@ -1,11 +1,12 @@
 package com.softserveacademy.core.domain.model
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
 /**
  * Enum class representing the amenities available in a hotel room.
 */
-enum class HotelRoomAmenity : Serializable {
+@Serializable
+enum class HotelRoomAmenity {
     WIFI,
     BREAKFAST,
     PARKING,
