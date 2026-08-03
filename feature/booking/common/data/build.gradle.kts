@@ -37,7 +37,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation(libs.retrofit)
+    implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.retrofit.converter.scalars)
 
