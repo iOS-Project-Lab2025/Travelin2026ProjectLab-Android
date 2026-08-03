@@ -13,6 +13,7 @@ class ValidateFlightSearchUseCase @Inject constructor() {
         val segmentErrors = mutableMapOf<Int, SegmentError>()
         var globalDateError: FlightError? = null
 
+
         segments.forEachIndexed { index, segment ->
             var dateSeqErr: FlightError? = null
             if (index > 0) {
@@ -23,12 +24,12 @@ class ValidateFlightSearchUseCase @Inject constructor() {
             }
 
             val originErr = when {
-                segment.origin.isBlank() || !iataRegex.matches(segment.origin) -> FlightError.INVALID_ORIGIN
+                segment.origin.isBlank() || !iataRegex.matches(segment.origin.trim().uppercase()) -> FlightError.INVALID_ORIGIN
                 else -> null
             }
 
             val destErr = when {
-                segment.destination.isBlank() || !iataRegex.matches(segment.destination) -> FlightError.INVALID_DESTINATION
+                segment.destination.isBlank() || !iataRegex.matches(segment.destination.trim().uppercase()) -> FlightError.INVALID_DESTINATION
                 segment.origin == segment.destination && segment.origin.isNotEmpty() -> FlightError.SAME_LOCATION
                 else -> null
             }

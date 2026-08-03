@@ -5,12 +5,19 @@ plugins {
 
 android {
     namespace = "com.softserveacademy.feature.booking.flight.presentation"
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
+    implementation(libs.androidx.ui.test.junit4)
     implementation(projects.feature.booking.flight.domain)
     implementation(projects.core.presentation.designSystem)
     implementation(projects.feature.booking.common.presentation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.glide.compose)
+    testImplementation(libs.bundles.testing.stack)
 }

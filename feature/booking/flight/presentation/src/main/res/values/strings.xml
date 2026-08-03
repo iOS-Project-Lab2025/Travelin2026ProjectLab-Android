@@ -44,4 +44,5 @@
     <string name="flight_cabin_first">First Class</string>
     <string name="flight_error_network">No internet connection.\nPlease check your network and try again.</string>
     <string name="flight_error_date_sequence">Flight must be after the previous one</string>
+    <string name="flight_result_see_more_button">"Show +%d more available"</string>
 </resources>

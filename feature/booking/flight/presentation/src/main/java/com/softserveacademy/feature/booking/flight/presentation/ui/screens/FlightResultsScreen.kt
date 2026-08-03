@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,7 +50,7 @@ fun FlightResultsScreen(
     val state by viewModel.uiState.collectAsState()
 
     FlightResultsContent(
-        offers = state.visibleOffers,
+        visibleOffers = state.visibleOffers,
         origin = state.origin,
         destination = state.destination,
         passengerCount = state.totalPassengers,
@@ -72,7 +73,7 @@ fun FlightResultsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightResultsContent(
-    offers: List<FlightOffer>,
+    visibleOffers: List<FlightOffer>,
     origin: String,
     destination: String,
     passengerCount: Int,
@@ -101,7 +102,7 @@ fun FlightResultsContent(
                 }
             },
             bottomBar = {
-                // Restauramos la barra inferior (Solo si no hay error crítico)
+                //restores bottom buttons if there is no network error
                 if (error == null) {
                     TravelBookingBottomBar(onBackClick = onBack, onNextClick = onNext)
                 }
@@ -111,7 +112,7 @@ fun FlightResultsContent(
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
 
-                    // Header Info (Siempre visible si no hay error de red)
+                    // Header Info (Always visible if no network error)
                     if (error == null) {
                         Column(modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium)) {
                             Text(
@@ -158,18 +159,18 @@ fun FlightResultsContent(
                                 )
                             }
                         }
-                        offers.isEmpty() -> {
+                        visibleOffers.isEmpty() -> {
                             FlightEmptyState()
                         }
                         else -> {
                             // Flight list
                             LazyColumn(modifier = Modifier.weight(1f)) {
-                                itemsIndexed(offers) { index, offer ->
+                                itemsIndexed(visibleOffers) { index, offer ->
                                     FlightResultItem(
                                         offer = offer,
                                         onClick = { onFlightSelected(offer.id) }
                                     )
-                                    if (index < offers.lastIndex) {
+                                    if (index < visibleOffers.lastIndex) {
                                         HorizontalDivider(
                                             modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium),
                                             thickness = 1.dp,
@@ -178,19 +179,20 @@ fun FlightResultsContent(
                                     }
                                 }
                                 // --- show more button ---
-                                if (totalAvailable > offers.size) {
+                                if (totalAvailable > visibleOffers.size) {
                                     item {
-                                        val remaining = totalAvailable - offers.size
+                                        val remaining = totalAvailable - visibleOffers.size
                                         OutlinedButton(
-                                            onClick = onLoadMore, // Llama a viewModel.onEvent(OnLoadMore)
+                                            onClick = onLoadMore,
                                             modifier = Modifier
                                                 .fillMaxWidth()
+                                                .testTag("load_more_button")
                                                 .padding(TravelinDimens.PaddingMedium),
                                             shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
                                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                                         ) {
                                             Text(
-                                                text = "Show +$remaining more available",
+                                                text = stringResource(R.string.flight_result_see_more_button, remaining),
                                                 color = MaterialTheme.colorScheme.primary,
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -213,7 +215,7 @@ fun FlightResultsContent(
 fun FlightResultsPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
         FlightResultsContent(
-            offers = getMockPreviewList(),
+            visibleOffers = getMockPreviewList(),
             origin = "SCL",
             destination = "LIM",
             passengerCount = 2,
@@ -233,11 +235,11 @@ fun FlightResultsPreview() {
 fun FlightResultsDarkPreview() {
     Travelin2026ProjectLabTheme(darkTheme = true) {
         FlightResultsContent(
-            offers = getMockPreviewList(),
+            visibleOffers = getMockPreviewList(),
             origin = "SCL",
             destination = "LIM",
             passengerCount = 2,
-            totalAvailable = 20, // El botón dirá +17 (20 total - 3 en lista)
+            totalAvailable = 20,
             isLoading = false,
             error = null,
             onNext = {},
