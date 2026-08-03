@@ -93,7 +93,7 @@ object HomeMockData {
 
     val hotels = listOf(
         Hotel(
-            id = 1,
+            id = "1",
             name = "Koh Rong Samloem Resort",
             address = "Koh Rong Samloem, Cambodia",
             star = 5,
@@ -102,7 +102,7 @@ object HomeMockData {
             image = listOf("https://picsum.photos/id/10/800/600")
         ),
         Hotel(
-            id = 2,
+            id = "2",
             name = "Sunset Paradise",
             address = "Phuket, Thailand",
             star = 4,
@@ -111,7 +111,7 @@ object HomeMockData {
             image = listOf("https://picsum.photos/id/11/800/600")
         ),
         Hotel(
-            id = 3,
+            id = "3",
             name = "Swiss Mountain Lodge",
             address = "Zermatt, Switzerland",
             star = 5,
@@ -120,7 +120,7 @@ object HomeMockData {
             image = listOf("https://picsum.photos/id/12/800/600")
         ),
         Hotel(
-            id = 4,
+            id = "4",
             name = "Ocean Breeze",
             address = "Bali, Indonesia",
             star = 4,
@@ -129,7 +129,7 @@ object HomeMockData {
             image = listOf("https://picsum.photos/id/13/800/600")
         ),
         Hotel(
-            id = 5,
+            id = "5",
             name = "The Grand Palace",
             address = "Paris, France",
             star = 5,

@@ -21,6 +21,7 @@ import coil3.compose.AsyncImage
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
+import com.softserveacademy.home.presentation.model.TravelItemType
 import com.softserveacademy.home.presentation.viewmodel.SearchUiState
 import com.softserveacademy.home.presentation.viewmodel.SearchViewModel
 
@@ -35,7 +36,7 @@ import com.softserveacademy.home.presentation.viewmodel.SearchViewModel
 @Composable
 fun DestinationSearchScreen(
     onBackClick: () -> Unit,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (String, TravelItemType) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     Scaffold(
@@ -239,7 +240,7 @@ fun NearbyHeader() {
  * Displays search results in a vertical list.
  */
 @Composable
-fun ResultsList(items: List<SearchItem>, onItemClick: (Int) -> Unit) {
+fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -> Unit) {
     LazyColumn(
         contentPadding = PaddingValues(TravelinDimens.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
@@ -252,7 +253,7 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (Int) -> Unit) {
                     image = item.hotel.image.firstOrNull(),
                     price = "${item.hotel.pricePerNight}",
                     rating = item.hotel.userRating,
-                    onClick = { item.hotel.id?.let { onItemClick(it) } }
+                    onClick = { item.hotel.id?.let { onItemClick(it, TravelItemType.HOTEL) } }
                 )
 
                 is SearchItem.TourItem -> SearchResultCard(
@@ -260,8 +261,8 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (Int) -> Unit) {
                     location = item.tour.location,
                     image = item.tour.imageUrl,
                     price = "${item.tour.price}",
-                    rating = item.tour.rating.toDouble()
-                    // Handle tour selection if needed
+                    rating = item.tour.rating.toDouble(),
+                    onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
                 )
                 // Handle additional search result types as needed
                 else -> {}

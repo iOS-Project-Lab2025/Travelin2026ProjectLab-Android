@@ -33,7 +33,7 @@ class HotelRoomSelectionViewModelTest {
     private lateinit var savedStateHandle: SavedStateHandle
     private val testDispatcher = StandardTestDispatcher()
 
-    private val hotelId = 1
+    private val hotelId = "1"
     private val mockRooms = listOf(
         HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
         HotelRoom(id = 2, type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
@@ -50,8 +50,8 @@ class HotelRoomSelectionViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
         coEvery { hotelRepo.getHotelRooms(hotelId, any(), any(), any()) } returns AppResult.Success(mockRooms)
-        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns HotelBookingDraft(
-            hotelId = hotelId.toString(),
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId) } returns HotelBookingDraft(
+            hotelId = hotelId,
             checkIn = checkIn,
             checkOut = checkOut
         )

@@ -37,7 +37,7 @@ class HotelRepoImpl @Inject constructor(
 ) : HotelRepo {
     private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
 
-    override suspend fun getHotelById(id: Int): AppResult<HotelDetails> = safeCall(mapper) {
+    override suspend fun getHotelById(id: String): AppResult<HotelDetails> = safeCall(mapper) {
         hotelApiService.getHotelById(id)
     }
 
@@ -45,7 +45,7 @@ class HotelRepoImpl @Inject constructor(
         hotelApiService.getHotels()
     }
 
-    override suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>> = safeCall(mapper) {
+    override suspend fun getHotelRooms(hotelId: String, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>> = safeCall(mapper) {
         val hotel = hotelApiService.getHotelById(hotelId)
         val baseRooms = hotel.rooms
         baseRooms
@@ -64,7 +64,7 @@ class HotelRepoImpl @Inject constructor(
             }
     }
 
-    override suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit> = safeCall(mapper) {
+    override suspend fun reserveRoom(hotelId: String, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit> = safeCall(mapper) {
         _bookings.update { currentBookings ->
             currentBookings + Booking(roomId, checkInDate, checkOutDate)
         }
