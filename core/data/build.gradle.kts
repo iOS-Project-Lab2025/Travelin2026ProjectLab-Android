@@ -1,7 +1,6 @@
 plugins {
     id("com.softserveacademy.android.library")
     id("com.softserveacademy.android.hilt")
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -13,5 +12,8 @@ dependencies {
     implementation(projects.core.error)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.appcompat)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
 }

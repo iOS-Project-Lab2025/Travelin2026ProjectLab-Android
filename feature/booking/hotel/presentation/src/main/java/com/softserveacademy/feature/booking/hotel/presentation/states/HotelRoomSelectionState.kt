@@ -1,8 +1,9 @@
 package com.softserveacademy.feature.booking.hotel.presentation.states
 
 import com.softserveacademy.core.domain.model.HotelRoom
+import java.io.Serializable
 
-enum class RoomFilter {
+enum class RoomFilter : Serializable {
     AVAILABLE, ALL, ONE_BED, TWO_BEDS
 }
 
@@ -23,4 +24,4 @@ data class HotelRoomSelectionState(
     val selectedFilter: RoomFilter = RoomFilter.AVAILABLE,
     val isLoading: Boolean = false,
     val nightCount: Int = 1
-)
+) : Serializable

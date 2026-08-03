@@ -32,4 +32,4 @@ data class HotelRoom(
     val totalRooms: Int = 5,
     val availableRooms: Int = 5,
     val isAvailable: Boolean = true
-)
+) : java.io.Serializable

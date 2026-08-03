@@ -8,7 +8,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.staticCompositionLocalOf
 private val DarkColorScheme = darkColorScheme(
     primary = Teal40,
     onPrimary = GrayLight20,
@@ -49,6 +51,8 @@ private val LightColorScheme = lightColorScheme(
     onPrimaryFixed = BlueDark90
 )
 
+val LocalIsDarkTheme = staticCompositionLocalOf { false }
+
 @Composable
 fun Travelin2026ProjectLabTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -64,11 +68,12 @@ fun Travelin2026ProjectLabTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = TravelinTypography,
-        shapes = shapes,
-        content = content
-    )
+    CompositionLocalProvider(LocalIsDarkTheme provides darkTheme){
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = TravelinTypography,
+            shapes = shapes,
+            content = content
+        )
+    }
 }

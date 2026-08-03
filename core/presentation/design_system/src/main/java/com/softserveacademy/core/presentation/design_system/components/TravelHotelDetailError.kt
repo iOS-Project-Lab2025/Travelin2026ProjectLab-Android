@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.components
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,10 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.home.presentation.R.string
+import com.softserveacademy.core.presentation.design_system.R
 
 /**
  * Displays an error message and a retry button when data fetching fails.
@@ -37,14 +36,14 @@ fun TravelHotelDetailError(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = message ?: stringResource(id = string.unexpected_error),
+            text = message ?: stringResource(id = R.string.unexpected_error),
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
         TravelPrimaryButton(
             onClick = onRetry,
-            text = stringResource(id = string.retry_label),
+            text = stringResource(id = R.string.retry_label),
             modifier = Modifier.fillMaxWidth(0.6f)
         )
     }

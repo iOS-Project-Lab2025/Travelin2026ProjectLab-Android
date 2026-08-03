@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.components
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
