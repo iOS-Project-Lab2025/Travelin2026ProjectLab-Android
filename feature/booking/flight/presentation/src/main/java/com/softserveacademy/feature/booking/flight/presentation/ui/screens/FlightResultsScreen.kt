@@ -28,6 +28,10 @@ import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
 import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightResultsEvent
+import com.softserveacademy.feature.booking.flight.presentation.ui.components.FlightEmptyState
+import com.softserveacademy.feature.booking.flight.presentation.ui.components.FlightResultItem
+import com.softserveacademy.feature.booking.flight.presentation.ui.mappers.toDisplayName
+import com.softserveacademy.feature.booking.flight.presentation.util.rememberFlightDateFormatter
 import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightResultsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -202,156 +206,7 @@ fun FlightResultsContent(
     }
 }
 
-/**
- * Clean list item following the "Upcoming Trip" aesthetics.
- * Uses official icons and provides high contrast for Dark Mode.
- */
-@Composable
-fun FlightResultItem(offer: FlightOffer, onClick: () -> Unit) {
-    val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = TravelinDimens.PaddingNormal, horizontal = TravelinDimens.PaddingMedium),
-        verticalAlignment = Alignment.Top
-    ) {
-        @OptIn(ExperimentalGlideComposeApi::class)
-        GlideImage(
-            model = offer.flight.airline.logoUrl,
-            contentDescription = "Airline Logo",
-            modifier = Modifier
-                .size(TravelinDimens.IconSizeExtraLarge)
-                .background(Color.White, shape = RoundedCornerShape(4.dp)) // Fondo blanco para logos con transparencia
-                .padding(4.dp),
-
-            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-
-        )
-
-        Spacer(modifier = Modifier.width(TravelinDimens.SpaceMedium))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = offer.flight.airline.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "${offer.flight.origin.city} → ${offer.flight.destination.city}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
-
-            // Professional Timeline: IATA Code + Icon
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Column(horizontalAlignment = Alignment.Start) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = offer.flight.origin.code, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                        Spacer(Modifier.width(4.dp))
-                        Icon(imageVector = PlaneTakeoffIcon, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
-                    }
-                    Text(text = timeFormat.format(Date(offer.flight.departureTime)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-
-                // Dotted Connection
-                Box(modifier = Modifier.weight(1f).padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
-                    DashedLine()
-                    Text(
-                        text = "1h 30m",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(horizontal = 4.dp)
-                    )
-                }
-
-                Column(horizontalAlignment = Alignment.End) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = PlaneLandIcon, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
-                        Spacer(Modifier.width(4.dp))
-                        Text(text = offer.flight.destination.code, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                    }
-                    Text(text = timeFormat.format(Date(offer.flight.arrivalTime)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
-
-            // Footer: Cabin Class and Formatted Price
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Surface(
-                    shape = RoundedCornerShape(TravelinDimens.Space2ExtraSmall),
-                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
-                    color = Color.Transparent
-                ) {
-                    Text(
-                        text = offer.flight.cabinClass.toDisplayName(),
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        text = "$${String.format("%,d", offer.basePrice.toLong()).replace(',', '.')}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Text(
-                        text = " CLP /p.p",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 2.dp, start = 2.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun FlightEmptyState() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = PlaneIcon,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.outline
-        )
-        Spacer(Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.flight_empty_results),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-fun DashedLine() {
-    val color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-    Canvas(Modifier.fillMaxWidth().height(1.dp)) {
-        drawLine(
-            color = color,
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(size.width, 0f),
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f),
-            strokeWidth = 1.dp.toPx()
-        )
-    }
-}
-
-// --- Previews: Moving Data out of Production Code ---
+// --- Previews (Light & Dark Modes) ---
 
 @Preview(showBackground = true, name = "Results - Light Mode")
 @Composable
@@ -362,7 +217,7 @@ fun FlightResultsPreview() {
             origin = "SCL",
             destination = "LIM",
             passengerCount = 2,
-            totalAvailable = 20, // Simulamos que hay 20 en total
+            totalAvailable = 20,
             isLoading = false,
             error = null,
             onNext = {},

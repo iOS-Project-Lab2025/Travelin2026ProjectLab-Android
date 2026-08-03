@@ -48,7 +48,7 @@ class FlightResultsViewModel @Inject constructor(
                 _uiState.update { current ->
                     val nextCount = current.visibleOffers.size + 5
                     current.copy(
-                        visibleOffers = current.offers.take(nextCount),
+                        visibleOffers = current.allAvailableOffers.take(nextCount),
                     )
                 }
             }
@@ -96,12 +96,12 @@ class FlightResultsViewModel @Inject constructor(
                 returnDate = draft.returnDateMillis)
                 .catch { e ->
                     // Handles network or server errors
-                    _uiState.update { it.copy(isLoading = false, error = R.string.flight_error_network, offers = emptyList()) }
+                    _uiState.update { it.copy(isLoading = false, error = R.string.flight_error_network, allAvailableOffers = emptyList()) }
                 }
                 .collect { results ->
                     _uiState.update { it.copy(
                         isLoading = false,
-                        offers = results,
+                        allAvailableOffers = results,
                         visibleOffers = results.take(5), //how many results we show
                         error = null,
                         totalAvailableCount = results.size

@@ -7,7 +7,7 @@ import com.softserveacademy.core.domain.model.FlightOffer
  */
 data class FlightResultsState(
     val isLoading: Boolean = false,
-    val offers: List<FlightOffer> = emptyList(),
+    val allAvailableOffers: List<FlightOffer> = emptyList(),
     val visibleOffers: List<FlightOffer> = emptyList(),
     val error: Int? = null,
     val origin: String = "",
