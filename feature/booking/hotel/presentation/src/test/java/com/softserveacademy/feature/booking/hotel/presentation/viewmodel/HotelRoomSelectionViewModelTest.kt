@@ -6,7 +6,6 @@ import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelRoomsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
@@ -31,7 +30,6 @@ class HotelRoomSelectionViewModelTest {
 
     private lateinit var viewModel: HotelRoomSelectionViewModel
     private lateinit var getHotelRoomsUseCase: GetHotelRoomsUseCase
-    private lateinit var reserveRoomUseCase: ReserveRoomUseCase
     private lateinit var getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase
     private lateinit var saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
     private lateinit var savedStateHandle: SavedStateHandle
@@ -50,7 +48,6 @@ class HotelRoomSelectionViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         getHotelRoomsUseCase = mockk()
-        reserveRoomUseCase = mockk()
         getHotelBookingDraftUseCase = mockk(relaxed = true)
         saveHotelBookingDraftUseCase = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
@@ -73,7 +70,6 @@ class HotelRoomSelectionViewModelTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
             getHotelRoomsUseCase,
-            reserveRoomUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase
         )
@@ -91,7 +87,6 @@ class HotelRoomSelectionViewModelTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
             getHotelRoomsUseCase,
-            reserveRoomUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase
         )
@@ -107,7 +102,6 @@ class HotelRoomSelectionViewModelTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
             getHotelRoomsUseCase,
-            reserveRoomUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase
         )
@@ -123,7 +117,6 @@ class HotelRoomSelectionViewModelTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
             getHotelRoomsUseCase,
-            reserveRoomUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase
         )
@@ -144,7 +137,6 @@ class HotelRoomSelectionViewModelTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
             getHotelRoomsUseCase,
-            reserveRoomUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase
         )
@@ -167,11 +159,10 @@ class HotelRoomSelectionViewModelTest {
     }
 
     @Test
-    fun `onNextClick reserves room and updates draft`() = runTest {
+    fun `onNextClick saves draft`() = runTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
             getHotelRoomsUseCase,
-            reserveRoomUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase
         )
@@ -179,12 +170,9 @@ class HotelRoomSelectionViewModelTest {
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
         
-        coEvery { reserveRoomUseCase(hotelId, 1, any(), any()) } returns AppResult.Success(Unit)
-        
         viewModel.onEvent(HotelRoomSelectionEvent.OnNextClick)
         advanceUntilIdle()
 
-        coVerify { reserveRoomUseCase(hotelId, 1, checkIn, checkOut) }
-        coVerify { saveHotelBookingDraftUseCase(any()) }
+        coVerify { saveHotelBookingDraftUseCase(match { it.roomId == 1 }) }
     }
 }

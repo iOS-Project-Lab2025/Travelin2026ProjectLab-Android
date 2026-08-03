@@ -8,7 +8,6 @@ import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelRoomsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
@@ -28,7 +27,6 @@ import javax.inject.Inject
  *
  * @property savedStateHandle The handle to saved state.
  * @property getHotelRoomsUseCase Use case for fetching available hotel rooms.
- * @property reserveRoomUseCase Use case for reserving a room.
  * @property getHotelBookingDraftUseCase Use case for retrieving booking drafts.
  * @property saveHotelBookingDraftUseCase Use case for saving booking drafts.
  */
@@ -36,7 +34,6 @@ import javax.inject.Inject
 class HotelRoomSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getHotelRoomsUseCase: GetHotelRoomsUseCase,
-    private val reserveRoomUseCase: ReserveRoomUseCase,
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
     private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
 ) : ViewModel() {
@@ -151,17 +148,12 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun onNextClick() {
         val selectedRoomId = _uiState.value.selectedRoomId ?: return
         val draft = bookingDraft
-        val checkIn = draft?.checkIn ?: 0L
-        val checkOut = draft?.checkOut ?: 0L
-
+        
         viewModelScope.launch {
-            reserveRoomUseCase(hotelId, selectedRoomId, checkIn, checkOut)
-                .onSuccess {
-                    draft?.let {
-                        val updatedDraft = it.copy(roomId = selectedRoomId)
-                        saveHotelBookingDraftUseCase(updatedDraft)
-                    }
-                }
+            draft?.let {
+                val updatedDraft = it.copy(roomId = selectedRoomId)
+                saveHotelBookingDraftUseCase(updatedDraft)
+            }
         }
     }
 

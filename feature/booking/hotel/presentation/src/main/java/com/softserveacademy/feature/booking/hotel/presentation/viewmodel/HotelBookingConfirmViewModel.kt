@@ -14,6 +14,7 @@ import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
@@ -33,6 +34,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
     private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase,
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
+    private val reserveRoomUseCase: ReserveRoomUseCase,
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase
@@ -143,7 +145,17 @@ class HotelBookingConfirmViewModel @Inject constructor(
     }
 
     private fun finalizeBooking() {
+        val state = _uiState.value
+        val hotelId = state.hotelDetails?.id
+        val roomId = state.selectedRoom?.id
+        val checkIn = state.bookingDraft?.checkIn ?: 0L
+        val checkOut = state.bookingDraft?.checkOut ?: 0L
+
         viewModelScope.launch {
+            if (hotelId != null && roomId != null) {
+                reserveRoomUseCase(hotelId, roomId, checkIn, checkOut)
+            }
+
             currentBookingId?.let { id ->
                 updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
             }
