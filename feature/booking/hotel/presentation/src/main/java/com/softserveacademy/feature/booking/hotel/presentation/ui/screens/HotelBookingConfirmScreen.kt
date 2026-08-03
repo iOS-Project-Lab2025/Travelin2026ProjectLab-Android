@@ -115,6 +115,7 @@ fun HotelBookingConfirmScreen(
                     )
                 )
             )
+            viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentReset)
         }
     }
 
