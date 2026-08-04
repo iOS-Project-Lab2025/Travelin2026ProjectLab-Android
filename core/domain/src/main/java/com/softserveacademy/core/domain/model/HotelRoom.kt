@@ -1,5 +1,6 @@
 package com.softserveacademy.core.domain.model
 
+import com.softserveacademy.core.domain.util.FlexibleStringSerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -20,6 +21,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HotelRoom(
+    @Serializable(with = FlexibleStringSerializer::class)
     val id: String? = null,
     val type: String,
     val description: String,
