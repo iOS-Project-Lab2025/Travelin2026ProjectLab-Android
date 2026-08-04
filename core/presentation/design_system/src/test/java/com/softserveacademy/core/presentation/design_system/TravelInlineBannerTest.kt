@@ -1,11 +1,12 @@
 package com.softserveacademy.core.presentation.design_system
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.softserveacademy.core.presentation.design_system.components.InlineErrorBanner
 import com.softserveacademy.core.presentation.design_system.components.InlineSuccessBanner
-import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,10 +15,10 @@ import org.robolectric.annotation.Config
 
 /**
  * UI Tests for Inline Banners using Robolectric.
- * Verifies visibility states and message rendering.
+ * Uses a minimal MaterialTheme in tests to avoid resolving app-specific resources at runtime.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [33]) // Simulates Android 13
+@Config(sdk = [33])
 class TravelInlineBannerTest {
 
     @get:Rule
@@ -27,9 +28,9 @@ class TravelInlineBannerTest {
     fun `given isVisible is true when ErrorBanner renders then message is displayed`() {
         val testMessage = "Invalid email format"
 
-        // GIVEN: The banner is visible
+        // GIVEN: The banner is visible (using minimal MaterialTheme to avoid theme resource fetches)
         composeTestRule.setContent {
-            Travelin2026ProjectLabTheme {
+            MaterialTheme {
                 InlineErrorBanner(
                     message = testMessage,
                     isVisible = true
@@ -45,9 +46,9 @@ class TravelInlineBannerTest {
     fun `given isVisible is false when ErrorBanner renders then message does not exist`() {
         val testMessage = "Secret error"
 
-        // GIVEN: El banner está oculto
+        // GIVEN: Banner is hidden
         composeTestRule.setContent {
-            Travelin2026ProjectLabTheme {
+            MaterialTheme {
                 InlineErrorBanner(
                     message = testMessage,
                     isVisible = false
@@ -55,7 +56,7 @@ class TravelInlineBannerTest {
             }
         }
 
-        // THEN: El texto no debe existir en la pantalla
+        // THEN: The text should not exist on the screen
         composeTestRule.onNodeWithText(testMessage).assertDoesNotExist()
     }
 
@@ -64,7 +65,7 @@ class TravelInlineBannerTest {
         val successMsg = "Registration Complete!"
 
         composeTestRule.setContent {
-            Travelin2026ProjectLabTheme {
+            MaterialTheme {
                 InlineSuccessBanner(
                     message = successMsg,
                     isVisible = true
