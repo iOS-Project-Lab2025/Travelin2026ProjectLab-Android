@@ -140,12 +140,12 @@ fun     TravelNavigationBar(
             onClick = { onTabClick(2) },
             icon = {
                 Icon(
-                    painter = painterResource(R.drawable.travel_ic_percentage),
+                    painter = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.ic_heart_filled),
                     contentDescription = null
                 )
             }, label = {
                 Text(
-                    text = stringResource(R.string.deals_ic_label)/*, color =
+                    text = stringResource(R.string.fav_ic_label)/*, color =
              MaterialTheme.colorScheme.primaryContainer*/
                 )
             })
