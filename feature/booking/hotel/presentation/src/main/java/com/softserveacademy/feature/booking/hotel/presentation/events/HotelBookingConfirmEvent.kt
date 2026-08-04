@@ -8,4 +8,7 @@ sealed interface HotelBookingConfirmEvent {
     data object OnBackClick : HotelBookingConfirmEvent
     data object OnPaymentSuccess : HotelBookingConfirmEvent
     data object OnPaymentReset : HotelBookingConfirmEvent
+    data object OnSimulateSuccessClick : HotelBookingConfirmEvent
+    data object OnSimulateFailureClick : HotelBookingConfirmEvent
+    data object OnDismissPaymentSimulationSheet : HotelBookingConfirmEvent
 }

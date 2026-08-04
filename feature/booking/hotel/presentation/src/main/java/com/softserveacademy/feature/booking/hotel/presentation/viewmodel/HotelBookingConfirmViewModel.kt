@@ -98,6 +98,16 @@ class HotelBookingConfirmViewModel @Inject constructor(
             HotelBookingConfirmEvent.OnPaymentReset -> {
                 _uiState.update { it.copy(clientSecret = null) }
             }
+            HotelBookingConfirmEvent.OnSimulateSuccessClick -> {
+                _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
+                finalizeBooking()
+            }
+            HotelBookingConfirmEvent.OnSimulateFailureClick -> {
+                _uiState.update { it.copy(paymentSimulationError = "Payment failed try again") }
+            }
+            HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet -> {
+                _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
+            }
         }
     }
 
@@ -135,7 +145,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 .onFailure { _ ->
                     _uiState.update {
                         it.copy(
-                            error = "Failed to create payment intent",
+                            showPaymentSimulationSheet = true,
                             isPaymentSheetLoading = false
                         )
                     }

@@ -16,6 +16,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBooki
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import com.softserveacademy.feature.booking.hotel.presentation.ui.components.HotelBookingSummaryCard
 import com.softserveacademy.feature.booking.hotel.presentation.ui.components.HotelSummaryCard
+import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelPaymentSimulationSheet
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.domain.model.HotelDetails
@@ -128,7 +129,10 @@ fun HotelBookingConfirmScreen(
     HotelBookingConfirmContent(
         uiState = uiState,
         onBackClick = onBackClick,
-        onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) }
+        onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) },
+        onSimulateSuccess = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateSuccessClick) },
+        onSimulateFailure = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateFailureClick) },
+        onDismissBottomSheet = { viewModel.onEvent(HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet) }
     )
 }
 
@@ -137,9 +141,21 @@ fun HotelBookingConfirmScreen(
 fun HotelBookingConfirmContent(
     uiState: HotelBookingConfirmState,
     onBackClick: () -> Unit,
-    onConfirmClick: () -> Unit
+    onConfirmClick: () -> Unit,
+    onSimulateSuccess: () -> Unit = {},
+    onSimulateFailure: () -> Unit = {},
+    onDismissBottomSheet: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+
+    if (uiState.showPaymentSimulationSheet) {
+        TravelPaymentSimulationSheet(
+            onDismissRequest = onDismissBottomSheet,
+            onSimulateSuccess = onSimulateSuccess,
+            onSimulateFailure = onSimulateFailure,
+            simulationError = uiState.paymentSimulationError
+        )
+    }
 
     if (uiState.isLoading) {
         TravelLoadingScreen()
