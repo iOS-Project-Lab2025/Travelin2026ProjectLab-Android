@@ -92,6 +92,7 @@ fun TravelDetailsScreen(
     isDescriptionExpanded: Boolean = false,
     showAmenitiesDialog: Boolean = false,
     showFullMap: Boolean = false,
+    showBookingBar: Boolean = true,
     onBackClick: () -> Unit = {},
     onSeeAllPhotosClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
@@ -106,11 +107,13 @@ fun TravelDetailsScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
-                Surface(shadowElevation = 8.dp) {
-                    TravelBookingBar(
-                        price = destinationDetails.minimumPrice,
-                        onBookClick = onBookClick
-                    )
+                if (showBookingBar) {
+                    Surface(shadowElevation = 8.dp) {
+                        TravelBookingBar(
+                            price = destinationDetails.minimumPrice,
+                            onBookClick = onBookClick
+                        )
+                    }
                 }
             }
         ) { innerPadding ->
@@ -152,13 +155,6 @@ fun TravelDetailsScreen(
                         longitude = destinationDetails.longitude,
                         isDarkTheme = isDarkTheme,
                         onMapClick = onMapClick
-                    )
-                }
-                item {
-                    GallerySection(
-                        imageList = destinationDetails.imageList,
-                        numberOfImages = destinationDetails.imageList.size,
-                        onSeeAllPhotosClick = onSeeAllPhotosClick
                     )
                 }
             }
@@ -264,7 +260,7 @@ private fun HeaderImage(
             shape = MaterialTheme.shapes.small
         ) {
             Text(
-                text = limitedImages,
+                text = stringResource(id = R.string.see_all_label) + " " + stringResource(id = R.string.plus_photos_label).lowercase(),
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(
@@ -776,7 +772,7 @@ private fun TravelDetailsScreenPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
         TravelDetailsScreen(
             destinationDetails = DestinationDetails(
-                id = 1,
+                id = "1",
                 minimumPrice = 400,
                 imageList = listOf(
                     "https://picsum.photos/200",

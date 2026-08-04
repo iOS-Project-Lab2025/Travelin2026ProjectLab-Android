@@ -44,9 +44,9 @@ class SearchRepositoryImpl @Inject constructor() : SearchRepository {
 
     private fun getMockData(): List<SearchItem> = listOf(
         // Hotels
-        SearchItem.HotelItem(Hotel(1, "San Alfonso del Mar", "Algarrobo, Chile", 5, 4.8, 200, listOf("https://picsum.photos/id/164/400/300"))),
-        SearchItem.HotelItem(Hotel(2, "Icon Hotel", "Santiago, Chile", 4, 4.5, 120, listOf("https://picsum.photos/id/165/400/300"))),
-        SearchItem.HotelItem(Hotel(3, "The Ritz-Carlton", "Santiago, Chile", 5, 4.9, 350, listOf("https://picsum.photos/id/166/400/300"))),
+        SearchItem.HotelItem(Hotel("1", "San Alfonso del Mar", "Algarrobo, Chile", 5, 4.8, 200, listOf("https://picsum.photos/id/164/400/300"))),
+        SearchItem.HotelItem(Hotel("2", "Icon Hotel", "Santiago, Chile", 4, 4.5, 120, listOf("https://picsum.photos/id/165/400/300"))),
+        SearchItem.HotelItem(Hotel("3", "The Ritz-Carlton", "Santiago, Chile", 5, 4.9, 350, listOf("https://picsum.photos/id/166/400/300"))),
 
         // Tours
         SearchItem.TourItem(Tour("t1", "Cajón del Maipo Trekking", "Full day trekking in the Andes", "San José de Maipo", "https://picsum.photos/id/10/400/300", 8.hours, 45.0, 4.8f, TourCategory.ADVENTURE)),
@@ -63,7 +63,7 @@ class SearchRepositoryImpl @Inject constructor() : SearchRepository {
         SearchItem.FlightItem(Flight("f2", Airline("H2", "SKY", ""), "H2101", Airport("SCL", "Santiago", "Santiago", "Chile"), Airport("LIM", "Jorge Chavez", "Lima", "Peru"), 0, 0, 3.hours, CabinClass.ECONOMY)),
 
         // More randoms to reach 15
-        SearchItem.HotelItem(Hotel(4, "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
+        SearchItem.HotelItem(Hotel("4", "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
         SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", "https://picsum.photos/id/16/400/300", 4.hours, 30.0, 4.5f, TourCategory.CITY)),
         SearchItem.DestinationItem(Destination("d4", "https://picsum.photos/id/17/400/300", "Pucón", "Araucanía, Chile", 4.7, 500.0, "USD", "3D2N"))
     )

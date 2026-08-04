@@ -10,5 +10,5 @@ interface HotelApiService {
     suspend fun getHotels(): List<Hotel>
 
     @GET("hotels/{id}")
-    suspend fun getHotelById(@Path("id") id: Int): HotelDetails
+    suspend fun getHotelById(@Path("id") id: String): HotelDetails
 }

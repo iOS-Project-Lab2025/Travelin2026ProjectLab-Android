@@ -21,7 +21,7 @@ import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 import com.softserveacademy.core.presentation.design_system.components.TravelDetailsScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelDetailError
 import com.softserveacademy.core.presentation.design_system.theme.LocalIsDarkTheme
-import com.softserveacademy.home.presentation.ui.components.toDestinationDetails
+import com.softserveacademy.home.presentation.model.TravelItemType
 
 /**
  * Stateful wrapper for the [TravelDetailsScreen].
@@ -30,13 +30,16 @@ import com.softserveacademy.home.presentation.ui.components.toDestinationDetails
  * It collects the state from the ViewModel and displays the appropriate UI (Loading, Error,
  * or Data).
  *
+ * @param itemId The unique identifier of the hotel or tour.
+ * @param type The type of travel item (HOTEL or TOUR).
  * @param onBackClick Action to perform when the back button is clicked.
  * @param modifier The modifier to be applied to the layout.
  * @param viewModel The ViewModel that provides the hotel detail data.
  */
 @Composable
-fun HotelDetailState(
-    hotelId: Int,
+fun TravelItemDetailState(
+    itemId: String,
+    type: TravelItemType,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
     onBookClick: () -> Unit,
@@ -49,8 +52,8 @@ fun HotelDetailState(
     val hotelDetails = hotelDetailState.hotelDetails
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit){
-        viewModel.onEvent(HotelDetailsEvent.Load(hotelId))
+    LaunchedEffect(itemId, type){
+        viewModel.onEvent(HotelDetailsEvent.Load(itemId, type))
     }
 
     val shareTitle = stringResource(id = R.string.share_hotel_title)
@@ -66,12 +69,12 @@ fun HotelDetailState(
                     is HotelDetailsEventEffect.ShareHotel -> {
                         val shareMessage = shareMessageTemplate.format(
                             effect.hotel.name,
-                            effect.hotel.id.toString()
+                            effect.hotel.id
                         )
                         val sendIntent: Intent = Intent().apply {
                             action = Intent.ACTION_SEND
                             putExtra(Intent.EXTRA_TEXT, shareMessage)
-                            type = "text/plain"
+                            setType("text/plain")
                         }
                         val shareIntent = Intent.createChooser(sendIntent, shareTitle)
                         context.startActivity(shareIntent)
@@ -88,16 +91,17 @@ fun HotelDetailState(
         hotelDetailState.errorMessage != null -> {
             TravelHotelDetailError(
                 message = hotelDetailState.errorMessage,
-                onRetry = { viewModel.onEvent(HotelDetailsEvent.Load(hotelId)) }
+                onRetry = { viewModel.onEvent(HotelDetailsEvent.Load(itemId, type)) }
             )
         }
         hotelDetails != null -> {
             TravelDetailsScreen(
-                destinationDetails = hotelDetails.toDestinationDetails(),
+                destinationDetails = hotelDetails,
                 isDarkTheme = isDark,
                 isDescriptionExpanded = hotelDetailState.isDescriptionExpanded,
                 showAmenitiesDialog = hotelDetailState.showAmenitiesDialog,
                 showFullMap = hotelDetailState.showFullMap,
+                showBookingBar = (type == TravelItemType.HOTEL),
                 onBackClick = {
                     viewModel.onEvent(HotelDetailsEvent.NavigateBack)
                 },

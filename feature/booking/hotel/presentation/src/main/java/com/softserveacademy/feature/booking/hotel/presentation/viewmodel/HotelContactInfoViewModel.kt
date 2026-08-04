@@ -24,7 +24,7 @@ class HotelContactInfoViewModel @Inject constructor(
     private val validateContactInfoUseCase: ValidateContactInfoUseCase
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(savedStateHandle.get<TravelBookingContactInfoState>(KEY_STATE) ?: TravelBookingContactInfoState())
     val uiState: StateFlow<TravelBookingContactInfoState> = _uiState.asStateFlow()
@@ -51,7 +51,7 @@ class HotelContactInfoViewModel @Inject constructor(
     private fun loadBookingDraft() {
         updateState { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId)
             bookingDraft?.let { draft ->
                 updateState {
                     it.copy(
@@ -122,7 +122,7 @@ class HotelContactInfoViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+            val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId)
             val updatedContactInfo = ContactInfo(
                 firstName = _uiState.value.firstName,
                 lastName = _uiState.value.lastName,
@@ -130,7 +130,7 @@ class HotelContactInfoViewModel @Inject constructor(
                 countryCode = _uiState.value.countryCode,
                 phoneNumber = _uiState.value.phoneNumber
             )
-            val updatedDraft = (repositoryDraft ?: HotelBookingDraft(hotelId = hotelId.toString())).copy(
+            val updatedDraft = (repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)).copy(
                 contactInfo = updatedContactInfo
             )
             hotelBookingDraftRepository.saveDraft(updatedDraft)

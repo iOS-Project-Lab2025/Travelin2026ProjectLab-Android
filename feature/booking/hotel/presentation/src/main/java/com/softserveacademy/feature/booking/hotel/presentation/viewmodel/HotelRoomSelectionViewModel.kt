@@ -35,7 +35,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private val hotelBookingDraftRepository: HotelBookingDraftRepository
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(HotelRoomSelectionState(
         selectedRoomId = savedStateHandle[KEY_SELECTED_ROOM_ID],
@@ -56,7 +56,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun loadRooms() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId)
             val draft = bookingDraft
             val checkIn = draft?.checkIn ?: 0L
             val checkOut = draft?.checkOut ?: 0L
@@ -110,8 +110,8 @@ class HotelRoomSelectionViewModel @Inject constructor(
 
     private fun saveRoomToDraft(roomId: Int?) {
         viewModelScope.launch {
-            val currentDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
-                ?: HotelBookingDraft(hotelId = hotelId.toString())
+            val currentDraft = hotelBookingDraftRepository.getDraft(hotelId)
+                ?: HotelBookingDraft(hotelId = hotelId)
             val updatedDraft = currentDraft.copy(roomId = roomId?.toString())
             hotelBookingDraftRepository.saveDraft(updatedDraft)
             bookingDraft = updatedDraft
