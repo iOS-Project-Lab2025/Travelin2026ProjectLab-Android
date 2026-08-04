@@ -2,6 +2,7 @@ package com.softserveacademy.core.data.di
 
 import com.softserveacademy.core.data.api.HotelApiService
 import com.softserveacademy.core.data.api.TourApiService
+import com.softserveacademy.core.data.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,7 +48,7 @@ object NetworkModule {
         val contentType = "application/json".toMediaType()
         val factory = json.asConverterFactory(contentType)
         return Retrofit.Builder()
-            .baseUrl("https://private-amnesiac-923781-travelin1.apiary-mock.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(factory)
             .build()
