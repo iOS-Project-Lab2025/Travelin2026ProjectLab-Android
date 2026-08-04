@@ -26,6 +26,22 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     sourceCompatibility = JavaVersion.VERSION_11
                     targetCompatibility = JavaVersion.VERSION_11
                 }
+                buildFeatures {
+                    buildConfig = true
+                }
+                flavorDimensions += FlavorDimension.contentType.name
+                productFlavors {
+                    TravelinFlavor.values().forEach { flavor ->
+                        create(flavor.name) {
+                            dimension = flavor.dimension.name
+                            buildConfigField(
+                                "String",
+                                "BASE_URL",
+                                "\"https://private-amnesiac-923781-travelin1.apiary-mock.com/\""
+                            )
+                        }
+                    }
+                }
             }
 
             tasks.withType(KotlinCompile::class.java).configureEach {

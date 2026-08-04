@@ -29,6 +29,20 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 }
                 buildFeatures {
                     compose = true
+                    buildConfig = true
+                }
+                flavorDimensions += FlavorDimension.contentType.name
+                productFlavors {
+                    TravelinFlavor.values().forEach { flavor ->
+                        create(flavor.name) {
+                            dimension = flavor.dimension.name
+                            buildConfigField(
+                                "String",
+                                "BASE_URL",
+                                "\"https://private-amnesiac-923781-travelin1.apiary-mock.com/\""
+                            )
+                        }
+                    }
                 }
             }
 
