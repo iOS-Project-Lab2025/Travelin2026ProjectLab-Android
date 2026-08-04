@@ -3,6 +3,7 @@ package com.softserveacademy.core.presentation.design_system.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,17 +29,18 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 /**
- * A reusable card for displaying information about a travel package.
+ * A reusable card for displaying information about the tour package.
+ *
+ * @param hotel The hotel object containing information needed to display in the card.
+ * @param onClick Callback invoked when the card is clicked.
+ *
+ * @see Hotel
  */
 @Composable
 fun TravelCardVertical(
-    title: String,
-    location: String,
-    rating: String,
-    price: String,
-    duration: String,
-    imageUrl: String,
-    onClick: () -> Unit = {}
+    hotel: Hotel,
+    onClick: (Hotel) -> Unit = {},
+    favoriteButton: @Composable (() -> Unit)? = null
 ){
     Column(
         modifier = Modifier
@@ -47,7 +49,7 @@ fun TravelCardVertical(
             .shadow(elevation = TravelinDimens.ElevationMedium, shape = MaterialTheme.shapes.medium)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.background)
-            .clickable { onClick() }
+            .clickable { onClick(hotel) }
     ) {
         TravelImageHandler(
             image = imageUrl,
@@ -63,14 +65,14 @@ fun TravelCardVertical(
                 .fillMaxWidth()
         ) {
             Text(
-                text = title,
+                text = hotel.name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
             Text(
-                text = location,
+                text = hotel.address,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(
@@ -80,6 +82,7 @@ fun TravelCardVertical(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Row(
+                //verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -88,13 +91,13 @@ fun TravelCardVertical(
             ) {
                 Icon(
                     imageVector = StarIcon,
-                    contentDescription = "rating star",
+                    contentDescription = "hotel star",
                     tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(TravelinDimens.IconSizeExtraSmall)
                 )
 
                 Text(
-                    text = rating,
+                    text = "${hotel.userRating}",
                     modifier = Modifier.padding(
                         start = TravelinDimens.PaddingExtraSmall
                     ),
@@ -117,7 +120,7 @@ fun TravelCardVertical(
                     )
 
                     Text(
-                        text = price,
+                        text = "$ ${hotel.pricePerNight}/pax",
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -126,7 +129,7 @@ fun TravelCardVertical(
                 Spacer(modifier = Modifier.width(TravelinDimens.SpaceExtraSmall))
 
                 Text(
-                    text = duration,
+                    text = "3D2N",
                     modifier = Modifier
                         .clip(MaterialTheme.shapes.extraLarge)
                         .background(MaterialTheme.colorScheme.secondary)
@@ -142,18 +145,26 @@ fun TravelCardVertical(
     }
 }
 
-
-@Preview(showBackground = false)
+@Preview(name = "Card Vertical", showBackground = true)
 @Composable
-fun TravelCardVerticalPreview() {
+fun TravelCardVerticalVariantsPreview() {
+    val hotelExample = Hotel(
+        name = "Mount Bromo",
+        address = "Volcano in East Java",
+        userRating = 4.9,
+        pricePerNight = 150,
+        image = listOf("https://picsum.photos/200")
+    )
+
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelCardVertical(
-            title = "Mount Bromo",
-            location = "Volcano in East Java",
-            rating = "4.9",
-            price = "$ 150/pax",
-            duration = "3D2N",
-            imageUrl = "https://picsum.photos/200"
-        )
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            TravelCardVertical(
+                hotel = hotelExample,
+                onClick = {}
+            )
+        }
     }
 }
