@@ -22,6 +22,7 @@ fun TravelPaymentSimulationSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surface,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
         Column(
