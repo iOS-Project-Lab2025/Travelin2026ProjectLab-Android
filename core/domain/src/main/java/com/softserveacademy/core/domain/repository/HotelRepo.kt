@@ -41,5 +41,5 @@ interface HotelRepo{
      * @param checkInDate The check-in date in milliseconds.
      * @param checkOutDate The check-out date in milliseconds.
      */
-    suspend fun reserveRoom(hotelId: String, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit>
+    suspend fun reserveRoom(hotelId: String, roomId: String, checkInDate: Long, checkOutDate: Long): AppResult<Unit>
 }

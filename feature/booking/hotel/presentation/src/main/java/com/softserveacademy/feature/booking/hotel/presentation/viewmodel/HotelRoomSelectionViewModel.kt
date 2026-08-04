@@ -112,7 +112,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun saveRoomToDraft(roomId: Int?) {
+    private fun saveRoomToDraft(roomId: String?) {
         viewModelScope.launch {
             val currentDraft = getHotelBookingDraftUseCase(hotelId)
                 ?: HotelBookingDraft(hotelId = hotelId)

@@ -23,8 +23,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class HotelBooking(
     val bookingId: String,
-    val hotelId: Int,
-    val roomId: Int,
+    val hotelId: String,
+    val roomId: String,
     val checkIn: Long,
     val checkOut: Long,
     val guests: BookingGuests,

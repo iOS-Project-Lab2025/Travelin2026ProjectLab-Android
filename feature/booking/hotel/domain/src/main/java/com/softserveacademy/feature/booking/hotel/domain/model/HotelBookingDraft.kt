@@ -19,8 +19,8 @@ import java.io.Serializable as JavaSerializable
  */
 @Serializable
 data class HotelBookingDraft(
-    val hotelId: Int? = null,
-    val roomId: Int? = null,
+    val hotelId: String? = null,
+    val roomId: String? = null,
     val checkIn: Long? = null,
     val checkOut: Long? = null,
     val guests: Guests = Guests(),

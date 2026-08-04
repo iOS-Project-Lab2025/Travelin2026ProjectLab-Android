@@ -94,7 +94,7 @@ class HotelEnterBookingDetailsViewModelTest {
         val draft = HotelBookingDraft(hotelId = hotelId, guests = Guests(adults = 4))
         coEvery { getHotelBookingDraftUseCase(any()) } returns draft
         
-        val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelIdInt))
+        val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
         val newViewModel = HotelEnterBookingDetailsViewModel(
             freshSavedStateHandle,
             validateEnterBookingDetailsUseCase,

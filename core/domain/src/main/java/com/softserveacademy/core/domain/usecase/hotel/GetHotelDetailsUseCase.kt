@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetHotelDetailsUseCase @Inject constructor(
     private val repository: HotelRepo
 ) {
-    suspend operator fun invoke(id: Int): AppResult<HotelDetails> {
+    suspend operator fun invoke(id: String): AppResult<HotelDetails> {
         return repository.getHotelById(id)
     }
 }

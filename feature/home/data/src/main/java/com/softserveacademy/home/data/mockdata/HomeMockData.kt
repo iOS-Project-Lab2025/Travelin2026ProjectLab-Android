@@ -231,9 +231,9 @@ object HomeMockData {
         hotel = HotelBooking(
             bookingId = "hotel_booking_001",
 
-            hotelId = 1,
+            hotelId = "1",
 
-            roomId = 11,
+            roomId = "11",
 
             checkIn = dateLong(2026, 8, 6),
 

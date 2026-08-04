@@ -7,7 +7,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
  */
 sealed interface HotelRoomSelectionEvent {
     data class OnFilterSelected(val filter: RoomFilter) : HotelRoomSelectionEvent
-    data class OnRoomSelected(val roomId: Int) : HotelRoomSelectionEvent
+    data class OnRoomSelected(val roomId: String) : HotelRoomSelectionEvent
     data object OnNextClick : HotelRoomSelectionEvent
     data object OnBackClick : HotelRoomSelectionEvent
 }

@@ -11,8 +11,8 @@ class ReserveRoomUseCase @Inject constructor(
     private val repository: HotelRepo
 ) {
     suspend operator fun invoke(
-        hotelId: Int,
-        roomId: Int,
+        hotelId: String,
+        roomId: String,
         checkInDate: Long,
         checkOutDate: Long
     ): AppResult<Unit> {

@@ -37,8 +37,8 @@ class HotelRoomSelectionViewModelTest {
 
     private val hotelId = "1"
     private val mockRooms = listOf(
-        HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
-        HotelRoom(id = 2, type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
+        HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
+        HotelRoom(id = "2", type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
     )
 
     private val checkIn = 1000L
@@ -94,7 +94,7 @@ class HotelRoomSelectionViewModelTest {
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.AVAILABLE))
         assertEquals(1, viewModel.uiState.value.filteredRooms.size)
-        assertEquals(1, viewModel.uiState.value.filteredRooms[0].id)
+        assertEquals("1", viewModel.uiState.value.filteredRooms[0].id)
     }
 
     @Test
@@ -109,7 +109,7 @@ class HotelRoomSelectionViewModelTest {
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.TWO_BEDS))
         assertEquals(1, viewModel.uiState.value.filteredRooms.size)
-        assertEquals(2, viewModel.uiState.value.filteredRooms[0].id)
+        assertEquals("2", viewModel.uiState.value.filteredRooms[0].id)
     }
 
     @Test
@@ -122,15 +122,15 @@ class HotelRoomSelectionViewModelTest {
         )
         advanceUntilIdle()
 
-        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
-        assertEquals(1, viewModel.uiState.value.selectedRoomId)
+        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected("1"))
+        assertEquals("1", viewModel.uiState.value.selectedRoomId)
     }
 
     @Test
     fun `applyFilters resets selectedRoomId when filteredRooms is empty and persists it`() = runTest {
         // Mock repository to return rooms that will be filtered out by ONE_BED
         val specialRooms = listOf(
-            HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100, isAvailable = true)
+            HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100, isAvailable = true)
         )
         coEvery { getHotelRoomsUseCase(hotelId, any(), any(), any()) } returns AppResult.Success(specialRooms)
         
@@ -143,9 +143,9 @@ class HotelRoomSelectionViewModelTest {
         advanceUntilIdle()
 
         // Select a room first
-        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
+        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected("1"))
         advanceUntilIdle()
-        assertEquals(1, viewModel.uiState.value.selectedRoomId)
+        assertEquals("1", viewModel.uiState.value.selectedRoomId)
 
         // Apply filter that results in empty list
         viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.ONE_BED))
@@ -168,11 +168,11 @@ class HotelRoomSelectionViewModelTest {
         )
         advanceUntilIdle()
 
-        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
+        viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected("1"))
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnNextClick)
         advanceUntilIdle()
 
-        coVerify { saveHotelBookingDraftUseCase(match { it.roomId == 1 }) }
+        coVerify { saveHotelBookingDraftUseCase(match { it.roomId == "1" }) }
     }
 }

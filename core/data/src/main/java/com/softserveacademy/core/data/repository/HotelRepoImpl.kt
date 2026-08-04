@@ -22,7 +22,7 @@ import javax.inject.Singleton
  * @param checkOutDate The check-out date in milliseconds.
  */
 data class Booking(
-    val roomId: Int,
+    val roomId: String,
     val checkInDate: Long,
     val checkOutDate: Long
 )
@@ -64,7 +64,7 @@ class HotelRepoImpl @Inject constructor(
             }
     }
 
-    override suspend fun reserveRoom(hotelId: String, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit> = safeCall(mapper) {
+    override suspend fun reserveRoom(hotelId: String, roomId: String, checkInDate: Long, checkOutDate: Long): AppResult<Unit> = safeCall(mapper) {
         _bookings.update { currentBookings ->
             currentBookings + Booking(roomId, checkInDate, checkOutDate)
         }

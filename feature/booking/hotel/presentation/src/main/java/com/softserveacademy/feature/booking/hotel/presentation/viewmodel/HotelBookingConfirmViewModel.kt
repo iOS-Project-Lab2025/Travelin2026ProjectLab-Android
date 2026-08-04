@@ -173,7 +173,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
         return HotelBooking(
             bookingId = currentBookingId ?: UUID.randomUUID().toString(),
             hotelId = hotelDetails.id,
-            roomId = room.id ?: 0,
+            roomId = room.id ?: "",
             checkIn = draft.checkIn ?: 0L,
             checkOut = draft.checkOut ?: 0L,
             guests = BookingGuests(

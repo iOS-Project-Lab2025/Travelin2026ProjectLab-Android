@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HotelRoom(
-    val id: Int? = null,
+    val id: String? = null,
     val type: String,
     val description: String,
     val maxOccupancy: Int,

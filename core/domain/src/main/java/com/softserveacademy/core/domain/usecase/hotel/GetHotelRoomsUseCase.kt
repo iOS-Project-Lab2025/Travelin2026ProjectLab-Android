@@ -12,7 +12,7 @@ class GetHotelRoomsUseCase @Inject constructor(
     private val repository: HotelRepo
 ) {
     suspend operator fun invoke(
-        hotelId: Int,
+        hotelId: String,
         checkInDate: Long,
         checkOutDate: Long,
         guestCount: Int

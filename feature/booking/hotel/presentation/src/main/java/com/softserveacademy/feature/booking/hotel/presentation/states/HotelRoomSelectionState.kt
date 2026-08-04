@@ -20,7 +20,7 @@ enum class RoomFilter : Serializable {
 data class HotelRoomSelectionState(
     val rooms: List<HotelRoom> = emptyList(),
     val filteredRooms: List<HotelRoom> = emptyList(),
-    val selectedRoomId: Int? = null,
+    val selectedRoomId: String? = null,
     val selectedFilter: RoomFilter = RoomFilter.AVAILABLE,
     val isLoading: Boolean = false,
     val nightCount: Int = 1
