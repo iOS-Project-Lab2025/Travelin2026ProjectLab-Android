@@ -3,6 +3,7 @@ package com.softserveacademy.core.presentation.design_system.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,7 +40,8 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 @Composable
 fun TravelCardVertical(
     hotel: Hotel,
-    onClick: (Hotel) -> Unit = {}
+    onClick: (Hotel) -> Unit = {},
+    favoriteButton: @Composable (() -> Unit)? = null
 ){
     Column(
         modifier = Modifier
@@ -143,10 +145,9 @@ fun TravelCardVertical(
     }
 }
 
-
-@Preview(showBackground = false)
+@Preview(name = "Card Vertical", showBackground = true)
 @Composable
-fun TravelCardVerticalPreview() {
+fun TravelCardVerticalVariantsPreview() {
     val hotelExample = Hotel(
         name = "Mount Bromo",
         address = "Volcano in East Java",
@@ -154,7 +155,16 @@ fun TravelCardVerticalPreview() {
         pricePerNight = 150,
         image = listOf("https://picsum.photos/200")
     )
+
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelCardVertical(hotel = hotelExample)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            TravelCardVertical(
+                hotel = hotelExample,
+                onClick = {}
+            )
+        }
     }
 }
