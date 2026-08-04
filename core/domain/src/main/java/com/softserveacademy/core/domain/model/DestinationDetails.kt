@@ -22,7 +22,7 @@ import java.io.Serializable
  * @property longitude The geographical longitude of the destination.
  */
 data class DestinationDetails(
-    val id: Int,
+    val id: String,
     val minimumPrice: Int,
     val imageList: List<String>,
     val name: String,

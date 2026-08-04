@@ -1,6 +1,6 @@
 package com.softserveacademy.home.presentation.state
 
-import com.softserveacademy.core.domain.model.HotelDetails
+import com.softserveacademy.core.domain.model.DestinationDetails
 import java.io.Serializable
 
 /**
@@ -8,7 +8,7 @@ import java.io.Serializable
  */
 data class HotelDetailState(
     val isLoading: Boolean = false,
-    val hotelDetails: HotelDetails? = null,
+    val hotelDetails: DestinationDetails? = null,
     val errorMessage: String? = null,
     val isDescriptionExpanded: Boolean = false,
     val isFavorite: Boolean = false,

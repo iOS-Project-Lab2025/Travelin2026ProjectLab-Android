@@ -3,6 +3,8 @@ package com.softserveacademy.home.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.home.domain.usecases.GetHotelDetailUseCase
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
+import com.softserveacademy.home.presentation.model.TravelItemType
+import com.softserveacademy.core.domain.repository.TourRepo
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +29,13 @@ class HotelDetailsViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val getHotelDetailUseCase = mockk<GetHotelDetailUseCase>()
+    private val tourRepo = mockk<TourRepo>()
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = HotelDetailsViewModel(SavedStateHandle(), getHotelDetailUseCase)
+        viewModel = HotelDetailsViewModel(SavedStateHandle(), getHotelDetailUseCase, tourRepo)
     }
 
     @After
@@ -47,7 +50,7 @@ class HotelDetailsViewModelTest {
         coEvery { getHotelDetailUseCase(any()) } returns Result.failure(Exception(errorMessage))
 
         // WHEN: Load event is triggered
-        viewModel.onEvent(HotelDetailsEvent.Load(1))
+        viewModel.onEvent(HotelDetailsEvent.Load("1", TravelItemType.HOTEL))
 
         advanceUntilIdle()
         // THEN: The state should have the expected error message and not be loading
@@ -63,7 +66,7 @@ class HotelDetailsViewModelTest {
         coEvery { getHotelDetailUseCase(any()) } returns Result.failure(Exception())
 
         // WHEN: Load event is triggered
-        viewModel.onEvent(HotelDetailsEvent.Load(1))
+        viewModel.onEvent(HotelDetailsEvent.Load("1", TravelItemType.HOTEL))
 
         advanceUntilIdle()
         // THEN: The state should have a null error message and not be loading

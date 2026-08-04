@@ -7,6 +7,11 @@ import com.softserveacademy.home.domain.usecases.GetHotelDetailUseCase
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.home.presentation.state.HotelDetailState
+import com.softserveacademy.home.presentation.model.TravelItemType
+import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.home.presentation.ui.components.toDestinationDetails
+import com.softserveacademy.core.domain.model.Tour
+import com.softserveacademy.core.domain.model.DestinationDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HotelDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getHotelDetailUseCase: GetHotelDetailUseCase
+    private val getHotelDetailUseCase: GetHotelDetailUseCase,
+    private val tourRepo: TourRepo
 ) : ViewModel() {
 
     private val _hotelDetailState = MutableStateFlow(
@@ -35,9 +41,9 @@ class HotelDetailsViewModel @Inject constructor(
         when (event) {
             is HotelDetailsEvent.Load -> {
                 val currentState = _hotelDetailState.value
-                // Only load if no data is present OR if the hotel ID has changed
-                if (currentState.hotelDetails == null || currentState.hotelDetails.id != event.hotelId) {
-                    loadHotelDetail(event.hotelId)
+                // Only load if no data is present OR if the ID has changed
+                if (currentState.hotelDetails == null || currentState.hotelDetails.id != event.id) {
+                    loadDetail(event.id, event.type)
                 }
             }
             HotelDetailsEvent.NavigateBack -> {
@@ -90,17 +96,46 @@ class HotelDetailsViewModel @Inject constructor(
         savedStateHandle[HOTEL_DETAILS_STATE] = _hotelDetailState.value
     }
 
-    private fun loadHotelDetail(id: Int) {
+    private fun loadDetail(id: String, type: TravelItemType) {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, errorMessage = null) }
-            getHotelDetailUseCase(id)
-                .onSuccess { details ->
-                    updateState { it.copy(isLoading = false, hotelDetails = details) }
+            if (type == TravelItemType.HOTEL) {
+                getHotelDetailUseCase(id)
+                    .onSuccess { details ->
+                        updateState { it.copy(isLoading = false, hotelDetails = details.toDestinationDetails()) }
+                    }
+                    .onFailure { error ->
+                        updateState { it.copy(isLoading = false, errorMessage = error.message) }
+                    }
+            } else {
+                when (val result = tourRepo.getTourById(id)) {
+                    is com.softserveacademy.core.error.model.AppResult.Success -> {
+                        updateState { it.copy(isLoading = false, hotelDetails = result.data.toDestinationDetails()) }
+                    }
+                    is com.softserveacademy.core.error.model.AppResult.Failure -> {
+                        updateState { it.copy(isLoading = false, errorMessage = "Failed to load tour details") }
+                    }
                 }
-                .onFailure { error ->
-                    updateState { it.copy(isLoading = false, errorMessage = error.message) }
-                }
+            }
         }
+    }
+
+    private fun Tour.toDestinationDetails(): DestinationDetails {
+        return DestinationDetails(
+            id = id,
+            minimumPrice = price.toInt(),
+            imageList = listOf(imageUrl), // Tour might not have imageList, use main image
+            name = title,
+            address = location,
+            star = rating.toInt(),
+            image = listOf(imageUrl),
+            numberOfReviews = 0, // Not provided in Tour model
+            rating = rating.toDouble(),
+            description = description,
+            includedItems = emptyList(), // Not provided in Tour model
+            latitude = 0.0, // Not provided in Tour model
+            longitude = 0.0 // Not provided in Tour model
+        )
     }
 
     companion object {

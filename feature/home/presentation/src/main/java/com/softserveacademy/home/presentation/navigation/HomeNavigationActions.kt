@@ -1,9 +1,8 @@
 package com.softserveacademy.home.presentation.navigation
 
-import com.softserveacademy.core.domain.model.Hotel
-
 data class HomeNavigationActions(
-    val onHotelClick: (Hotel) -> Unit = {},
+    val onHotelClick: (String) -> Unit = {},
+    val onTourClick: (String) -> Unit = {},
     val onAccountClick: () -> Unit = {},
     val onProfileClick: () -> Unit = {},
     val onJourneySeeAllClick: () -> Unit = {},

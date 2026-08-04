@@ -33,7 +33,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private val hotelBookingDraftRepository: HotelBookingDraftRepository
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) ?: TravelEnterBookingDetailsState())
     val uiState: StateFlow<TravelEnterBookingDetailsState> = _uiState.asStateFlow()
@@ -55,9 +55,9 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         if (savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) == null) {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
-                val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+                val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId)
 
-                hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelId.toString())
+                hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)
                 syncSavedState()
                 updateUiState()
                 delay(500.milliseconds) // Small delay for smooth transition

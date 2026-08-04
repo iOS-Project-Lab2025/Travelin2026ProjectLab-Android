@@ -32,6 +32,7 @@ import com.softserveacademy.core.presentation.design_system.components.TravelTex
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.mockdata.PresentationMockData
+import com.softserveacademy.home.presentation.model.TravelItemType
 import com.softserveacademy.home.presentation.model.TourUi
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 import com.softserveacademy.home.presentation.state.HomeUiState
@@ -75,15 +76,20 @@ fun RootHomeScreen(
     if (isSearchMode) {
         DestinationSearchScreen(
             onBackClick = { isSearchMode = false },
-            onItemClick = { hotelId ->
-                // Aquí podrías navegar al detalle del hotel usando el ID
+            onItemClick = { id, type ->
                 isSearchMode = false
+                if (type == TravelItemType.HOTEL) {
+                    actions.onHotelClick(id)
+                } else {
+                    actions.onTourClick(id)
+                }
             }
         )
     } else {
         TravelHomeScreen(
             state = state,
             onHotelClick = actions.onHotelClick,
+            onTourClick = actions.onTourClick,
             onAccountClick = actions.onAccountClick,
             onProfileClick = actions.onProfileClick,
             onJourneySeeAllClick = actions.onJourneySeeAllClick,
@@ -121,7 +127,8 @@ fun RootHomeScreen(
 @Composable
 fun TravelHomeScreen(
     state: HomeUiState,
-    onHotelClick: (Hotel) -> Unit,
+    onHotelClick: (String) -> Unit,
+    onTourClick: (String) -> Unit,
     onAccountClick: () -> Unit,
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
@@ -220,7 +227,7 @@ fun TravelHomeScreen(
                             price = tour.price,
                             duration = tour.duration,
                             imageUrl = tour.imageUrl,
-                            onClick = { /* Handle tour click */ }
+                            onClick = { onTourClick(tour.id) }
                         )
                     }
 
@@ -253,9 +260,17 @@ fun TravelHomeScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { onHotelClick(hotel) }
+                                        .clickable { onHotelClick(hotel.id ?: "") }
                                 ) {
-                                    TravelCardHorizontal(hotel = hotel)
+                                    TravelCardHorizontal(
+                                        title = hotel.name,
+                                        address = hotel.address,
+                                        starRating = hotel.star?.toDouble(),
+                                        ratingText = "${hotel.star}-star hotel",
+                                        price = "$ ${hotel.pricePerNight}",
+                                        priceSuffix = "/night",
+                                        imageUrl = hotel.image.firstOrNull() ?: ""
+                                    )
                                 }
                             }
                         }
@@ -306,7 +321,7 @@ private fun TravelHomeScreenPreview() {
                 hotelsRecommended = SectionState.Success(
                     listOf(
                         Hotel(
-                            id = 1,
+                            id = "1",
                             name = "Koh Rong Samloem Resort",
                             address = "Koh Rong Samloem, Cambodia",
                             star = 5,
@@ -315,7 +330,7 @@ private fun TravelHomeScreenPreview() {
                             image = listOf("https://picsum.photos/id/10/800/600")
                         ),
                         Hotel(
-                            id = 2,
+                            id = "2",
                             name = "Sunset Paradise",
                             address = "Phuket, Thailand",
                             star = 4,
@@ -324,7 +339,7 @@ private fun TravelHomeScreenPreview() {
                             image = listOf("https://picsum.photos/id/11/800/600")
                         ),
                         Hotel(
-                            id = 3,
+                            id = "3",
                             name = "Swiss Mountain Lodge",
                             address = "Zermatt, Switzerland",
                             star = 5,
@@ -333,7 +348,7 @@ private fun TravelHomeScreenPreview() {
                             image = listOf("https://picsum.photos/id/12/800/600")
                         ),
                         Hotel(
-                            id = 4,
+                            id = "4",
                             name = "Ocean Breeze",
                             address = "Bali, Indonesia",
                             star = 4,
@@ -342,7 +357,7 @@ private fun TravelHomeScreenPreview() {
                             image = listOf("https://picsum.photos/id/13/800/600")
                         ),
                         Hotel(
-                            id = 5,
+                            id = "5",
                             name = "The Grand Palace",
                             address = "Paris, France",
                             star = 5,
@@ -354,6 +369,7 @@ private fun TravelHomeScreenPreview() {
                 )
             ),
             onHotelClick = {},
+            onTourClick = {},
             onAccountClick = {}
         )
     }

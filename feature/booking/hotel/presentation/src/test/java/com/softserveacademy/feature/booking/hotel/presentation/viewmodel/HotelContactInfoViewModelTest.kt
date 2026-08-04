@@ -32,7 +32,7 @@ class HotelContactInfoViewModelTest {
     private lateinit var hotelBookingDraftRepository: HotelBookingDraftRepository
     private lateinit var validateContactInfoUseCase: ValidateContactInfoUseCase
     private val testDispatcher = StandardTestDispatcher()
-    private val hotelId = 123
+    private val hotelId = "123"
 
     @Before
     fun setUp() {
@@ -41,7 +41,7 @@ class HotelContactInfoViewModelTest {
         hotelBookingDraftRepository = mockk(relaxed = true)
         validateContactInfoUseCase = ValidateContactInfoUseCase()
         
-        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns null
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId) } returns null
         
         viewModel = HotelContactInfoViewModel(
             savedStateHandle = savedStateHandle,
@@ -69,7 +69,7 @@ class HotelContactInfoViewModelTest {
     @Test
     fun `loads draft data on initialization`() = runTest {
         val draft = HotelBookingDraft(
-            hotelId = hotelId.toString(),
+            hotelId = hotelId,
             contactInfo = ContactInfo(
                 firstName = "John",
                 lastName = "Doe",
@@ -77,7 +77,7 @@ class HotelContactInfoViewModelTest {
                 phoneNumber = "123456789"
             )
         )
-        coEvery { hotelBookingDraftRepository.getDraft(hotelId.toString()) } returns draft
+        coEvery { hotelBookingDraftRepository.getDraft(hotelId) } returns draft
 
         val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
         val newViewModel = HotelContactInfoViewModel(

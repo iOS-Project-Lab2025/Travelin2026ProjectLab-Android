@@ -1,6 +1,7 @@
 package com.softserveacademy.core.domain.model
 
 import com.softserveacademy.core.domain.util.DurationSerializer
+import com.softserveacademy.core.domain.util.FlexibleStringSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
@@ -22,6 +23,7 @@ import kotlin.time.Duration
  */
 @Serializable
 data class Tour(
+    @Serializable(with = FlexibleStringSerializer::class)
     val id: String,
 
     val title: String,

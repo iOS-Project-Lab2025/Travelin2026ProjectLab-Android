@@ -1,6 +1,7 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 
 
+import com.softserveacademy.home.presentation.model.TravelItemType
 import kotlinx.serialization.Serializable
 /**
  * Defines all navigation destinations used throughout the application.
@@ -52,29 +53,29 @@ sealed interface Routes {
     data object EditProfileScreen : Routes
 
     @Serializable
-    data class TravelHotelDetailScreen(val id: Int) : Routes
+    data class TravelItemDetailScreen(val id: String, val type: TravelItemType) : Routes
 
     @Serializable
-    data class HotelGalleryScreen(val id: Int) : Routes
+    data class HotelGalleryScreen(val id: String, val type: TravelItemType) : Routes
 
     @Serializable
     data class TravelUpcomingTripScreen(val bookingId: String) : Routes
     @Serializable
-    data object TravelHotelListScreen : Routes
+    data class TravelListScreen(val type: TravelItemType) : Routes
 
     // ---------------- BOOKING ----------------
 
     @Serializable
-    data class HotelEnterBookingDetailsScreen(val hotelId: Int) : Routes
+    data class HotelEnterBookingDetailsScreen(val hotelId: String) : Routes
 
     @Serializable
-    data class HotelRoomSelectionScreen(val hotelId: Int) : Routes
+    data class HotelRoomSelectionScreen(val hotelId: String) : Routes
 
     @Serializable
-    data class HotelContactInfoScreen(val hotelId: Int) : Routes
+    data class HotelContactInfoScreen(val hotelId: String) : Routes
 
     @Serializable
-    data class HotelBookingConfirmationScreen(val hotelId: Int) : Routes
+    data class HotelBookingConfirmationScreen(val hotelId: String) : Routes
 
 
 // ---------------- ONBOARDING ----------------

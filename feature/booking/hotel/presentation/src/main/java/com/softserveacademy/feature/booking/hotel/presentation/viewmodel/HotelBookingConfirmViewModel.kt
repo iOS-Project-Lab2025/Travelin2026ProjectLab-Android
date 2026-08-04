@@ -24,7 +24,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val hotelRepo: HotelRepo
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(HotelBookingConfirmState())
     val uiState: StateFlow<HotelBookingConfirmState> = _uiState.asStateFlow()
@@ -36,7 +36,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun loadBookingDetails() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val draft = hotelBookingDraftRepository.getDraft(hotelId.toString())
+            val draft = hotelBookingDraftRepository.getDraft(hotelId)
             if (draft != null) {
                 hotelRepo.getHotelById(hotelId)
                     .onSuccess { hotelDetails ->
