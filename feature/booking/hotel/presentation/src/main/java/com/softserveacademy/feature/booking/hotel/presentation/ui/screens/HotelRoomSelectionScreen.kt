@@ -113,7 +113,7 @@ fun HotelRoomSelectionScreenContent(
                                 room = room,
                                 nightCount = state.nightCount,
                                 isSelected = state.selectedRoomId == room.id,
-                                onRoomSelected = { onEvent(HotelRoomSelectionEvent.OnRoomSelected(it.id ?: 0)) }
+                                onRoomSelected = { onEvent(HotelRoomSelectionEvent.OnRoomSelected(it.id ?: "")) }
                             )
                         }
                     }
@@ -170,7 +170,7 @@ private fun EmptyRoomsState() {
 private fun HotelRoomSelectionScreenPreview() {
     val mockRooms = listOf(
         HotelRoom(
-            id = 1,
+            id = "1",
             type = "Deluxe Suite, King Size Bed",
             description = "Volcano in East Java",
             maxOccupancy = 5,
@@ -185,7 +185,7 @@ private fun HotelRoomSelectionScreenPreview() {
             isAvailable = true
         ),
         HotelRoom(
-            id = 2,
+            id = "2",
             type = "Standard Suite, Queen Size Bed",
             description = "Volcano in East Java",
             maxOccupancy = 5,
@@ -203,7 +203,7 @@ private fun HotelRoomSelectionScreenPreview() {
     val state = HotelRoomSelectionState(
         rooms = mockRooms,
         filteredRooms = mockRooms,
-        selectedRoomId = 1,
+        selectedRoomId = "1",
         nightCount = 3
     )
     Travelin2026ProjectLabTheme {

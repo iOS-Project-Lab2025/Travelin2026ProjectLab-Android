@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
+import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelBookingContactInfoEvent
 import com.softserveacademy.feature.booking.common.presentation.states.TravelBookingContactInfoState
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HotelContactInfoViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val hotelBookingDraftRepository: HotelBookingDraftRepository,
+    private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
+    private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase,
     private val validateContactInfoUseCase: ValidateContactInfoUseCase
 ) : ViewModel() {
 
@@ -51,7 +53,7 @@ class HotelContactInfoViewModel @Inject constructor(
     private fun loadBookingDraft() {
         updateState { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId)
+            bookingDraft = getHotelBookingDraftUseCase(hotelId)
             bookingDraft?.let { draft ->
                 updateState {
                     it.copy(
@@ -122,7 +124,7 @@ class HotelContactInfoViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val repositoryDraft = hotelBookingDraftRepository.getDraft(hotelId)
+            val repositoryDraft = getHotelBookingDraftUseCase(hotelId)
             val updatedContactInfo = ContactInfo(
                 firstName = _uiState.value.firstName,
                 lastName = _uiState.value.lastName,
@@ -133,7 +135,7 @@ class HotelContactInfoViewModel @Inject constructor(
             val updatedDraft = (repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)).copy(
                 contactInfo = updatedContactInfo
             )
-            hotelBookingDraftRepository.saveDraft(updatedDraft)
+            saveHotelBookingDraftUseCase(updatedDraft)
             _validationSuccess.value = true
         }
     }

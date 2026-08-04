@@ -2,6 +2,8 @@ package com.softserveacademy.home.data.mockdata
 
 import com.softserveacademy.core.domain.model.Airline
 import com.softserveacademy.core.domain.model.Airport
+import com.softserveacademy.core.domain.model.BookingGuests
+import com.softserveacademy.core.domain.model.BookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
@@ -222,26 +224,34 @@ object HomeMockData {
                     )
                 ),
                 confirmationCode = "ABC123",
-                status = BookingStatus.CONFIRMED
+                status = BookingStatus.COMPLETED
             )
         ),
 
         hotel = HotelBooking(
             bookingId = "hotel_booking_001",
 
-            hotel = hotels.first(),
+            hotelId = "1",
 
-            roomType = "Deluxe Ocean View",
+            roomId = "11",
 
             checkIn = dateLong(2026, 8, 6),
 
             checkOut = dateLong(2026, 8, 11),
 
-            guests = 2,
+            guests = BookingGuests(adults = 2),
+
+            price = BookingPrice(
+                roomPricePerNight = 50,
+                roomPrice = 250,
+                total = 250
+            ),
 
             confirmationCode = "HOTEL456",
 
-            status = BookingStatus.CONFIRMED
+            status = BookingStatus.COMPLETED,
+
+            createdAt = dateLong(2026, 7, 31)
         ),
 
         tours = listOf(
@@ -266,7 +276,7 @@ object HomeMockData {
 
                 confirmationCode = "TOUR789",
 
-                status = BookingStatus.CONFIRMED
+                status = BookingStatus.COMPLETED
             )
         )
     )

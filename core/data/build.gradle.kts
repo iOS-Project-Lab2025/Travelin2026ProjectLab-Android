@@ -1,7 +1,6 @@
 plugins {
     id("com.softserveacademy.android.library")
     id("com.softserveacademy.android.hilt")
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

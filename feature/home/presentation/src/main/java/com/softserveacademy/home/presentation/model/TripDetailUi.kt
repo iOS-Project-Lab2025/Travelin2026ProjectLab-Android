@@ -103,11 +103,11 @@ fun Trip.toTripDetailUi(): TripDetailUi {
         },
         hotelInfo = hotel?.let { h ->
             HotelInfoUi(
-                name = h.hotel.name,
-                roomType = h.roomType,
+                name = "Hotel ID: ${h.hotelId}", // Replace with actual hotel info
+                roomType = "Room ID: ${h.roomId}", // Replace with actual room info
                 checkIn = dateFormat.format(java.util.Date(h.checkIn)),
                 checkOut = dateFormat.format(java.util.Date(h.checkOut)),
-                guests = h.guests,
+                guests = h.guests.adults + h.guests.children,
                 confirmationCode = h.confirmationCode
             )
         },

@@ -1,5 +1,8 @@
-package com.softserveacademy.core.data.repository
+package com.softserveacademy.core.data.di
 
+import com.softserveacademy.core.data.repository.HotelBookingRepositoryImpl
+import com.softserveacademy.core.data.repository.HotelRepoImpl
+import com.softserveacademy.core.domain.repository.HotelBookingRepository
 import com.softserveacademy.core.domain.repository.HotelRepo
 import dagger.Binds
 import dagger.Module
@@ -22,4 +25,10 @@ abstract class HotelDataModule {
     abstract fun bindHotelRepo(
         hotelRepoImpl: HotelRepoImpl
     ): HotelRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindHotelBookingRepository(
+        hotelBookingRepositoryImpl: HotelBookingRepositoryImpl
+    ): HotelBookingRepository
 }

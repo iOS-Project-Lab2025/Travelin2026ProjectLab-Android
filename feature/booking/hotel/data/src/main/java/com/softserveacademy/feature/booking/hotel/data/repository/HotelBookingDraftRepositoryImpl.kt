@@ -31,7 +31,7 @@ class HotelBookingDraftRepositoryImpl @Inject constructor(
         val hotelId = draft.hotelId ?: return
         val json = Json.encodeToString(draft)
         context.dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(hotelId)] = json
+            preferences[stringPreferencesKey(hotelId.toString())] = json
         }
     }
 

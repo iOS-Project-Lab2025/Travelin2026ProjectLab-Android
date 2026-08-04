@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.coil.compose)
+    implementation(libs.stripe.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

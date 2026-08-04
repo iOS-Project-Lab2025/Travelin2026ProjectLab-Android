@@ -46,6 +46,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelC
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelContactInfoViewModel
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingSuccessScreen
 
 
 /**
@@ -387,7 +388,20 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
             val viewModel: HotelBookingConfirmViewModel = hiltViewModel()
             HotelBookingConfirmScreen(
                 onBackClick = { navController.popBackStack() },
+                onPaymentSuccess = {
+                    navController.navigate(Routes.TravelBookingSuccessScreen)
+                },
                 viewModel = viewModel
+            )
+        }
+
+        composable<Routes.TravelBookingSuccessScreen> {
+            TravelBookingSuccessScreen(
+                onBackToHome = {
+                    navController.navigate(Routes.MainGraph) {
+                        popUpTo(Routes.BookingGraph) { inclusive = true }
+                    }
+                }
             )
         }
     }

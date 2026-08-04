@@ -7,7 +7,9 @@ import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
-import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetHotelRoomsUseCase
+import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
@@ -25,14 +27,16 @@ import javax.inject.Inject
  * View model for the hotel room selection screen.
  *
  * @property savedStateHandle The handle to saved state.
- * @property hotelRepo Repository for fetching hotel and room data.
- * @property hotelBookingDraftRepository Repository for managing booking drafts.
+ * @property getHotelRoomsUseCase Use case for fetching available hotel rooms.
+ * @property getHotelBookingDraftUseCase Use case for retrieving booking drafts.
+ * @property saveHotelBookingDraftUseCase Use case for saving booking drafts.
  */
 @HiltViewModel
 class HotelRoomSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val hotelRepo: HotelRepo,
-    private val hotelBookingDraftRepository: HotelBookingDraftRepository
+    private val getHotelRoomsUseCase: GetHotelRoomsUseCase,
+    private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
+    private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
 ) : ViewModel() {
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
@@ -56,7 +60,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun loadRooms() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = hotelBookingDraftRepository.getDraft(hotelId)
+            bookingDraft = getHotelBookingDraftUseCase(hotelId)
             val draft = bookingDraft
             val checkIn = draft?.checkIn ?: 0L
             val checkOut = draft?.checkOut ?: 0L
@@ -67,7 +71,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
                 ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
             } else 1
 
-            hotelRepo.getHotelRooms(hotelId, checkIn, checkOut, guestCount)
+            getHotelRoomsUseCase(hotelId, checkIn, checkOut, guestCount)
                 .onSuccess { rooms ->
                     delay(1.seconds)
                     _uiState.update {
@@ -75,7 +79,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
                             rooms = rooms,
                             nightCount = nightCount,
                             isLoading = false,
-                            selectedRoomId = it.selectedRoomId ?: draft?.roomId?.toIntOrNull()
+                            selectedRoomId = it.selectedRoomId ?: draft?.roomId
                         )
                     }
                     applyFilters()
@@ -108,12 +112,12 @@ class HotelRoomSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun saveRoomToDraft(roomId: Int?) {
+    private fun saveRoomToDraft(roomId: String?) {
         viewModelScope.launch {
-            val currentDraft = hotelBookingDraftRepository.getDraft(hotelId)
+            val currentDraft = getHotelBookingDraftUseCase(hotelId)
                 ?: HotelBookingDraft(hotelId = hotelId)
-            val updatedDraft = currentDraft.copy(roomId = roomId?.toString())
-            hotelBookingDraftRepository.saveDraft(updatedDraft)
+            val updatedDraft = currentDraft.copy(roomId = roomId)
+            saveHotelBookingDraftUseCase(updatedDraft)
             bookingDraft = updatedDraft
         }
     }
@@ -145,17 +149,12 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun onNextClick() {
         val selectedRoomId = _uiState.value.selectedRoomId ?: return
         val draft = bookingDraft
-        val checkIn = draft?.checkIn ?: 0L
-        val checkOut = draft?.checkOut ?: 0L
 
         viewModelScope.launch {
-            hotelRepo.reserveRoom(hotelId, selectedRoomId, checkIn, checkOut)
-                .onSuccess {
-                    draft?.let {
-                        val updatedDraft = it.copy(roomId = selectedRoomId.toString())
-                        hotelBookingDraftRepository.saveDraft(updatedDraft)
-                    }
-                }
+            draft?.let {
+                val updatedDraft = it.copy(roomId = selectedRoomId)
+                saveHotelBookingDraftUseCase(updatedDraft)
+            }
         }
     }
 

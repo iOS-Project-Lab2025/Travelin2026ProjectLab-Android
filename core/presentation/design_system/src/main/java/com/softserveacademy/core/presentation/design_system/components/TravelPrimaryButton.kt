@@ -8,14 +8,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.colors
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -37,6 +42,7 @@ fun TravelPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     variant: PrimaryButtonVariant = PrimaryButtonVariant.CallToAction,
     debounceInterval: Long = 1000L
 ) {
@@ -51,23 +57,31 @@ fun TravelPrimaryButton(
                 onClick()
             }
         },
-        enabled = enabled,
+        enabled = enabled && !isLoading,
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(TravelinDimens.ButtonHeightMedium),
         colors = ButtonDefaults.buttonColors(
             containerColor = colors.containerColor,
             contentColor = colors.contentColor,
+            disabledContainerColor = if (isLoading) colors.containerColor else MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = if (isLoading) colors.contentColor else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         shape = MaterialTheme.shapes.medium,
-        contentPadding = PaddingValues(
-            TravelinDimens.PaddingLarge,
-            TravelinDimens.PaddingMedium
-        )
+        contentPadding = PaddingValues(horizontal = TravelinDimens.PaddingLarge)
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.headlineSmall,
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(TravelinDimens.IconSizeMedium),
+                color = colors.contentColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
     }
 }
 
@@ -96,6 +110,28 @@ fun TravelPrimaryButtonPreview() {
                 onClick = {},
                 variant = PrimaryButtonVariant.SecondaryAction,
                 enabled = true
+            )
+            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
+            TravelPrimaryButton(
+                text = "Button",
+                onClick = {},
+                variant = PrimaryButtonVariant.CallToAction,
+                enabled = true,
+                isLoading = true
+            )
+            TravelPrimaryButton(
+                text = "Button",
+                onClick = {},
+                variant = PrimaryButtonVariant.Neutral,
+                enabled = true,
+                isLoading = true
+            )
+            TravelPrimaryButton(
+                text = "Button",
+                onClick = {},
+                variant = PrimaryButtonVariant.SecondaryAction,
+                enabled = true,
+                isLoading = true
             )
         }
     }

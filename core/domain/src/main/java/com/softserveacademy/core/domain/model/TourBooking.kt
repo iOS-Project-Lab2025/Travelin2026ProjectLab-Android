@@ -1,5 +1,7 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.Serializable
+
 /**
  * Represents a user's tour reservation.
  *
@@ -14,6 +16,7 @@ package com.softserveacademy.core.domain.model
  * @property confirmationCode Tour provider or booking confirmation code.
  * @property status Current status of the booking.
  */
+@Serializable
 data class TourBooking(
     val bookingId: String,
 
@@ -27,18 +30,3 @@ data class TourBooking(
 
     val status: BookingStatus
 )
-
-/**
- * Represents the lifecycle states of a booking.
- *
- * @property CONFIRMED The booking has been confirmed by the provider.
- * @property PENDING The booking is awaiting confirmation.
- * @property CANCELLED The booking has been cancelled.
- * @property COMPLETED The booked service has been completed.
- */
-enum class BookingStatus {
-    CONFIRMED,
-    PENDING,
-    CANCELLED,
-    COMPLETED
-}

@@ -3,10 +3,20 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.domain.model.BookingContactInfo
+import com.softserveacademy.core.domain.model.BookingGuests
+import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.BookingStatus
+import com.softserveacademy.core.domain.model.HotelBooking
+import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
-import com.softserveacademy.feature.booking.hotel.domain.repository.HotelBookingDraftRepository
+import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
+import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
+import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
+import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,16 +25,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class HotelBookingConfirmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val hotelBookingDraftRepository: HotelBookingDraftRepository,
-    private val hotelRepo: HotelRepo
+    private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
+    private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase,
+    private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
+    private val reserveRoomUseCase: ReserveRoomUseCase,
+    private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
+    private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
+    private val createPaymentIntentUseCase: CreatePaymentIntentUseCase
 ) : ViewModel() {
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
+    private var currentBookingId: String? = null
 
     private val _uiState = MutableStateFlow(HotelBookingConfirmState())
     val uiState: StateFlow<HotelBookingConfirmState> = _uiState.asStateFlow()
@@ -36,22 +53,31 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun loadBookingDetails() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val draft = hotelBookingDraftRepository.getDraft(hotelId)
+            val draft = getHotelBookingDraftUseCase(hotelId)
             if (draft != null) {
-                hotelRepo.getHotelById(hotelId)
+                getHotelDetailsUseCase(hotelId)
                     .onSuccess { hotelDetails ->
-                        val selectedRoom = hotelDetails.rooms.find { it.id.toString() == draft.roomId }
+                        val selectedRoom = hotelDetails.rooms.find { it.id == draft.roomId }
+
+                        val checkIn = draft.checkIn
+                        val checkOut = draft.checkOut
+                        val nights = if (checkIn != null && checkOut != null) {
+                            ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
+                        } else 1
+                        val totalPrice = (selectedRoom?.pricePerNight ?: 0) * nights
+
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 bookingDraft = draft,
                                 hotelDetails = hotelDetails,
-                                selectedRoom = selectedRoom
+                                selectedRoom = selectedRoom,
+                                totalPrice = totalPrice
                             )
                         }
                     }
                     .onFailure { e ->
-                        _uiState.update { it.copy(isLoading = false, error = e.toString()) }
+                        _uiState.update { it.copy(isLoading = false, error = "Failed to load details") }
                     }
             } else {
                 _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
@@ -62,9 +88,124 @@ class HotelBookingConfirmViewModel @Inject constructor(
     fun onEvent(event: HotelBookingConfirmEvent) {
         when (event) {
             HotelBookingConfirmEvent.OnConfirmClick -> {
-                // Handle booking confirmation (e.g., call repository to save booking)
+                createPaymentIntent()
             }
             HotelBookingConfirmEvent.OnBackClick -> { /* Handled by navigation */ }
+            HotelBookingConfirmEvent.OnPaymentSuccess -> {
+                // Finalize booking after successful payment
+                finalizeBooking()
+            }
+            HotelBookingConfirmEvent.OnPaymentReset -> {
+                _uiState.update { it.copy(clientSecret = null) }
+            }
+            HotelBookingConfirmEvent.OnSimulateSuccessClick -> {
+                _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
+                finalizeBooking()
+            }
+            HotelBookingConfirmEvent.OnSimulateFailureClick -> {
+                _uiState.update { it.copy(paymentSimulationError = "Payment failed try again") }
+            }
+            HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet -> {
+                _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
+            }
         }
+    }
+
+    private fun createPaymentIntent() {
+        val state = _uiState.value
+        val amount = state.totalPrice.toLong()
+        if (amount <= 0) {
+            _uiState.update { it.copy(error = "Invalid price calculation") }
+            return
+        }
+        _uiState.update { it.copy(isPaymentSheetLoading = true) }
+
+        viewModelScope.launch {
+            // Save initial CREATED booking
+            val booking = createBookingFromState(BookingStatus.CREATED)
+            if (booking != null) {
+                currentBookingId = booking.bookingId
+                saveHotelBookingUseCase(booking)
+                    .onFailure { _ ->
+                        _uiState.update { it.copy(error = "Failed to save booking", isPaymentSheetLoading = false) }
+                        updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
+                        return@launch
+                    }
+            } else {
+                _uiState.update { it.copy(error = "Failed to create booking data", isPaymentSheetLoading = false) }
+                return@launch
+            }
+
+            createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
+                .onSuccess { secret ->
+                    _uiState.update { it.copy(clientSecret = secret, isPaymentSheetLoading = false) }
+                    // Update status to PENDING as we are now awaiting payment
+                    updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.PENDING)
+                }
+                .onFailure { _ ->
+                    _uiState.update {
+                        it.copy(
+                            showPaymentSimulationSheet = true,
+                            isPaymentSheetLoading = false
+                        )
+                    }
+                    updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
+                }
+        }
+    }
+
+    private fun finalizeBooking() {
+        val state = _uiState.value
+        val hotelId = state.hotelDetails?.id
+        val roomId = state.selectedRoom?.id
+        val checkIn = state.bookingDraft?.checkIn ?: 0L
+        val checkOut = state.bookingDraft?.checkOut ?: 0L
+
+        viewModelScope.launch {
+            if (hotelId != null && roomId != null) {
+                reserveRoomUseCase(hotelId, roomId, checkIn, checkOut)
+            }
+
+            currentBookingId?.let { id ->
+                updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
+            }
+            clearHotelBookingDraftUseCase(hotelId.toString())
+            _uiState.update { it.copy(isPaymentSuccessful = true) }
+        }
+    }
+
+    private fun createBookingFromState(status: BookingStatus): HotelBooking? {
+        val state = _uiState.value
+        val hotelDetails = state.hotelDetails ?: return null
+        val room = state.selectedRoom ?: return null
+        val draft = state.bookingDraft ?: return null
+
+        return HotelBooking(
+            bookingId = currentBookingId ?: UUID.randomUUID().toString(),
+            hotelId = hotelDetails.id,
+            roomId = room.id ?: "",
+            checkIn = draft.checkIn ?: 0L,
+            checkOut = draft.checkOut ?: 0L,
+            guests = BookingGuests(
+                adults = draft.guests.adults,
+                children = draft.guests.children,
+                pets = draft.guests.pets
+            ),
+            price = BookingPrice(
+                roomPricePerNight = room.pricePerNight,
+                roomPrice = state.totalPrice,
+                total = state.totalPrice
+            ),
+            confirmationCode = "HB-${System.currentTimeMillis() % 10000}",
+            status = status,
+            createdAt = System.currentTimeMillis(),
+            contactInfo = BookingContactInfo(
+                firstName = draft.contactInfo.firstName,
+                lastName = draft.contactInfo.lastName,
+                email = draft.contactInfo.email,
+                countryCode = draft.contactInfo.countryCode,
+                phoneNumber = draft.contactInfo.phoneNumber
+            )
+        )
     }
 }

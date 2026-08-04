@@ -77,6 +77,9 @@ sealed interface Routes {
     @Serializable
     data class HotelBookingConfirmationScreen(val hotelId: String) : Routes
 
+    @Serializable
+    data object TravelBookingSuccessScreen : Routes
+
 
 // ---------------- ONBOARDING ----------------
     /**

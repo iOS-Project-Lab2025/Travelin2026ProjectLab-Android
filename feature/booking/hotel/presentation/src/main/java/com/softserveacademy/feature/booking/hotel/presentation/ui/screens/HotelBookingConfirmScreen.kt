@@ -10,41 +10,129 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelRoomCard
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import com.softserveacademy.feature.booking.hotel.presentation.ui.components.HotelBookingSummaryCard
 import com.softserveacademy.feature.booking.hotel.presentation.ui.components.HotelSummaryCard
+import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelPaymentSimulationSheet
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
-import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.countries
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
-import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingConfirmBottomBar
 import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
-import com.softserveacademy.feature.booking.common.presentation.R as CommonR
 import com.softserveacademy.feature.booking.hotel.presentation.R
+import com.softserveacademy.core.presentation.design_system.R as coreR
+
+import androidx.compose.runtime.LaunchedEffect
+import com.softserveacademy.core.presentation.design_system.theme.BlueDark80
+import com.softserveacademy.core.presentation.design_system.theme.Gray40
+import com.softserveacademy.core.presentation.design_system.theme.Gray80
+import com.softserveacademy.core.presentation.design_system.theme.GrayLight20
+import com.softserveacademy.core.presentation.design_system.theme.Red50
+import com.softserveacademy.core.presentation.design_system.theme.Teal40
+import com.softserveacademy.core.presentation.design_system.theme.White100
+import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingConfirmScreen
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.rememberPaymentSheet
 
 @Composable
 fun HotelBookingConfirmScreen(
     onBackClick: () -> Unit,
+    onPaymentSuccess: () -> Unit,
     viewModel: HotelBookingConfirmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
+    val paymentSheet = rememberPaymentSheet { result ->
+        when (result) {
+            is PaymentSheetResult.Completed -> {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentSuccess)
+            }
+            is PaymentSheetResult.Canceled -> {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentReset)
+            }
+            is PaymentSheetResult.Failed -> {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentReset)
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.clientSecret) {
+        uiState.clientSecret?.let { secret ->
+            paymentSheet.presentWithPaymentIntent(
+                secret,
+                PaymentSheet.Configuration(
+                    merchantDisplayName = "Travelin 2026",
+                    appearance = PaymentSheet.Appearance(
+                        colorsLight = PaymentSheet.Colors(
+                            primary = Teal40,
+                            surface = White100,
+                            component = White100,
+                            componentBorder = Gray40,
+                            componentDivider = Gray40,
+                            onComponent = Gray80,
+                            subtitle = Gray40,
+                            placeholderText = Gray40,
+                            onSurface = Gray80,
+                            appBarIcon = Gray80,
+                            error = Red50,
+                        ),
+                        colorsDark = PaymentSheet.Colors(
+                            primary = Teal40,
+                            surface = BlueDark80,
+                            component = BlueDark80,
+                            componentBorder = Gray80,
+                            componentDivider = Gray40,
+                            onComponent = GrayLight20,
+                            subtitle = Gray40,
+                            placeholderText = Gray40,
+                            onSurface = GrayLight20,
+                            appBarIcon = GrayLight20,
+                            error = Red50,
+                        ),
+                        shapes = PaymentSheet.Shapes(
+                            cornerRadiusDp = 10f,
+                            borderStrokeWidthDp = 1f
+                        ),
+                        typography = PaymentSheet.Typography(
+                            sizeScaleFactor = 1f,
+                            fontResId = coreR.font.inter_medium,
+                        ),
+                        primaryButton = PaymentSheet.PrimaryButton(
+                            shape = PaymentSheet.PrimaryButtonShape(
+                                cornerRadiusDp = 15f,
+                                heightDp = 56f
+                            ),
+                        )
+                    )
+                )
+            )
+            viewModel.onEvent(HotelBookingConfirmEvent.OnPaymentReset)
+        }
+    }
+
+    LaunchedEffect(uiState.isPaymentSuccessful) {
+        if (uiState.isPaymentSuccessful) {
+            onPaymentSuccess()
+        }
+    }
+
     HotelBookingConfirmContent(
         uiState = uiState,
         onBackClick = onBackClick,
-        onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) }
+        onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) },
+        onSimulateSuccess = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateSuccessClick) },
+        onSimulateFailure = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateFailureClick) },
+        onDismissBottomSheet = { viewModel.onEvent(HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet) }
     )
 }
 
@@ -53,57 +141,34 @@ fun HotelBookingConfirmScreen(
 fun HotelBookingConfirmContent(
     uiState: HotelBookingConfirmState,
     onBackClick: () -> Unit,
-    onConfirmClick: () -> Unit
+    onConfirmClick: () -> Unit,
+    onSimulateSuccess: () -> Unit = {},
+    onSimulateFailure: () -> Unit = {},
+    onDismissBottomSheet: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+
+    if (uiState.showPaymentSimulationSheet) {
+        TravelPaymentSimulationSheet(
+            onDismissRequest = onDismissBottomSheet,
+            onSimulateSuccess = onSimulateSuccess,
+            onSimulateFailure = onSimulateFailure,
+            simulationError = uiState.paymentSimulationError
+        )
+    }
 
     if (uiState.isLoading) {
         TravelLoadingScreen()
     } else {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.booking_confirm_title),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(TravelinDimens.PaddingMedium)
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                imageVector = ArrowLeftIcon,
-                                contentDescription = stringResource(CommonR.string.back_button_label)
-                            )
-                        }
-                    },
-                    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
-                )
-            },
-            bottomBar = {
-                val totalPrice = uiState.selectedRoom?.let { room ->
-                    val nights = uiState.bookingDraft?.let { draft ->
-                        val checkIn = draft.checkIn
-                        val checkOut = draft.checkOut
-                        if (checkIn != null && checkOut != null) {
-                            ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
-                        } else 1
-                    } ?: 1
-                    room.pricePerNight * nights
-                } ?: 0
-
-                TravelBookingConfirmBottomBar(
-                    totalPrice = totalPrice,
-                    buttonText = stringResource(R.string.booking_confirm_button_label),
-                    onButtonClick = onConfirmClick
-                )
-            }
+        TravelBookingConfirmScreen(
+            totalPrice = uiState.totalPrice,
+            onBackClick = onBackClick,
+            onConfirmClick = onConfirmClick,
+            isConfirmLoading = uiState.isPaymentSheetLoading
         ) { padding ->
             if (uiState.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = uiState.error)
+                    Text(text = uiState.error ?: "")
                 }
             } else {
                 Column(
@@ -192,7 +257,7 @@ fun HotelBookingConfirmPreview() {
     )
 
     val sampleRoom = HotelRoom(
-        id = 1,
+        id = "1",
         type = "Standard Suite, Queen Size Bed",
         description = "Volcano in East Java",
         maxOccupancy = 5,

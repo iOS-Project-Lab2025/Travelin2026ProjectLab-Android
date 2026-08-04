@@ -50,6 +50,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.stripe.android)
+
     // onboarding feature
     implementation(projects.feature.onboarding.presentation)
     implementation(projects.feature.onboarding.domain)
