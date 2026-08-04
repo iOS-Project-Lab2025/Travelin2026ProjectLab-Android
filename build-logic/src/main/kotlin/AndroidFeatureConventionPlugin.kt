@@ -39,7 +39,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                             buildConfigField(
                                 "String",
                                 "BASE_URL",
-                                "\"https://private-amnesiac-923781-travelin1.apiary-mock.com/\""
+                                "\"${flavor.baseUrl}\""
                             )
                         }
                     }
