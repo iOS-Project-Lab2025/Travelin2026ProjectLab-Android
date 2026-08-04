@@ -26,7 +26,7 @@ class HotelContactInfoViewModel @Inject constructor(
     private val validateContactInfoUseCase: ValidateContactInfoUseCase
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(savedStateHandle.get<TravelBookingContactInfoState>(KEY_STATE) ?: TravelBookingContactInfoState())
     val uiState: StateFlow<TravelBookingContactInfoState> = _uiState.asStateFlow()
@@ -53,7 +53,7 @@ class HotelContactInfoViewModel @Inject constructor(
     private fun loadBookingDraft() {
         updateState { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = getHotelBookingDraftUseCase(hotelId.toString())
+            bookingDraft = getHotelBookingDraftUseCase(hotelId)
             bookingDraft?.let { draft ->
                 updateState {
                     it.copy(
@@ -124,7 +124,7 @@ class HotelContactInfoViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val repositoryDraft = getHotelBookingDraftUseCase(hotelId.toString())
+            val repositoryDraft = getHotelBookingDraftUseCase(hotelId)
             val updatedContactInfo = ContactInfo(
                 firstName = _uiState.value.firstName,
                 lastName = _uiState.value.lastName,

@@ -27,6 +27,8 @@ import com.softserveacademy.core.presentation.design_system.components.util.deta
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 
+import com.softserveacademy.home.presentation.model.TravelItemType
+
 /**
  * Screen that displays the full gallery of a hotel's photos.
  *
@@ -35,7 +37,8 @@ import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
  */
 @Composable
 fun TravelHotelGalleryScreen(
-    hotelId: Int,
+    hotelId: String,
+    type: TravelItemType,
     onBackClick: () -> Unit,
     viewModel: HotelDetailsViewModel = hiltViewModel()
 ) {
@@ -44,8 +47,8 @@ fun TravelHotelGalleryScreen(
     var selectedImageIndex by remember { mutableIntStateOf(0) }
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        viewModel.onEvent(HotelDetailsEvent.Load(hotelId))
+    LaunchedEffect(hotelId, type) {
+        viewModel.onEvent(HotelDetailsEvent.Load(hotelId, type))
     }
 
     LaunchedEffect(Unit) {

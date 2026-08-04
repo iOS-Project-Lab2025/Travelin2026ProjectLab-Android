@@ -1,5 +1,6 @@
 package com.softserveacademy.core.domain.model
 
+import com.softserveacademy.core.domain.util.FlexibleStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +24,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HotelDetails(
-    val id: Int,
+    @Serializable(with = FlexibleStringSerializer::class)
+    val id: String,
     val minimumPrice: Int,
     val imageList: List<String>,
     val name: String,

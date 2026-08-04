@@ -105,7 +105,7 @@ fun HotelSummaryCardPreview() {
     Travelin2026ProjectLabTheme() {
         HotelSummaryCard(
             hotel = HotelDetails(
-                id = 1,
+                id = "1",
                 name = "Swiss-Belhotel Rainforest Kuta",
                 address = "Jl. Sunset Road No. 101, Kuta, Bali, Indonesia",
                 star = 3,

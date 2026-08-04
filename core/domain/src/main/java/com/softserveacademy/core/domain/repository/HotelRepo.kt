@@ -15,7 +15,7 @@ interface HotelRepo{
      * @param id The ID of the hotel to fetch.
      * @return The detailed hotel object.
      */
-    suspend fun getHotelById(id: Int): AppResult<HotelDetails>
+    suspend fun getHotelById(id: String): AppResult<HotelDetails>
 
     /**
      * Fetch all available hotels.
@@ -32,7 +32,7 @@ interface HotelRepo{
      * @param guestCount The number of guests for the booking.
      * @return A list of rooms for the hotel.
      */
-    suspend fun getHotelRooms(hotelId: Int, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>>
+    suspend fun getHotelRooms(hotelId: String, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>>
 
     /**
      * Reserve a room in a hotel.
@@ -41,5 +41,5 @@ interface HotelRepo{
      * @param checkInDate The check-in date in milliseconds.
      * @param checkOutDate The check-out date in milliseconds.
      */
-    suspend fun reserveRoom(hotelId: Int, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit>
+    suspend fun reserveRoom(hotelId: String, roomId: Int, checkInDate: Long, checkOutDate: Long): AppResult<Unit>
 }

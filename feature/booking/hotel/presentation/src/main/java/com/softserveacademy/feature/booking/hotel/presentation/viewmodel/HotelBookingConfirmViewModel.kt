@@ -40,7 +40,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
     private var currentBookingId: String? = null
 
     private val _uiState = MutableStateFlow(HotelBookingConfirmState())
@@ -53,7 +53,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private fun loadBookingDetails() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val draft = getHotelBookingDraftUseCase(hotelId.toString())
+            val draft = getHotelBookingDraftUseCase(hotelId)
             if (draft != null) {
                 getHotelDetailsUseCase(hotelId)
                     .onSuccess { hotelDetails ->
@@ -109,7 +109,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
             return
         }
         _uiState.update { it.copy(isPaymentSheetLoading = true) }
-        
+
         viewModelScope.launch {
             // Save initial CREATED booking
             val booking = createBookingFromState(BookingStatus.CREATED)

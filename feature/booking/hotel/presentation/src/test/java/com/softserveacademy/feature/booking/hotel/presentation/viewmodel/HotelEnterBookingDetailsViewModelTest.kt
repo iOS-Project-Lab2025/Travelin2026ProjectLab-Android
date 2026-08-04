@@ -35,7 +35,7 @@ class HotelEnterBookingDetailsViewModelTest {
     private lateinit var getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase
     private lateinit var saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
     private val testDispatcher = StandardTestDispatcher()
-    private val hotelId = 123
+    private val hotelId = "123"
 
     @Before
     fun setUp() {
@@ -90,8 +90,8 @@ class HotelEnterBookingDetailsViewModelTest {
 
     @Test
     fun `restores state from BookingRepository if SavedStateHandle is empty`() = runTest {
-        val hotelIdInt = 123
-        val draft = HotelBookingDraft(hotelId = hotelIdInt, guests = Guests(adults = 4))
+        val hotelId = "123"
+        val draft = HotelBookingDraft(hotelId = hotelId, guests = Guests(adults = 4))
         coEvery { getHotelBookingDraftUseCase(any()) } returns draft
         
         val freshSavedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelIdInt))

@@ -35,7 +35,7 @@ class HotelRoomSelectionViewModelTest {
     private lateinit var savedStateHandle: SavedStateHandle
     private val testDispatcher = StandardTestDispatcher()
 
-    private val hotelId = 1
+    private val hotelId = "1"
     private val mockRooms = listOf(
         HotelRoom(id = 1, type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
         HotelRoom(id = 2, type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
@@ -169,7 +169,7 @@ class HotelRoomSelectionViewModelTest {
         advanceUntilIdle()
 
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected(1))
-        
+
         viewModel.onEvent(HotelRoomSelectionEvent.OnNextClick)
         advanceUntilIdle()
 

@@ -36,7 +36,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) ?: TravelEnterBookingDetailsState())
     val uiState: StateFlow<TravelEnterBookingDetailsState> = _uiState.asStateFlow()
@@ -58,7 +58,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         if (savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) == null) {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
-                val repositoryDraft = getHotelBookingDraftUseCase(hotelId.toString())
+                val repositoryDraft = getHotelBookingDraftUseCase(hotelId)
 
                 hotelBookingDraft = repositoryDraft ?: HotelBookingDraft(hotelId = hotelId)
                 syncSavedState()

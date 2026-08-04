@@ -3,6 +3,7 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
@@ -38,7 +39,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
 ) : ViewModel() {
 
-    private val hotelId: Int = checkNotNull(savedStateHandle["hotelId"])
+    private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
     private val _uiState = MutableStateFlow(HotelRoomSelectionState(
         selectedRoomId = savedStateHandle[KEY_SELECTED_ROOM_ID],
@@ -59,7 +60,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun loadRooms() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            bookingDraft = getHotelBookingDraftUseCase(hotelId.toString())
+            bookingDraft = getHotelBookingDraftUseCase(hotelId)
             val draft = bookingDraft
             val checkIn = draft?.checkIn ?: 0L
             val checkOut = draft?.checkOut ?: 0L
@@ -113,7 +114,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
 
     private fun saveRoomToDraft(roomId: Int?) {
         viewModelScope.launch {
-            val currentDraft = getHotelBookingDraftUseCase(hotelId.toString())
+            val currentDraft = getHotelBookingDraftUseCase(hotelId)
                 ?: HotelBookingDraft(hotelId = hotelId)
             val updatedDraft = currentDraft.copy(roomId = roomId)
             saveHotelBookingDraftUseCase(updatedDraft)
@@ -148,7 +149,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun onNextClick() {
         val selectedRoomId = _uiState.value.selectedRoomId ?: return
         val draft = bookingDraft
-        
+
         viewModelScope.launch {
             draft?.let {
                 val updatedDraft = it.copy(roomId = selectedRoomId)
