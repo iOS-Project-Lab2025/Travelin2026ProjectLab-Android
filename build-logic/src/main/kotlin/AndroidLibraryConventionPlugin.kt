@@ -31,7 +31,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 }
                 flavorDimensions += FlavorDimension.contentType.name
                 productFlavors {
-                    TravelinFlavor.values().forEach { flavor ->
+                    TravelinFlavor.entries.forEach { flavor ->
                         create(flavor.name) {
                             dimension = flavor.dimension.name
                             buildConfigField(

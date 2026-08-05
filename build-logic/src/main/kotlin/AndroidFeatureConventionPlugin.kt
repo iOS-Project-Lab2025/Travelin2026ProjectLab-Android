@@ -33,7 +33,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 }
                 flavorDimensions += FlavorDimension.contentType.name
                 productFlavors {
-                    TravelinFlavor.values().forEach { flavor ->
+                    TravelinFlavor.entries.forEach { flavor ->
                         create(flavor.name) {
                             dimension = flavor.dimension.name
                             buildConfigField(
@@ -67,6 +67,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("androidTestImplementation", libs.findLibrary("androidx-compose-ui-test-junit4").get())
                 add("androidTestImplementation", libs.findLibrary("androidx-junit").get())
                 add("androidTestImplementation", libs.findLibrary("androidx-espresso-core").get())
+                add("testImplementation", platform(bom))
                 add("testImplementation", libs.findLibrary("junit").get())
             }
         }
