@@ -1,8 +1,10 @@
 package com.softserveacademy.home.presentation.navigation
 
-data class HomeNavigationActions(
+data class HomeNavigationActions( 
+   
     val onHotelClick: (String) -> Unit = {},
     val onTourClick: (String) -> Unit = {},
+    val onFlightsClick: () -> Unit = {},
     val onAccountClick: () -> Unit = {},
     val onProfileClick: () -> Unit = {},
     val onJourneySeeAllClick: () -> Unit = {},

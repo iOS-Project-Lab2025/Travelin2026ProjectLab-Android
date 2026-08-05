@@ -88,4 +88,8 @@ dependencies {
     implementation(projects.feature.booking.common.data)
     implementation(projects.feature.booking.common.presentation)
 
+    // coil for jetpack compose to allow render images
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }
+

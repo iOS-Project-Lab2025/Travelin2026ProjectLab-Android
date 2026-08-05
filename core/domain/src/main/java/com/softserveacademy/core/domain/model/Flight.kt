@@ -1,5 +1,6 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 /**
@@ -34,6 +35,20 @@ data class Flight(
     val cabinClass: CabinClass
 )
 
+
+/**
+ * Represents a specific flight offer with pricing information.
+ * Used primarily for search results and booking initialization.
+ * @property id Unique identifier of the flight offer.
+ * @property flight The flight associated with this offer.
+ * @property basePrice Base price of the flight offer.
+ */
+data class FlightOffer(
+    val id: String,
+    val flight: Flight,
+    val basePrice: Double
+)
+
 /**
  * Represents an airline operating commercial flights.
  *
@@ -61,13 +76,34 @@ data class Airport(
     val city: String,
     val country: String
 )
+@Serializable
+data class FlightSegment(
+    val origin: String = "",
+    val destination: String = "",
+    val dateMillis: Long? = null
+)
 
 /**
  * Represents the available travel cabin classes for a flight.
  */
+@Serializable
 enum class CabinClass {
     ECONOMY,
     PREMIUM_ECONOMY,
     BUSINESS,
     FIRST
 }
+
+/**
+ * Standard Airline Passenger Type Codes (PTC).
+ * @property ADU Adult, Over 12 years old
+ * @property CHD Child, Between 2 and 12 years old
+ * @property INF Infant, Under 2 years old, usually sitting on lap
+ */
+enum class PassengerType {
+    ADU,
+    CHD,
+    INF
+}
+@Serializable
+enum class FlightType { ROUND_TRIP, ONE_WAY, MULTI_CITY }

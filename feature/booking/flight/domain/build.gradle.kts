@@ -1,7 +1,12 @@
 plugins {
     id("com.softserveacademy.domain.module")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 dependencies {
-    implementation(projects.core.domain)
+    api(projects.core.domain)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.javax.inject)
+    implementation(libs.kotlinx.serialization.json)
+    testImplementation(libs.bundles.testing.stack)
 }

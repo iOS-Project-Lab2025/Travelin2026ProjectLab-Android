@@ -27,6 +27,9 @@ sealed interface Routes {
 
     @Serializable
     data object OnboardingGraph : Routes
+
+    @Serializable data object FlightBookingGraph : Routes
+
     // ---------------- AUTH ----------------
     @Serializable
     data object LoginScreen : Routes
@@ -63,7 +66,7 @@ sealed interface Routes {
     @Serializable
     data class TravelListScreen(val type: TravelItemType) : Routes
 
-    // ---------------- BOOKING ----------------
+    // ---------------- HOTEL BOOKING ----------------
 
     @Serializable
     data class HotelEnterBookingDetailsScreen(val hotelId: String) : Routes
@@ -87,6 +90,19 @@ sealed interface Routes {
      */
     @Serializable
     data object OnboardingScreen : Routes
+
+// ---------------- FLIGHT BOOKING ----------------
+    /**
+     * Routes for the Flight Booking flow. Shows calendar and search passenger options.
+     */
+    @Serializable
+    data object FlightSearchScreen : Routes
+
+    /**
+     * Routes for the Flight Results flow. Show list of available flights.
+     */
+    @Serializable
+    data object FlightResultsScreen : Routes
 
 
 

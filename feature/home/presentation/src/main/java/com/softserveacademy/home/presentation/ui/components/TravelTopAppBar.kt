@@ -251,9 +251,11 @@ fun TravelCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TravelIconsCard() {
+fun TravelIconsCard(onFlightsClick: () -> Unit = {},) {
     Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.clickable { onFlightsClick() },
+            horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
                     .size(50.dp)

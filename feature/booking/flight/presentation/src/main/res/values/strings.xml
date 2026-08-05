@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flight_search_title">Choose Your Destination</string>
+    <string name="flight_search_from">From</string>
+    <string name="flight_search_to">To</string>
+    <string name="flight_search_date">Choose Your Dates</string>
+    <string name="flight_results_title">Choose your flight</string>
+    <string name="flight_search_button">Search Flights</string>
+    <string name="flight_error_message">Something went wrong. Please try again.</string>
+    <string name="flight_error_invalid_origin">Use minimum 3-letter IATA code (e.g. SCL)</string>
+    <string name="flight_error_invalid_destination">Use minimum 3-letter IATA code (e.g. LIM)</string>
+    <string name="flight_error_same_location">Origin and Destination cannot be the same</string>
+    <string name="flight_error_invalid_date">Please select a date</string>
+    <string name="flight_error_no_adults">At least one adult is required</string>
+    <string name="flight_error_generic">Invalid search criteria</string>
+    <string name="flight_search_button_label">Search Flights</string>
+    <string name="flight_empty_results">No flights found. \nPlease try a different search.</string>
+    <string name="flight_error_missing_return_date">Please select departure and return dates</string>
+    <string name="flight_error_occurred">An error occurred while fetching flights.</string>
+    <string name="flight_retry_button">Retry</string>
+    <string name="flight_passengers_title">Passengers</string>
+    <string name="flight_passengers_subtitle">Add passengers to this flight</string>
+    <string name="flight_search_description">Enter your flight details to find the best available flights.</string>
+    <string name="flight_label_adults">Adults</string>
+    <string name="flight_subtitle_adults">Over 12 years</string>
+    <string name="flight_label_children">Children</string>
+    <string name="flight_subtitle_children">2 - 12 years</string>
+    <string name="flight_label_infants">Infants</string>
+    <string name="flight_subtitle_infants">Under 2 years</string>
+    <string name="flight_label_flight">Flight %1$d</string>
+    <string name="flight_action_add_flight">Add Flight</string>
+    <string name="flight_action_delete_flight">Delete flight</string>
+    <string name="flight_cabin_class_title">Cabin type</string>
+    <string name="flight_select_cabin_class">Select Cabin Class</string>
+    <string name="flight_select_date">Select date</string>
+    <string name="flight_date_selected">Date selected</string>
+    <plurals name="flight_passenger_count">
+        <item quantity="one">%d Passenger</item>
+        <item quantity="other">%d Passengers</item>
+    </plurals>
+    <string name="flight_cabin_economy">Economy</string>
+    <string name="flight_cabin_premium_economy">Premium Economy</string>
+    <string name="flight_cabin_business">Business</string>
+    <string name="flight_cabin_first">First Class</string>
+    <string name="flight_error_network">No internet connection.\nPlease check your network and try again.</string>
+    <string name="flight_error_date_sequence">Flight must be after the previous one</string>
+    <string name="flight_result_see_more_button">"Show +%d more available"</string>
+</resources>
