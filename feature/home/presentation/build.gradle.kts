@@ -5,6 +5,7 @@ plugins {
 
 android {
     namespace = "com.softserveacademy.home.presentation"
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -33,5 +34,4 @@ dependencies {
 
     // Maps SDK for Android
     implementation(libs.maps.compose)
-    implementation(libs.secrets.gradlePlugin)
 }
