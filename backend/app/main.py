@@ -1,0 +1,27 @@
+from fastapi import FastAPI
+from app.routes.hotels import router as hotels_router
+from app.database import supabase
+
+app = FastAPI(
+    title="Travelin Backend"
+)
+
+app.include_router(hotels_router)
+
+
+@app.get("/")
+def root():
+    return {
+        "message": "Travelin Backend Running"
+    }
+
+@app.get("/health")
+def health_check():
+    try:
+        supabase.table("hotels").select("count", count="exact").limit(1).execute()
+        return {"status": "ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+# Include routers here later
+# app.include_router(tours.router)
+# app.include_router(hotels.router)

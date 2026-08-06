@@ -47,6 +47,7 @@ object NetworkModule {
         val contentType = "application/json".toMediaType()
         val factory = json.asConverterFactory(contentType)
         return Retrofit.Builder()
+            //.baseUrl("http://10.0.2.2:8000/")
             .baseUrl("https://private-amnesiac-923781-travelin1.apiary-mock.com/")
             .client(okHttpClient)
             .addConverterFactory(factory)
