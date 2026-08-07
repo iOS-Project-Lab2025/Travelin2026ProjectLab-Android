@@ -1,12 +1,10 @@
 package com.softserveacademy.home.presentation.events
 
-import com.softserveacademy.home.presentation.model.TravelItemType
-
 /**
  * Sealed interface representing user intents for the hotel detail screen.
  */
 sealed interface HotelDetailsEvent {
-    data class Load(val id: String, val type: TravelItemType) : HotelDetailsEvent
+    data class Load(val id: String) : HotelDetailsEvent
     data object NavigateBack : HotelDetailsEvent
     data object Share : HotelDetailsEvent
     data object ToggleFavorite : HotelDetailsEvent

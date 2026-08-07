@@ -250,18 +250,18 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                 is SearchItem.HotelItem -> SearchResultCard(
                     title = item.hotel.name,
                     location = item.hotel.address,
-                    image = item.hotel.image.firstOrNull(),
-                    price = "${item.hotel.pricePerNight}",
-                    rating = item.hotel.userRating,
-                    onClick = { item.hotel.id?.let { onItemClick(it, TravelItemType.HOTEL) } }
+                    image = item.hotel.imageList.firstOrNull(),
+                    price = "$500", // TODO: change for minimum price from rooms
+                    rating = item.hotel.reviewRating,
+                    onClick = { item.hotel.id.let { onItemClick(it, TravelItemType.HOTEL) } }
                 )
 
                 is SearchItem.TourItem -> SearchResultCard(
                     title = item.tour.title,
                     location = item.tour.location,
-                    image = item.tour.imageUrl,
+                    image = item.tour.imageList.firstOrNull(),
                     price = "${item.tour.price}",
-                    rating = item.tour.rating.toDouble(),
+                    rating = item.tour.rating,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
                 )
                 // Handle additional search result types as needed

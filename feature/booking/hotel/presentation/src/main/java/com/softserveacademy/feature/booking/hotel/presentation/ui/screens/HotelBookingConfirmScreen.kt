@@ -19,7 +19,7 @@ import com.softserveacademy.feature.booking.hotel.presentation.ui.components.Hot
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelPaymentSimulationSheet
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.core.domain.model.HotelDetails
+import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -177,7 +177,7 @@ fun HotelBookingConfirmContent(
                         .verticalScroll(scrollState)
                         .padding(TravelinDimens.PaddingMedium)
                 ) {
-                    uiState.hotelDetails?.let { hotel ->
+                    uiState.hotel?.let { hotel ->
                         HotelSummaryCard(hotel = hotel)
 
                         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
@@ -241,16 +241,14 @@ fun HotelBookingConfirmContent(
 @Preview(showBackground = true)
 @Composable
 fun HotelBookingConfirmPreview() {
-    val sampleHotel = HotelDetails(
+    val sampleHotel = Hotel(
         id = "1",
         name = "Swiss-Belhotel Rainforest Kuta",
         address = "Jl. Sunset Road No. 101, Kuta, Bali, Indonesia",
-        star = 5,
-        rating = 4.9,
+        starCategory = 5,
+        reviewRating = 4.9,
         numberOfReviews = 100,
-        image = listOf("https://picsum.photos/800/600"),
         imageList = listOf("https://picsum.photos/800/600"),
-        minimumPrice = 150,
         description = "A beautiful hotel in Kuta.",
         latitude = 1.35,
         longitude = 103.87,
@@ -284,7 +282,7 @@ fun HotelBookingConfirmPreview() {
     Travelin2026ProjectLabTheme {
         HotelBookingConfirmContent(
             uiState = HotelBookingConfirmState(
-                hotelDetails = sampleHotel,
+                hotel = sampleHotel,
                 selectedRoom = sampleRoom,
                 bookingDraft = sampleDraft
             ),

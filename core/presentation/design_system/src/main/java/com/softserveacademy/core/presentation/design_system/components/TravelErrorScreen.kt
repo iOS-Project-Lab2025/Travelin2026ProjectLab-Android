@@ -25,7 +25,7 @@ import com.softserveacademy.core.presentation.design_system.R
  * @param modifier The modifier to be applied to the layout.
  */
 @Composable
-fun TravelHotelDetailError(
+fun TravelErrorScreen(
     message: String?,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -51,9 +51,9 @@ fun TravelHotelDetailError(
 
 @Preview(showBackground = true)
 @Composable
-private fun HotelDetailErrorPreview() {
+private fun ErrorScreenPreview() {
     Travelin2026ProjectLabTheme {
-        TravelHotelDetailError(
+        TravelErrorScreen(
             message = "Unable to load hotel details. Please try again.",
             onRetry = {}
         )

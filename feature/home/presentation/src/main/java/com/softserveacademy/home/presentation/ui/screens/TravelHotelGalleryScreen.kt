@@ -24,10 +24,8 @@ import com.softserveacademy.core.presentation.design_system.components.TravelLoa
 import com.softserveacademy.core.presentation.design_system.components.TravelPhotoViewer
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelHotelDetailsTopIcons
-import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
-
-import com.softserveacademy.home.presentation.model.TravelItemType
+import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
 /**
  * Screen that displays the full gallery of a hotel's photos.
@@ -38,17 +36,16 @@ import com.softserveacademy.home.presentation.model.TravelItemType
 @Composable
 fun TravelHotelGalleryScreen(
     hotelId: String,
-    type: TravelItemType,
     onBackClick: () -> Unit,
     viewModel: HotelDetailsViewModel = hiltViewModel()
 ) {
-    val state by viewModel.hotelDetailState.collectAsState()
+    val state by viewModel.hotelDetailsState.collectAsState()
     var isPhotoViewerOpen by remember { mutableStateOf(false) }
     var selectedImageIndex by remember { mutableIntStateOf(0) }
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(hotelId, type) {
-        viewModel.onEvent(HotelDetailsEvent.Load(hotelId, type))
+    LaunchedEffect(hotelId) {
+        viewModel.onEvent(HotelDetailsEvent.Load(hotelId))
     }
 
     LaunchedEffect(Unit) {
@@ -78,8 +75,8 @@ fun TravelHotelGalleryScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                state.hotelDetails != null -> {
-                    val images = state.hotelDetails!!.imageList
+                state.hotel != null -> {
+                    val images = state.hotel!!.imageList
                     HotelGalleryScreen(
                         images = images,
                         onImageClick = { index ->

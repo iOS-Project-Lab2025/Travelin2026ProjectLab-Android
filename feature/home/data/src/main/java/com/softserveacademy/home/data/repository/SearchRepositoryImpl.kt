@@ -6,6 +6,7 @@ import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.domain.repository.SearchRepository
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 
 class SearchRepositoryImpl @Inject constructor() : SearchRepository {
 
@@ -15,7 +16,7 @@ class SearchRepositoryImpl @Inject constructor() : SearchRepository {
         location: String?
     ): Result<List<SearchItem>> {
         // Simulamos un delay de red
-        kotlinx.coroutines.delay(1000)
+        kotlinx.coroutines.delay(1000.milliseconds)
 
         val allItems = getMockData()
 
@@ -49,9 +50,9 @@ class SearchRepositoryImpl @Inject constructor() : SearchRepository {
         SearchItem.HotelItem(Hotel("3", "The Ritz-Carlton", "Santiago, Chile", 5, 4.9, 350, listOf("https://picsum.photos/id/166/400/300"))),
 
         // Tours
-        SearchItem.TourItem(Tour("t1", "Cajón del Maipo Trekking", "Full day trekking in the Andes", "San José de Maipo", "https://picsum.photos/id/10/400/300", 8.hours, 45.0, 4.8f, TourCategory.ADVENTURE)),
-        SearchItem.TourItem(Tour("t2", "Wine Tasting Tour", "Visit 3 premium vineyards", "Valle de Casablanca", "https://picsum.photos/id/11/400/300", 6.hours, 65.0, 4.9f, TourCategory.GASTRONOMY)),
-        SearchItem.TourItem(Tour("t3", "Valparaiso Walking Tour", "Graffiti and elevators", "Valparaíso", "https://picsum.photos/id/12/400/300", 3.hours, 25.0, 4.7f, TourCategory.CULTURE)),
+        SearchItem.TourItem(Tour("t1", "Cajón del Maipo Trekking", "Full day trekking in the Andes", "San José de Maipo", listOf("https://picsum.photos/id/10/400/300"), 8.hours, 45.0, 4.8, TourCategory.ADVENTURE)),
+        SearchItem.TourItem(Tour("t2", "Wine Tasting Tour", "Visit 3 premium vineyards", "Valle de Casablanca", listOf("https://picsum.photos/id/11/400/300"), 6.hours, 65.0, 4.9, TourCategory.GASTRONOMY)),
+        SearchItem.TourItem(Tour("t3", "Valparaiso Walking Tour", "Graffiti and elevators", "Valparaíso", listOf("https://picsum.photos/id/12/400/300"), 3.hours, 25.0, 4.7, TourCategory.CULTURE)),
 
         // Destinations
         SearchItem.DestinationItem(Destination("d1", "https://picsum.photos/id/13/400/300", "Torres del Paine", "Patagonia, Chile", 4.9, 1500.0, "USD", "5D4N")),
@@ -64,7 +65,7 @@ class SearchRepositoryImpl @Inject constructor() : SearchRepository {
 
         // More randoms to reach 15
         SearchItem.HotelItem(Hotel("4", "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
-        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", "https://picsum.photos/id/16/400/300", 4.hours, 30.0, 4.5f, TourCategory.CITY)),
+        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours, 30.0, 4.5, TourCategory.CITY)),
         SearchItem.DestinationItem(Destination("d4", "https://picsum.photos/id/17/400/300", "Pucón", "Araucanía, Chile", 4.7, 500.0, "USD", "3D2N"))
     )
 }

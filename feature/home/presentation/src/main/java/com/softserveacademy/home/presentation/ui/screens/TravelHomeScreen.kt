@@ -66,8 +66,8 @@ import androidx.compose.runtime.setValue
  */
 @Composable
 fun RootHomeScreen(
-    actions: HomeNavigationActions = HomeNavigationActions(),
     modifier: Modifier = Modifier,
+    actions: HomeNavigationActions = HomeNavigationActions(),
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -128,17 +128,16 @@ fun RootHomeScreen(
 @Composable
 fun TravelHomeScreen(
     state: HomeUiState,
-
-    onHotelClick: (String) -> Unit,    
+    onHotelClick: (String) -> Unit,
     onTourClick: (String) -> Unit,
-    onFlightClick: () -> Unit = {},
     onAccountClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onFlightClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
     onHotelsSeeAllClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onUpcomingTripClick: (String) -> Unit = {},
-    modifier: Modifier = Modifier,
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
     val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
@@ -229,7 +228,7 @@ fun TravelHomeScreen(
                             rating = tour.rating.toString(),
                             price = tour.price,
                             duration = tour.duration,
-                            imageUrl = tour.imageUrl,
+                            imageUrl = tour.imageUrl ?: "",
                             onClick = { onTourClick(tour.id) }
                         )
                     }
@@ -263,16 +262,16 @@ fun TravelHomeScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { onHotelClick(hotel.id ?: "") }
+                                        .clickable { onHotelClick(hotel.id) }
                                 ) {
                                     TravelCardHorizontal(
                                         title = hotel.name,
                                         address = hotel.address,
-                                        starRating = hotel.star?.toDouble(),
-                                        ratingText = "${hotel.star}-star hotel",
-                                        price = "$ ${hotel.pricePerNight}",
+                                        starRating = hotel.starCategory,
+                                        ratingText = "${hotel.starCategory}-star hotel",
+                                        price = "$50",// TODO: Get this value from the minimum of the list of room prices (with the respective currency)
                                         priceSuffix = "/night",
-                                        imageUrl = hotel.image.firstOrNull() ?: ""
+                                        imageUrl = hotel.imageList.firstOrNull() ?: ""
                                     )
                                 }
                             }
@@ -294,7 +293,7 @@ fun TravelHomeScreen(
 @Preview
 @Composable
 private fun TravelHomeScreenPreview() {
-    Travelin2026ProjectLabTheme() {
+    Travelin2026ProjectLabTheme {
         TravelHomeScreen(
             state = HomeUiState(
                 userProfile = SectionState.Success(PresentationMockData.userProfile),
@@ -306,7 +305,7 @@ private fun TravelHomeScreenPreview() {
                             title = "Mount Bromo Sunrise",
                             imageUrl = "https://picsum.photos/id/1015/800/600",
                             location = "East Java",
-                            rating = 4.9f,
+                            rating = 4.9,
                             price = "$ 150",
                             duration = "1 day"
                         ),
@@ -315,7 +314,7 @@ private fun TravelHomeScreenPreview() {
                             title = "Bali Cultural Dance",
                             imageUrl = "https://picsum.photos/id/1016/800/600",
                             location = "Ubud, Bali",
-                            rating = 4.7f,
+                            rating = 4.7,
                             price = "$ 45",
                             duration = "4 hours"
                         )
@@ -327,46 +326,41 @@ private fun TravelHomeScreenPreview() {
                             id = "1",
                             name = "Koh Rong Samloem Resort",
                             address = "Koh Rong Samloem, Cambodia",
-                            star = 5,
-                            userRating = 4.8,
-                            pricePerNight = 400,
-                            image = listOf("https://picsum.photos/id/10/800/600")
+                            starCategory = 5,
+                            reviewRating = 4.8,
+                            imageList = listOf("https://picsum.photos/id/10/800/600")
                         ),
                         Hotel(
                             id = "2",
                             name = "Sunset Paradise",
                             address = "Phuket, Thailand",
-                            star = 4,
-                            userRating = 4.6,
-                            pricePerNight = 280,
-                            image = listOf("https://picsum.photos/id/11/800/600")
+                            starCategory = 4,
+                            reviewRating = 4.6,
+                            imageList = listOf("https://picsum.photos/id/11/800/600")
                         ),
                         Hotel(
                             id = "3",
                             name = "Swiss Mountain Lodge",
                             address = "Zermatt, Switzerland",
-                            star = 5,
-                            userRating = 4.9,
-                            pricePerNight = 650,
-                            image = listOf("https://picsum.photos/id/12/800/600")
+                            starCategory = 5,
+                            reviewRating = 4.9,
+                            imageList = listOf("https://picsum.photos/id/12/800/600")
                         ),
                         Hotel(
                             id = "4",
                             name = "Ocean Breeze",
                             address = "Bali, Indonesia",
-                            star = 4,
-                            userRating = 4.7,
-                            pricePerNight = 320,
-                            image = listOf("https://picsum.photos/id/13/800/600")
+                            starCategory = 4,
+                            reviewRating = 4.7,
+                            imageList = listOf("https://picsum.photos/id/13/800/600")
                         ),
                         Hotel(
                             id = "5",
                             name = "The Grand Palace",
                             address = "Paris, France",
-                            star = 5,
-                            userRating = 4.9,
-                            pricePerNight = 720,
-                            image = listOf("https://picsum.photos/id/14/800/600")
+                            starCategory = 5,
+                            reviewRating = 4.9,
+                            imageList = listOf("https://picsum.photos/id/14/800/600")
                         )
                     )
                 )

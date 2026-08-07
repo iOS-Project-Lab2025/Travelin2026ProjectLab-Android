@@ -17,8 +17,8 @@ class GetRecommendedHotelsUseCaseTest {
     @Test
     fun `given success when invoke then returns hotel list`() = runTest {
         val hotels = listOf(
-            Hotel(name = "Hotel A", address = "Addr A", pricePerNight = 100, image = emptyList()),
-            Hotel(name = "Hotel B", address = "Addr B", pricePerNight = 200, image = emptyList())
+            Hotel(name = "Hotel A", address = "Addr A", imageList = emptyList()),
+            Hotel(name = "Hotel B", address = "Addr B", imageList = emptyList())
         )
         coEvery { repository.getRecommendedHotels() } returns Result.success(hotels)
 

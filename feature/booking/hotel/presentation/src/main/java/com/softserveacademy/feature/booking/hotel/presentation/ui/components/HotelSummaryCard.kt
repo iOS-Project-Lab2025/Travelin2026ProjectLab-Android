@@ -19,7 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
-import com.softserveacademy.core.domain.model.HotelDetails
+import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.components.TravelRatingBar
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelStar
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -29,12 +29,12 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * A card component that displays a summary of a hotel, including its image, name, address,
  * star rating, and user reviews.
  *
- * @param hotel The [HotelDetails] object containing the hotel information to display.
+ * @param hotel The [Hotel] object containing the hotel information to display.
  * @param modifier The modifier to be applied to the card.
  */
 @Composable
 fun HotelSummaryCard(
-    hotel: HotelDetails,
+    hotel: Hotel,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -49,7 +49,7 @@ fun HotelSummaryCard(
     ) {
         Column {
             AsyncImage(
-                model = hotel.image.firstOrNull(),
+                model = hotel.imageList.firstOrNull(),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,7 +80,7 @@ fun HotelSummaryCard(
                     modifier = Modifier.padding(vertical = TravelinDimens.PaddingSmall),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TravelRatingBar(rating = hotel.star.toDouble())
+                    TravelRatingBar(rating = hotel.starCategory.toDouble())
                 }
 
                 Row(
@@ -89,7 +89,7 @@ fun HotelSummaryCard(
                     TravelStar(starSize = TravelinDimens.IconSizeSmall)
                     Spacer(modifier = Modifier.width(TravelinDimens.SpaceExtraSmall))
                     Text(
-                        text = "${hotel.rating} (${hotel.numberOfReviews} reviews)",
+                        text = "${hotel.reviewRating} (${hotel.numberOfReviews} reviews)",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -104,16 +104,14 @@ fun HotelSummaryCard(
 fun HotelSummaryCardPreview() {
     Travelin2026ProjectLabTheme() {
         HotelSummaryCard(
-            hotel = HotelDetails(
+            hotel = Hotel(
                 id = "1",
                 name = "Swiss-Belhotel Rainforest Kuta",
                 address = "Jl. Sunset Road No. 101, Kuta, Bali, Indonesia",
-                star = 3,
-                rating = 4.9,
+                starCategory = 3,
+                reviewRating = 4.9,
                 numberOfReviews = 100,
-                image = listOf("https://picsum.photos/800/600"),
                 imageList = listOf("https://picsum.photos/800/600"),
-                minimumPrice = 150,
                 description = "A beautiful hotel in Kuta.",
                 latitude = 1.35,
                 longitude = 103.87,

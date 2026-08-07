@@ -70,7 +70,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                             it.copy(
                                 isLoading = false,
                                 bookingDraft = draft,
-                                hotelDetails = hotelDetails,
+                                hotel = hotelDetails,
                                 selectedRoom = selectedRoom,
                                 totalPrice = totalPrice
                             )
@@ -156,7 +156,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
     private fun finalizeBooking() {
         val state = _uiState.value
-        val hotelId = state.hotelDetails?.id
+        val hotelId = state.hotel?.id
         val roomId = state.selectedRoom?.id
         val checkIn = state.bookingDraft?.checkIn ?: 0L
         val checkOut = state.bookingDraft?.checkOut ?: 0L
@@ -176,7 +176,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
     private fun createBookingFromState(status: BookingStatus): HotelBooking? {
         val state = _uiState.value
-        val hotelDetails = state.hotelDetails ?: return null
+        val hotelDetails = state.hotel ?: return null
         val room = state.selectedRoom ?: return null
         val draft = state.bookingDraft ?: return null
 

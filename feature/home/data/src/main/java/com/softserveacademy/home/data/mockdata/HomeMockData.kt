@@ -98,46 +98,41 @@ object HomeMockData {
             id = "1",
             name = "Koh Rong Samloem Resort",
             address = "Koh Rong Samloem, Cambodia",
-            star = 5,
-            userRating = 4.8,
-            pricePerNight = 400,
-            image = listOf("https://picsum.photos/id/10/800/600")
+            starCategory = 4,
+            reviewRating = 4.8,
+            imageList = listOf("https://picsum.photos/id/10/800/600")
         ),
         Hotel(
             id = "2",
             name = "Sunset Paradise",
             address = "Phuket, Thailand",
-            star = 4,
-            userRating = 4.6,
-            pricePerNight = 280,
-            image = listOf("https://picsum.photos/id/11/800/600")
+            starCategory = 4,
+            reviewRating = 4.6,
+            imageList = listOf("https://picsum.photos/id/11/800/600")
         ),
         Hotel(
             id = "3",
             name = "Swiss Mountain Lodge",
             address = "Zermatt, Switzerland",
-            star = 5,
-            userRating = 4.9,
-            pricePerNight = 650,
-            image = listOf("https://picsum.photos/id/12/800/600")
+            starCategory = 5,
+            reviewRating = 4.9,
+            imageList = listOf("https://picsum.photos/id/12/800/600")
         ),
         Hotel(
             id = "4",
             name = "Ocean Breeze",
             address = "Bali, Indonesia",
-            star = 4,
-            userRating = 4.7,
-            pricePerNight = 320,
-            image = listOf("https://picsum.photos/id/13/800/600")
+            starCategory = 4,
+            reviewRating = 4.7,
+            imageList = listOf("https://picsum.photos/id/13/800/600")
         ),
         Hotel(
             id = "5",
             name = "The Grand Palace",
             address = "Paris, France",
-            star = 5,
-            userRating = 4.9,
-            pricePerNight = 720,
-            image = listOf("https://picsum.photos/id/14/800/600")
+            starCategory = 5,
+            reviewRating = 4.9,
+            imageList = listOf("https://picsum.photos/id/14/800/600")
         )
     )
 
@@ -263,10 +258,10 @@ object HomeMockData {
                     title = "Eiffel Tower Experience",
                     description = "Visit the Eiffel Tower with a guided tour.",
                     location = "Paris, France",
-                    imageUrl = "https://picsum.photos/id/1031/800/600",
+                    imageList = listOf("https://picsum.photos/id/1031/800/600"),
                     duration = 3.hours,
                     price = 120.0,
-                    rating = 4.8f,
+                    rating = 4.8,
                     category = TourCategory.CULTURE
                 ),
 

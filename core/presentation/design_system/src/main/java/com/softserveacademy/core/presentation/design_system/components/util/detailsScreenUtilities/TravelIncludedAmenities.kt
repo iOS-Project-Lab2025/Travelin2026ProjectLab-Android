@@ -16,19 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.domain.model.IncludedItems
+import com.softserveacademy.core.domain.model.Amenities
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 /**
  * A reusable component to display the services included in a hotel package.
  *
- * @param item The [IncludedItems] containing title, icon, and optional subtitle.
+ * @param item The [Amenities] containing title, icon, and optional subtitle.
  * @param modifier The modifier to be applied to the component.
  */
 @Composable
 fun TravelIncludedItem(
-    item: IncludedItems,
+    item: Amenities,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -71,6 +71,6 @@ fun TravelIncludedItem(
 @Composable
 private fun TravelHotelDetailScreenPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelIncludedItem(IncludedItems.BuffetBreakfast)
+        TravelIncludedItem(Amenities.BuffetBreakfast)
     }
 }

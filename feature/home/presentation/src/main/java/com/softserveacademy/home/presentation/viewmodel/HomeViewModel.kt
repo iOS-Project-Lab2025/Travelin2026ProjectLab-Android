@@ -2,7 +2,6 @@ package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.domain.model.UserProfile
@@ -145,7 +144,7 @@ class HomeViewModel @Inject constructor(
     private fun Tour.toTourUi(): TourUi = TourUi(
         id = id,
         title = title,
-        imageUrl = imageUrl,
+        imageUrl = imageList.firstOrNull(),
         location = location,
         rating = rating,
         price = "$ $price",

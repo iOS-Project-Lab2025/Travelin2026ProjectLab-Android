@@ -1,7 +1,9 @@
 package com.softserveacademy.core.domain.model
 
 import com.softserveacademy.core.domain.util.DurationSerializer
+import com.softserveacademy.core.domain.util.FlexibleListSerializer
 import com.softserveacademy.core.domain.util.FlexibleStringSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
@@ -15,7 +17,7 @@ import kotlin.time.Duration
  * @property title Display name of the tour.
  * @property description Brief description of the experience.
  * @property location Location where the tour takes place.
- * @property imageUrl URL of the tour's representative image.
+ * @property imageList List of URLs for the tour's images.
  * @property duration Estimated duration of the tour.
  * @property price Price per participant.
  * @property rating Average user rating of the tour.
@@ -25,24 +27,25 @@ import kotlin.time.Duration
 data class Tour(
     @Serializable(with = FlexibleStringSerializer::class)
     val id: String,
-
-    val title: String,
-
-    val description: String,
-
-    val location: String,
-
-    val imageUrl: String,
-
+    val title: String = "",
+    val description: String = "",
+    val location: String = "",
+    @SerialName("imageUrl")
+    @Serializable(with = FlexibleListSerializer::class)
+    val imageList: List<String> = emptyList(),
     @Serializable(with = DurationSerializer::class)
-    val duration: Duration,
+    val duration: Duration = Duration.ZERO,
+    val price: Double = 0.0,
+    val rating: Double = 0.0,
+    val category: TourCategory = TourCategory.ADVENTURE,
+    val numberOfReviews: Int = 0,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
 
-    val price: Double,
-
-    val rating: Float,
-
-    val category: TourCategory
-)
+){
+    val limitedReviews: String
+        get() = if (numberOfReviews > 999) "999+ reviews" else "$numberOfReviews reviews"
+}
 
 /**
  * Represents the available categories of a tour.
