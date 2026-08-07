@@ -1,6 +1,6 @@
 package com.softserveacademy.travelin2026projectlab.navigation
+
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,12 +33,13 @@ import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
 
 // Home screens.
-import com.softserveacademy.home.presentation.ui.screens.TravelItemDetailState
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen
 import com.softserveacademy.home.presentation.ui.screens.RootUpcomingTripScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelGalleryScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelListScreen
 import com.softserveacademy.home.presentation.model.TravelItemType
+import com.softserveacademy.home.presentation.ui.screens.TravelHotelDetailScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelTourDetailsScreen
 
 // Booking screens.
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelEnterBookingDetailsScreen
@@ -224,10 +225,10 @@ fun NavGraphBuilder.mainGraph(
             RootHomeScreen(
                 actions = HomeNavigationActions(
                     onHotelClick = { id ->
-                        navController.navigate(Routes.TravelItemDetailScreen(id = id, type = TravelItemType.HOTEL))
+                        navController.navigate(Routes.TravelHotelDetailsScreen(id = id))
                     },
                     onTourClick = { id ->
-                        navController.navigate(Routes.TravelItemDetailScreen(id = id, type = TravelItemType.TOUR))
+                        navController.navigate(Routes.TravelTourDetailsScreen(id = id))
                     },
                     onFlightsClick = {
                         navController.navigate(Routes.FlightSearchScreen)
@@ -290,20 +291,34 @@ fun NavGraphBuilder.mainGraph(
             )
         }
 
-        composable<Routes.TravelItemDetailScreen>(
+        composable<Routes.TravelHotelDetailsScreen>(
             deepLinks = listOf(
-                navDeepLink<Routes.TravelItemDetailScreen>(
-                    basePath = "https://travelin.softserveacademy.com/travel"
+                navDeepLink<Routes.TravelHotelDetailsScreen>(
+                    basePath = "https://travelin.softserveacademy.com/hotel"
                 )
             )
         ) { backStackEntry ->
-            val route: Routes.TravelItemDetailScreen = backStackEntry.toRoute()
-            TravelItemDetailState(
+            val route: Routes.TravelHotelDetailsScreen = backStackEntry.toRoute()
+            TravelHotelDetailScreen(
                 itemId = route.id,
-                type = route.type,
                 onBackClick = { navController.popBackStack() },
-                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id, type = route.type)) },
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
                 onBookClick = { navController.navigate(Routes.HotelEnterBookingDetailsScreen(hotelId = route.id)) }
+            )
+        }
+
+        composable<Routes.TravelTourDetailsScreen>(
+            deepLinks = listOf(
+                navDeepLink<Routes.TravelTourDetailsScreen>(
+                    basePath = "https://travelin.softserveacademy.com/tour"
+                )
+            )
+        ) { backStackEntry ->
+            val route: Routes.TravelTourDetailsScreen = backStackEntry.toRoute()
+            TravelTourDetailsScreen(
+                itemId = route.id,
+                onBackClick = { navController.popBackStack() },
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) }
             )
         }
 
@@ -311,7 +326,6 @@ fun NavGraphBuilder.mainGraph(
             val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
             TravelHotelGalleryScreen(
                 hotelId = route.id,
-                type = route.type,
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -338,7 +352,11 @@ fun NavGraphBuilder.mainGraph(
                 type = route.type,
                 onBackClick = { navController.popBackStack() },
                 onItemClick = { id ->
-                    navController.navigate(Routes.TravelItemDetailScreen(id = id, type = route.type))
+                    val destination = when (route.type) {
+                        TravelItemType.HOTEL -> Routes.TravelHotelDetailsScreen(id = id)
+                        TravelItemType.TOUR -> Routes.TravelTourDetailsScreen(id = id)
+                    }
+                    navController.navigate(destination)
                 }
             )
         }

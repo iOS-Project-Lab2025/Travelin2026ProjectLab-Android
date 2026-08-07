@@ -22,7 +22,7 @@ fun TravelImageHandler(
 ) {
     AsyncImage(
         model = image,
-        contentDescription = "hotel image",
+        contentDescription = "image",
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .width(imageWidth)

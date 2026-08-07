@@ -24,13 +24,13 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * A booking bar component fixed at the bottom of the screen.
  * Displays the price per person and a "Book Now" button.
  *
- * @param price The price to display.
+ * @param price The formatted price string to display (e.g., "$400").
  * @param onBookClick The action to perform when the "Book Now" button is clicked.
  * @param modifier The modifier to be applied to the bar.
  */
 @Composable
 fun TravelBookingBar(
-    price: Int,
+    price: String,
     onBookClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -62,7 +62,7 @@ fun TravelBookingBar(
                             fontSize = 18.sp
                         )
                     ) {
-                        append("\$$price")
+                        append(price)
                     }
                     withStyle(
                         style = SpanStyle(
@@ -92,7 +92,7 @@ fun TravelBookingBar(
 private fun TravelBookingBarPreview() {
     Travelin2026ProjectLabTheme {
         TravelBookingBar(
-            price = 600,
+            price = "$600",
             onBookClick = {}
         )
     }

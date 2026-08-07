@@ -1,10 +1,8 @@
 package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.home.domain.usecases.GetHotelDetailUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
-import com.softserveacademy.home.presentation.model.TravelItemType
-import com.softserveacademy.core.domain.repository.TourRepo
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -25,17 +23,16 @@ import org.junit.Test
  * Unit tests for [HotelDetailsViewModel] mocking error states.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class HotelDetailsViewModelTest {
+class HotelViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val getHotelDetailUseCase = mockk<GetHotelDetailUseCase>()
-    private val tourRepo = mockk<TourRepo>()
+    private val getHotelDetailsUseCase = mockk<GetHotelDetailsUseCase>()
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = HotelDetailsViewModel(SavedStateHandle(), getHotelDetailUseCase, tourRepo)
+        viewModel = HotelDetailsViewModel(SavedStateHandle(), getHotelDetailsUseCase)
     }
 
     @After
@@ -47,32 +44,32 @@ class HotelDetailsViewModelTest {
     fun `given error when Load event is triggered then state is updated with errorMessage`() = runTest {
         // GIVEN: The use case returns a failure
         val errorMessage = "Network Error"
-        coEvery { getHotelDetailUseCase(any()) } returns Result.failure(Exception(errorMessage))
+        coEvery { getHotelDetailsUseCase(any()) } returns Result.failure(Exception(errorMessage))
 
         // WHEN: Load event is triggered
-        viewModel.onEvent(HotelDetailsEvent.Load("1", TravelItemType.HOTEL))
+        viewModel.onEvent(HotelDetailsEvent.Load("1"))
 
         advanceUntilIdle()
         // THEN: The state should have the expected error message and not be loading
-        val currentState = viewModel.hotelDetailState.value
+        val currentState = viewModel.hotelDetailsState.value
         assertFalse(currentState.isLoading)
         assertEquals(errorMessage, currentState.errorMessage)
-        assertNull(currentState.hotelDetails)
+        assertNull(currentState.hotel)
     }
 
     @Test
     fun `given exception without message when Load event is triggered then state is updated with null errorMessage`() = runTest {
         // GIVEN: The use case returns a failure without a message
-        coEvery { getHotelDetailUseCase(any()) } returns Result.failure(Exception())
+        coEvery { getHotelDetailsUseCase(any()) } returns Result.failure(Exception())
 
         // WHEN: Load event is triggered
-        viewModel.onEvent(HotelDetailsEvent.Load("1", TravelItemType.HOTEL))
+        viewModel.onEvent(HotelDetailsEvent.Load("1"))
 
         advanceUntilIdle()
         // THEN: The state should have a null error message and not be loading
-        val currentState = viewModel.hotelDetailState.value
+        val currentState = viewModel.hotelDetailsState.value
         assertFalse(currentState.isLoading)
         assertNull(currentState.errorMessage)
-        assertNull(currentState.hotelDetails)
+        assertNull(currentState.hotel)
     }
 }

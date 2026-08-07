@@ -19,17 +19,17 @@ class HomeRepositoryImpl @Inject constructor(
 ) : HomeRepository {
 
     override suspend fun getUserProfile(): Result<UserProfile> {
-        delay(500)
+        delay(500.milliseconds)
         return Result.success(HomeMockData.user)
     }
 
     override suspend fun getUpcomingTrip(): Result<Trip?> {
-        delay(700)
+        delay(700.milliseconds)
         return Result.success(HomeMockData.trip)
     }
 
     override suspend fun getJourneyTogether(): Result<List<Tour>> {
-        delay(700)
+        delay(700.milliseconds)
         return when (val result = tourRepo.getTours()) {
             is AppResult.Success -> Result.success(result.data)
             is AppResult.Failure -> Result.failure(Exception("Tours error: ${result.error}"))

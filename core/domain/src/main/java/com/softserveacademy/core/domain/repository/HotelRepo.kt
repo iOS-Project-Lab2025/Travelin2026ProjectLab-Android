@@ -1,7 +1,6 @@
 package com.softserveacademy.core.domain.repository
 
 import com.softserveacademy.core.domain.model.Hotel
-import com.softserveacademy.core.domain.model.HotelDetails
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.error.model.AppResult
 
@@ -15,7 +14,7 @@ interface HotelRepo{
      * @param id The ID of the hotel to fetch.
      * @return The detailed hotel object.
      */
-    suspend fun getHotelById(id: String): AppResult<HotelDetails>
+    suspend fun getHotelById(id: String): AppResult<Hotel>
 
     /**
      * Fetch all available hotels.

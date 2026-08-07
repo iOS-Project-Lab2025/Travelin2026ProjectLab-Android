@@ -42,24 +42,21 @@ fun TravelCarouselPreview() {
         Hotel(
             name = "Mount Bromo",
             address = "Volcano in East Java",
-            userRating = 4.9,
-            pricePerNight = 150,
+            reviewRating = 4.9,
             //An example picture has been added to Res/drawables
-            image = listOf("https://picsum.photos/200")
+            imageList = listOf("https://picsum.photos/200")
         ),
         Hotel(
             name = "Swiss-Belhotel Rainforest",
             address = "Kuta, Bali, Indonesia",
-            userRating = 4.5,
-            pricePerNight = 50,
-            image = listOf("https://picsum.photos/200")
+            reviewRating = 4.5,
+            imageList = listOf("https://picsum.photos/200")
         ),
         Hotel(
             name = "Tokyo Adventure Resort",
             address = "Tokyo, Japan",
-            userRating = 4.8,
-            pricePerNight = 200,
-            image = listOf("https://picsum.photos/200")
+            reviewRating = 4.8,
+            imageList = listOf("https://picsum.photos/200")
         )
     )
 
@@ -68,10 +65,10 @@ fun TravelCarouselPreview() {
         TravelCardVertical(
             title = hotelItem.name,
             location = hotelItem.address,
-            rating = hotelItem.userRating.toString(),
-            price = "$ ${hotelItem.pricePerNight}/pax",
+            rating = hotelItem.reviewRating.toString(),
+            price = "$500/pax",
             duration = "3D2N",
-            imageUrl = hotelItem.image.first()
+            imageUrl = hotelItem.imageList.first()
         )
     }
 }

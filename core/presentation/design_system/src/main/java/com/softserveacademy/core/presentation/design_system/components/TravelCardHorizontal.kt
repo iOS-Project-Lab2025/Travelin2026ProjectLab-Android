@@ -37,7 +37,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 fun TravelCardHorizontal(
     title: String,
     address: String,
-    starRating: Double?,
+    starRating: Int?,
     ratingText: String?,
     price: String,
     priceSuffix: String? = null,
@@ -130,7 +130,7 @@ fun TravelCardHorizontalPreview() {
         TravelCardHorizontal(
             title = "Swiss-Belhotel Rainforest Kuta",
             address = "Jl. Sunset Road No. 101, Kuta, Bali , Indonesia",
-            starRating = 4.0,
+            starRating = 4,
             ratingText = "4-star hotel",
             price = "$ 50",
             priceSuffix = "/night",

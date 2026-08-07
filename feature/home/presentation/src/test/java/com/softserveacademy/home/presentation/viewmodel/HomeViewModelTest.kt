@@ -100,16 +100,20 @@ class HomeViewModelTest {
             title = "Eiffel Tower",
             description = "Guided tour",
             location = "Paris, France",
-            imageUrl = "https://example.com/tour.png",
+            imageList = listOf("https://example.com/tour.png"),
             duration = 3.hours,
             price = 120.0,
-            rating = 4.8f,
+            rating = 4.8,
             category = TourCategory.CULTURE
         )
     )
 
     private val hotels = listOf(
-        Hotel(name = "Hotel A", address = "Paris, France", pricePerNight = 200, image = emptyList())
+        Hotel(
+            name = "Hotel A",
+            address = "Paris, France",
+            imageList = emptyList()
+        )
     )
 
     @Before

@@ -34,4 +34,8 @@
     <string name="share_hotel_title">Share Hotel</string>
     <string name="share_hotel_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/hotel%2$s</string>
 
+    <!-- Tour Details -->
+    <string name="share_tour_title">Share Tour</string>
+    <string name="share_tour_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/tour%2$s</string>
+
 </resources>

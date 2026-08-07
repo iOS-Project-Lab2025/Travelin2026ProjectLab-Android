@@ -28,7 +28,6 @@ import com.softserveacademy.core.presentation.design_system.components.TravelCar
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Green70
-import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.White100_Alpha70
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.model.TravelItemType
@@ -126,32 +125,32 @@ fun TravelListScreen(
                             val id: String
                             val title: String
                             val address: String
-                            val rating: Double
+                            val rating: Int
                             val ratingText: String
                             val price: String
                             val priceSuffix: String?
                             val imageUrl: String
 
                             if (item is Hotel) {
-                                id = item.id ?: ""
+                                id = item.id
                                 title = item.name
                                 address = item.address
-                                rating = item.star?.toDouble() ?: 0.0
-                                ratingText = "${item.star}-star hotel"
-                                price = "$ ${item.pricePerNight}"
+                                rating = item.starCategory
+                                ratingText = "${item.starCategory}-star hotel"
+                                price = "$50" // TODO: Get this value from the minimum of the list of room prices (with the respective currency)
                                 priceSuffix = "/night"
-                                imageUrl = item.image.firstOrNull() ?: ""
+                                imageUrl = item.imageList.firstOrNull() ?: ""
                             } else {
                                 // Assuming item is TourUi
                                 val tour = item as com.softserveacademy.home.presentation.model.TourUi
                                 id = tour.id
                                 title = tour.title
                                 address = tour.location
-                                rating = tour.rating.toDouble()
+                                rating = tour.rating.toInt() // TODO: Stars and user rating i´ts different, maybe make new cards?
                                 ratingText = tour.rating.toString()
                                 price = tour.price
                                 priceSuffix = null
-                                imageUrl = tour.imageUrl
+                                imageUrl = tour.imageUrl.toString()
                             }
 
                             Box(
