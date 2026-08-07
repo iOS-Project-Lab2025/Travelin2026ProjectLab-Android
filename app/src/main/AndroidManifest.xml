@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".TravelinApp"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Travelin2026ProjectLab">
         <activity
             android:name=".MainActivity"
