@@ -2,6 +2,7 @@ package com.softserveacademy.core.data.di
 
 import com.softserveacademy.core.data.api.HotelApiService
 import com.softserveacademy.core.data.api.TourApiService
+import com.softserveacademy.core.data.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +30,11 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
     }
 
@@ -47,8 +52,7 @@ object NetworkModule {
         val contentType = "application/json".toMediaType()
         val factory = json.asConverterFactory(contentType)
         return Retrofit.Builder()
-            //.baseUrl("http://10.0.2.2:8000/")
-            .baseUrl("https://private-amnesiac-923781-travelin1.apiary-mock.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(factory)
             .build()

@@ -61,7 +61,7 @@ jobs:
 
       # (Opcional) corre los tests unitarios también
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew testDevDebugUnitTest testProdDebugUnitTest testStagingDebugUnitTest --stacktrace
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
 

@@ -24,12 +24,32 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
                 buildTypes {
+                    debug {
+                        applicationIdSuffix = ".debug"
+                    }
                     release {
-                        isMinifyEnabled = false
+                        isMinifyEnabled = true
+                        signingConfig = signingConfigs.getByName("debug")
                         proguardFiles(
                             getDefaultProguardFile("proguard-android-optimize.txt"),
                             "proguard-rules.pro"
                         )
+                    }
+                }
+                flavorDimensions += FlavorDimension.contentType.name
+                productFlavors {
+                    TravelinFlavor.entries.forEach { flavor ->
+                        create(flavor.name) {
+                            dimension = flavor.dimension.name
+                            if (flavor.applicationIdSuffix != null) {
+                                applicationIdSuffix = flavor.applicationIdSuffix
+                            }
+                            buildConfigField(
+                                "String",
+                                "BASE_URL",
+                                "\"${flavor.baseUrl}\""
+                            )
+                        }
                     }
                 }
                 compileOptions {
@@ -38,6 +58,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
                 buildFeatures {
                     compose = true
+                    buildConfig = true
                 }
             }
 
