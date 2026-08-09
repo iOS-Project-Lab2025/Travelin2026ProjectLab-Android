@@ -10,6 +10,10 @@ This project uses Gradle Product Flavors and Build Types to manage different env
 - **staging**: Staging/Testing environment. Points to the Apiary mock backend.
 - **prod**: Production environment. Points to the Apiary mock backend.
 
+### Signing & Secrets
+
+For information on how to configure signing for release builds and manage secrets like API keys, see [SIGNING.md](SIGNING.md).
+
 ### Build Types
 
 - **debug**: Debuggable build with `.debug` (or flavor-specific) package name suffix.

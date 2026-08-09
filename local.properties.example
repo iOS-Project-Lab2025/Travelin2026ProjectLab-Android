@@ -6,3 +6,6 @@ KEYSTORE_PATH=/path/to/your/release-keystore.jks
 KEYSTORE_PASSWORD=your_keystore_password
 KEY_ALIAS=your_key_alias
 KEY_PASSWORD=your_key_password
+
+# API Keys
+MAPS_API_KEY=your_google_maps_api_key_here
