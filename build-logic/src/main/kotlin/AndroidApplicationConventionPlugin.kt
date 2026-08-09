@@ -37,10 +37,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
 
-                val isReleaseSigningConfigured = getProperty("KEYSTORE_PATH") != null &&
+                val keystorePath = getProperty("KEYSTORE_PATH")
+                val isReleaseSigningConfigured = keystorePath != null &&
                         getProperty("KEYSTORE_PASSWORD") != null &&
                         getProperty("KEY_ALIAS") != null &&
-                        getProperty("KEY_PASSWORD") != null
+                        getProperty("KEY_PASSWORD") != null &&
+                        rootProject.file(keystorePath).exists()
 
                 signingConfigs {
                     if (isReleaseSigningConfigured) {
