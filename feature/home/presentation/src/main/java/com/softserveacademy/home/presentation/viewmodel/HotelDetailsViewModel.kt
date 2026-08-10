@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.error.extension.onFailure
+import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.home.presentation.state.HotelDetailsState
@@ -96,8 +98,8 @@ class HotelDetailsViewModel @Inject constructor(
                 .onSuccess { hotel ->
                     updateState { it.copy(isLoading = false, hotel = hotel) }
                 }
-                .onFailure { error ->
-                    updateState { it.copy(isLoading = false, errorMessage = error.message) }
+                .onFailure { _ ->
+                    updateState { it.copy(isLoading = false, errorMessage = "Failed to load hotel details") }
                 }
 
         }

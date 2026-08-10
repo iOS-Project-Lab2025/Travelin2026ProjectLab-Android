@@ -72,7 +72,7 @@ class HotelBookingConfirmViewModelTest {
         )
 
         coEvery { getHotelBookingDraftUseCase("hotel1") } returns draft
-        coEvery { getHotelDetailsUseCase("hotel1") } returns Result.success(hotel)
+        coEvery { getHotelDetailsUseCase("hotel1") } returns AppResult.Success(hotel)
         coEvery { saveHotelBookingUseCase(any()) } returns AppResult.Success(Unit)
         coEvery { updateHotelBookingStatusUseCase(any(), any()) } returns AppResult.Success(Unit)
     }
@@ -134,5 +134,55 @@ class HotelBookingConfirmViewModelTest {
         assertFalse(state.showPaymentSimulationSheet)
         assertFalse(state.isPaymentSheetLoading)
         assertEquals("No connection", state.error)
+    }
+
+    @Test
+    fun `loadBookingDetails handles error correctly`() = runTest {
+        val networkError = AppError.Network.Timeout
+        coEvery { getHotelDetailsUseCase(any()) } returns AppResult.Failure(networkError)
+        every { errorHandler.handle(any()) } returns ErrorAction.ShowMessage(UiText.Raw("Timeout error"))
+
+        viewModel = HotelBookingConfirmViewModel(
+            savedStateHandle,
+            getHotelBookingDraftUseCase,
+            clearHotelBookingDraftUseCase,
+            getHotelDetailsUseCase,
+            reserveRoomUseCase,
+            saveHotelBookingUseCase,
+            updateHotelBookingStatusUseCase,
+            createPaymentIntentUseCase,
+            errorHandler
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals("Timeout error", state.error)
+    }
+
+    @Test
+    fun `OnRetryClick triggers reload when hotel is null`() = runTest {
+        coEvery { getHotelDetailsUseCase(any()) } returns AppResult.Failure(AppError.Unknown(Exception("Failed")))
+        every { errorHandler.handle(any()) } returns ErrorAction.ShowMessage(UiText.Raw("Error"))
+
+        viewModel = HotelBookingConfirmViewModel(
+            savedStateHandle,
+            getHotelBookingDraftUseCase,
+            clearHotelBookingDraftUseCase,
+            getHotelDetailsUseCase,
+            reserveRoomUseCase,
+            saveHotelBookingUseCase,
+            updateHotelBookingStatusUseCase,
+            createPaymentIntentUseCase,
+            errorHandler
+        )
+        advanceUntilIdle()
+
+        coEvery { getHotelDetailsUseCase(any()) } returns AppResult.Success(mockk(relaxed = true))
+        viewModel.onEvent(HotelBookingConfirmEvent.OnRetryClick)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.hotel != null)
+        assertEquals(null, state.error)
     }
 }

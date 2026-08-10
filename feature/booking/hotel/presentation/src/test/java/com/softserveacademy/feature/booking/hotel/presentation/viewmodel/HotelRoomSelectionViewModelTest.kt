@@ -9,8 +9,12 @@ import com.softserveacademy.core.domain.usecase.hotel.GetHotelRoomsUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
+import com.softserveacademy.core.error.handler.ErrorHandler
+import com.softserveacademy.core.error.model.ErrorAction
+import com.softserveacademy.core.error.model.UiText
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +36,7 @@ class HotelRoomSelectionViewModelTest {
     private lateinit var getHotelRoomsUseCase: GetHotelRoomsUseCase
     private lateinit var getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase
     private lateinit var saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
+    private lateinit var errorHandler: ErrorHandler
     private lateinit var savedStateHandle: SavedStateHandle
     private val testDispatcher = StandardTestDispatcher()
 
@@ -50,10 +55,11 @@ class HotelRoomSelectionViewModelTest {
         getHotelRoomsUseCase = mockk()
         getHotelBookingDraftUseCase = mockk(relaxed = true)
         saveHotelBookingDraftUseCase = mockk(relaxed = true)
+        errorHandler = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
         coEvery { getHotelRoomsUseCase(hotelId, any(), any(), any()) } returns AppResult.Success(mockRooms)
-        coEvery { getHotelBookingDraftUseCase(hotelId.toString()) } returns HotelBookingDraft(
+        coEvery { getHotelBookingDraftUseCase(hotelId) } returns HotelBookingDraft(
             hotelId = hotelId,
             checkIn = checkIn,
             checkOut = checkOut
@@ -71,7 +77,8 @@ class HotelRoomSelectionViewModelTest {
             savedStateHandle,
             getHotelRoomsUseCase,
             getHotelBookingDraftUseCase,
-            saveHotelBookingDraftUseCase
+            saveHotelBookingDraftUseCase,
+            errorHandler
         )
         advanceUntilIdle()
 
@@ -88,7 +95,8 @@ class HotelRoomSelectionViewModelTest {
             savedStateHandle,
             getHotelRoomsUseCase,
             getHotelBookingDraftUseCase,
-            saveHotelBookingDraftUseCase
+            saveHotelBookingDraftUseCase,
+            errorHandler
         )
         advanceUntilIdle()
 
@@ -103,7 +111,8 @@ class HotelRoomSelectionViewModelTest {
             savedStateHandle,
             getHotelRoomsUseCase,
             getHotelBookingDraftUseCase,
-            saveHotelBookingDraftUseCase
+            saveHotelBookingDraftUseCase,
+            errorHandler
         )
         advanceUntilIdle()
 
@@ -118,7 +127,8 @@ class HotelRoomSelectionViewModelTest {
             savedStateHandle,
             getHotelRoomsUseCase,
             getHotelBookingDraftUseCase,
-            saveHotelBookingDraftUseCase
+            saveHotelBookingDraftUseCase,
+            errorHandler
         )
         advanceUntilIdle()
 
@@ -138,7 +148,8 @@ class HotelRoomSelectionViewModelTest {
             savedStateHandle,
             getHotelRoomsUseCase,
             getHotelBookingDraftUseCase,
-            saveHotelBookingDraftUseCase
+            saveHotelBookingDraftUseCase,
+            errorHandler
         )
         advanceUntilIdle()
 
@@ -164,7 +175,8 @@ class HotelRoomSelectionViewModelTest {
             savedStateHandle,
             getHotelRoomsUseCase,
             getHotelBookingDraftUseCase,
-            saveHotelBookingDraftUseCase
+            saveHotelBookingDraftUseCase,
+            errorHandler
         )
         advanceUntilIdle()
 
@@ -174,5 +186,47 @@ class HotelRoomSelectionViewModelTest {
         advanceUntilIdle()
 
         coVerify { saveHotelBookingDraftUseCase(match { it.roomId == "1" }) }
+    }
+
+    @Test
+    fun `loadRooms handles failure correctly`() = runTest {
+        coEvery { getHotelRoomsUseCase(any(), any(), any(), any()) } returns AppResult.Failure(mockk())
+        every { errorHandler.handle(any()) } returns ErrorAction.ShowMessage(UiText.Raw("Room error"))
+
+        viewModel = HotelRoomSelectionViewModel(
+            savedStateHandle,
+            getHotelRoomsUseCase,
+            getHotelBookingDraftUseCase,
+            saveHotelBookingDraftUseCase,
+            errorHandler
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals("Room error", state.error)
+        assertFalse(state.isLoading)
+    }
+
+    @Test
+    fun `OnRetryClick reloads rooms`() = runTest {
+        coEvery { getHotelRoomsUseCase(any(), any(), any(), any()) } returns AppResult.Failure(mockk())
+        every { errorHandler.handle(any()) } returns ErrorAction.ShowMessage(UiText.Raw("Error"))
+
+        viewModel = HotelRoomSelectionViewModel(
+            savedStateHandle,
+            getHotelRoomsUseCase,
+            getHotelBookingDraftUseCase,
+            saveHotelBookingDraftUseCase,
+            errorHandler
+        )
+        advanceUntilIdle()
+
+        coEvery { getHotelRoomsUseCase(any(), any(), any(), any()) } returns AppResult.Success(mockRooms)
+        viewModel.onEvent(HotelRoomSelectionEvent.OnRetryClick)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(mockRooms, state.rooms)
+        assertEquals(null, state.error)
     }
 }

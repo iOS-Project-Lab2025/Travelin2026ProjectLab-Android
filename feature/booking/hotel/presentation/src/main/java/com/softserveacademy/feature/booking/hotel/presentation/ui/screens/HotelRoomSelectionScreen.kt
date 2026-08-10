@@ -36,6 +36,8 @@ import com.softserveacademy.core.presentation.design_system.components.TravelLoa
 import com.softserveacademy.feature.booking.hotel.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 
+import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
+
 @Composable
 fun HotelRoomSelectionScreen(
     onBackClick: () -> Unit,
@@ -67,6 +69,12 @@ fun HotelRoomSelectionScreenContent(
 ) {
     if (state.isLoading) {
         TravelLoadingScreen()
+    } else if (state.error != null) {
+        TravelErrorScreen(
+            message = state.error,
+            onRetry = { onEvent(HotelRoomSelectionEvent.OnRetryClick) },
+            onBackClick = onBackClick
+        )
     } else {
         Scaffold(
             topBar = {

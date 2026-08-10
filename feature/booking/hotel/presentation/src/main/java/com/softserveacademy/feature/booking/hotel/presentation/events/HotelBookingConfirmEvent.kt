@@ -11,4 +11,5 @@ sealed interface HotelBookingConfirmEvent {
     data object OnSimulateSuccessClick : HotelBookingConfirmEvent
     data object OnSimulateFailureClick : HotelBookingConfirmEvent
     data object OnDismissPaymentSimulationSheet : HotelBookingConfirmEvent
+    data object OnRetryClick : HotelBookingConfirmEvent
 }

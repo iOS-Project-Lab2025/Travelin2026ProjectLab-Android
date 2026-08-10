@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -130,6 +129,7 @@ fun HotelBookingConfirmScreen(
         uiState = uiState,
         onBackClick = onBackClick,
         onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) },
+        onRetryClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnRetryClick) },
         onSimulateSuccess = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateSuccessClick) },
         onSimulateFailure = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateFailureClick) },
         onDismissBottomSheet = { viewModel.onEvent(HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet) }
@@ -142,6 +142,7 @@ fun HotelBookingConfirmContent(
     uiState: HotelBookingConfirmState,
     onBackClick: () -> Unit,
     onConfirmClick: () -> Unit,
+    onRetryClick: () -> Unit,
     onSimulateSuccess: () -> Unit = {},
     onSimulateFailure: () -> Unit = {},
     onDismissBottomSheet: () -> Unit = {}
@@ -164,73 +165,69 @@ fun HotelBookingConfirmContent(
             totalPrice = uiState.totalPrice,
             onBackClick = onBackClick,
             onConfirmClick = onConfirmClick,
-            isConfirmLoading = uiState.isPaymentSheetLoading
+            isConfirmLoading = uiState.isPaymentSheetLoading,
+            error = uiState.error,
+            onRetryClick = onRetryClick
         ) { padding ->
-            if (uiState.error != null) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = uiState.error ?: "")
-                }
-            } else {
-                Column(
-                    modifier = Modifier
-                        .padding(padding)
-                        .verticalScroll(scrollState)
-                        .padding(TravelinDimens.PaddingMedium)
-                ) {
-                    uiState.hotel?.let { hotel ->
-                        HotelSummaryCard(hotel = hotel)
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .verticalScroll(scrollState)
+                    .padding(TravelinDimens.PaddingMedium)
+            ) {
+                uiState.hotel?.let { hotel ->
+                    HotelSummaryCard(hotel = hotel)
 
-                        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
-                        // Booking Details Section
-                        HotelBookingSummaryCard(
-                            checkIn = uiState.bookingDraft?.checkIn ?: 0L,
-                            checkOut = uiState.bookingDraft?.checkOut ?: 0L,
-                            guests = uiState.bookingDraft?.guests?.let {
-                                stringResource(
-                                    R.string.booking_confirm_guests_format,
-                                    it.adults,
-                                    it.children,
-                                    stringResource(if (it.pets) R.string.booking_confirm_pets_yes else R.string.booking_confirm_pets_no)
-                                )
-                            } ?: ""
-                        )
-
-                        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
-
-                        // Room Selection
-                        uiState.selectedRoom?.let { room ->
-                            val nights = uiState.bookingDraft?.let { draft ->
-                                val checkIn = draft.checkIn
-                                val checkOut = draft.checkOut
-                                if (checkIn != null && checkOut != null) {
-                                    ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt()
-                                        .coerceAtLeast(1)
-                                } else 1
-                            } ?: 1
-                            TravelHotelRoomCard(
-                                room = room,
-                                nightCount = nights,
-                                isSelected = false,
-                                isClickable = false
+                    // Booking Details Section
+                    HotelBookingSummaryCard(
+                        checkIn = uiState.bookingDraft?.checkIn ?: 0L,
+                        checkOut = uiState.bookingDraft?.checkOut ?: 0L,
+                        guests = uiState.bookingDraft?.guests?.let {
+                            stringResource(
+                                R.string.booking_confirm_guests_format,
+                                it.adults,
+                                it.children,
+                                stringResource(if (it.pets) R.string.booking_confirm_pets_yes else R.string.booking_confirm_pets_no)
                             )
-                        }
+                        } ?: ""
+                    )
 
-                        Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
-                        // Contact Information
-                        val contactInfo = uiState.bookingDraft?.contactInfo
-                        val countryCode = contactInfo?.countryCode ?: ""
-                        TravelBookingContactInfoCard(
-                            firstName = contactInfo?.firstName ?: "",
-                            lastName = contactInfo?.lastName ?: "",
-                            email = contactInfo?.email ?: "",
-                            countryCode = countryCode,
-                            countryFlag = countries.find { it.code == countryCode }?.flag ?: "",
-                            phoneNumber = contactInfo?.phoneNumber ?: "",
-                            subtitle = stringResource(R.string.contact_info_who_check_in)
+                    // Room Selection
+                    uiState.selectedRoom?.let { room ->
+                        val nights = uiState.bookingDraft?.let { draft ->
+                            val checkIn = draft.checkIn
+                            val checkOut = draft.checkOut
+                            if (checkIn != null && checkOut != null) {
+                                ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt()
+                                    .coerceAtLeast(1)
+                            } else 1
+                        } ?: 1
+                        TravelHotelRoomCard(
+                            room = room,
+                            nightCount = nights,
+                            isSelected = false,
+                            isClickable = false
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
+
+                    // Contact Information
+                    val contactInfo = uiState.bookingDraft?.contactInfo
+                    val countryCode = contactInfo?.countryCode ?: ""
+                    TravelBookingContactInfoCard(
+                        firstName = contactInfo?.firstName ?: "",
+                        lastName = contactInfo?.lastName ?: "",
+                        email = contactInfo?.email ?: "",
+                        countryCode = countryCode,
+                        countryFlag = countries.find { it.code == countryCode }?.flag ?: "",
+                        phoneNumber = contactInfo?.phoneNumber ?: "",
+                        subtitle = stringResource(R.string.contact_info_who_check_in)
+                    )
                 }
             }
         }
@@ -287,7 +284,8 @@ fun HotelBookingConfirmPreview() {
                 bookingDraft = sampleDraft
             ),
             onBackClick = {},
-            onConfirmClick = {}
+            onConfirmClick = {},
+            onRetryClick = {}
         )
     }
 }

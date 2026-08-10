@@ -77,12 +77,20 @@ class HotelBookingConfirmViewModel @Inject constructor(
                                 bookingDraft = draft,
                                 hotel = hotelDetails,
                                 selectedRoom = selectedRoom,
-                                totalPrice = totalPrice
+                                totalPrice = totalPrice,
+                                error = null
                             )
                         }
                     }
-                    .onFailure { e ->
-                        _uiState.update { it.copy(isLoading = false, error = "Failed to load details") }
+                    .onFailure { error ->
+                        val action = errorHandler.handle(error)
+                        val message = if (action is ErrorAction.ShowMessage) {
+                            when (val uiText = action.message) {
+                                is UiText.Raw -> uiText.value
+                                is UiText.Resource -> "Failed to load booking details."
+                            }
+                        } else "Failed to load details"
+                        _uiState.update { it.copy(isLoading = false, error = message) }
                     }
             } else {
                 _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
@@ -112,6 +120,15 @@ class HotelBookingConfirmViewModel @Inject constructor(
             }
             HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet -> {
                 _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
+            }
+            HotelBookingConfirmEvent.OnRetryClick -> {
+                if (_uiState.value.hotel == null) {
+                    loadBookingDetails()
+                } else if (_uiState.value.error != null) {
+                    // If we have hotel but still error, it might be payment intent error
+                    _uiState.update { it.copy(error = null) }
+                    createPaymentIntent()
+                }
             }
         }
     }

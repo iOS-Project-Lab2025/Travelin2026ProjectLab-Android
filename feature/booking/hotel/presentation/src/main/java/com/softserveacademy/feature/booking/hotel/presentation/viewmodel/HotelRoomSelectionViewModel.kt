@@ -3,7 +3,6 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
@@ -23,6 +22,9 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 import javax.inject.Inject
 
+import com.softserveacademy.core.error.model.UiText
+import com.softserveacademy.core.error.handler.ErrorHandler
+
 /**
  * View model for the hotel room selection screen.
  *
@@ -30,13 +32,15 @@ import javax.inject.Inject
  * @property getHotelRoomsUseCase Use case for fetching available hotel rooms.
  * @property getHotelBookingDraftUseCase Use case for retrieving booking drafts.
  * @property saveHotelBookingDraftUseCase Use case for saving booking drafts.
+ * @property errorHandler The error handler for the screen.
  */
 @HiltViewModel
 class HotelRoomSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getHotelRoomsUseCase: GetHotelRoomsUseCase,
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
-    private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
+    private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
@@ -79,13 +83,27 @@ class HotelRoomSelectionViewModel @Inject constructor(
                             rooms = rooms,
                             nightCount = nightCount,
                             isLoading = false,
+                            error = null,
                             selectedRoomId = it.selectedRoomId ?: draft?.roomId
                         )
                     }
                     applyFilters()
                 }
-                .onFailure {
-                    _uiState.update { it.copy(isLoading = false) }
+                .onFailure { error ->
+                    _uiState.update {
+                        val action = errorHandler.handle(error)
+                        val message = if (action is com.softserveacademy.core.error.model.ErrorAction.ShowMessage) {
+                            when (val uiText = action.message) {
+                                is UiText.Raw -> uiText.value
+                                is UiText.Resource -> "An error occurred while loading rooms."
+                            }
+                        } else "Failed to load hotel rooms."
+
+                        it.copy(
+                            isLoading = false,
+                            error = message
+                        )
+                    }
                 }
         }
     }
@@ -109,6 +127,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
             }
             HotelRoomSelectionEvent.OnNextClick -> onNextClick()
             HotelRoomSelectionEvent.OnBackClick -> { /* Handled by navigation */ }
+            HotelRoomSelectionEvent.OnRetryClick -> loadRooms()
         }
     }
 
