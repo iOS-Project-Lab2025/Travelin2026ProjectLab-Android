@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
+import java.util.Properties
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,6 +17,18 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
+            val localProperties = Properties()
+            val localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use {
+                    localProperties.load(it)
+                }
+            }
+
+            fun getProperty(key: String): String? {
+                return localProperties.getProperty(key) ?: System.getenv(key)
+            }
+
             extensions.configure<ApplicationExtension> {
                 compileSdk = libs.findVersion("compileSdk").get().requiredVersion.toInt()
                 defaultConfig {
@@ -23,13 +36,36 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     targetSdk = libs.findVersion("targetSdk").get().requiredVersion.toInt()
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
+
+                val keystorePath = getProperty("KEYSTORE_PATH")
+                val isReleaseSigningConfigured = keystorePath != null &&
+                        getProperty("KEYSTORE_PASSWORD") != null &&
+                        getProperty("KEY_ALIAS") != null &&
+                        getProperty("KEY_PASSWORD") != null &&
+                        rootProject.file(keystorePath).exists()
+
+                signingConfigs {
+                    if (isReleaseSigningConfigured) {
+                        create("release") {
+                            storeFile = file(getProperty("KEYSTORE_PATH")!!)
+                            storePassword = getProperty("KEYSTORE_PASSWORD")!!
+                            keyAlias = getProperty("KEY_ALIAS")!!
+                            keyPassword = getProperty("KEY_PASSWORD")!!
+                        }
+                    }
+                }
+
                 buildTypes {
                     debug {
                         applicationIdSuffix = ".debug"
                     }
                     release {
                         isMinifyEnabled = true
-                        signingConfig = signingConfigs.getByName("debug")
+                        signingConfig = if (isReleaseSigningConfigured) {
+                            signingConfigs.getByName("release")
+                        } else {
+                            signingConfigs.getByName("debug")
+                        }
                         proguardFiles(
                             getDefaultProguardFile("proguard-android-optimize.txt"),
                             "proguard-rules.pro"
