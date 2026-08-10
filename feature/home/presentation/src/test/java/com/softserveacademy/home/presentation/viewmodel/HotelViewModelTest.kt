@@ -2,6 +2,8 @@ package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.error.model.AppError
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -44,7 +46,7 @@ class HotelViewModelTest {
     fun `given error when Load event is triggered then state is updated with errorMessage`() = runTest {
         // GIVEN: The use case returns a failure
         val errorMessage = "Network Error"
-        coEvery { getHotelDetailsUseCase(any()) } returns Result.failure(Exception(errorMessage))
+        coEvery { getHotelDetailsUseCase(any()) } returns AppResult.Failure(AppError.Unknown(Exception(errorMessage)))
 
         // WHEN: Load event is triggered
         viewModel.onEvent(HotelDetailsEvent.Load("1"))
@@ -60,7 +62,7 @@ class HotelViewModelTest {
     @Test
     fun `given exception without message when Load event is triggered then state is updated with null errorMessage`() = runTest {
         // GIVEN: The use case returns a failure without a message
-        coEvery { getHotelDetailsUseCase(any()) } returns Result.failure(Exception())
+        coEvery { getHotelDetailsUseCase(any()) } returns AppResult.Failure(AppError.Unknown(Exception()))
 
         // WHEN: Load event is triggered
         viewModel.onEvent(HotelDetailsEvent.Load("1"))
