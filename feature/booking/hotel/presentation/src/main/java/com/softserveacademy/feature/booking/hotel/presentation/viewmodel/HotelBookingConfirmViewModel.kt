@@ -130,6 +130,9 @@ class HotelBookingConfirmViewModel @Inject constructor(
                     createPaymentIntent()
                 }
             }
+            HotelBookingConfirmEvent.OnDismissError -> {
+                _uiState.update { it.copy(error = null) }
+            }
         }
     }
 

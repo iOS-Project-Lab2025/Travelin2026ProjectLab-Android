@@ -130,6 +130,13 @@ fun HotelBookingConfirmScreen(
         onBackClick = onBackClick,
         onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) },
         onRetryClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnRetryClick) },
+        onDismissError = {
+            if (uiState.hotel == null) {
+                onBackClick()
+            } else {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnDismissError)
+            }
+        },
         onSimulateSuccess = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateSuccessClick) },
         onSimulateFailure = { viewModel.onEvent(HotelBookingConfirmEvent.OnSimulateFailureClick) },
         onDismissBottomSheet = { viewModel.onEvent(HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet) }
@@ -143,6 +150,7 @@ fun HotelBookingConfirmContent(
     onBackClick: () -> Unit,
     onConfirmClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onDismissError: () -> Unit = onBackClick,
     onSimulateSuccess: () -> Unit = {},
     onSimulateFailure: () -> Unit = {},
     onDismissBottomSheet: () -> Unit = {}
@@ -167,7 +175,8 @@ fun HotelBookingConfirmContent(
             onConfirmClick = onConfirmClick,
             isConfirmLoading = uiState.isPaymentSheetLoading,
             error = uiState.error,
-            onRetryClick = onRetryClick
+            onRetryClick = onRetryClick,
+            onDismissError = onDismissError
         ) { padding ->
             Column(
                 modifier = Modifier

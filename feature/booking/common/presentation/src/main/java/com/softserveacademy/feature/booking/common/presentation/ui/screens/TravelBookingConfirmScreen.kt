@@ -30,13 +30,14 @@ fun TravelBookingConfirmScreen(
     isConfirmLoading: Boolean = false,
     error: String? = null,
     onRetryClick: () -> Unit = {},
+    onDismissError: () -> Unit = onBackClick,
     content: @Composable (PaddingValues) -> Unit
 ) {
     if (error != null) {
         TravelErrorScreen(
             message = error,
             onRetry = onRetryClick,
-            onBackClick = onBackClick
+            onBackClick = onDismissError
         )
     } else {
         Scaffold(
