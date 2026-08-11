@@ -18,6 +18,7 @@ import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.common.presentation.R
+import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,40 +28,51 @@ fun TravelBookingConfirmScreen(
     onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier,
     isConfirmLoading: Boolean = false,
+    error: String? = null,
+    onRetryClick: () -> Unit = {},
+    onDismissError: () -> Unit = onBackClick,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.booking_confirm_screen_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(TravelinDimens.PaddingMedium)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = ArrowLeftIcon,
-                            contentDescription = stringResource(R.string.back_button_label)
+    if (error != null) {
+        TravelErrorScreen(
+            message = error,
+            onRetry = onRetryClick,
+            onBackClick = onDismissError
+        )
+    } else {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.booking_confirm_screen_title),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(TravelinDimens.PaddingMedium)
                         )
-                    }
-                },
-                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
-            )
-        },
-        bottomBar = {
-            TravelBookingConfirmBottomBar(
-                totalPrice = totalPrice,
-                onButtonClick = onConfirmClick,
-                isLoading = isConfirmLoading
-            )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = ArrowLeftIcon,
+                                contentDescription = stringResource(R.string.back_button_label)
+                            )
+                        }
+                    },
+                    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+                )
+            },
+            bottomBar = {
+                TravelBookingConfirmBottomBar(
+                    totalPrice = totalPrice,
+                    onButtonClick = onConfirmClick,
+                    isLoading = isConfirmLoading
+                )
+            }
+        ) { padding ->
+            content(padding)
         }
-    ) { padding ->
-        content(padding)
     }
 }
 

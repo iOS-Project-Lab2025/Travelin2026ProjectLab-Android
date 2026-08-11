@@ -12,12 +12,17 @@ class PaymentRepositoryImpl @Inject constructor(
     private val stripeApi: StripeApi,
     private val mapper: ExceptionMapper
 ) : PaymentRepository {
-    override suspend fun getClientSecret(amount: Long, currency: String): AppResult<String> = safeCall(mapper) {
-        val response = stripeApi.createPaymentIntent(
-            apiKey = "Bearer ${BuildConfig.STRIPE_SECRET_KEY}",
-            amount = amount,
-            currency = currency
-        )
-        response["client_secret"] as String
+    override suspend fun getClientSecret(amount: Long, currency: String): AppResult<String> {
+        if (BuildConfig.STRIPE_SECRET_KEY.isBlank() || BuildConfig.STRIPE_PUBLISHABLE_KEY.isBlank()) {
+            return AppResult.Failure(com.softserveacademy.core.error.model.AppError.Auth.Unauthorized)
+        }
+        return safeCall(mapper) {
+            val response = stripeApi.createPaymentIntent(
+                apiKey = "Bearer ${BuildConfig.STRIPE_SECRET_KEY}",
+                amount = amount,
+                currency = currency
+            )
+            response["client_secret"] as String
+        }
     }
 }
