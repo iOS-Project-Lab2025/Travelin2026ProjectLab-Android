@@ -6,23 +6,6 @@
     <string name="ferry_label">Ferry</string>
     <string name="bus_label">Bus</string>
 
-    <string name="home_ic_label">Home</string>
-    <string name="orders_ic_label">Order</string>
-    <string name="deals_ic_label">Deals</string>
-    <string name="accounts_ic_label">Accounts</string>
-
-    <!-- Logout Dialogues -->
-    <string name="logout_dialog_title">Logout</string>
-    <string name="logout_dialog_message">Are you sure you want to log out?</string>
-    <string name="logout_confirm">Logout</string>
-    <string name="logout_cancel">Cancel</string>
-
-    <!-- Theme selection -->
-    <string name="theme_dialog_title">Select Theme</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_system">Same as system</string>
-
     <!-- HomeScreen sections -->
     <string name="journey_together_title">Journey together</string>
     <string name="hotels_recommendation_title">Hotels recommendation for you</string>
