@@ -2,7 +2,9 @@ package com.softserveacademy.home.presentation.ui.screens
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
@@ -274,6 +276,7 @@ private fun TravelHotelDetailsWrapper(
                         nearbyPlaces = hotel.nearbyPlaces,
                         onSeeMoreClick = onSeeMoreNearbyClick
                     )
+                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
                 }
             }
         }
