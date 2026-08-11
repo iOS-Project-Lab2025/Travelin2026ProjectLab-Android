@@ -39,10 +39,10 @@ import com.softserveacademy.home.presentation.state.HomeUiState
 import com.softserveacademy.home.presentation.state.SectionState
 import com.softserveacademy.home.presentation.ui.components.TravelBackground
 import com.softserveacademy.home.presentation.ui.components.TravelIconsCard
-import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
+import com.softserveacademy.core.presentation.ui.components.TravelNavigationBar
 import com.softserveacademy.home.presentation.ui.components.TravelTextField
 import com.softserveacademy.home.presentation.ui.components.TravelUpcomingTripCard
-import com.softserveacademy.home.presentation.ui.components.TravelUserProfileCard
+import com.softserveacademy.profile.presentation.ui.components.TravelUserProfileCard
 import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember

@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.screens
+package com.softserveacademy.profile.presentation.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,13 +24,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.AppTheme
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.theme.*
-import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
-import com.softserveacademy.home.presentation.state.ProfileState
-import com.softserveacademy.home.presentation.R
-import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
+import com.softserveacademy.profile.presentation.viewmodel.ProfileViewModel
+import com.softserveacademy.profile.presentation.state.ProfileState
+import com.softserveacademy.profile.presentation.R
+import com.softserveacademy.core.presentation.ui.components.TravelNavigationBar
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -182,7 +182,7 @@ private fun ThemeSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(text = "Close")
+                Text(text = stringResource(R.string.close_label))
             }
         }
     )
@@ -352,7 +352,7 @@ fun ProfileSuccessContent(
 
         // Account Setting Header
         Text(
-            text = "Account Setting",
+            text = stringResource(R.string.account_setting_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth(),
@@ -364,7 +364,7 @@ fun ProfileSuccessContent(
         // Setting Items
         SettingItem(
             icon = UserCircleFilledIcon,
-            title = "Edit profile",
+            title = stringResource(R.string.edit_profile_label),
             onClick = onEditProfileClick
         )
 
@@ -372,7 +372,7 @@ fun ProfileSuccessContent(
 
         SettingItem(
             icon = MoonIcon,
-            title = "Color mode",
+            title = stringResource(R.string.color_mode_label),
             onClick = onThemeClick,
             trailingText = when (currentTheme) {
                 AppTheme.LIGHT -> "Light"
@@ -400,7 +400,7 @@ fun ProfileSuccessContent(
             )
         ) {
             Text(
-                text = "Logout",
+                text = stringResource(R.string.logout_label),
                 style = MaterialTheme.typography.titleLarge,
                 textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
             )
@@ -410,7 +410,7 @@ fun ProfileSuccessContent(
 
         // App Version
         Text(
-            text = "Version 3.0.0",
+            text = stringResource(R.string.version_label),
             style = MaterialTheme.typography.bodySmall,
             color = TravelBlue40
         )
@@ -476,25 +476,6 @@ fun SettingItem(
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    Travelin2026ProjectLabTheme {
-        ProfileContent(
-            state = ProfileState.Success(
-                UserProfile("John", "Doe", 100, "", location = "Mars, Solar System")
-            ),
-            currentTheme = AppTheme.SYSTEM,
-            onNavigateBack = {},
-            onEditProfileClick = {},
-            onLogoutClick = {},
-            onThemeClick = {},
-            onRetry = {},
-            onHomeClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ProfileScreenDarkPreview() {
     Travelin2026ProjectLabTheme {
         ProfileContent(
             state = ProfileState.Success(

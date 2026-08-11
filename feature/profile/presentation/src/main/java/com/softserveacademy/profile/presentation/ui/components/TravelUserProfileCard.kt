@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.components
+package com.softserveacademy.profile.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,14 +31,11 @@ import com.softserveacademy.core.presentation.design_system.R as CoreR
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.core.presentation.design_system.theme.Yellow50
-import com.softserveacademy.home.presentation.model.UserProfileUi
+import com.softserveacademy.profile.presentation.model.UserProfileUi
 import java.text.NumberFormat
 
 /**
  * Displays the user's profile summary at the top of the home screen.
- *
- * <p>Shows the user's name, a points badge (yellow circle with diamond), the
- * points value, and a circular avatar image aligned to the right.</p>
  *
  * @param userProfile The user profile data to display.
  * @param onClick Callback invoked when the card is tapped.

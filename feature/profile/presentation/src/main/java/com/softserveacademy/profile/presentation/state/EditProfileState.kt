@@ -1,6 +1,6 @@
-package com.softserveacademy.home.presentation.state
+package com.softserveacademy.profile.presentation.state
 
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 
 /**
  * Represents the UI state for the Edit Profile screen.

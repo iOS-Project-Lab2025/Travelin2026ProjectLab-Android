@@ -1,10 +1,10 @@
-package com.softserveacademy.home.presentation.di
+package com.softserveacademy.profile.presentation.di
 
 import com.softserveacademy.feature.auth.common.domain.usecase.LogoutUseCase
 import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
-import com.softserveacademy.home.domain.repository.ProfileRepository
-import com.softserveacademy.home.domain.usecases.GetProfileUseCase
-import com.softserveacademy.home.domain.usecases.UpdateProfileUseCase
+import com.softserveacademy.profile.domain.repository.ProfileRepository
+import com.softserveacademy.profile.domain.usecases.GetProfileUseCase
+import com.softserveacademy.profile.domain.usecases.UpdateProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

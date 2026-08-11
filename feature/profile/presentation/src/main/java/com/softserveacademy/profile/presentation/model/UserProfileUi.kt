@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.model
+package com.softserveacademy.profile.presentation.model
 
 data class UserProfileUi(
     val name: String,

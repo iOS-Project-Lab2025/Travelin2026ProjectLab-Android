@@ -1,4 +1,4 @@
-package com.softserveacademy.home.presentation.ui.screens
+package com.softserveacademy.profile.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,17 +9,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.*
-import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.*
-import com.softserveacademy.home.presentation.state.EditProfileState
-import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
+import com.softserveacademy.profile.presentation.state.EditProfileState
+import com.softserveacademy.profile.presentation.viewmodel.EditProfileViewModel
+import com.softserveacademy.profile.presentation.R
 
 /**
  * Screen for editing the user's profile information.
@@ -103,7 +101,7 @@ fun EditProfileContent(
                 )
                 Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
                 Text(
-                    text = "Edit profile",
+                    text = stringResource(R.string.edit_profile_label),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -136,7 +134,7 @@ fun EditProfileContent(
                         )
                     } else {
                         Text(
-                            text = "Save changes",
+                            text = stringResource(R.string.save_changes_label),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -157,61 +155,61 @@ fun EditProfileContent(
                     .padding(horizontal = TravelinDimens.PaddingLarge),
                 verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)
             ) {
-                LabeledInput(label = "First name") {
+                LabeledInput(label = stringResource(R.string.first_name_label)) {
                     AppTextInput(
                         value = firstName,
                         onValueChange = onFirstNameChange,
-                        placeholder = "First name"
+                        placeholder = stringResource(R.string.first_name_label)
                     )
                 }
 
-                LabeledInput(label = "Last name") {
+                LabeledInput(label = stringResource(R.string.last_name_label)) {
                     AppTextInput(
                         value = lastName,
                         onValueChange = onLastNameChange,
-                        placeholder = "Last name"
+                        placeholder = stringResource(R.string.last_name_label)
                     )
                 }
 
-                LabeledInput(label = "Phone") {
+                LabeledInput(label = stringResource(R.string.phone_label)) {
                     TravelPhoneNumberInput(
                         countryCode = countryCode,
                         onCountryCodeChange = onCountryCodeChange,
                         phoneNumber = phone,
                         onPhoneNumberChange = onPhoneChange,
-                        placeholder = "Phone number"
+                        placeholder = stringResource(R.string.phone_label)
                     )
                 }
 
-                LabeledInput(label = "Age") {
+                LabeledInput(label = stringResource(R.string.age_label)) {
                     AppNumberInput(
                         value = age,
                         onValueChange = onAgeChange,
-                        placeholder = "Age"
+                        placeholder = stringResource(R.string.age_label)
                     )
                 }
 
-                LabeledInput(label = "Direction") {
+                LabeledInput(label = stringResource(R.string.direction_label)) {
                     AppTextInput(
                         value = location,
                         onValueChange = onLocationChange,
-                        placeholder = "Direction"
+                        placeholder = stringResource(R.string.direction_label)
                     )
                 }
 
-                LabeledInput(label = "Password") {
+                LabeledInput(label = stringResource(R.string.password_label)) {
                     AppPasswordInput(
                         value = password,
                         onValueChange = onPasswordChange,
-                        placeholder = "Password"
+                        placeholder = stringResource(R.string.password_label)
                     )
                 }
 
-                LabeledInput(label = "Confirm password") {
+                LabeledInput(label = stringResource(R.string.confirm_password_label)) {
                     AppPasswordInput(
                         value = confirmPassword,
                         onValueChange = onConfirmPasswordChange,
-                        placeholder = "Confirm password"
+                        placeholder = stringResource(R.string.confirm_password_label)
                     )
                 }
 
@@ -225,7 +223,7 @@ fun EditProfileContent(
                         .padding(TravelinDimens.PaddingLarge),
                     action = {
                         TextButton(onClick = onClearError) {
-                            Text("Dismiss", color = MaterialTheme.colorScheme.inversePrimary)
+                            Text(stringResource(R.string.dismiss_label), color = MaterialTheme.colorScheme.inversePrimary)
                         }
                     }
                 ) {
@@ -241,7 +239,7 @@ fun EditProfileContent(
                     containerColor = Green50,
                     contentColor = Color.White
                 ) {
-                    Text(text = "Profile updated successfully!")
+                    Text(text = stringResource(R.string.profile_updated_success))
                 }
             }
         }
