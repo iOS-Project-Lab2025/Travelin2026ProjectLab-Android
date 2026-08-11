@@ -4,17 +4,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
-import com.softserveacademy.core.presentation.design_system.theme.HeartLineIcon
+import com.softserveacademy.core.presentation.design_system.theme.ShareIcon
 
 @Composable
-fun TravelFavoriteIcon(
+fun TravelShareIconButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ){
     TravelIconButton(
-        icon = HeartLineIcon,
+        icon = ShareIcon,
         onClick = onClick,
-        contentDescription = "favorite button",
+        contentDescription = "share button",
         backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
         modifier = modifier
     )

@@ -40,7 +40,8 @@ data class Hotel(
     val amenities: List<Amenities> = emptyList(),
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val rooms: List<HotelRoom> = emptyList()
+    val rooms: List<HotelRoom> = emptyList(),
+    val nearbyPlaces: List<Poi> = emptyList()
 ) : java.io.Serializable {
     val limitedReviews: String
         get() = if (numberOfReviews > 999) "999+ reviews" else "$numberOfReviews reviews"

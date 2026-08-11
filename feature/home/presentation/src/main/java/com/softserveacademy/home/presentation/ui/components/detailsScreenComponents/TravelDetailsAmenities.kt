@@ -28,7 +28,7 @@ import com.softserveacademy.core.domain.model.Amenities
 import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
 import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelIncludedItem
-import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIcon
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 /**
@@ -130,7 +130,7 @@ fun AmenitiesOverlay(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                TravelArrowIcon(
+                TravelArrowIconButton(
                     onClick = onDismiss,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
