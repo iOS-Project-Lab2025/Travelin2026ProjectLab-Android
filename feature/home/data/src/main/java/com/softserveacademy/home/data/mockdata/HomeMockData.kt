@@ -17,7 +17,7 @@ import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.domain.model.Trip
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 import java.util.Calendar
 import kotlin.time.Duration.Companion.hours
 
