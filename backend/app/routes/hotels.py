@@ -13,12 +13,7 @@ def get_hotels():
     response = (
         supabase
         .table("hotels")
-        .select("""
-            *,
-            hotel_images(
-                image_url
-            )
-        """)
+        .select("*")
         .execute()
     )
 
@@ -31,13 +26,7 @@ def get_hotels():
             "address": hotel["address"],
             "star": hotel["star"],
             "userRating": hotel["user_rating"],
-            "pricePerNight": hotel["price_per_night"],
-            "image": [
-                img["image_url"]
-                for img in hotel.get("hotel_images", [])
-            ]
+            "pricePerNight": hotel["price_per_night"]
         })
 
     return hotels
-
-    return response.data
