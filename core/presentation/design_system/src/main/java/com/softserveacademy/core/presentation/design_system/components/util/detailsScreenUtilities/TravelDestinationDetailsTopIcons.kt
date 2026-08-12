@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIcon
-import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelFavoriteIcon
-import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelShareIcon
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelFavoriteIconButton
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelShareIconButton
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -31,14 +31,14 @@ fun TravelHotelDetailsTopIcons(
             ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TravelArrowIcon(onClick = onBackClick)
+        TravelArrowIconButton(onClick = onBackClick)
 
         Row {
-            TravelShareIcon(onClick = onShareClick)
+            TravelShareIconButton(onClick = onShareClick)
 
             Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
 
-            TravelFavoriteIcon(onClick = onFavoriteClick)
+            TravelFavoriteIconButton(onClick = onFavoriteClick)
         }
     }
 }

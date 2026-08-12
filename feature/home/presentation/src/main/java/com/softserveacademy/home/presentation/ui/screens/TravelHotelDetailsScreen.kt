@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -24,29 +25,31 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.maps.model.LatLng
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.Poi
 import com.softserveacademy.core.domain.model.Amenities
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.core.presentation.design_system.components.HotelDetailLoading
-import com.softserveacademy.home.presentation.viewmodel.TourDetailsViewModel
 import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
 import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelBookingBar
 import com.softserveacademy.core.presentation.design_system.theme.LocalIsDarkTheme
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.AmenitiesOverlay
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.ExploreAreaOverlay
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsAmenities
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsDescription
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsHeader
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsMap
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.MapOverlay
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.NearbyPlacesSection
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
 /**
  * Stateful screen that use the [TravelHotelDetailsWrapper].
  *
- * This composable handles the connection between the UI and the [TourDetailsViewModel].
+ * This composable handles the connection between the UI and the [HotelDetailsViewModel].
  * It collects the state from the ViewModel and displays the appropriate UI.
  *
  * @param itemId The unique identifier of the hotel or tour.
@@ -150,6 +153,16 @@ fun TravelHotelDetailScreen(
                 onDismissMap = {
                     viewModel.onEvent(HotelDetailsEvent.DismissMap)
                 },
+                onSeeMoreNearbyClick = {
+                    viewModel.onEvent(HotelDetailsEvent.ViewExploreArea)
+                },
+                showExploreArea = hotelDetailState.showExploreArea,
+                areaDescription = hotelDetailState.areaDescription,
+                nearbyTransport = hotelDetailState.nearbyTransport,
+                nearbyRestaurants = hotelDetailState.nearbyRestaurants,
+                onDismissExploreArea = {
+                    viewModel.onEvent(HotelDetailsEvent.DismissExploreArea)
+                },
                 modifier = modifier
             )
         }
@@ -176,6 +189,10 @@ fun TravelHotelDetailScreen(
  * @param onDismissAmenitiesOverlay The action to perform when the amenities overlay is dismissed.
  * @param onMapClick The action to perform when the map preview is clicked.
  * @param onDismissMap The action to perform when the full-screen map is dismissed.
+ * @param onSeeMoreNearbyClick The action to perform when the "See more" button in nearby places is clicked.
+ * @param showExploreArea Whether the explore area overlay is currently visible.
+ * @param areaDescription A description of the area.
+ * @param onDismissExploreArea The action to perform when the explore area overlay is dismissed.
  */
 @Composable
 private fun TravelHotelDetailsWrapper(
@@ -194,7 +211,13 @@ private fun TravelHotelDetailsWrapper(
     onSeeAllAmenitiesClick: () -> Unit = {},
     onDismissAmenitiesOverlay: () -> Unit = {},
     onMapClick: () -> Unit = {},
-    onDismissMap: () -> Unit = {}
+    onDismissMap: () -> Unit = {},
+    onSeeMoreNearbyClick: () -> Unit = {},
+    showExploreArea: Boolean = false,
+    areaDescription: String? = null,
+    nearbyTransport: List<Poi> = emptyList(),
+    nearbyRestaurants: List<Poi> = emptyList(),
+    onDismissExploreArea: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
@@ -246,11 +269,15 @@ private fun TravelHotelDetailsWrapper(
                         isDarkTheme = isDarkTheme,
                         onMapClick = onMapClick
                     )
-
-                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
-
+                    Divider()
                 }
-
+                item {
+                    NearbyPlacesSection(
+                        nearbyPlaces = hotel.nearbyPlaces,
+                        onSeeMoreClick = onSeeMoreNearbyClick
+                    )
+                    Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+                }
             }
         }
 
@@ -269,7 +296,26 @@ private fun TravelHotelDetailsWrapper(
             )
         }
 
+        if (showExploreArea) {
+            ExploreAreaOverlay(
+                nearbyPlaces = hotel.nearbyPlaces,
+                areaDescription = areaDescription,
+                nearbyTransport = nearbyTransport,
+                nearbyRestaurants = nearbyRestaurants,
+                onDismiss = onDismissExploreArea
+            )
+        }
     }
+}
+@Composable
+private fun Divider(){
+    HorizontalDivider(
+        modifier = Modifier
+            .padding(
+                vertical = TravelinDimens.PaddingLarge,
+                horizontal = TravelinDimens.PaddingLarge
+            )
+    )
 }
 
 @Preview(showBackground = true)
