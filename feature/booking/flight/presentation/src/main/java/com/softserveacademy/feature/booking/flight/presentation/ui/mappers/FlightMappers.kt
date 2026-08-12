@@ -4,7 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.softserveacademy.core.domain.model.CabinClass
+import com.softserveacademy.core.domain.model.DocumentType
+import com.softserveacademy.core.domain.model.Gender
+import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.core.presentation.design_system.theme.*
+import com.softserveacademy.feature.booking.flight.domain.model.PassengerFieldError
 import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
 import com.softserveacademy.feature.booking.flight.presentation.R
 
@@ -36,6 +40,30 @@ fun CabinClass.toDisplayName(): String {
 }
 
 /**
+ * Maps DocumentType enum to a localized display name.
+ */
+@Composable
+fun DocumentType.toDisplayName(): String {
+    return when (this) {
+        DocumentType.PASSPORT -> stringResource(R.string.flight_doc_passport)
+        DocumentType.NATIONAL_ID -> stringResource(R.string.flight_doc_national_id)
+    }
+}
+
+/**
+ * Maps PassengerType enum to a localized label.
+ */
+@Composable
+fun PassengerType.toDisplayName(): String {
+    return when (this) {
+        PassengerType.ADU -> stringResource(R.string.flight_label_adults)
+        PassengerType.CHD -> stringResource(R.string.flight_label_children)
+        PassengerType.INF -> stringResource(R.string.flight_label_infants)
+    }
+}
+
+
+/**
  * Maps domain-level validation errors to user-friendly localized messages.
  * Used for the global error banner in the search screen.
  */
@@ -50,4 +78,28 @@ fun ValidateFlightSearchUseCase.FlightError.toMessage(): String {
         ValidateFlightSearchUseCase.FlightError.INVALID_DATE_SEQUENCE -> R.string.flight_error_date_sequence
     }
     return stringResource(id)
+}
+
+/**
+ * Maps field-level validation errors to error messages.
+ */
+@Composable
+fun PassengerFieldError.toMessage(): String {
+    return when (this) {
+        PassengerFieldError.EMPTY -> "This field cannot be empty" // TODO: Move to strings.xml
+        PassengerFieldError.INVALID_FORMAT -> "Invalid format"
+    }
+}
+
+/**
+ * Maps Gender enum to a localized Camel Case string.
+ */
+@Composable
+fun Gender?.toDisplayName(): String {
+    return when (this) {
+        Gender.MALE -> stringResource(R.string.flight_gender_male)
+        Gender.FEMALE -> stringResource(R.string.flight_gender_female)
+        Gender.OTHER -> stringResource(R.string.flight_gender_other)
+        null -> stringResource(R.string.flight_gender_placeholder)
+    }
 }

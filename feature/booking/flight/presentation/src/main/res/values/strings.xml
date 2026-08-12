@@ -58,5 +58,42 @@
     <string name="flight_price_currency_per_person">%1$s /p.p</string>
     <string name="flight_price_format">%1$s %2$s</string>
 
+    <string name="flight_gender_male">Male</string>
+    <string name="flight_gender_female">Female</string>
+    <string name="flight_gender_other">Other</string>
+    <string name="flight_gender_placeholder">Select Gender</string>
+
+    <string name="flight_doc_passport">Passport</string>
+
+    <string name="flight_doc_national_id">National ID</string>
+    <string name="flight_document_number">Document Number</string>
+    <string name="flight_nationality">Nationality</string>
+    <string name="flight_birth_date">Birth Date</string>
+    <string name="flight_gender">Gender</string>
+    <string name="flight_document_type">Document Type</string>
+    <string name="flight_doc_placeholder">Select Type</string>
+    <string name="flight_passenger_progress_format">Passenger %1$d of %2$d (%3$s)</string>
+    <string name="flight_first_name_required">First name is required</string>
+    <string name="flight_label_adult_single">Adult</string>
+    <string name="flight_label_child_single">Child</string>
+    <string name="flight_label_infant_single">Infant</string>
+    <!-- Passenger Form Labels -->
+    <string name="flight_first_name">First Name</string>
+    <string name="flight_last_name">Last Name</string>
+    <string name="flight_doc_number_placeholder">1234567-K</string>
+    <string name="flight_contact_details">Contact Details</string>
+    <string name="flight_email_address">Email Address</string>
+    <string name="flight_phone_number">Phone Number</string>
+    <string name="flight_country_code">+56</string>
+    <string name="flight_birth_date_placeholder">Select birth date</string>
+
+    <string name="flight_last_name_required">Last name is required</string>
+    <string name="flight_document_required">Document number is required</string>
+    <string name="flight_birth_date_required">Birth date is required</string>
+    <string name="flight_email_required">Email address is required</string>
+    <string name="flight_email_invalid">Invalid email format</string>
+    <string name="flight_phone_required">Phone number is required</string>
+    <string name="flight_select_birth_date">Select Birth Date</string>
+
 
 </resources>

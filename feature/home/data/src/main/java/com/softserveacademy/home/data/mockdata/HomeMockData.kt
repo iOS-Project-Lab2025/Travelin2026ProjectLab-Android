@@ -219,7 +219,14 @@ object HomeMockData {
                     )
                 ),
                 confirmationCode = "ABC123",
-                status = BookingStatus.COMPLETED
+                status = BookingStatus.COMPLETED,
+                totalAmount = 900.0,
+                currencyCode = "USD",
+                contactInfo = com.softserveacademy.core.domain.model.FlightContactInfo(
+                    email = "john.doe@travelin.com",
+                    phone = "987654321",
+                    countryCode = "+56"
+                )
             )
         ),
 

@@ -51,10 +51,12 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelCo
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingSuccessScreen
+import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightPassengerInfoScreen
 
 // FlightBooking screens.
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightSearchScreen
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightResultsScreen
+import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightPassengerInfoViewModel
 
 /**
  * Root navigation host for the application.
@@ -459,9 +461,21 @@ fun NavGraphBuilder.flightGraph(navController: NavHostController) {
             val viewModel: FlightResultsViewModel = hiltViewModel()
 
             FlightResultsScreen(
-                onNext = { /* Próximo US3: Passengers */ },
+                onNext = { navController.navigate(Routes.FlightPassengerInfoScreen) },
                 onBack = { navController.popBackStack() },
                 viewModel = viewModel
+            )
+        }
+
+        composable<Routes.FlightPassengerInfoScreen> {
+            val viewModel: FlightPassengerInfoViewModel = hiltViewModel()
+            FlightPassengerInfoScreen(
+                viewModel = viewModel,
+                onNext = {
+                    // Next: Booking Confirmation
+                    println("Moving to Confirmation")
+                },
+                onBack = { navController.popBackStack() }
             )
         }
     }
