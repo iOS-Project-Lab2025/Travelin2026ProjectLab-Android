@@ -16,8 +16,8 @@ class BookingGuests(BaseModel):
 class BookingPrice(BaseModel):
     room_price_per_night: int
     room_price: int
-    taxes: int
-    fees: int
+    taxes: Optional[int] = 0
+    fees: Optional[int] = 0
     total: int
 
 class BookingContactInfo(BaseModel):
