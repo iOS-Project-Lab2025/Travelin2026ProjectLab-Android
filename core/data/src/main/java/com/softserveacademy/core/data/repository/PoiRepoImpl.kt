@@ -20,6 +20,8 @@ import com.softserveacademy.core.domain.repository.PoiRepo
 import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.core.error.util.safeCall
+import com.softserveacademy.core.data.api.RouteMatrixElement
+import com.google.android.libraries.places.api.model.PhotoMetadata
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,6 +31,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
 
+/**
+ * Implementation of [PoiRepo] that uses Google Places API and Google Maps Route Matrix API.
+ * Provides data about points of interest, nearby transport, and restaurants.
+ *
+ * @property googleMapsApiService Service for interacting with Google Maps APIs.
+ * @property placesClient Client for interacting with the Google Places SDK.
+ * @property mapper Mapper for converting exceptions to [AppResult] failures.
+ * @property context Application context used to retrieve the API key.
+ */
 @Singleton
 class PoiRepoImpl @Inject constructor(
     private val googleMapsApiService: GoogleMapsApiService,
@@ -41,240 +52,242 @@ class PoiRepoImpl @Inject constructor(
     var maxPoiSearch = 10
 
     private val apiKey: String by lazy {
-        val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-        ai.metaData.getString("com.google.android.geo.API_KEY") ?: ""
+        try {
+            val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+            ai.metaData?.getString("com.google.android.geo.API_KEY") ?: ""
+        } catch (e: Exception) {
+            ""
+        }
     }
 
-    override suspend fun getNearbyPlaces(latitude: Double, longitude: Double): AppResult<List<Poi>> = safeCall(mapper) {
-        val center = LatLng(latitude, longitude)
-        val circle = CircularBounds.newInstance(center, searchRadius) // 5km radius
-        val placeFields = listOf(
+    /**
+     * Fetches nearby tourist attractions and historical sites.
+     *
+     * @param latitude The latitude of the center point.
+     * @param longitude The longitude of the center point.
+     * @return [AppResult] containing a list of [Poi] or an error.
+     */
+    override suspend fun getNearbyPlaces(
+        latitude: Double,
+        longitude: Double
+    ): AppResult<List<Poi>> = safeCall(mapper) {
+        val fields = listOf(
             Place.Field.DISPLAY_NAME,
             Place.Field.TYPES,
             Place.Field.LOCATION,
             Place.Field.PHOTO_METADATAS,
             Place.Field.EDITORIAL_SUMMARY
         )
-
-        val request = SearchNearbyRequest.builder(circle, placeFields)
-            .setIncludedTypes(listOf("tourist_attraction", "museum", "park"))
-            .setMaxResultCount(maxPoiSearch)
-            .build()
-
-        val response = placesClient.searchNearby(request).await()
-        val places = response.places
-
+        val places = fetchPlaces(
+            latitude,
+            longitude,
+            searchRadius,
+            maxPoiSearch,
+            listOf("tourist_attraction", "museum", "park"),
+            fields
+        )
         if (places.isEmpty()) return@safeCall emptyList()
 
-        val routeMatrixRequest = RouteMatrixRequest(
-            origins = listOf(RouteMatrixOrigin(Waypoint(LocationDto(LatLngDto(latitude, longitude))))),
-            destinations = places.map { place ->
-                RouteMatrixDestination(
-                    Waypoint(
-                        LocationDto(
-                            LatLngDto(
-                                place.location?.latitude ?: 0.0,
-                                place.location?.longitude ?: 0.0
-                            )
-                        )
-                    )
-                )
-            }
-        )
-
-        val routeMatrixResponse = googleMapsApiService.computeRouteMatrix(
-            apiKey = apiKey,
-            fieldMask = "originIndex,destinationIndex,duration,distanceMeters,condition",
-            request = routeMatrixRequest
-        )
-
-        coroutineScope {
-            places.mapIndexed { index, place ->
-                async {
-                    val element = routeMatrixResponse.find { it.destinationIndex == index }
-
-                    val walkingTime = element?.duration?.let { durationStr ->
-                        val seconds = durationStr.removeSuffix("s").toDoubleOrNull() ?: 0.0
-                        val minutes = (seconds / 60).roundToInt()
-                        if (minutes < 1) "1 min walk" else "$minutes min walk"
-                    } ?: "N/A"
-
-                    val photoMetadata = place.photoMetadatas?.firstOrNull()
-                    val imageUrl = photoMetadata?.let {
-                        try {
-                            val uriResponse = placesClient.fetchResolvedPhotoUri(
-                                FetchResolvedPhotoUriRequest.builder(it).build()
-                            ).await()
-                            uriResponse.uri?.toString()
-                        } catch (_: Exception) {
-                            null
-                        }
-                    }
-
-                    Poi(
-                        name = place.displayName ?: "Unknown",
-                        type = place.placeTypes?.firstOrNull()?.replace("_", " ")?.lowercase()
-                            ?.replaceFirstChar { it.uppercase() } ?: "POI",
-                        travelTime = walkingTime,
-                        imageUrl = imageUrl,
-                        description = place.editorialSummary
-                    )
-                }
-            }.awaitAll()
-        }
+        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
+        mapPlacesToPois(places, routeMatrix, "walk")
     }
 
-    override suspend fun getAreaDescription(latitude: Double, longitude: Double): AppResult<String?> = safeCall(mapper) {
-        val center = LatLng(latitude, longitude)
-        val circle = CircularBounds.newInstance(center, 10000.0)
-
-        val placeFields = listOf(Place.Field.EDITORIAL_SUMMARY, Place.Field.DISPLAY_NAME, Place.Field.TYPES)
-
-        val request = SearchNearbyRequest.builder(circle, placeFields)
-            .setIncludedTypes(listOf("tourist_attraction", "museum", "park", "art_gallery"))
-            .setMaxResultCount(20)
-            .build()
-
-        val response = placesClient.searchNearby(request).await()
-
-        response.places.firstOrNull { !it.editorialSummary.isNullOrEmpty() }?.editorialSummary
+    /**
+     * Fetches an editorial summary of the area from the most prominent nearby place.
+     *
+     * @param latitude The latitude of the center point.
+     * @param longitude The longitude of the center point.
+     * @return [AppResult] containing the area description string or null.
+     */
+    override suspend fun getAreaDescription(
+        latitude: Double,
+        longitude: Double
+    ): AppResult<String?> = safeCall(mapper) {
+        val fields = listOf(Place.Field.EDITORIAL_SUMMARY, Place.Field.DISPLAY_NAME, Place.Field.TYPES)
+        val places = fetchPlaces(
+            latitude,
+            longitude,
+            10000.0,
+            20,
+            listOf("tourist_attraction", "museum", "park", "art_gallery"),
+            fields
+        )
+        places.firstOrNull { !it.editorialSummary.isNullOrEmpty() }?.editorialSummary
     }
 
-    override suspend fun getNearbyTransport(latitude: Double, longitude: Double): AppResult<List<Poi>> = safeCall(mapper) {
-        val center = LatLng(latitude, longitude)
-        val circle = CircularBounds.newInstance(center, 20000.0)
-        val placeFields = listOf(
-            Place.Field.DISPLAY_NAME,
-            Place.Field.TYPES,
-            Place.Field.LOCATION
-        )
-
-        val request = SearchNearbyRequest.builder(circle, placeFields)
-            .setIncludedTypes(listOf("bus_station", "train_station", "transit_station", "airport"))
-            .setMaxResultCount(3)
-            .build()
-
-        val response = placesClient.searchNearby(request).await()
-        val places = response.places
-
+    /**
+     * Fetches nearby transport hubs like bus and train stations.
+     *
+     * @param latitude The latitude of the center point.
+     * @param longitude The longitude of the center point.
+     * @return [AppResult] containing a list of [Poi] transport hubs.
+     */
+    override suspend fun getNearbyTransport(
+        latitude: Double,
+        longitude: Double
+    ): AppResult<List<Poi>> = safeCall(mapper) {
+        val fields = listOf(Place.Field.DISPLAY_NAME, Place.Field.TYPES, Place.Field.LOCATION)
+        val types = listOf("bus_station", "train_station", "transit_station", "airport")
+        val places = fetchPlaces(latitude, longitude, 20000.0, 3, types, fields)
         if (places.isEmpty()) return@safeCall emptyList()
 
-        val routeMatrixRequest = RouteMatrixRequest(
-            origins = listOf(RouteMatrixOrigin(Waypoint(LocationDto(LatLngDto(latitude, longitude))))),
-            destinations = places.map { place ->
-                RouteMatrixDestination(
-                    Waypoint(
-                        LocationDto(
-                            LatLngDto(
-                                place.location?.latitude ?: 0.0,
-                                place.location?.longitude ?: 0.0
-                            )
-                        )
-                    )
-                )
-            },
-            travelMode = "DRIVE"
-        )
-
-        val routeMatrixResponse = googleMapsApiService.computeRouteMatrix(
-            apiKey = apiKey,
-            fieldMask = "originIndex,destinationIndex,duration,distanceMeters,condition",
-            request = routeMatrixRequest
-        )
-
+        val routeMatrix = fetchRouteMatrix(latitude, longitude, places, "DRIVE")
         places.mapIndexed { index, place ->
-            val element = routeMatrixResponse.find { it.destinationIndex == index }
-            val time = element?.duration?.let { durationStr ->
-                val seconds = durationStr.removeSuffix("s").toDoubleOrNull() ?: 0.0
-                val minutes = (seconds / 60).roundToInt()
-                if (minutes < 1) "1 min" else "$minutes min"
-            } ?: "N/A"
-
+            val element = routeMatrix.find { it.destinationIndex == index }
+            val time = formatDuration(element?.duration)
             val isTransit = place.placeTypes?.any { it.contains("station") || it.contains("transit") } == true
             val suffix = if (isTransit) "walk" else "drive"
 
             Poi(
                 name = place.displayName ?: "Station",
-                type = place.placeTypes?.firstOrNull() ?: "Transport",
+                type = place.placeTypes?.firstOrNull()?.formatType() ?: "Transport",
                 travelTime = "$time $suffix"
             )
         }
     }
 
-    override suspend fun getNearbyRestaurants(latitude: Double, longitude: Double): AppResult<List<Poi>> = safeCall(mapper) {
-        val center = LatLng(latitude, longitude)
-        val circle = CircularBounds.newInstance(center, searchRadius)
-        val placeFields = listOf(
-            Place.Field.DISPLAY_NAME,
-            Place.Field.TYPES,
-            Place.Field.LOCATION,
-            Place.Field.PHOTO_METADATAS
-        )
-
-        val request = SearchNearbyRequest.builder(circle, placeFields)
-            .setIncludedTypes(listOf("restaurant", "cafe", "bar"))
-            .setMaxResultCount(3)
-            .build()
-
-        val response = placesClient.searchNearby(request).await()
-        val places = response.places
-
+    /**
+     * Fetches nearby restaurants, cafes, and bars.
+     *
+     * @param latitude The latitude of the center point.
+     * @param longitude The longitude of the center point.
+     * @return [AppResult] containing a list of restaurant [Poi]s.
+     */
+    override suspend fun getNearbyRestaurants(
+        latitude: Double,
+        longitude: Double
+    ): AppResult<List<Poi>> = safeCall(mapper) {
+        val fields = listOf(Place.Field.DISPLAY_NAME, Place.Field.TYPES, Place.Field.LOCATION, Place.Field.PHOTO_METADATAS)
+        val places = fetchPlaces(latitude, longitude, searchRadius, 3, listOf("restaurant", "cafe", "bar"), fields)
         if (places.isEmpty()) return@safeCall emptyList()
 
-        val routeMatrixRequest = RouteMatrixRequest(
-            origins = listOf(RouteMatrixOrigin(Waypoint(LocationDto(LatLngDto(latitude, longitude))))),
-            destinations = places.map { place ->
+        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
+        mapPlacesToPois(places, routeMatrix, "walk")
+    }
+
+    /**
+     * Internal helper to fetch places using the Google Places SDK.
+     *
+     * @param lat Center latitude.
+     * @param lng Center longitude.
+     * @param radius Search radius in meters.
+     * @param maxResults Maximum number of results to return.
+     * @param types List of place types to include in the search.
+     * @param fields List of [Place.Field] to populate in the results.
+     * @return A list of [Place] objects.
+     */
+    private suspend fun fetchPlaces(
+        lat: Double,
+        lng: Double,
+        radius: Double,
+        maxResults: Int,
+        types: List<String>,
+        fields: List<Place.Field>
+    ): List<Place> {
+        val circle = CircularBounds.newInstance(LatLng(lat, lng), radius)
+        val request = SearchNearbyRequest.builder(circle, fields)
+            .setIncludedTypes(types)
+            .setMaxResultCount(maxResults)
+            .build()
+        return placesClient.searchNearby(request).await().places
+    }
+
+    /**
+     * Fetches travel duration and distance matrix from an origin to multiple destinations.
+     *
+     * @param lat Origin latitude.
+     * @param lng Origin longitude.
+     * @param destinations List of [Place] objects to calculate routes to.
+     * @param travelMode The travel mode (e.g., "WALK", "DRIVE").
+     * @return A list of [RouteMatrixElement] containing route info.
+     */
+    private suspend fun fetchRouteMatrix(
+        lat: Double,
+        lng: Double,
+        destinations: List<Place>,
+        travelMode: String = "WALK"
+    ) = googleMapsApiService.computeRouteMatrix(
+        apiKey = apiKey,
+        fieldMask = "originIndex,destinationIndex,duration,distanceMeters,condition",
+        request = RouteMatrixRequest(
+            origins = listOf(RouteMatrixOrigin(Waypoint(LocationDto(LatLngDto(lat, lng))))),
+            destinations = destinations.map { place ->
                 RouteMatrixDestination(
                     Waypoint(
                         LocationDto(
                             LatLngDto(
-                                place.location?.latitude ?: 0.0,
-                                place.location?.longitude ?: 0.0
+                                place.location?.latitude ?: 0.0, place.location?.longitude ?: 0.0
                             )
                         )
                     )
                 )
+            },
+            travelMode = travelMode
+        )
+    )
+
+    /**
+     * Maps a list of [Place] objects and their route data into domain [Poi] objects.
+     *
+     * @param places The list of places to map.
+     * @param routeMatrix The corresponding route data.
+     * @param suffix Suffix to append to the travel time (e.g., "walk").
+     * @return A list of mapped [Poi] domain objects.
+     */
+    private suspend fun mapPlacesToPois(
+        places: List<Place>,
+        routeMatrix: List<RouteMatrixElement>,
+        suffix: String
+    ): List<Poi> = coroutineScope {
+        places.mapIndexed { index, place ->
+            async {
+                val element = routeMatrix.find { it.destinationIndex == index }
+                Poi(
+                    name = place.displayName ?: "Unknown",
+                    type = place.placeTypes?.firstOrNull()?.formatType() ?: "POI",
+                    travelTime = "${formatDuration(element?.duration)} $suffix",
+                    imageUrl = fetchPhotoUri(place.photoMetadatas?.firstOrNull()),
+                    description = place.editorialSummary
+                )
             }
-        )
+        }.awaitAll()
+    }
 
-        val routeMatrixResponse = googleMapsApiService.computeRouteMatrix(
-            apiKey = apiKey,
-            fieldMask = "originIndex,destinationIndex,duration,distanceMeters,condition",
-            request = routeMatrixRequest
-        )
-
-        coroutineScope {
-            places.mapIndexed { index, place ->
-                async {
-                    val element = routeMatrixResponse.find { it.destinationIndex == index }
-
-                    val walkingTime = element?.duration?.let { durationStr ->
-                        val seconds = durationStr.removeSuffix("s").toDoubleOrNull() ?: 0.0
-                        val minutes = (seconds / 60).roundToInt()
-                        if (minutes < 1) "1 min walk" else "$minutes min walk"
-                    } ?: "N/A"
-
-                    val photoMetadata = place.photoMetadatas?.firstOrNull()
-                    val imageUrl = photoMetadata?.let {
-                        try {
-                            val uriResponse = placesClient.fetchResolvedPhotoUri(
-                                FetchResolvedPhotoUriRequest.builder(it).build()
-                            ).await()
-                            uriResponse.uri?.toString()
-                        } catch (_: Exception) {
-                            null
-                        }
-                    }
-
-                    Poi(
-                        name = place.displayName ?: "Unknown",
-                        type = place.placeTypes?.firstOrNull()?.replace("_", " ")?.lowercase()
-                            ?.replaceFirstChar { it.uppercase() } ?: "Restaurant",
-                        travelTime = walkingTime,
-                        imageUrl = imageUrl
-                    )
-                }
-            }.awaitAll()
+    /**
+     * Resolves the URI for a place's photo metadata.
+     *
+     * @param photoMetadata The metadata for the photo.
+     * @return The resolved URI string or null if resolution fails.
+     */
+    private suspend fun fetchPhotoUri(
+        photoMetadata: PhotoMetadata?
+    ): String? {
+        if (photoMetadata == null) return null
+        return try {
+            placesClient.fetchResolvedPhotoUri(
+                FetchResolvedPhotoUriRequest.builder(photoMetadata).build()
+            ).await().uri?.toString()
+        } catch (_: Exception) {
+            null
         }
     }
+
+    /**
+     * Formats a duration string (e.g., "300s") into a user-friendly "X min" format.
+     *
+     * @param durationStr The raw duration string from the API.
+     * @return A formatted duration string.
+     */
+    private fun formatDuration(
+        durationStr: String?
+    ): String {
+        val seconds = durationStr?.removeSuffix("s")?.toDoubleOrNull() ?: 0.0
+        val minutes = (seconds / 60).roundToInt()
+        return if (minutes < 1) "1 min" else "$minutes min"
+    }
+
+    /**
+     * Extension to format place types from API style (SNAKE_CASE) to Title case.
+     */
+    private fun String.formatType() = replace("_", " ").lowercase().replaceFirstChar { it.uppercase() }
 }

@@ -9,15 +9,22 @@ import dagger.hilt.android.HiltAndroidApp
 class TravelinApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        
-        // Initialize Google Places SDK
-        val ai = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-        val apiKey = ai.metaData.getString("com.google.android.geo.API_KEY")
-        
-        if (apiKey != null && apiKey != "YOUR_API_KEY") {
-            if (!Places.isInitialized()) {
-                Places.initialize(this, apiKey)
-            }
+
+        val ai = try {
+            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        } catch (e: Exception) {
+            null
+        }
+        val apiKey = ai?.metaData?.getString("com.google.android.geo.API_KEY")
+
+        val keyToUse = if (!apiKey.isNullOrBlank() && apiKey != "YOUR_API_KEY") {
+            apiKey
+        } else {
+            "MISSING_API_KEY"
+        }
+
+        if (!Places.isInitialized()) {
+            Places.initialize(this, keyToUse)
         }
     }
 }
