@@ -17,7 +17,6 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.favorites.common.domain.model.FavoriteItem
 import com.softserveacademy.feature.favorites.common.presentation.events.FavoriteType
-import com.softserveacademy.feature.favorites.common.presentation.mappers.toHotel
 
 @Composable
 fun FavoriteItemCard(
@@ -30,7 +29,13 @@ fun FavoriteItemCard(
         modifier = modifier.clickable { onCardClick(favoriteItem) }
     ) {
         TravelCardVertical(
-            hotel = favoriteItem.toHotel()
+            title = favoriteItem.title,
+            location = favoriteItem.location,
+            rating = favoriteItem.rating.toString(),
+            price = "$${favoriteItem.price}/pax",
+            duration = "3D2N",
+            imageUrl = favoriteItem.imageUrl,
+            onClick = { onCardClick(favoriteItem) }
         )
 
         TravelIconButton(
@@ -43,6 +48,7 @@ fun FavoriteItemCard(
         )
     }
 }
+
 @Preview(
     showBackground = false,
     name = "Favorite Item Card Preview",

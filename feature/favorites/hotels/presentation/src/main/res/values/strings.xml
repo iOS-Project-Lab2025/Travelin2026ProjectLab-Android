@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_hotels_title">Favourites Hotels</string>
+    <string name="filter_available">Available</string>
+    <string name="filter_all">All</string>
+    <string name="filter_1_bed">1 Bed</string>
+    <string name="filter_2_beds">2 Beds</string>
+</resources>
