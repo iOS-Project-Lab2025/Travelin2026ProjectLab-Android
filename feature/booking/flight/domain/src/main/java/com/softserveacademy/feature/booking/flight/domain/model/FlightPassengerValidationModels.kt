@@ -3,7 +3,7 @@ package com.softserveacademy.feature.booking.flight.domain.model
 /**
  * Possible field-level validation errors for travelers.
  */
-enum class PassengerFieldError { EMPTY, INVALID_FORMAT }
+enum class PassengerFieldError { EMPTY, INVALID_FORMAT, TOO_SHORT, INVALID_AGE }
 
 /**
  * Breakdown of validation errors for a single passenger.

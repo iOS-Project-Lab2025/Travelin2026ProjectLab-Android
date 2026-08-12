@@ -22,7 +22,10 @@ sealed interface FlightPassengerInfoEvent {
     data class OnShowGenderSheet(val index: Int) : FlightPassengerInfoEvent
     data class OnShowDocTypeSheet(val index: Int) : FlightPassengerInfoEvent
     data class OnShowDatePicker(val index: Int) : FlightPassengerInfoEvent
+    data class OnShowNationalitySheet(val index: Int) : FlightPassengerInfoEvent
+    data class OnToggleSameContact(val enabled: Boolean) : FlightPassengerInfoEvent
 
     object OnDismissSheet : FlightPassengerInfoEvent
     object OnNextClick : FlightPassengerInfoEvent
+    object OnBackClick : FlightPassengerInfoEvent
 }

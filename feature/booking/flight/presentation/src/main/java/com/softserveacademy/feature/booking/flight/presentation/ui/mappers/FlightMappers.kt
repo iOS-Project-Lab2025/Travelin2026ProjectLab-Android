@@ -56,9 +56,9 @@ fun DocumentType.toDisplayName(): String {
 @Composable
 fun PassengerType.toDisplayName(): String {
     return when (this) {
-        PassengerType.ADU -> stringResource(R.string.flight_label_adults)
-        PassengerType.CHD -> stringResource(R.string.flight_label_children)
-        PassengerType.INF -> stringResource(R.string.flight_label_infants)
+        PassengerType.ADU -> stringResource(R.string.flight_label_adult_single)
+        PassengerType.CHD -> stringResource(R.string.flight_label_child_single)
+        PassengerType.INF -> stringResource(R.string.flight_label_infant_single)
     }
 }
 
@@ -86,8 +86,10 @@ fun ValidateFlightSearchUseCase.FlightError.toMessage(): String {
 @Composable
 fun PassengerFieldError.toMessage(): String {
     return when (this) {
-        PassengerFieldError.EMPTY -> "This field cannot be empty" // TODO: Move to strings.xml
-        PassengerFieldError.INVALID_FORMAT -> "Invalid format"
+        PassengerFieldError.EMPTY -> stringResource(R.string.flight_error_field_empty)
+        PassengerFieldError.INVALID_FORMAT -> stringResource(R.string.flight_invalid_format)
+        PassengerFieldError.TOO_SHORT -> stringResource(R.string.flight_error_too_short)
+        PassengerFieldError.INVALID_AGE -> stringResource(R.string.flight_error_invalid_age)
     }
 }
 

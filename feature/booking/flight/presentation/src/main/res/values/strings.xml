@@ -1,99 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ====================================================================== -->
+    <!-- FLIGHT SEARCH SCREEN                                                   -->
+    <!-- ====================================================================== -->
     <string name="flight_search_title">Choose Your Destination</string>
+    <string name="flight_search_description">Enter your flight details to find the best available flights.</string>
     <string name="flight_search_from">From</string>
     <string name="flight_search_to">To</string>
     <string name="flight_search_date">Choose Your Dates</string>
-    <string name="flight_results_title">Choose your flight</string>
     <string name="flight_search_button">Search Flights</string>
-    <string name="flight_error_message">Something went wrong. Please try again.</string>
-    <string name="flight_error_invalid_origin">Use minimum 3-letter IATA code (e.g. SCL)</string>
-    <string name="flight_error_invalid_destination">Use minimum 3-letter IATA code (e.g. LIM)</string>
-    <string name="flight_error_same_location">Origin and Destination cannot be the same</string>
-    <string name="flight_error_invalid_date">Please select a date</string>
-    <string name="flight_error_no_adults">At least one adult is required</string>
-    <string name="flight_error_generic">Invalid search criteria</string>
-    <string name="flight_search_button_label">Search Flights</string>
-    <string name="flight_empty_results">No flights found. \nPlease try a different search.</string>
-    <string name="flight_error_missing_return_date">Please select departure and return dates</string>
-    <string name="flight_error_occurred">An error occurred while fetching flights.</string>
-    <string name="flight_retry_button">Retry</string>
-    <string name="flight_passengers_title">Passengers</string>
-    <string name="flight_passengers_subtitle">Add passengers to this flight</string>
-    <string name="flight_search_description">Enter your flight details to find the best available flights.</string>
+    <string name="flight_action_add_flight">Add Flight</string>
+    <string name="flight_action_delete_flight">Delete flight</string>
+
+    <!-- Search Preference Labels -->
     <string name="flight_label_adults">Adults</string>
     <string name="flight_subtitle_adults">Over 12 years</string>
     <string name="flight_label_children">Children</string>
     <string name="flight_subtitle_children">2 - 12 years</string>
     <string name="flight_label_infants">Infants</string>
     <string name="flight_subtitle_infants">Under 2 years</string>
-    <string name="flight_label_flight">Flight %1$d</string>
-    <string name="flight_action_add_flight">Add Flight</string>
-    <string name="flight_action_delete_flight">Delete flight</string>
     <string name="flight_cabin_class_title">Cabin type</string>
     <string name="flight_select_cabin_class">Select Cabin Class</string>
-    <string name="flight_select_date">Select date</string>
-    <string name="flight_date_selected">Date selected</string>
-    <plurals name="flight_passenger_count">
-        <item quantity="one">%d Passenger</item>
-        <item quantity="other">%d Passengers</item>
-    </plurals>
     <string name="flight_cabin_economy">Economy</string>
     <string name="flight_cabin_premium_economy">Premium Economy</string>
     <string name="flight_cabin_business">Business</string>
     <string name="flight_cabin_first">First Class</string>
-    <string name="flight_error_network">No internet connection.\nPlease check your network and try again.</string>
-    <string name="flight_error_date_sequence">Flight must be after the previous one</string>
+
+    <!-- ====================================================================== -->
+    <!-- FLIGHT RESULTS SCREEN                                                  -->
+    <!-- ====================================================================== -->
+    <string name="flight_results_title">Choose your flight</string>
+    <string name="flight_empty_results">No flights found. \nPlease try a different search.</string>
     <string name="flight_result_see_more_button">"Show +%d more available"</string>
+    <string name="flight_duration_label">Flight</string>
+
+    <!-- Result Formats -->
     <string name="flight_results_subtitle_format">%1$s to %2$s • %3$d Passengers</string>
     <string name="flight_segment_progress_format">Flight %1$d of %2$d</string>
-
-    <string name="flight_duration_label">Flight</string>
-    <string name="flight_back_content_description">Back</string>
     <string name="flight_results_origin_to_destination_format">%1$s → %2$s</string>
+    <string name="flight_price_currency_per_person">%1$s /p.p</string>
+    <string name="flight_price_format">%1$s %2$s</string>
+
+    <!-- ====================================================================== -->
+    <!-- PASSENGER INFORMATION SCREEN (US3)                                     -->
+    <!-- ====================================================================== -->
+    <string name="flight_passengers_title">Passengers</string>
+    <string name="flight_passengers_subtitle">Add passengers to this flight</string>
+    <string name="flight_passenger_progress_format">Passenger %1$d of %2$d (%3$s)</string>
+
+    <!-- Form Labels -->
+    <string name="flight_first_name">First Name</string>
+    <string name="flight_last_name">Last Name</string>
+    <string name="flight_document_type">Document Type</string>
+    <string name="flight_document_number">Document Number</string>
+    <string name="flight_gender">Gender</string>
+    <string name="flight_nationality">Nationality</string>
+    <string name="flight_birth_date">Birth Date</string>
+    <string name="flight_contact_details">Contact Details</string>
+    <string name="flight_email">Email Address</string>
+    <string name="flight_phone">Phone Number</string>
+    <string name="flight_country_code">+56</string>
+    <string name="flight_max_passengers_subtitle">Maximum of 9 passengers allowed</string>
+    <string name="flight_phone_required">Phone number is required</string>
+    <string name="flight_label_flight">Flight %1$d"</string>
+    <string name="flight_select_date">Select Date</string>
+    <string name="flight_invalid_format">Invalid Format</string>
+
+
+    <!-- Wizard Specifics -->
+    <string name="flight_use_primary_contact">Use primary contact details for all passengers</string>
+    <string name="flight_label_adult_single">Adult</string>
+    <string name="flight_label_child_single">Child</string>
+    <string name="flight_label_infant_single">Infant</string>
+
+    <!-- Selectors and Placeholders -->
+    <string name="flight_gender_placeholder">Select Gender</string>
+    <string name="flight_gender_male">Male</string>
+    <string name="flight_gender_female">Female</string>
+    <string name="flight_gender_other">Other</string>
+    <string name="flight_doc_placeholder">Select Type</string>
+    <string name="flight_doc_passport">Passport</string>
+    <string name="flight_doc_national_id">National ID</string>
+    <string name="flight_select_birth_date">Select Birth Date</string>
+    <string name="flight_birth_date_placeholder">Select birth date</string>
+    <string name="flight_first_name_placeholder">e.g. John</string>
+    <string name="flight_last_name_placeholder">e.g. Doe</string>
+    <string name="flight_email_placeholder">john.doe@travelin.com</string>
+    <string name="flight_doc_number_placeholder">1234567K</string>
+
+    <!-- ====================================================================== -->
+    <!-- ERROR MESSAGES AND VALIDATION                                          -->
+    <!-- ====================================================================== -->
+    <string name="flight_error_generic">Invalid search criteria</string>
+    <string name="flight_error_occurred">An error occurred while fetching flights.</string>
+    <string name="flight_error_network">No internet connection.\nPlease check your network and try again.</string>
+    <string name="flight_error_invalid_origin">Use minimum 3-letter IATA code (e.g. SCL)</string>
+    <string name="flight_error_invalid_destination">Use minimum 3-letter IATA code (e.g. LIM)</string>
+    <string name="flight_error_same_location">Origin and Destination cannot be the same</string>
+    <string name="flight_error_invalid_date">Please select a date</string>
+    <string name="flight_error_no_adults">At least one adult is required</string>
+    <string name="flight_error_missing_return_date">Please select departure and return dates</string>
+    <string name="flight_error_date_sequence">Flight must be after the previous one</string>
+
+    <!-- Passenger Form Errors -->
+    <string name="flight_error_field_empty">This field cannot be empty</string>
+    <string name="flight_error_too_short">At least 3 characters required</string>
+    <string name="flight_error_phone_too_short">At least 6 digits required</string>
+    <string name="flight_error_email_invalid">Invalid email format (e.g. name@example.com)</string>
+    <string name="flight_error_invalid_age">Age do not correspond to the passenger type</string>
+
+    <!-- ====================================================================== -->
+    <!-- COMMON / SHARED RESOURCES                                              -->
+    <!-- ====================================================================== -->
+    <string name="flight_retry_button">Retry</string>
+    <string name="flight_back_content_description">Back</string>
     <string name="flight_airline_logo_content_description">Airline Logo</string>
     <string name="flight_takeoff_content_description">Takeoff</string>
     <string name="flight_landing_content_description">Landing</string>
     <string name="flight_price_content_description">Price</string>
-    <string name="flight_price_currency_per_person">%1$s /p.p</string>
-    <string name="flight_price_format">%1$s %2$s</string>
 
-    <string name="flight_gender_male">Male</string>
-    <string name="flight_gender_female">Female</string>
-    <string name="flight_gender_other">Other</string>
-    <string name="flight_gender_placeholder">Select Gender</string>
-
-    <string name="flight_doc_passport">Passport</string>
-
-    <string name="flight_doc_national_id">National ID</string>
-    <string name="flight_document_number">Document Number</string>
-    <string name="flight_nationality">Nationality</string>
-    <string name="flight_birth_date">Birth Date</string>
-    <string name="flight_gender">Gender</string>
-    <string name="flight_document_type">Document Type</string>
-    <string name="flight_doc_placeholder">Select Type</string>
-    <string name="flight_passenger_progress_format">Passenger %1$d of %2$d (%3$s)</string>
-    <string name="flight_first_name_required">First name is required</string>
-    <string name="flight_label_adult_single">Adult</string>
-    <string name="flight_label_child_single">Child</string>
-    <string name="flight_label_infant_single">Infant</string>
-    <!-- Passenger Form Labels -->
-    <string name="flight_first_name">First Name</string>
-    <string name="flight_last_name">Last Name</string>
-    <string name="flight_doc_number_placeholder">1234567-K</string>
-    <string name="flight_contact_details">Contact Details</string>
-    <string name="flight_email_address">Email Address</string>
-    <string name="flight_phone_number">Phone Number</string>
-    <string name="flight_country_code">+56</string>
-    <string name="flight_birth_date_placeholder">Select birth date</string>
-
-    <string name="flight_last_name_required">Last name is required</string>
-    <string name="flight_document_required">Document number is required</string>
-    <string name="flight_birth_date_required">Birth date is required</string>
-    <string name="flight_email_required">Email address is required</string>
-    <string name="flight_email_invalid">Invalid email format</string>
-    <string name="flight_phone_required">Phone number is required</string>
-    <string name="flight_select_birth_date">Select Birth Date</string>
-
-
+    <plurals name="flight_passenger_count">
+        <item quantity="one">%d Passenger</item>
+        <item quantity="other">%d Passengers</item>
+    </plurals>
 </resources>

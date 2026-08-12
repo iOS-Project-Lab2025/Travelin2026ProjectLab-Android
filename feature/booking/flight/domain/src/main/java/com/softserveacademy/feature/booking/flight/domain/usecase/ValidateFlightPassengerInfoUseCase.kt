@@ -15,6 +15,7 @@ import javax.inject.Inject
 class ValidateFlightPassengerInfoUseCase @Inject constructor() {
 
     private val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
+    private val alphanumericRegex = Regex("^[a-zA-Z0-9]*$")
 
     /**
      * Validates the complete passenger and contact state.
@@ -30,10 +31,22 @@ class ValidateFlightPassengerInfoUseCase @Inject constructor() {
         // Validate Passengers
         val passengerErrors = passengers.mapIndexed { index, passenger ->
             index to PassengerError(
-                firstNameError = if (passenger.firstName.isBlank()) PassengerFieldError.EMPTY else null,
-                lastNameError = if (passenger.lastName.isBlank()) PassengerFieldError.EMPTY else null,
-                documentError = if (passenger.documentNumber.isBlank()) PassengerFieldError.EMPTY else null,
-                birthDateError = if (passenger.birthDateMillis == null) PassengerFieldError.EMPTY else null
+                firstNameError = when {
+                    passenger.firstName.isBlank() -> PassengerFieldError.EMPTY
+                    passenger.firstName.trim().length < 3 -> PassengerFieldError.TOO_SHORT
+                    else -> null
+                },
+                lastNameError = when {
+                    passenger.lastName.isBlank() -> PassengerFieldError.EMPTY
+                    passenger.lastName.trim().length < 3 -> PassengerFieldError.TOO_SHORT
+                    else -> null
+                },
+                documentError = when {
+                    passenger.documentNumber.isBlank() -> PassengerFieldError.EMPTY
+                    !alphanumericRegex.matches(passenger.documentNumber) -> PassengerFieldError.INVALID_FORMAT // Blocks '$', '#' etc.
+                    else -> null
+                },
+                birthDateError = validateAge(passenger.birthDateMillis, passenger.passengerType)
 
             )
         }.filter { it.second.hasError() }.toMap()
@@ -45,7 +58,11 @@ class ValidateFlightPassengerInfoUseCase @Inject constructor() {
                 contactInfo?.email?.let { emailRegex.matches(it) } == false -> PassengerFieldError.INVALID_FORMAT
                 else -> null
             },
-            phoneError = if (contactInfo?.phone?.isBlank() == true) PassengerFieldError.EMPTY else null
+            phoneError = when {
+                contactInfo?.phone?.isBlank() == true -> PassengerFieldError.EMPTY
+                (contactInfo?.phone?.length ?: 0) < 6 -> PassengerFieldError.TOO_SHORT
+                else -> null
+            }
         )
 
         return PassengerValidationResult(
@@ -54,6 +71,26 @@ class ValidateFlightPassengerInfoUseCase @Inject constructor() {
             isValid = passengerErrors.isEmpty() && !contactError.hasError()
         )
     }
+
+    private fun validateAge(millis: Long?, type: com.softserveacademy.core.domain.model.PassengerType): PassengerFieldError? {
+        if (millis == null) return PassengerFieldError.EMPTY
+
+        val age = calculateAge(millis)
+        return when (type) {
+            com.softserveacademy.core.domain.model.PassengerType.ADU -> if (age < 12) PassengerFieldError.INVALID_AGE else null
+            com.softserveacademy.core.domain.model.PassengerType.CHD -> if (age !in 2..11) PassengerFieldError.INVALID_AGE else null
+            com.softserveacademy.core.domain.model.PassengerType.INF -> if (age >= 2) PassengerFieldError.INVALID_AGE else null
+        }
+    }
+
+    private fun calculateAge(birthMillis: Long): Int {
+        val birth = java.util.Calendar.getInstance().apply { timeInMillis = birthMillis }
+        val today = java.util.Calendar.getInstance()
+        var age = today.get(java.util.Calendar.YEAR) - birth.get(java.util.Calendar.YEAR)
+        if (today.get(java.util.Calendar.DAY_OF_YEAR) < birth.get(java.util.Calendar.DAY_OF_YEAR)) age--
+        return age
+    }
+
 }
 
 

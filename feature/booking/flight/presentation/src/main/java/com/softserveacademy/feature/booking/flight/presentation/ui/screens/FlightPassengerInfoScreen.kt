@@ -2,14 +2,13 @@ package com.softserveacademy.feature.booking.flight.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.FlightContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
@@ -24,11 +23,8 @@ import com.softserveacademy.feature.booking.flight.presentation.viewmodel.Flight
 
 /**
  * Stateful entry point for the Traveler Details collection (US3).
- * Orchestrates the passenger data forms and contact information validation.
- *
- * @param viewModel State holder for the passenger forms.
- * @param onNext Navigation callback to progress to check out/payment.
- * @param onBack Navigation callback to return to flight selection.
+ * Manages the Wizard-style navigation through multiple passenger forms and
+ * handles primary contact synchronization.
  */
 @Composable
 fun FlightPassengerInfoScreen(
@@ -38,28 +34,31 @@ fun FlightPassengerInfoScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    // Observe navigation events from ViewModel
+    // Handle Forward Navigation (to Confirmation/Checkout)
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNext() }
     }
 
+    // Handle Backward Navigation (to Flight Results or Previous Step)
+    LaunchedEffect(Unit) {
+        viewModel.navigationBackEvent.collect { onBack() }
+    }
+
     FlightPassengerInfoContent(
         state = state,
-        onEvent = viewModel::onEvent,
-        onBack = onBack
+        onEvent = viewModel::onEvent
     )
 }
 
 /**
  * Stateless UI for the Passenger Information form.
- * Displays a list of forms based on the number of travelers and a single contact section.
+ * Implements a unified layout with Passenger details and Contact section below.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightPassengerInfoContent(
     state: FlightPassengerInfoState,
     onEvent: (FlightPassengerInfoEvent) -> Unit,
-    onBack: () -> Unit
 ) {
     if (state.isLoading) {
         TravelLoadingScreen()
@@ -67,55 +66,78 @@ fun FlightPassengerInfoContent(
         Scaffold(
             bottomBar = {
                 TravelBookingBottomBar(
-                    onBackClick = onBack,
+                    onBackClick = { onEvent(FlightPassengerInfoEvent.OnBackClick) },
                     onNextClick = { onEvent(FlightPassengerInfoEvent.OnNextClick) }
                 )
             },
             containerColor = MaterialTheme.colorScheme.background
         ) { paddingValues ->
+            val currentIndex = state.currentPassengerIndex
+            val currentPassenger = state.passengers.getOrNull(currentIndex) ?: return@Scaffold
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = TravelinDimens.PaddingMedium),
-                verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)
+                verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
             ) {
-                // Header Section
                 item {
-                    Spacer(Modifier.height(TravelinDimens.SpaceMedium))
-                    Text(
-                        text = stringResource(R.string.flight_passengers_title),
-                        style = MaterialTheme.typography.headlineSmall, // Professional compact title
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.flight_passengers_subtitle),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                    Spacer(Modifier.height(TravelinDimens.SpaceSmall))
 
-                // Dynamic forms for each traveler (Adults, Children, Infants)
-                itemsIndexed(state.passengers) { index, passenger ->
+                    // 1. INDIVIDUAL PASSENGER FORM
                     PassengerFormItem(
-                        index = index,
+                        index = currentIndex,
                         total = state.passengers.size,
-                        passenger = passenger,
-                        error = state.passengerErrors[index],
-                        onChanged = { onEvent(FlightPassengerInfoEvent.OnPassengerDataChanged(index, it)) },
-                        onShowGender = { onEvent(FlightPassengerInfoEvent.OnShowGenderSheet(index)) },
-                        onShowDocType = { onEvent(FlightPassengerInfoEvent.OnShowDocTypeSheet(index)) },
-                        onShowDatePicker = { onEvent(FlightPassengerInfoEvent.OnShowDatePicker(index)) }
+                        passenger = currentPassenger,
+                        error = state.passengerErrors[currentIndex],
+                        onChanged = { updated ->
+                            onEvent(FlightPassengerInfoEvent.OnPassengerDataChanged(currentIndex, updated))
+                        },
+                        onShowGender = { onEvent(FlightPassengerInfoEvent.OnShowGenderSheet(currentIndex)) },
+                        onShowDocType = { onEvent(FlightPassengerInfoEvent.OnShowDocTypeSheet(currentIndex)) },
+                        onShowNationality = { onEvent(FlightPassengerInfoEvent.OnShowNationalitySheet(currentIndex)) },
+                        onShowDatePicker = { onEvent(FlightPassengerInfoEvent.OnShowDatePicker(currentIndex)) }
                     )
-                }
 
-                // Global contact information section
-                item {
+                    Spacer(Modifier.height(TravelinDimens.SpaceLarge))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    Spacer(Modifier.height(TravelinDimens.SpaceLarge))
+
+                    // 2. CONTACT DETAILS HEADER & CHECKBOX
+                    Text(
+                        text = stringResource(R.string.flight_contact_details),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = TravelinDimens.PaddingSmall)
+                    )
+
+                    // Show "Use Primary Contact" starting from the second passenger
+                    if (currentIndex > 0) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = TravelinDimens.PaddingMedium)
+                        ) {
+                            Checkbox(
+                                checked = state.usePrimaryContact,
+                                onCheckedChange = { onEvent(FlightPassengerInfoEvent.OnToggleSameContact(it)) }
+                            )
+                            Text(
+                                text = stringResource(R.string.flight_use_primary_contact),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    // 3. CONTACT INFO SECTION (Grayed out if checkbox is enabled)
                     ContactInfoSection(
                         contactInfo = state.contactInfo,
                         error = state.contactError,
+                        enabled = !state.usePrimaryContact, // Controlled by ViewModel state
                         onChanged = { onEvent(FlightPassengerInfoEvent.OnContactInfoChanged(it)) }
                     )
+
                     Spacer(Modifier.height(TravelinDimens.SpaceExtraLarge))
                 }
             }
@@ -127,28 +149,45 @@ fun FlightPassengerInfoContent(
     activePassenger?.let { passenger ->
         GenderSelectionSheet(
             isVisible = state.showGenderSheet,
-            passenger = passenger,
-            onGenderSelected = { onEvent(FlightPassengerInfoEvent.OnPassengerDetailSelected(state.activePassengerIndex, passenger.copy(gender = it))) },
+            selectedGender = passenger.gender,
+            onGenderSelected = { gender ->
+                val updated = passenger.copy(gender = gender)
+                onEvent(FlightPassengerInfoEvent.OnPassengerDetailSelected(state.activePassengerIndex, updated))
+            },
             onDismiss = { onEvent(FlightPassengerInfoEvent.OnDismissSheet) }
         )
 
         DocumentTypeSelectionSheet(
             isVisible = state.showDocTypeSheet,
-            passenger = passenger,
-            onTypeSelected = { onEvent(FlightPassengerInfoEvent.OnPassengerDetailSelected(state.activePassengerIndex, passenger.copy(documentType = it))) },
+            selectedType = passenger.documentType,
+            onTypeSelected = { type ->
+                val updated = passenger.copy(documentType = type)
+                onEvent(FlightPassengerInfoEvent.OnPassengerDetailSelected(state.activePassengerIndex, updated))
+            },
             onDismiss = { onEvent(FlightPassengerInfoEvent.OnDismissSheet) }
         )
 
-        // Unified DatePicker for Passenger Birth Date
+        NationalitySelectionSheet(
+            isVisible = state.showNationalitySheet,
+            selectedNationality = passenger.nationality,
+            onCountrySelected = { country ->
+                val updated = passenger.copy(nationality = "${country.flag} ${country.name}")
+                onEvent(FlightPassengerInfoEvent.OnPassengerDetailSelected(state.activePassengerIndex, updated))
+            },
+            onDismiss = { onEvent(FlightPassengerInfoEvent.OnDismissSheet) }
+        )
+
+        // Birth Date Picker Dialog
         if (state.showDatePicker) {
             val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-            val datePickerState = rememberDatePickerState()
+            val datePickerState = rememberDatePickerState(initialSelectedDateMillis = passenger.birthDateMillis)
 
             ModalBottomSheet(
                 onDismissRequest = { onEvent(FlightPassengerInfoEvent.OnDismissSheet) },
                 sheetState = sheetState,
                 containerColor = MaterialTheme.colorScheme.background,
-                dragHandle = { BottomSheetDefaults.DragHandle() }
+                dragHandle = { BottomSheetDefaults.DragHandle() },
+                modifier = Modifier.fillMaxSize()
             ) {
                 Column(modifier = Modifier.fillMaxSize().navigationBarsPadding()) {
                     Text(
@@ -164,7 +203,10 @@ fun FlightPassengerInfoContent(
                             title = null, headline = null,
                             showModeToggle = false,
                             modifier = Modifier.fillMaxWidth(),
-                            colors = DatePickerDefaults.colors(containerColor = androidx.compose.ui.graphics.Color.Transparent)
+                            colors = DatePickerDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                selectedYearContainerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
                         )
                     }
 
@@ -179,7 +221,7 @@ fun FlightPassengerInfoContent(
                                 onClick = {
                                     onEvent(FlightPassengerInfoEvent.OnPassengerDetailSelected(
                                         state.activePassengerIndex,
-                                        activePassenger.copy(birthDateMillis = datePickerState.selectedDateMillis)
+                                        passenger.copy(birthDateMillis = datePickerState.selectedDateMillis)
                                     ))
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -192,11 +234,9 @@ fun FlightPassengerInfoContent(
     }
 }
 
+
 // --- PREVIEWS (LIGHT & DARK MODES) ---
 
-/**
- * Realistic mock data for the preview state.
- */
 private val previewState = FlightPassengerInfoState(
     isLoading = false,
     passengers = listOf(
@@ -207,7 +247,7 @@ private val previewState = FlightPassengerInfoState(
             passengerType = com.softserveacademy.core.domain.model.PassengerType.ADU,
             gender = com.softserveacademy.core.domain.model.Gender.MALE,
             nationality = "Chile",
-            birthDateMillis = System.currentTimeMillis() - 946080000000L // Approx 30 years old
+            birthDateMillis = System.currentTimeMillis() - 946080000000L
         )
     ),
     contactInfo = FlightContactInfo(
@@ -222,11 +262,7 @@ private val previewState = FlightPassengerInfoState(
 fun FlightPassengerInfoPreview() {
     com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme(darkTheme = false) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            FlightPassengerInfoContent(
-                state = previewState,
-                onEvent = {},
-                onBack = {}
-            )
+            FlightPassengerInfoContent(state = previewState, onEvent = {})
         }
     }
 }
@@ -236,11 +272,7 @@ fun FlightPassengerInfoPreview() {
 fun FlightPassengerInfoDarkPreview() {
     com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme(darkTheme = true) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            FlightPassengerInfoContent(
-                state = previewState,
-                onEvent = {},
-                onBack = {}
-            )
+            FlightPassengerInfoContent(state = previewState, onEvent = {})
         }
     }
 }

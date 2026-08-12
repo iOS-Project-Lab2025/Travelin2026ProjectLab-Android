@@ -21,8 +21,11 @@ data class FlightPassengerInfoState(
     val passengerErrors: Map<Int, PassengerError> = emptyMap(),
     val contactError: ContactError? = null,
     val showGenderSheet: Boolean = false,
+    val showNationalitySheet: Boolean = false,
     val showDocTypeSheet: Boolean = false,
     val showDatePicker: Boolean = false,
-    val activePassengerIndex: Int = 0
-
+    val activePassengerIndex: Int = 0,
+    val currentPassengerIndex: Int = 0,
+    val isContactStep: Boolean = false,
+    val usePrimaryContact: Boolean = false
 )
