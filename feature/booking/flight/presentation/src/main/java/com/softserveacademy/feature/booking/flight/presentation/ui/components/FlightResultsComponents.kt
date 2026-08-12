@@ -3,7 +3,6 @@ package com.softserveacademy.feature.booking.flight.presentation.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -22,114 +21,204 @@ import com.softserveacademy.core.domain.model.FlightOffer
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.ui.mappers.toDisplayName
+import com.softserveacademy.feature.booking.flight.presentation.util.formatCurrency
 import com.softserveacademy.feature.booking.flight.presentation.util.rememberFlightTimeFormatter
 import java.util.Date
 
+/**
+ * Visual representation of a flight offer in the search results.
+ * Displays airline branding, route summary, schedule, and dynamic price conversion.
+ *
+ * @param offer The flight data to display.
+ * @param isSelected Whether this card is currently picked by the user.
+ * @param currencyCode The currency symbol/code (e.g., "USD").
+ * @param exchangeRate Multiplier for price conversion logic.
+ * @param onClick Callback when the user taps on the card.
+ */
 @Composable
-fun FlightResultItem(offer: FlightOffer, onClick: () -> Unit) {
+fun FlightResultItem(
+    offer: FlightOffer,
+    isSelected: Boolean,
+    currencyCode: String = "USD",
+    exchangeRate: Double = 1.0,
+    onClick: () -> Unit
+) {
     val timeFormat = rememberFlightTimeFormatter()
 
-    Row(
+    Surface(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("flight_result_item")
-            .clickable { onClick() }
-            .padding(vertical = TravelinDimens.PaddingNormal, horizontal = TravelinDimens.PaddingMedium),
-        verticalAlignment = Alignment.Top
+            .padding(
+                vertical = TravelinDimens.Padding2ExtraSmall,
+                horizontal = TravelinDimens.PaddingMedium
+            ),
+        shape = MaterialTheme.shapes.medium,
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+        else MaterialTheme.colorScheme.surface,
+        border = if (isSelected) BorderStroke(TravelinDimens.ElevationSmall, MaterialTheme.colorScheme.primary)
+        else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        @OptIn(ExperimentalGlideComposeApi::class)
-        GlideImage(
-            model = offer.flight.airline.logoUrl,
-            contentDescription = "Airline Logo",
+
+        Row(
             modifier = Modifier
-                .size(TravelinDimens.IconSizeExtraLarge)
-                .background(Color.White, shape = RoundedCornerShape(4.dp))
-                .padding(4.dp),
-            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-        )
-
-        Spacer(modifier = Modifier.width(TravelinDimens.SpaceMedium))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = offer.flight.airline.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
+                .fillMaxWidth()
+                .testTag("flight_result_item")
+                .padding(
+                    vertical = TravelinDimens.PaddingNormal,
+                    horizontal = TravelinDimens.PaddingMedium
+                ),
+            verticalAlignment = Alignment.Top
+        ) {
+            // Airline Logo
+            @OptIn(ExperimentalGlideComposeApi::class)
+            GlideImage(
+                model = offer.flight.airline.logoUrl,
+                contentDescription = stringResource(R.string.flight_airline_logo_content_description),
+                modifier = Modifier
+                    .size(TravelinDimens.IconSizeExtraLarge)
+                    .background(Color.White, shape = RoundedCornerShape(4.dp))
+                    .padding(4.dp),
+                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
             )
-            Text(
-                text = "${offer.flight.origin.city} → ${offer.flight.destination.city}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
 
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+            Spacer(modifier = Modifier.width(TravelinDimens.SpaceMedium))
 
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Column(horizontalAlignment = Alignment.Start) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = offer.flight.origin.code, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                        Spacer(Modifier.width(4.dp))
-                        Icon(imageVector = PlaneTakeoffIcon, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
-                    }
-                    Text(text = timeFormat.format(Date(offer.flight.departureTime)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                // Carrier and Route
+                Text(
+                    text = offer.flight.airline.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(
+                        R.string.flight_results_origin_to_destination_format,
+                        offer.flight.origin.city,
+                        offer.flight.destination.city
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
-                Box(modifier = Modifier.weight(1f).padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
-                    DashedLine()
-                    Text(
-                        text = "Flight", // Podrías pasar la duración real aquí
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(horizontal = 4.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
-                Column(horizontalAlignment = Alignment.End) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = PlaneLandIcon, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
-                        Spacer(Modifier.width(4.dp))
-                        Text(text = offer.flight.destination.code, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                    }
-                    Text(text = timeFormat.format(Date(offer.flight.arrivalTime)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
-
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Surface(
-                    shape = RoundedCornerShape(TravelinDimens.Space2ExtraSmall),
-                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
-                    color = Color.Transparent
+                // Schedule details with Takeoff and Landing icons
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = offer.flight.cabinClass.toDisplayName(),
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = offer.flight.origin.code,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                imageVector = PlaneTakeoffIcon,
+                                contentDescription = stringResource(R.string.flight_takeoff_content_description),
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Text(
+                            text = timeFormat.format(Date(offer.flight.departureTime)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    // Journey visual indicator
+                    Box(
+                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        DashedLine()
+                        Text(
+                            text = stringResource(R.string.flight_duration_label),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                                .padding(horizontal = 4.dp)
+                        )
+                    }
+
+                    Column(horizontalAlignment = Alignment.End) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = PlaneLandIcon,
+                                contentDescription = stringResource(R.string.flight_landing_content_description),
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text(
+                                text = offer.flight.destination.code,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Text(
+                            text = timeFormat.format(Date(offer.flight.arrivalTime)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        text = "$${String.format("%,d", offer.basePrice.toLong()).replace(',', '.')}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Text(
-                        text = " CLP /p.p",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 2.dp, start = 2.dp)
-                    )
+                Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+
+                // Cabin Class and Dynamic Pricing
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(TravelinDimens.Space2ExtraSmall),
+                        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
+                        color = Color.Transparent
+                    ) {
+                        Text(
+                            text = offer.flight.cabinClass.toDisplayName(),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        val priceText = formatCurrency(offer.basePrice, exchangeRate)
+                        Text(
+                            text = stringResource(R.string.flight_price_format, "$", priceText),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = stringResource(R.string.flight_price_currency_per_person, currencyCode),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(
+                                bottom = TravelinDimens.Padding2ExtraSmall,
+                                start = TravelinDimens.Padding2ExtraSmall
+                            )
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * State displayed when no flights match the search criteria.
+ */
 @Composable
 fun FlightEmptyState() {
     Column(
@@ -143,7 +232,7 @@ fun FlightEmptyState() {
             modifier = Modifier.size(80.dp),
             tint = MaterialTheme.colorScheme.outline
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(TravelinDimens.PaddingMedium))
         Text(
             text = stringResource(R.string.flight_empty_results),
             style = MaterialTheme.typography.titleMedium,
@@ -152,6 +241,9 @@ fun FlightEmptyState() {
     }
 }
 
+/**
+ * Draws a stylized dashed line to visually connect takeoff and landing times.
+ */
 @Composable
 fun DashedLine() {
     val color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
@@ -165,3 +257,4 @@ fun DashedLine() {
         )
     }
 }
+

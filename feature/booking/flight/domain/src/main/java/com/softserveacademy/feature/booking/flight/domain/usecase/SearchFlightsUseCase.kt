@@ -7,16 +7,22 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Business logic to search for flights.
- *
- * This use case orchestrates the search process by validating input
- * and calling the repository to fetch data.
+ * Use case to search for available flights based on specific traveler criteria.
+ * This class coordinates the communication between the Presentation layer and the Repository.
  */
 class SearchFlightsUseCase @Inject constructor(
     private val repository: FlightRepository
 ) {
     /**
-     * Executes the search operation.
+     * Executes the search operation by delegating to the repository.
+     *
+     * @param origin Departure airport code.
+     * @param destination Arrival airport code.
+     * @param passengerCounts Breakdown of travelers by type.
+     * @param cabinClass Selection of travel comfort (Economy, etc.).
+     * @param departureDate Epoch millis of the outbound flight.
+     * @param returnDate Epoch millis of the inbound flight (optional).
+     * @return A Flow emitting matching [FlightOffer] results.
      */
     operator fun invoke(
         origin: String,
@@ -26,7 +32,6 @@ class SearchFlightsUseCase @Inject constructor(
         departureDate: Long?,
         returnDate: Long?
     ): Flow<List<FlightOffer>> {
-        // Here we could add validation logic (e.g., origin != destination)
         return repository.searchFlights(origin, destination, passengerCounts, cabinClass, departureDate, returnDate)
     }
 }

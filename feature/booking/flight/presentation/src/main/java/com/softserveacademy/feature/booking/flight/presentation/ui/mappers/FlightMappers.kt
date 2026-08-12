@@ -8,6 +8,10 @@ import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
 import com.softserveacademy.feature.booking.flight.presentation.R
 
+/**
+ * Maps a [CabinClass] domain model to its corresponding design system icon.
+ * This keeps the Domain layer agnostic of UI implementation details.
+ */
 @Composable
 fun CabinClass.toIcon(): ImageVector {
     return when (this) {
@@ -18,6 +22,9 @@ fun CabinClass.toIcon(): ImageVector {
     }
 }
 
+/**
+ * Translates a [CabinClass] to its localized display name.
+ */
 @Composable
 fun CabinClass.toDisplayName(): String {
     return when (this) {
@@ -28,6 +35,10 @@ fun CabinClass.toDisplayName(): String {
     }
 }
 
+/**
+ * Maps domain-level validation errors to user-friendly localized messages.
+ * Used for the global error banner in the search screen.
+ */
 @Composable
 fun ValidateFlightSearchUseCase.FlightError.toMessage(): String {
     val id = when (this) {
