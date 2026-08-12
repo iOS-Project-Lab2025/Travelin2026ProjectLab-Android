@@ -26,11 +26,23 @@ import com.softserveacademy.feature.booking.flight.presentation.util.rememberFli
 import java.util.Date
 
 /**
- * Renders a list of flight segments. Supports dynamic additions for Multi-city.
+ * Component that renders the list of flight segments for the search criteria.
+ * Filter segments visibility based on [FlightType] and manages the "Add Segment" action.
+ *
+ * @param state The search state containing all configured segments.
+ * @param onEvent Lambda to propagate addition or removal events.
  */
 @Composable
 fun FlightSegmentList(state: FlightSearchState, onEvent: (FlightSearchEvent) -> Unit) {
-    state.segments.forEachIndexed { index, segment ->
+    // VISUAL FILTER: Show only the first segment for One-way/Round-trip
+    val segmentsToShow = if (state.selectedFlightType == FlightType.MULTI_CITY) {
+        state.segments
+    } else {
+        state.segments.take(1)
+    }
+
+    segmentsToShow.forEachIndexed { index, segment ->
+        // Label for Multi-city steps
         if (state.selectedFlightType == FlightType.MULTI_CITY) {
             Text(
                 text = stringResource(R.string.flight_label_flight, index + 1),
@@ -42,15 +54,20 @@ fun FlightSegmentList(state: FlightSearchState, onEvent: (FlightSearchEvent) -> 
 
         FlightSegmentItem(index, segment, state, onEvent)
 
+        // Delete button for extra Multi-city segments (minimum 2 segments required)
         if (state.selectedFlightType == FlightType.MULTI_CITY && state.segments.size > 2) {
             TextButton(onClick = { onEvent(FlightSearchEvent.OnRemoveSegment(index)) }) {
-                Text(stringResource(R.string.flight_action_delete_flight), color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = stringResource(R.string.flight_action_delete_flight),
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
         Spacer(Modifier.height(TravelinDimens.SpaceSmall))
     }
 
-    if (state.selectedFlightType == FlightType.MULTI_CITY) {
+    // "Add Flight" button - Visible only in Multi-city up to 4 segments total
+    if (state.selectedFlightType == FlightType.MULTI_CITY && state.segments.size < 4) {
         TextButton(
             onClick = { onEvent(FlightSearchEvent.OnAddSegment) },
             modifier = Modifier.fillMaxWidth()
@@ -62,6 +79,11 @@ fun FlightSegmentList(state: FlightSearchState, onEvent: (FlightSearchEvent) -> 
         Spacer(Modifier.height(TravelinDimens.SpaceSmall))
     }
 }
+
+/**
+ * Form item for an individual flight segment.
+ * Includes origin/destination inputs, swap action, and date selection for Multi-city.
+ */
 @Composable
 fun FlightSegmentItem(
     index: Int,
@@ -72,6 +94,7 @@ fun FlightSegmentItem(
     val segmentError = state.errors[index]
     Box(modifier = Modifier.fillMaxWidth()) {
         Column {
+            // Origin Field
             Box {
                 AppTextInput(
                     value = segment.origin,
@@ -81,6 +104,7 @@ fun FlightSegmentItem(
                     errorMessage = segmentError?.originError?.toMessage(),
                     leadingIcon = { Icon(PlaneTakeoffIcon, null, tint = MaterialTheme.colorScheme.primary) }
                 )
+                // Suggestions Overlay
                 if (state.activeSegmentIndex == index && state.originSuggestions.isNotEmpty()) {
                     Box(modifier = Modifier.padding(top = 56.dp).zIndex(2f)) {
                         AirportSuggestions(state.originSuggestions) {
@@ -92,6 +116,7 @@ fun FlightSegmentItem(
 
             Spacer(Modifier.height(TravelinDimens.SpaceExtraSmall))
 
+            // Destination Field
             Box {
                 AppTextInput(
                     value = segment.destination,
@@ -111,17 +136,18 @@ fun FlightSegmentItem(
             }
         }
 
+        // Swap Locations Button
         IconButton(
             onClick = { onEvent(FlightSearchEvent.OnSwapSegmentLocations(index)) },
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = TravelinDimens.PaddingSmall)
-                .offset(y = (-5).dp)
+                .offset(y = -(TravelinDimens.PaddingExtraSmall + 1.dp))
                 .zIndex(1f)
         ) {
             Icon(
                 imageVector = SwapVerticalIcon,
-                contentDescription = "Swap",
+                contentDescription = "Swap Locations",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(TravelinDimens.IconSizeExtraLarge)
@@ -131,6 +157,7 @@ fun FlightSegmentItem(
         }
     }
 
+    // Segment Date Selection (Inline for Multi-city)
     if (state.selectedFlightType == FlightType.MULTI_CITY) {
         DatePickerField(
             label = stringResource(R.string.flight_select_date),
@@ -146,12 +173,15 @@ fun FlightSegmentItem(
                 text = segmentError.dateError!!.toMessage(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+                modifier = Modifier.padding(start = TravelinDimens.PaddingMedium, top = TravelinDimens.Padding2ExtraSmall)
             )
         }
     }
 }
 
+/**
+ * Dropdown list displaying airport matching suggestions.
+ */
 @Composable
 fun AirportSuggestions(list: List<Airport>, onSelected: (Airport) -> Unit) {
     Card(
@@ -159,17 +189,25 @@ fun AirportSuggestions(list: List<Airport>, onSelected: (Airport) -> Unit) {
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        list.forEach { airport ->
-            Text(
-                text = "${airport.code} - ${airport.city}, ${airport.country}",
-                modifier = Modifier.fillMaxWidth().clickable { onSelected(airport) }.padding(TravelinDimens.PaddingNormal),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+        Column {
+            list.forEach { airport ->
+                Text(
+                    text = "${airport.code} - ${airport.city}, ${airport.country}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelected(airport) }
+                        .padding(TravelinDimens.PaddingNormal),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
 
+/**
+ * Interactive surface that triggers the date picker modal.
+ */
 @Composable
 fun DatePickerField(label: String, dateMillis: Long?, isError: Boolean = false, onClick: () -> Unit) {
     Surface(
@@ -182,8 +220,15 @@ fun DatePickerField(label: String, dateMillis: Long?, isError: Boolean = false, 
         color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxWidth().padding(vertical = TravelinDimens.Padding2ExtraSmall)
     ) {
-        Row(modifier = Modifier.padding(TravelinDimens.PaddingMedium), verticalAlignment = Alignment.CenterVertically) {
-            Icon(CalendarIcon, null, tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+        Row(
+            modifier = Modifier.padding(TravelinDimens.PaddingMedium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = CalendarIcon,
+                contentDescription = null,
+                tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.width(TravelinDimens.SpaceMedium))
             val formatter = rememberFlightDateFormatter()
 

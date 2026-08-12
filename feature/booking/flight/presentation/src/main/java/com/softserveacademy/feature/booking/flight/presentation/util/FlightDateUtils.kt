@@ -6,8 +6,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 /**
- * Utility to provide a consistent date format for the flight module.
- * Example: Aug 12, 2026
+ * Provides a consistent date formatter for flight search criteria and summaries.
+ * Uses a lifecycle-aware 'remember' to avoid recreating formatters during recomposition.
+ *
+ * Example output: "Aug 12, 2026"
+ *
+ * @return [SimpleDateFormat] configured for short month and year display.
  */
 @Composable
 fun rememberFlightDateFormatter(): SimpleDateFormat {
@@ -15,8 +19,12 @@ fun rememberFlightDateFormatter(): SimpleDateFormat {
 }
 
 /**
- * Utility for short time format in result cards.
- * Example: 14:30
+ * Provides a short time formatter for flight result cards.
+ * Essential for displaying departure and arrival times in a compact format.
+ *
+ * Example output: "14:30"
+ *
+ * @return [SimpleDateFormat] configured for 24-hour clock display.
  */
 @Composable
 fun rememberFlightTimeFormatter(): SimpleDateFormat {

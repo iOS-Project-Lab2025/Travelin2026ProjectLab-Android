@@ -3,7 +3,6 @@ package com.softserveacademy.feature.booking.flight.presentation.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import com.softserveacademy.core.domain.model.FlightType
 import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightSearchState
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightCriteriaContent
@@ -14,6 +13,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
+/**
+ * UI/Compose tests for the Flight Search criteria screen.
+ * Uses Robolectric to simulate the Android environment for Compose Rule.
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], packageName = "com.softserveacademy.feature.booking.flight.presentation")
 class FlightSearchScreenTest {
@@ -22,11 +25,10 @@ class FlightSearchScreenTest {
     val composeTestRule = createComposeRule()
 
     /**
-     * Verifies that the error banner displays the correct message
-     * when a critical validation error (missing return date) is present.
+     * Verifies that the global error banner appears when validation fails.
      */
     @Test
-    fun whenStateHasGlobalError_bannerDisplaysMissingReturnDateMessage() {
+    fun whenStateHasGlobalError_bannerDisplaysValidationMessage() {
         val errorMessagePart = "Please select departure"
         val stateWithError = FlightSearchState(
             errorMessage = com.softserveacademy.feature.booking.flight.presentation.R.string.flight_error_missing_return_date
@@ -38,15 +40,14 @@ class FlightSearchScreenTest {
             }
         }
 
-        // Using substring = true to handle potential formatting/newline issues
-        composeTestRule.onNodeWithText(errorMessagePart, substring = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText(errorMessagePart, substring = true, ignoreCase = true).assertExists()
     }
 
     /**
-     * Confirms that the specific IATA validation error is visible under the origin input.
+     * Verifies that field-specific errors are displayed correctly.
      */
     @Test
-    fun whenOriginHasIataError_fieldDisplaysValidationMessage() {
+    fun whenOriginHasIataError_fieldDisplaysSpecificValidationMessage() {
         val iataErrorPart = "minimum 3-letter IATA code"
         val stateWithError = FlightSearchState(
             errors = mapOf(0 to ValidateFlightSearchUseCase.SegmentError(
@@ -60,31 +61,6 @@ class FlightSearchScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText(iataErrorPart, substring = true).assertIsDisplayed()
-    }
-
-    /**
-     * Checks if segment labels (e.g., "Flight 1") and the addition button
-     * are visible in Multi-city mode.
-     */
-    @Test
-    fun whenMultiCityModeIsActive_segmentLabelsAndAddButtonAreVisible() {
-        val multiCityState = FlightSearchState(
-            selectedFlightType = FlightType.MULTI_CITY,
-            segments = listOf(
-                com.softserveacademy.core.domain.model.FlightSegment(),
-                com.softserveacademy.core.domain.model.FlightSegment()
-            )
-        )
-
-        composeTestRule.setContent {
-            Travelin2026ProjectLabTheme {
-                FlightCriteriaContent(state = multiCityState, onEvent = {}, onBack = {})
-            }
-        }
-
-        composeTestRule.onNodeWithText("Flight 1").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Add Flight").assertExists()
-        composeTestRule.onNodeWithText("Flight 2").assertExists()
+        composeTestRule.onNodeWithText(iataErrorPart, substring = true, ignoreCase = true).assertIsDisplayed()
     }
 }

@@ -19,6 +19,7 @@ import kotlin.time.Duration
  * @property duration Total flight duration.
  * @property cabinClass Travel cabin class.
  */
+@Serializable
 data class Flight(
     val id: String,
     val airline: Airline,
@@ -43,6 +44,7 @@ data class Flight(
  * @property flight The flight associated with this offer.
  * @property basePrice Base price of the flight offer.
  */
+@Serializable
 data class FlightOffer(
     val id: String,
     val flight: Flight,
@@ -56,6 +58,7 @@ data class FlightOffer(
  * @property name Airline name.
  * @property logoUrl URL of the airline logo.
  */
+@Serializable
 data class Airline(
     val code: String,
     val name: String,
@@ -70,6 +73,7 @@ data class Airline(
  * @property city City where the airport is located.
  * @property country Country where the airport is located.
  */
+@Serializable
 data class Airport(
     val code: String,      // SCL
     val name: String,      // Arturo Merino Benítez
@@ -100,6 +104,7 @@ enum class CabinClass {
  * @property CHD Child, Between 2 and 12 years old
  * @property INF Infant, Under 2 years old, usually sitting on lap
  */
+@Serializable
 enum class PassengerType {
     ADU,
     CHD,
