@@ -161,7 +161,7 @@ def create_booking(hotel_id: str, booking: HotelBooking):
         # Insert into Supabase - Corrected table name
         response = (
             supabase
-            .table("hotel_booking")
+            .table("hotels_booking")
             .insert(booking_data)
             .execute()
         )
