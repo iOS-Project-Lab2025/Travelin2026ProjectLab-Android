@@ -38,5 +38,6 @@
     <!-- Error state -->
     <string name="retry_label">Retry</string>
     <string name="unexpected_error">An unexpected error occurred</string>
+    <string name="back_button_label">Back</string>
 
 </resources>

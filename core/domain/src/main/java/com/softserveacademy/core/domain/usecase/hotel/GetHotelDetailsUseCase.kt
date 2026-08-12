@@ -14,12 +14,9 @@ class GetHotelDetailsUseCase @Inject constructor(
     /**
      * Executes the hotel detail retrieval.
      * @param id The unique identifier of the hotel.
-     * @return Result containing [Hotel] on success.
+     * @return AppResult containing [Hotel] on success.
      */
-    suspend operator fun invoke(id: String): Result<Hotel> {
-        return when (val result = repository.getHotelById(id)) {
-            is AppResult.Success -> Result.success(result.data)
-            is AppResult.Failure -> Result.failure(Exception("Failed to load hotel details"))
-        }
+    suspend operator fun invoke(id: String): AppResult<Hotel> {
+        return repository.getHotelById(id)
     }
 }

@@ -17,6 +17,10 @@ import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
+import com.softserveacademy.core.error.handler.ErrorHandler
+import com.softserveacademy.core.error.model.AppError
+import com.softserveacademy.core.error.model.ErrorAction
+import com.softserveacademy.core.error.model.UiText
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +41,8 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val reserveRoomUseCase: ReserveRoomUseCase,
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
-    private val createPaymentIntentUseCase: CreatePaymentIntentUseCase
+    private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
@@ -72,12 +77,20 @@ class HotelBookingConfirmViewModel @Inject constructor(
                                 bookingDraft = draft,
                                 hotel = hotelDetails,
                                 selectedRoom = selectedRoom,
-                                totalPrice = totalPrice
+                                totalPrice = totalPrice,
+                                error = null
                             )
                         }
                     }
-                    .onFailure { e ->
-                        _uiState.update { it.copy(isLoading = false, error = "Failed to load details") }
+                    .onFailure { error ->
+                        val action = errorHandler.handle(error)
+                        val message = if (action is ErrorAction.ShowMessage) {
+                            when (val uiText = action.message) {
+                                is UiText.Raw -> uiText.value
+                                is UiText.Resource -> "Failed to load booking details."
+                            }
+                        } else "Failed to load details"
+                        _uiState.update { it.copy(isLoading = false, error = message) }
                     }
             } else {
                 _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
@@ -107,6 +120,18 @@ class HotelBookingConfirmViewModel @Inject constructor(
             }
             HotelBookingConfirmEvent.OnDismissPaymentSimulationSheet -> {
                 _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
+            }
+            HotelBookingConfirmEvent.OnRetryClick -> {
+                if (_uiState.value.hotel == null) {
+                    loadBookingDetails()
+                } else if (_uiState.value.error != null) {
+                    // If we have hotel but still error, it might be payment intent error
+                    _uiState.update { it.copy(error = null) }
+                    createPaymentIntent()
+                }
+            }
+            HotelBookingConfirmEvent.OnDismissError -> {
+                _uiState.update { it.copy(error = null) }
             }
         }
     }
@@ -142,12 +167,29 @@ class HotelBookingConfirmViewModel @Inject constructor(
                     // Update status to PENDING as we are now awaiting payment
                     updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.PENDING)
                 }
-                .onFailure { _ ->
-                    _uiState.update {
-                        it.copy(
-                            showPaymentSimulationSheet = true,
-                            isPaymentSheetLoading = false
-                        )
+                .onFailure { error ->
+                    if (error is AppError.Auth) {
+                        _uiState.update {
+                            it.copy(
+                                showPaymentSimulationSheet = true,
+                                isPaymentSheetLoading = false
+                            )
+                        }
+                    } else {
+                        val action = errorHandler.handle(error)
+                        val message = if (action is ErrorAction.ShowMessage) {
+                            when (val uiText = action.message) {
+                                is UiText.Raw -> uiText.value
+                                is UiText.Resource -> "An error occurred during payment initialization."
+                            }
+                        } else "Network error. Please try again."
+
+                        _uiState.update {
+                            it.copy(
+                                error = message,
+                                isPaymentSheetLoading = false
+                            )
+                        }
                     }
                     updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
                 }

@@ -10,4 +10,5 @@ sealed interface HotelRoomSelectionEvent {
     data class OnRoomSelected(val roomId: String) : HotelRoomSelectionEvent
     data object OnNextClick : HotelRoomSelectionEvent
     data object OnBackClick : HotelRoomSelectionEvent
+    data object OnRetryClick : HotelRoomSelectionEvent
 }
