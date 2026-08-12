@@ -1,7 +1,6 @@
 package com.softserveacademy.feature.booking.flight.presentation.ui.screens
 
 import androidx.compose.foundation.BorderStroke
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,13 +23,15 @@ import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightResultsEvent
 import com.softserveacademy.feature.booking.flight.presentation.ui.components.FlightEmptyState
 import com.softserveacademy.feature.booking.flight.presentation.ui.components.FlightResultItem
-
 import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightResultsViewModel
-
 
 /**
  * Stateful version of the Results screen.
- * Orchestrates navigation and connects the UI with the domain logic.
+ * Orchestrates navigation between multiple flight segments and connects the UI with domain logic.
+ *
+ * @param viewModel State holder that manages segment selection, search results, and persistence.
+ * @param onNext Navigation callback triggered when all segments have been selected.
+ * @param onBack Navigation callback to exit the results flow and return to search criteria.
  */
 @Composable
 fun FlightResultsScreen(
@@ -41,14 +41,13 @@ fun FlightResultsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    // Observe final navigation event (all segments completed)
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect {
-            onNext() //triggers navigation to US3
-        }
+        viewModel.navigationEvent.collect { onNext() }
     }
 
+    // Observe back navigation to exit the flow if at the first segment
     LaunchedEffect(Unit) {
-        // Escucha para retroceder (salir de resultados)
         viewModel.backNavigationEvent.collect { onBack() }
     }
 
@@ -63,9 +62,9 @@ fun FlightResultsScreen(
         currentSegmentIndex = state.currentSegmentIndex,
         totalSegments = state.totalSegments,
         selectedOfferId = state.selectedOfferId,
-        isNextEnabled = state.selectedOfferId != null,
         currencyCode = state.currencyCode,
         exchangeRate = state.exchangeRate,
+        isNextEnabled = state.selectedOfferId != null,
         onNext = { viewModel.onEvent(FlightResultsEvent.OnNextClick) },
         onBack = { viewModel.onEvent(FlightResultsEvent.OnBackClick) },
         onLoadMore = { viewModel.onEvent(FlightResultsEvent.OnLoadMore) },
@@ -77,8 +76,27 @@ fun FlightResultsScreen(
 }
 
 /**
- * Stateless content of the results.
- * Corrected to handle Loading and Error states professionally.
+ * Stateless UI for the Flight Results list.
+ * Handles the display of the loading spinner, technical errors, and the actual flight list.
+ *
+ * @param visibleOffers List of flight offers to display (paginated).
+ * @param origin IATA code or city name of the departure.
+ * @param destination IATA code or city name of the arrival.
+ * @param passengerCount Total number of travelers.
+ * @param totalAvailable Count of all matching flights from the server.
+ * @param isLoading Whether the data is being fetched.
+ * @param error Resource ID of the error message, if any.
+ * @param isNextEnabled Whether the 'Next' button should be clickable (requires a selection).
+ * @param currentSegmentIndex The 0-based index of the segment being selected.
+ * @param totalSegments Total segments in the booking draft.
+ * @param selectedOfferId ID of the currently selected offer for highlighting.
+ * @param currencyCode Currency to display (e.g. "USD").
+ * @param exchangeRate Conversion rate to apply to prices.
+ * @param onNext Triggered when confirming the current selection.
+ * @param onBack Triggered when navigating back to a previous segment or search.
+ * @param onLoadMore Triggered when clicking the pagination button.
+ * @param onRetry Triggered when attempting to recover from a search error.
+ * @param onFlightSelected Triggered when a user picks a flight from the list.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,20 +127,16 @@ fun FlightResultsContent(
             topBar = {
                 IconButton(
                     onClick = onBack,
-                    modifier = Modifier.padding(
-                        start = TravelinDimens.PaddingSmall,
-                        top = TravelinDimens.PaddingSmall
-                    )
+                    modifier = Modifier.padding(TravelinDimens.PaddingSmall)
                 ) {
                     Icon(
                         imageVector = ArrowLeftIcon,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.flight_back_content_description),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             },
             bottomBar = {
-                //restores bottom buttons if there is no network error
                 if (error == null) {
                     TravelBookingBottomBar(
                         onBackClick = onBack,
@@ -136,7 +150,7 @@ fun FlightResultsContent(
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
 
-                    // Header Info (Always visible if no network error)
+                    // Header: Flight progress and summary
                     if (error == null) {
                         Column(modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium)) {
                             if (totalSegments > 1) {
@@ -166,10 +180,9 @@ fun FlightResultsContent(
                         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
                     }
 
-                    // INTERN ORCHESTATION OF STATES
+                    // Main Content: Error, Empty, or Results List
                     when {
                         error != null -> {
-                            // Pantalla de Error
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Center,
@@ -196,15 +209,12 @@ fun FlightResultsContent(
                                 )
                             }
                         }
-
                         visibleOffers.isEmpty() -> {
                             FlightEmptyState()
                         }
-
                         else -> {
-                            // Lista de Vuelos (Ahora sí dentro de la Column principal)
                             LazyColumn(modifier = Modifier.weight(1f)) {
-                                itemsIndexed(visibleOffers) { _, offer ->
+                                itemsIndexed(visibleOffers) { index, offer ->
                                     FlightResultItem(
                                         offer = offer,
                                         isSelected = offer.id == selectedOfferId,
@@ -212,13 +222,15 @@ fun FlightResultsContent(
                                         exchangeRate = exchangeRate,
                                         onClick = { onFlightSelected(offer.id) }
                                     )
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium),
-                                        thickness = 1.dp,
-                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                                    )
+                                    if (index < visibleOffers.lastIndex) {
+                                        HorizontalDivider(
+                                            modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium),
+                                            thickness = 1.dp,
+                                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                        )
+                                    }
                                 }
-
+                                // Pagination Button
                                 if (totalAvailable > visibleOffers.size) {
                                     item {
                                         val remaining = totalAvailable - visibleOffers.size
@@ -226,19 +238,12 @@ fun FlightResultsContent(
                                             onClick = onLoadMore,
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .testTag("load_more_button")
                                                 .padding(TravelinDimens.PaddingMedium),
                                             shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
-                                            border = BorderStroke(
-                                                1.dp,
-                                                MaterialTheme.colorScheme.outline
-                                            )
+                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                                         ) {
                                             Text(
-                                                text = stringResource(
-                                                    R.string.flight_result_see_more_button,
-                                                    remaining
-                                                ),
+                                                text = stringResource(R.string.flight_result_see_more_button, remaining),
                                                 color = MaterialTheme.colorScheme.primary,
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -254,15 +259,14 @@ fun FlightResultsContent(
     }
 }
 
+// --- PREVIEWS ---
 
-// --- Previews (Light & Dark Modes) ---
-
-@Preview(showBackground = true, name = "Results - Light Mode")
+@Preview(name = "Results - Light Mode", showBackground = true)
 @Composable
 fun FlightResultsPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
         FlightResultsContent(
-            visibleOffers = getMockPreviewList(),
+            visibleOffers = emptyList(),
             origin = "SCL",
             destination = "LIM",
             passengerCount = 2,
@@ -270,95 +274,16 @@ fun FlightResultsPreview() {
             isLoading = false,
             error = null,
             currentSegmentIndex = 0,
-            totalSegments = 3,
+            totalSegments = 2,
             selectedOfferId = null,
             currencyCode = "USD",
             exchangeRate = 1.0,
+            isNextEnabled = false,
             onNext = {},
             onBack = {},
-            isNextEnabled = false,
             onLoadMore = {},
             onRetry = {},
             onFlightSelected = {}
         )
     }
 }
-
-@Preview(showBackground = true, name = "Results - Dark Mode")
-@Composable
-fun FlightResultsDarkPreview() {
-    Travelin2026ProjectLabTheme(darkTheme = true) {
-        FlightResultsContent(
-            visibleOffers = getMockPreviewList(),
-            origin = "SCL",
-            destination = "LIM",
-            passengerCount = 2,
-            totalAvailable = 20,
-            isLoading = false,
-            error = null,
-            currentSegmentIndex = 0,
-            totalSegments = 3,
-            selectedOfferId = null,
-            currencyCode = "USD",
-            exchangeRate = 1.0,
-            onNext = {},
-            onBack = {},
-            isNextEnabled = false,
-            onLoadMore = {},
-            onRetry = {},
-            onFlightSelected = {}
-        )
-    }
-}
-
-/**
- * Data mock específica para Previews.
- * Muestra el formato de precio de la imagen (100.000.000).
- */
-private fun getMockPreviewList() = listOf(
-    com.softserveacademy.core.domain.model.FlightOffer(
-        id = "1",
-        flight = com.softserveacademy.core.domain.model.Flight(
-            id = "F1",
-            airline = com.softserveacademy.core.domain.model.Airline("LA", "Latam Airlines", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/LATAM_Logo.svg/512px-LATAM_Logo.svg.png"),
-            flightNumber = "LA123",
-            origin = com.softserveacademy.core.domain.model.Airport("SCL", "Santiago", "SCL", "Chile"),
-            destination = com.softserveacademy.core.domain.model.Airport("LIM", "Lima", "LIM", "Peru"),
-            departureTime = System.currentTimeMillis(),
-            arrivalTime = System.currentTimeMillis() + 5400000,
-            duration = kotlin.time.Duration.parse("1h 30m"),
-            cabinClass = com.softserveacademy.core.domain.model.CabinClass.FIRST
-        ),
-        basePrice = 100000000.0
-    ),
-    com.softserveacademy.core.domain.model.FlightOffer(
-        id = "2",
-        flight = com.softserveacademy.core.domain.model.Flight(
-            id = "F2",
-            airline = com.softserveacademy.core.domain.model.Airline("LA", "Latam Airlines", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/LATAM_Logo.svg/512px-LATAM_Logo.svg.png"),
-            flightNumber = "LA456",
-            origin = com.softserveacademy.core.domain.model.Airport("SCL", "Santiago", "SCL", "Chile"),
-            destination = com.softserveacademy.core.domain.model.Airport("LIM", "Lima", "LIM", "Peru"),
-            departureTime = System.currentTimeMillis() + 10000000,
-            arrivalTime = System.currentTimeMillis() + 15400000,
-            duration = kotlin.time.Duration.parse("1h 30m"),
-            cabinClass = com.softserveacademy.core.domain.model.CabinClass.ECONOMY
-        ),
-        basePrice = 500000.0
-    ),
-    com.softserveacademy.core.domain.model.FlightOffer(
-        id = "3",
-        flight = com.softserveacademy.core.domain.model.Flight(
-            id = "F3",
-            airline = com.softserveacademy.core.domain.model.Airline("LA", "Latam Airlines", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/LATAM_Logo.svg/512px-LATAM_Logo.svg.png"),
-            flightNumber = "LA789",
-            origin = com.softserveacademy.core.domain.model.Airport("SCL", "Santiago", "SCL", "Chile"),
-            destination = com.softserveacademy.core.domain.model.Airport("LIM", "Lima", "LIM", "Peru"),
-            departureTime = System.currentTimeMillis() + 20000000,
-            arrivalTime = System.currentTimeMillis() + 25400000,
-            duration = kotlin.time.Duration.parse("1h 30m"),
-            cabinClass = com.softserveacademy.core.domain.model.CabinClass.BUSINESS
-        ),
-        basePrice = 1000000.0
-    )
-)

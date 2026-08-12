@@ -15,7 +15,12 @@ import javax.inject.Inject
 
 /**
  * ViewModel for the Flight Results screen.
- * Orchestrates the data flow between the persisted booking draft and the search API.
+ * Orchestrates search results fetching and manages the iterative segment selection process.
+ *
+ * Flow:
+ * 1. Loads current segment criteria from [FlightBookingDraft].
+ * 2. Fetches matching flights for that specific segment.
+ * 3. Handles selection and advances the [currentSelectingIndex] until all segments are picked.
  */
 @HiltViewModel
 class FlightResultsViewModel @Inject constructor(
@@ -25,103 +30,93 @@ class FlightResultsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(FlightResultsState())
     val uiState: StateFlow<FlightResultsState> = _uiState.asStateFlow()
-    private val _navigationEvent = MutableSharedFlow<Unit>()
-    val navigationEvent = _navigationEvent.asSharedFlow()
-    private val _backNavigationEvent = MutableSharedFlow<Unit>()
-    val backNavigationEvent = _backNavigationEvent.asSharedFlow()
 
+    private val _navigationEvent = MutableSharedFlow<Unit>()
+    /** Dispatched when all segments in the draft have a selected offer. */
+    val navigationEvent = _navigationEvent.asSharedFlow()
+
+    private val _backNavigationEvent = MutableSharedFlow<Unit>()
+    /** Dispatched when user exits the results flow (e.g., clicking back on the first segment). */
+    val backNavigationEvent = _backNavigationEvent.asSharedFlow()
 
     init {
         loadDraftAndSearch()
     }
 
+    /**
+     * Entry point for user actions on the results screen.
+     */
     fun onEvent(event: FlightResultsEvent) {
         when (event) {
             is FlightResultsEvent.OnRetryClick -> loadDraftAndSearch()
 
-
             is FlightResultsEvent.OnFlightSelected -> {
+                // Highlighting only: does not advance until 'Next' is clicked
                 _uiState.update { it.copy(selectedOfferId = event.flightId) }
             }
+
+            is FlightResultsEvent.OnNextClick -> handleNextStep()
+
+            is FlightResultsEvent.OnBackClick -> handleBackStep()
+
             is FlightResultsEvent.OnLoadMore -> {
                 _uiState.update { current ->
                     val nextCount = current.visibleOffers.size + 5
-                    current.copy(
-                        visibleOffers = current.allAvailableOffers.take(nextCount),
-                    )
-                }
-            }
-
-            is FlightResultsEvent.OnBackClick -> {
-                viewModelScope.launch {
-                    val draft = draftRepository.getDraft().first()
-                    draft?.let {
-                        if (it.currentSelectingIndex > 0) {
-                            // Retrocedemos el índice y recargamos
-                            val updatedDraft = it.copy(currentSelectingIndex = it.currentSelectingIndex - 1)
-                            draftRepository.saveDraft(updatedDraft)
-                            loadDraftAndSearch()
-                        } else {
-                            // Si es el primer tramo, disparamos el evento para salir de la pantalla
-                            // (puedes crear un SharedFlow nuevo o usar el navigationEvent)
-                            _backNavigationEvent.emit(Unit)
-                        }
-                    }
-                }
-            }
-
-            is FlightResultsEvent.OnNextClick -> {
-                viewModelScope.launch {
-                    val currentOfferId = _uiState.value.selectedOfferId
-                    if (currentOfferId == null) return@launch // No hacemos nada si no hay selección
-
-                    val currentDraft = draftRepository.getDraft().first()
-                    currentDraft?.let { draft ->
-                        val selectedOffer = _uiState.value.allAvailableOffers.find { it.id == currentOfferId }
-
-                        selectedOffer?.let { offer ->
-                            // Guardamos la oferta en el draft
-                            val updatedOffers = draft.selectedOffers + (draft.currentSelectingIndex to offer)
-                            val isLastStep = draft.currentSelectingIndex == draft.segments.size - 1
-
-                            val updatedDraft = draft.copy(
-                                selectedOffers = updatedOffers,
-                                // Avanzamos el índice solo si no es el último paso
-                                currentSelectingIndex = if (isLastStep) draft.currentSelectingIndex else draft.currentSelectingIndex + 1
-                            )
-                            draftRepository.saveDraft(updatedDraft)
-
-                            if (isLastStep) {
-                                _navigationEvent.emit(Unit) // Navegación final
-                            } else {
-                                loadDraftAndSearch() // Cargar siguiente segmento
-                            }
-                        }
-                    }
+                    current.copy(visibleOffers = current.allAvailableOffers.take(nextCount))
                 }
             }
         }
     }
 
-    /**
-     * Public function to manually trigger a retry.
-     */
-    fun retrySearch() {
-        loadDraftAndSearch()
+    private fun handleNextStep() {
+        viewModelScope.launch {
+            val currentOfferId = _uiState.value.selectedOfferId ?: return@launch
+            val draft = draftRepository.getDraft().filterNotNull().first()
+            val selectedOffer = _uiState.value.allAvailableOffers.find { it.id == currentOfferId }
+
+            selectedOffer?.let { offer ->
+                val isLastStep = draft.currentSelectingIndex == draft.segments.size - 1
+                val updatedDraft = draft.copy(
+                    selectedOffers = draft.selectedOffers + (draft.currentSelectingIndex to offer),
+                    currentSelectingIndex = if (isLastStep) draft.currentSelectingIndex else draft.currentSelectingIndex + 1
+                )
+                draftRepository.saveDraft(updatedDraft)
+
+                if (isLastStep) {
+                    _navigationEvent.emit(Unit)
+                } else {
+                    // Reset selection for the next segment and reload
+                    _uiState.update { it.copy(selectedOfferId = null) }
+                    loadDraftAndSearch()
+                }
+            }
+        }
     }
 
+    private fun handleBackStep() {
+        viewModelScope.launch {
+            val draft = draftRepository.getDraft().filterNotNull().first()
+            if (draft.currentSelectingIndex > 0) {
+                val updatedDraft = draft.copy(currentSelectingIndex = draft.currentSelectingIndex - 1)
+                draftRepository.saveDraft(updatedDraft)
+                loadDraftAndSearch()
+            } else {
+                _backNavigationEvent.emit(Unit)
+            }
+        }
+    }
+
+    /**
+     * Loads the criteria for the active segment from the draft and triggers search.
+     */
     private fun loadDraftAndSearch() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            // 1. Get the draft from DataStore
-            val draft = draftRepository.getDraft()
-                .filterNotNull()
-                .first()
-
-            // 2. Extract criteria from the new segments structure
+            val draft = draftRepository.getDraft().filterNotNull().first()
             val currentSegment = draft.segments.getOrNull(draft.currentSelectingIndex) ?: draft.segments[0]
 
+            // Check if there's already a selection for this segment to restore UI state
             val selectedId = draft.selectedOffers[draft.currentSelectingIndex]?.id
 
             _uiState.update { it.copy(
@@ -131,37 +126,33 @@ class FlightResultsViewModel @Inject constructor(
                 selectedOfferId = selectedId,
                 currentSegmentIndex = draft.currentSelectingIndex,
                 totalSegments = draft.segments.size,
-                currencyCode = "USD",
+                currencyCode = "USD", // Logic ready for future multi-currency support
                 exchangeRate = 1.0
             )}
 
             val passengers = mapOf(
-                com.softserveacademy.core.domain.model.PassengerType.ADU to draft.adults,
-                com.softserveacademy.core.domain.model.PassengerType.CHD to draft.children,
-                com.softserveacademy.core.domain.model.PassengerType.INF to draft.infants
+                PassengerType.ADU to draft.adults,
+                PassengerType.CHD to draft.children,
+                PassengerType.INF to draft.infants
             )
 
-            // 3. Trigger the search and handle errors
             searchFlightsUseCase(
-                currentSegment.origin,
-                currentSegment.destination,
-                passengers,
+                origin = currentSegment.origin,
+                destination = currentSegment.destination,
+                passengerCounts = passengers,
                 cabinClass = draft.cabinClass,
                 departureDate = currentSegment.dateMillis,
-                returnDate = null)
+                returnDate = null // In this flow, we search segment by segment
+            )
                 .catch { e ->
-                    // Handles network or server errors
-                    val errorRes = if (e is java.io.IOException) R.string.flight_error_network
-                    else R.string.flight_error_occurred
+                    val errorRes = if (e is java.io.IOException) R.string.flight_error_network else R.string.flight_error_occurred
                     _uiState.update { it.copy(isLoading = false, error = errorRes) }
-
                 }
                 .collect { results ->
                     _uiState.update { it.copy(
                         isLoading = false,
                         allAvailableOffers = results,
-                        visibleOffers = results.take(5), //how many results we show
-                        error = null,
+                        visibleOffers = results.take(5),
                         totalAvailableCount = results.size
                     )}
                 }

@@ -12,7 +12,12 @@ import javax.inject.Inject
 
 /**
  * Concrete implementation of [FlightRepository].
- * Orchestrates data between remote sources and domain consumers.
+ * Acts as a bridge between the [FlightRemoteDataSource] and the Domain layer.
+ *
+ * Future improvement: This repository can be easily extended to include
+ * a local cache or a real API while keeping the Domain layer untouched.
+ *
+ * @param remoteDataSource The data source providing flight offers and airport data.
  */
 class FlightRepositoryImpl @Inject constructor(
     private val remoteDataSource: FlightRemoteDataSource

@@ -34,8 +34,12 @@ import com.softserveacademy.feature.booking.flight.presentation.viewmodel.Flight
 import java.util.*
 
 /**
- * Main entry point (Stateful) for the flight search criteria screen.
- * Handles the connection with the ViewModel and navigation events.
+ * Entry point (Stateful) for the Flight Search criteria screen.
+ * Orchestrates the connection between [FlightSearchViewModel] and the UI.
+ *
+ * @param viewModel The view model that holds search criteria and validation logic.
+ * @param onSearchExecuted Callback triggered when search is successful and ready to navigate to results.
+ * @param onBack Callback to navigate back to the previous screen.
  */
 @Composable
 fun FlightSearchScreen(
@@ -45,7 +49,7 @@ fun FlightSearchScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    // Observe successful search to navigate
+    // Observe navigation events from the ViewModel
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onSearchExecuted() }
     }
@@ -59,6 +63,11 @@ fun FlightSearchScreen(
 
 /**
  * Main container (Stateless) that organizes the screen sections.
+ * Displays title, flight type chips, segment inputs, and passenger preferences.
+ *
+ * @param state Current UI state for search criteria.
+ * @param onEvent Lambda to handle user interactions via events.
+ * @param onBack Callback for the top bar's back navigation.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +76,7 @@ fun FlightCriteriaContent(
     onEvent: (FlightSearchEvent) -> Unit,
     onBack: () -> Unit
 ) {
-    // Current UTC time for date blocking
+    // Reference time for minimum selectable date (Today)
     val todayStartUtc = remember {
         Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
@@ -77,8 +86,8 @@ fun FlightCriteriaContent(
         }.timeInMillis
     }
 
+    // State for single-date selection (One-way or Multi-city tranches)
     val singleDatePickerState = key(state.activeSegmentIndex) {
-        // Calculamos el mínimo permitido: hoy O la fecha del vuelo anterior
         val minDateAllowed = if (state.activeSegmentIndex > 0) {
             state.segments.getOrNull(state.activeSegmentIndex - 1)?.dateMillis ?: todayStartUtc
         } else {
@@ -94,6 +103,7 @@ fun FlightCriteriaContent(
         )
     }
 
+    // State for range-date selection (Round trip)
     val dateRangePickerState = rememberDateRangePickerState(
         initialSelectedStartDateMillis = state.bookingDetailsState.startDateMillis,
         initialSelectedEndDateMillis = state.bookingDetailsState.endDateMillis,
@@ -104,7 +114,7 @@ fun FlightCriteriaContent(
         }
     )
 
-    // Synchronize UI state with Date Picker
+    // Sync UI state with Date Picker when state changes externally
     LaunchedEffect(
         state.bookingDetailsState.startDateMillis,
         state.bookingDetailsState.endDateMillis
@@ -118,7 +128,7 @@ fun FlightCriteriaContent(
         }
     }
 
-    // Launch event when user selects a date range
+    // Handle range selection event
     LaunchedEffect(
         dateRangePickerState.selectedStartDateMillis,
         dateRangePickerState.selectedEndDateMillis
@@ -144,7 +154,7 @@ fun FlightCriteriaContent(
             ) {
                 Icon(
                     imageVector = ArrowLeftIcon,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.flight_back_content_description),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -173,17 +183,15 @@ fun FlightCriteriaContent(
                         FlightPreferencesSection(state, onEvent)
                     }
                 }
-
             }
-
         }
     }
 
-    // Sheets and Modals
+    // Modal Components
     CabinClassBottomSheet(state, onEvent)
     PassengerSelectionSheet(state, onEvent)
 
-    // --- UNIFIED DATE MODAL  ---
+    // Unified Date Picker Modal
     if (state.showDatePicker) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -194,7 +202,6 @@ fun FlightCriteriaContent(
             dragHandle = { BottomSheetDefaults.DragHandle() },
             modifier = Modifier.padding(TravelinDimens.PaddingMedium).fillMaxSize()
         ) {
-            // Modal principal column
             Column(modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()) {
@@ -206,7 +213,6 @@ fun FlightCriteriaContent(
                     modifier = Modifier.padding(TravelinDimens.PaddingMedium)
                 )
 
-                // Calendar with flexible controled container
                 Box(modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()) {
@@ -223,10 +229,7 @@ fun FlightCriteriaContent(
                             headline = null,
                             showModeToggle = false,
                             modifier = Modifier.fillMaxWidth(),
-                            colors = DatePickerDefaults.colors(
-                                containerColor = Color.Transparent,
-
-                                )
+                            colors = DatePickerDefaults.colors(containerColor = Color.Transparent)
                         )
                     }
                 }
@@ -240,7 +243,6 @@ fun FlightCriteriaContent(
                             text = stringResource(com.softserveacademy.feature.booking.common.presentation.R.string.accept_button_label),
                             onClick = {
                                 if (state.selectedFlightType == FlightType.ROUND_TRIP) {
-                                    // Synchronize first segment for draft
                                     onEvent(
                                         FlightSearchEvent.OnDateSelected(
                                             0,
@@ -248,8 +250,7 @@ fun FlightCriteriaContent(
                                         )
                                     )
                                 } else {
-                                    val index =
-                                        if (state.selectedFlightType == FlightType.MULTI_CITY) state.activeSegmentIndex else 0
+                                    val index = if (state.selectedFlightType == FlightType.MULTI_CITY) state.activeSegmentIndex else 0
                                     onEvent(
                                         FlightSearchEvent.OnDateSelected(
                                             index,
@@ -266,7 +267,6 @@ fun FlightCriteriaContent(
             }
         }
     }
-
 }
 
 /**
@@ -289,7 +289,7 @@ private fun FlightSearchHeader(state: FlightSearchState) {
 }
 
 /**
- * Chip selector for Round Trip, One Way or Multi-city flights.
+ * Renders Chip-based selector for [FlightType] options.
  */
 @Composable
 private fun FlightTypeSelector(state: FlightSearchState, onEvent: (FlightSearchEvent) -> Unit) {
@@ -320,7 +320,7 @@ private fun FlightTypeSelector(state: FlightSearchState, onEvent: (FlightSearchE
 }
 
 /**
- * Section for cabin type and passenger count preferences.
+ * Section that handles preferences like Cabin Class, Passengers, and Dates for One-way/Round-trip.
  */
 @Composable
 private fun FlightPreferencesSection(
@@ -329,7 +329,9 @@ private fun FlightPreferencesSection(
 ) {
     val dateErrorEnum = state.globalDateError ?: state.errors[0]?.dateError
     val hasDateError = dateErrorEnum != null
+
     Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)) {
+        // Cabin Class Selector
         Surface(
             onClick = { onEvent(FlightSearchEvent.OnShowCabinSheet) },
             shape = MaterialTheme.shapes.medium,
@@ -357,6 +359,7 @@ private fun FlightPreferencesSection(
             }
         }
 
+        // Passenger Selector
         Surface(
             onClick = { onEvent(FlightSearchEvent.OnShowPassengerSheet) },
             shape = MaterialTheme.shapes.medium,
@@ -373,19 +376,15 @@ private fun FlightPreferencesSection(
                 Spacer(Modifier.width(TravelinDimens.SpaceMedium))
                 val totalPax = state.adults + state.children + state.infants
                 Text(
-                    text = pluralStringResource(
-                        R.plurals.flight_passenger_count,
-                        totalPax,
-                        totalPax
-                    ),
+                    text = pluralStringResource(R.plurals.flight_passenger_count, totalPax, totalPax),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
-        // --- DATE SELECTION CARD ---
-        if (state.selectedFlightType != FlightType.MULTI_CITY) {
 
+        // Date Selection Card (Only for One-way/Round-trip, Multi-city uses segment pickers)
+        if (state.selectedFlightType != FlightType.MULTI_CITY) {
             Column {
                 Surface(
                     onClick = { onEvent(FlightSearchEvent.OnShowDatePicker) },
@@ -403,25 +402,16 @@ private fun FlightPreferencesSection(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(CalendarIcon, null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(Modifier.width(12.dp))
+                        Spacer(Modifier.width(TravelinDimens.SpaceMedium))
                         val formatter = rememberFlightDateFormatter()
-                        // Leemos la fecha del primer segmento para One Way y Multi-city
                         val segmentDate = state.segments.getOrNull(0)?.dateMillis
-                        val startDate =
-                            if (state.selectedFlightType == FlightType.ROUND_TRIP) state.bookingDetailsState.startDateMillis else segmentDate
+                        val startDate = if (state.selectedFlightType == FlightType.ROUND_TRIP) state.bookingDetailsState.startDateMillis else segmentDate
                         val endDate = state.bookingDetailsState.endDateMillis
 
                         val dateText = when {
                             state.selectedFlightType == FlightType.ROUND_TRIP && startDate != null && endDate != null -> {
-                                "${formatter.format(Date(startDate))} - ${
-                                    formatter.format(
-                                        Date(
-                                            endDate
-                                        )
-                                    )
-                                }"
+                                "${formatter.format(Date(startDate))} - ${formatter.format(Date(endDate))}"
                             }
-
                             startDate != null -> formatter.format(Date(startDate))
                             else -> stringResource(R.string.flight_search_date)
                         }
@@ -435,19 +425,16 @@ private fun FlightPreferencesSection(
                         )
                     }
                 }
-
+                if (hasDateError) {
+                    Text(
+                        text = dateErrorEnum.toMessage(),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = TravelinDimens.PaddingMedium, top = TravelinDimens.Padding2ExtraSmall)
+                    )
+                }
             }
-            if (hasDateError) {
-                Text(
-                    text = dateErrorEnum.toMessage(),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
-                )
-            }
-
         }
-
     }
 }
 
