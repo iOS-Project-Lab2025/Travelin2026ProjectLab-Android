@@ -8,22 +8,22 @@ plugins {
 android {
     namespace = "com.softserveacademy.core.presentation.design_system"
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
+        val localPropertiesFile = project.rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
-            localPropertiesFile.inputStream().use {
-                localProperties.load(it)
-            }
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
         }
-        
-        val mapsKey = (localProperties.getProperty("MAPS_API_KEY") 
-            ?: project.findProperty("MAPS_API_KEY") 
-            ?: System.getenv("MAPS_API_KEY") 
-            ?: "YOUR_API_KEY").toString()
-            
-        manifestPlaceholders["MAPS_API_KEY"] = mapsKey
-        buildConfigField("String", "MAPS_API_KEY", "\"$mapsKey\"")
+
+        val mapsApiKey = localProperties.getProperty("MAPS_API_KEY")
+            ?: project.findProperty("MAPS_API_KEY")?.toString()
+            ?: ""
+
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
     }
 
     testOptions {
