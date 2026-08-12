@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.softserveacademy.android.feature")
     id("com.softserveacademy.android.hilt")
@@ -5,6 +7,25 @@ plugins {
 
 android {
     namespace = "com.softserveacademy.home.presentation"
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        val localProperties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+
+        val mapsApiKey = localProperties.getProperty("MAPS_API_KEY")
+            ?: project.findProperty("MAPS_API_KEY")?.toString()
+            ?: ""
+
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+    }
 
     testOptions {
         unitTests {

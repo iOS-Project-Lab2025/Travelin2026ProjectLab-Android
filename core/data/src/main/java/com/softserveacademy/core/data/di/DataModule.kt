@@ -1,6 +1,7 @@
 package com.softserveacademy.core.data.di
 
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -31,6 +32,21 @@ object DataModule {
     @Provides
     @Singleton
     fun providePlacesClient(@ApplicationContext context: Context): PlacesClient {
+        if (!Places.isInitialized()) {
+            val ai = try {
+                context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+            } catch (e: Exception) {
+                null
+            }
+            val apiKey = ai?.metaData?.getString("com.google.android.geo.API_KEY")
+
+            val keyToUse = if (!apiKey.isNullOrBlank() && apiKey != "YOUR_API_KEY") {
+                apiKey
+            } else {
+                "MISSING_API_KEY"
+            }
+            Places.initialize(context, keyToUse)
+        }
         return Places.createClient(context)
     }
 }
