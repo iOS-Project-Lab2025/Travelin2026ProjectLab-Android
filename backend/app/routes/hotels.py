@@ -65,9 +65,10 @@ def get_hotels():
 
     return hotels
 
-@router.get("/{id}")
+@router.get("/{id}/")
 def get_hotel_by_id(id: str):
-    response = (
+    # Fetch hotel details
+    hotel_response = (
         supabase
         .table("hotels")
         .select("*")
@@ -76,19 +77,73 @@ def get_hotel_by_id(id: str):
         .execute()
     )
 
-    if not response.data:
+    if not hotel_response.data:
         raise HTTPException(status_code=404, detail="Hotel not found")
 
-    hotel = response.data
+    hotel = hotel_response.data
+
+    # Fetch associated rooms from the 'rooms' table
+    rooms_response = (
+        supabase
+        .table("rooms")
+        .select("*")
+        .eq("hotel_id", id)
+        .execute()
+    )
+
+    rooms = []
+    for room in rooms_response.data:
+        rooms.append({
+            "id": str(room["id"]),
+            "type": room["type"],
+            "description": room.get("description", ""),
+            "maxOccupancy": room["max_occupancy"],
+            "bedType": room.get("bed_type", ""),
+            "amenities": room.get("amenities", []),
+            "pricePerNight": float(room["price_per_night"]),
+            "images": room.get("images", []),
+            "totalRooms": room["total_rooms"],
+            "availableRooms": room["available_rooms"],
+            "isAvailable": room["is_available"]
+        })
+
     return {
-        "id": hotel["id"],
+        "id": str(hotel["id"]),
         "name": hotel["name"],
         "address": hotel["address"],
         "star": hotel["star"],
         "userRating": hotel["user_rating"],
         "pricePerNight": hotel["price_per_night"],
-        "image": hotel.get("image_list", [])
+        "image": hotel.get("image_list", []),
+        "rooms": rooms
     }
+
+@router.get("/{id}/rooms/")
+def get_hotel_rooms(id: str):
+    response = (
+        supabase
+        .table("rooms")
+        .select("*")
+        .eq("hotel_id", id)
+        .execute()
+    )
+
+    rooms = []
+    for room in response.data:
+        rooms.append({
+            "id": str(room["id"]),
+            "type": room["type"],
+            "description": room.get("description", ""),
+            "maxOccupancy": room["max_occupancy"],
+            "bedType": room.get("bed_type", ""),
+            "amenities": room.get("amenities", []),
+            "pricePerNight": float(room["price_per_night"]),
+            "images": room.get("images", []),
+            "totalRooms": room["total_rooms"],
+            "availableRooms": room["available_rooms"],
+            "isAvailable": room["is_available"]
+        })
+    return rooms
 
 @router.post("/{hotel_id}/bookings")
 def create_booking(hotel_id: str, booking: HotelBooking):
