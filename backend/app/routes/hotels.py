@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.database import supabase
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 from typing import List, Optional
 
@@ -13,39 +13,38 @@ class BaseSchema(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_camel,
         populate_by_name=True,
-        from_attributes=True,
     )
 
 class BookingGuests(BaseSchema):
-    adults: int
-    children: int
-    pets: bool
+    adults: int = 1
+    children: int = 0
+    pets: bool = False
 
 class BookingPrice(BaseSchema):
-    room_price_per_night: int
-    room_price: int
+    room_price_per_night: int = Field(alias="room_price_per_night")
+    room_price: int = Field(alias="room_price")
     taxes: Optional[int] = 0
     fees: Optional[int] = 0
     total: int
 
 class BookingContactInfo(BaseSchema):
-    first_name: str
-    last_name: str
+    first_name: str = Field(alias="first_name")
+    last_name: str = Field(alias="last_name")
     email: str
-    country_code: str
-    phone_number: str
+    country_code: str = Field(alias="country_code")
+    phone_number: str = Field(alias="phone_number")
 
 class HotelBooking(BaseSchema):
-    booking_id: str
-    hotel_id: str
-    room_id: str
-    check_in: int
-    check_out: int
+    booking_id: str = Field(alias="booking_id")
+    hotel_id: str = Field(alias="hotel_id")
+    room_id: str = Field(alias="room_id")
+    check_in: int = Field(alias="check_in")
+    check_out: int = Field(alias="check_out")
     guests: BookingGuests
     price: BookingPrice
     status: str
-    confirmation_code: str
-    created_at: int
+    confirmation_code: str = Field(alias="confirmation_code")
+    created_at: int = Field(alias="created_at")
     contact_info: Optional[BookingContactInfo] = None
 
 @router.get("")
