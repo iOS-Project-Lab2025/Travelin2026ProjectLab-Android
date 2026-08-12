@@ -23,6 +23,7 @@ android {
             ?: project.findProperty("MAPS_API_KEY")?.toString()
             ?: ""
 
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
         buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
     }
 

@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.LibraryExtension
+import java.util.Properties
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,11 +17,29 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
+            val localProperties = Properties()
+            val localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use {
+                    localProperties.load(it)
+                }
+            }
+
+            fun getProperty(key: String): String? {
+                return localProperties.getProperty(key) ?: System.getenv(key)
+            }
+
             extensions.configure<LibraryExtension> {
                 compileSdk = libs.findVersion("compileSdk").get().requiredVersion.toInt()
                 defaultConfig {
                     minSdk = libs.findVersion("minSdk").get().requiredVersion.toInt()
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+                    val mapsApiKey = getProperty("MAPS_API_KEY")
+                        ?: project.findProperty("MAPS_API_KEY")?.toString()
+                        ?: ""
+                    manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+                    buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
                 }
                 compileOptions {
                     sourceCompatibility = JavaVersion.VERSION_11
