@@ -1,6 +1,7 @@
 package com.softserveacademy.feature.booking.flight.data.remote
 
 import android.Manifest
+import android.R
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -120,7 +121,12 @@ class MockFlightRemoteDataSource @Inject constructor(@dagger.hilt.android.qualif
     /**
      * Search airports logic for the autocomplete feature.
      */
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     override suspend fun searchAirports(query: String): List<Airport> {
+
+        if (!isNetworkAvailable()) {
+            throw IOException()
+        }
         if (query.length < 2) return emptyList()
         return airportsMock.filter {
             it.code.contains(query, ignoreCase = true) ||

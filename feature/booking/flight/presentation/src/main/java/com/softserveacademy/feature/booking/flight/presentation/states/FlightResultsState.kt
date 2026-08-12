@@ -1,5 +1,6 @@
 package com.softserveacademy.feature.booking.flight.presentation.states
 
+
 import com.softserveacademy.core.domain.model.FlightOffer
 
 /**
@@ -13,5 +14,11 @@ data class FlightResultsState(
     val origin: String = "",
     val destination: String = "",
     val totalPassengers: Int = 0,
-    val totalAvailableCount: Int = 0
+    val totalAvailableCount: Int = 0,
+    val currentSegmentIndex: Int = 0,
+    val totalSegments: Int = 0,
+    val selectedOfferId: String? = null,
+    val currencyCode: String = "USD",
+    val exchangeRate: Double = 1.0
+
 )

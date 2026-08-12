@@ -25,6 +25,11 @@ class FlightResultsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(FlightResultsState())
     val uiState: StateFlow<FlightResultsState> = _uiState.asStateFlow()
+    private val _navigationEvent = MutableSharedFlow<Unit>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
+    private val _backNavigationEvent = MutableSharedFlow<Unit>()
+    val backNavigationEvent = _backNavigationEvent.asSharedFlow()
+
 
     init {
         loadDraftAndSearch()
@@ -36,13 +41,7 @@ class FlightResultsViewModel @Inject constructor(
 
 
             is FlightResultsEvent.OnFlightSelected -> {
-                // Aquí actualizaremos el draft con el ID seleccionado
-                viewModelScope.launch {
-                    val currentDraft = draftRepository.getDraft().first()
-                    currentDraft?.let {
-                        draftRepository.saveDraft(it.copy(selectedFlightId = event.flightId))
-                    }
-                }
+                _uiState.update { it.copy(selectedOfferId = event.flightId) }
             }
             is FlightResultsEvent.OnLoadMore -> {
                 _uiState.update { current ->
@@ -50,6 +49,55 @@ class FlightResultsViewModel @Inject constructor(
                     current.copy(
                         visibleOffers = current.allAvailableOffers.take(nextCount),
                     )
+                }
+            }
+
+            is FlightResultsEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    val draft = draftRepository.getDraft().first()
+                    draft?.let {
+                        if (it.currentSelectingIndex > 0) {
+                            // Retrocedemos el índice y recargamos
+                            val updatedDraft = it.copy(currentSelectingIndex = it.currentSelectingIndex - 1)
+                            draftRepository.saveDraft(updatedDraft)
+                            loadDraftAndSearch()
+                        } else {
+                            // Si es el primer tramo, disparamos el evento para salir de la pantalla
+                            // (puedes crear un SharedFlow nuevo o usar el navigationEvent)
+                            _backNavigationEvent.emit(Unit)
+                        }
+                    }
+                }
+            }
+
+            is FlightResultsEvent.OnNextClick -> {
+                viewModelScope.launch {
+                    val currentOfferId = _uiState.value.selectedOfferId
+                    if (currentOfferId == null) return@launch // No hacemos nada si no hay selección
+
+                    val currentDraft = draftRepository.getDraft().first()
+                    currentDraft?.let { draft ->
+                        val selectedOffer = _uiState.value.allAvailableOffers.find { it.id == currentOfferId }
+
+                        selectedOffer?.let { offer ->
+                            // Guardamos la oferta en el draft
+                            val updatedOffers = draft.selectedOffers + (draft.currentSelectingIndex to offer)
+                            val isLastStep = draft.currentSelectingIndex == draft.segments.size - 1
+
+                            val updatedDraft = draft.copy(
+                                selectedOffers = updatedOffers,
+                                // Avanzamos el índice solo si no es el último paso
+                                currentSelectingIndex = if (isLastStep) draft.currentSelectingIndex else draft.currentSelectingIndex + 1
+                            )
+                            draftRepository.saveDraft(updatedDraft)
+
+                            if (isLastStep) {
+                                _navigationEvent.emit(Unit) // Navegación final
+                            } else {
+                                loadDraftAndSearch() // Cargar siguiente segmento
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -72,12 +120,19 @@ class FlightResultsViewModel @Inject constructor(
                 .first()
 
             // 2. Extract criteria from the new segments structure
-            val firstSegment = draft.segments.firstOrNull() ?: com.softserveacademy.core.domain.model.FlightSegment()
+            val currentSegment = draft.segments.getOrNull(draft.currentSelectingIndex) ?: draft.segments[0]
+
+            val selectedId = draft.selectedOffers[draft.currentSelectingIndex]?.id
 
             _uiState.update { it.copy(
-                origin = firstSegment.origin,
-                destination = firstSegment.destination,
-                totalPassengers = draft.adults + draft.children + draft.infants
+                origin = currentSegment.origin,
+                destination = currentSegment.destination,
+                totalPassengers = draft.adults + draft.children + draft.infants,
+                selectedOfferId = selectedId,
+                currentSegmentIndex = draft.currentSelectingIndex,
+                totalSegments = draft.segments.size,
+                currencyCode = "USD",
+                exchangeRate = 1.0
             )}
 
             val passengers = mapOf(
@@ -88,15 +143,18 @@ class FlightResultsViewModel @Inject constructor(
 
             // 3. Trigger the search and handle errors
             searchFlightsUseCase(
-                firstSegment.origin,
-                firstSegment.destination,
+                currentSegment.origin,
+                currentSegment.destination,
                 passengers,
                 cabinClass = draft.cabinClass,
-                departureDate = firstSegment.dateMillis,
-                returnDate = draft.returnDateMillis)
+                departureDate = currentSegment.dateMillis,
+                returnDate = null)
                 .catch { e ->
                     // Handles network or server errors
-                    _uiState.update { it.copy(isLoading = false, error = R.string.flight_error_network, allAvailableOffers = emptyList()) }
+                    val errorRes = if (e is java.io.IOException) R.string.flight_error_network
+                    else R.string.flight_error_occurred
+                    _uiState.update { it.copy(isLoading = false, error = errorRes) }
+
                 }
                 .collect { results ->
                     _uiState.update { it.copy(

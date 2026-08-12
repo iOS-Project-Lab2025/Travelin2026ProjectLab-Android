@@ -2,11 +2,13 @@ package com.softserveacademy.feature.booking.flight.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.core.domain.model.FlightType
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightBookingDraftRepository
 import com.softserveacademy.feature.booking.flight.domain.usecase.SearchAirportsUseCase
 import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
+import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightSearchEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightSearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -134,9 +136,15 @@ class FlightSearchViewModel @Inject constructor(
                     current.copy(
                         selectedFlightType = event.flightType,
                         globalDateError = newGlobalError,
-                        segments = if (event.flightType == com.softserveacademy.core.domain.model.FlightType.MULTI_CITY && current.segments.size < 2)
-                            listOf(current.segments[0].copy(dateMillis = firstDate), com.softserveacademy.core.domain.model.FlightSegment())
-                        else listOf(current.segments[0].copy(dateMillis = firstDate))
+                        // CAMBIO EN VIEWMODEL:
+                        segments = if (event.flightType == FlightType.MULTI_CITY && current.segments.size < 2) {
+                            // Si falta el tramo mínimo para Multi-city, lo añadimos
+                            current.segments + com.softserveacademy.core.domain.model.FlightSegment()
+                        } else {
+                            // En cualquier otro caso, DEVOLVEMOS LA LISTA COMPLETA
+                            // Así, si tiene 4 tramos, se quedan guardados en el State.
+                            current.segments
+                        }
                     )
                 }
             }
@@ -151,7 +159,11 @@ class FlightSearchViewModel @Inject constructor(
             }
 
             is FlightSearchEvent.OnAddSegment -> {
-                _uiState.update { it.copy(segments = it.segments + com.softserveacademy.core.domain.model.FlightSegment()) }
+                _uiState.update { current ->
+                    // Si ya hay 4 tramos, no permitimos añadir más (Protección de Negocio)
+                    if (current.segments.size >= 4) return@update current
+                    current.copy(segments = current.segments + com.softserveacademy.core.domain.model.FlightSegment())
+                }
             }
 
             is FlightSearchEvent.OnRemoveSegment -> {
@@ -246,12 +258,24 @@ class FlightSearchViewModel @Inject constructor(
             viewModelScope.launch {
                 _uiState.update { it.copy(errors = emptyMap(), globalDateError = null) }
                 // Sincronizar fechas para el primer tramo si es Round/One Way
-                val finalSegments =
-                    if (currentState.selectedFlightType != com.softserveacademy.core.domain.model.FlightType.MULTI_CITY) {
-                        listOf(sanitizedSegments[0].copy(dateMillis = currentState.bookingDetailsState.startDateMillis))
-                    } else {
-                        sanitizedSegments
+                // Sincronizar tramos según el tipo de vuelo
+                val finalSegments = when (currentState.selectedFlightType) {
+                    com.softserveacademy.core.domain.model.FlightType.ROUND_TRIP -> {
+                        // Creamos dos tramos: el de ida y el de vuelta (invertido)
+                        listOf(
+                            sanitizedSegments[0].copy(dateMillis = currentState.bookingDetailsState.startDateMillis),
+                            sanitizedSegments[0].copy(
+                                origin = sanitizedSegments[0].destination,
+                                destination = sanitizedSegments[0].origin,
+                                dateMillis = currentState.bookingDetailsState.endDateMillis
+                            )
+                        )
                     }
+                    com.softserveacademy.core.domain.model.FlightType.ONE_WAY -> {
+                        listOf(sanitizedSegments[0].copy(dateMillis = currentState.bookingDetailsState.startDateMillis))
+                    }
+                    else -> sanitizedSegments // MULTI_CITY ya trae sus propios tramos
+                }
 
                 val draft = FlightBookingDraft(
                     segments = finalSegments,
@@ -261,7 +285,9 @@ class FlightSearchViewModel @Inject constructor(
                     children = currentState.children,
                     infants = currentState.infants,
                     flightType = currentState.selectedFlightType,
-                    cabinClass = currentState.selectedCabinClass
+                    cabinClass = currentState.selectedCabinClass,
+                    selectedOffers = emptyMap(),
+                    currentSelectingIndex = 0
                 )
                 draftRepository.saveDraft(draft)
                 _navigationEvent.emit(Unit)
@@ -280,16 +306,26 @@ class FlightSearchViewModel @Inject constructor(
     }
 
     private fun searchAirports(query: String, isOrigin: Boolean, index: Int) {
+        if (query.length < 3) return // No buscamos si el texto es muy corto
+
         viewModelScope.launch {
-            searchAirportsUseCase(query).collect { list ->
-                _uiState.update { current ->
-                    current.copy(
-                        originSuggestions = if (isOrigin) list else emptyList(),
-                        destinationSuggestions = if (!isOrigin) list else emptyList(),
-                        activeSegmentIndex = index
-                    )
+            searchAirportsUseCase(query)
+                .catch { e ->
+                    // Si es error de red, lo mostramos en el banner superior
+                    val errorRes = if (e is java.io.IOException) R.string.flight_error_network
+                    else R.string.flight_error_occurred
+                    _uiState.update { it.copy(errorMessage = errorRes) }
                 }
-            }
+                .collect { list ->
+                    _uiState.update { current ->
+                        current.copy(
+                            originSuggestions = if (isOrigin) list else emptyList(),
+                            destinationSuggestions = if (!isOrigin) list else emptyList(),
+                            activeSegmentIndex = index,
+                            errorMessage = null // Limpiamos el error si la búsqueda funciona
+                        )
+                    }
+                }
         }
     }
 

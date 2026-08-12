@@ -191,8 +191,8 @@ fun FlightCriteriaContent(
             onDismissRequest = { onEvent(FlightSearchEvent.OnDismissDatePicker) },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.background,
-            dragHandle = null,
-            modifier = Modifier.fillMaxSize()
+            dragHandle = { BottomSheetDefaults.DragHandle() },
+            modifier = Modifier.padding(TravelinDimens.PaddingMedium).fillMaxSize()
         ) {
             // Modal principal column
             Column(modifier = Modifier

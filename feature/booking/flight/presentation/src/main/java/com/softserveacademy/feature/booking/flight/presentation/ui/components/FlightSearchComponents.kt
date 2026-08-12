@@ -28,9 +28,21 @@ import java.util.Date
 /**
  * Renders a list of flight segments. Supports dynamic additions for Multi-city.
  */
+// Archivo: FlightSearchComponents.kt
+
 @Composable
 fun FlightSegmentList(state: FlightSearchState, onEvent: (FlightSearchEvent) -> Unit) {
-    state.segments.forEachIndexed { index, segment ->
+
+    // 1. CREAMOS EL FILTRO VISUAL
+    // Si es Multi-city, mostramos todo. Si no, solo el primero (.take(1))
+    val segmentsToShow = if (state.selectedFlightType == FlightType.MULTI_CITY) {
+        state.segments
+    } else {
+        state.segments.take(1)
+    }
+
+    // 2. CAMBIAMOS EL BUCLE PARA QUE USE 'segmentsToShow'
+    segmentsToShow.forEachIndexed { index, segment ->
         if (state.selectedFlightType == FlightType.MULTI_CITY) {
             Text(
                 text = stringResource(R.string.flight_label_flight, index + 1),
@@ -42,7 +54,8 @@ fun FlightSegmentList(state: FlightSearchState, onEvent: (FlightSearchEvent) -> 
 
         FlightSegmentItem(index, segment, state, onEvent)
 
-        if (state.selectedFlightType == FlightType.MULTI_CITY && state.segments.size > 2) {
+        // Botón de eliminar (ajustamos para que use la lista visible)
+        if (state.selectedFlightType == FlightType.MULTI_CITY && segmentsToShow.size > 2) {
             TextButton(onClick = { onEvent(FlightSearchEvent.OnRemoveSegment(index)) }) {
                 Text(stringResource(R.string.flight_action_delete_flight), color = MaterialTheme.colorScheme.error)
             }
@@ -50,7 +63,8 @@ fun FlightSegmentList(state: FlightSearchState, onEvent: (FlightSearchEvent) -> 
         Spacer(Modifier.height(TravelinDimens.SpaceSmall))
     }
 
-    if (state.selectedFlightType == FlightType.MULTI_CITY) {
+    // 2. EL BOTÓN DE AÑADIR (Sigue igual, usa 'state.segments.size' para el límite de 4)
+    if (state.selectedFlightType == FlightType.MULTI_CITY && state.segments.size < 4) {
         TextButton(
             onClick = { onEvent(FlightSearchEvent.OnAddSegment) },
             modifier = Modifier.fillMaxWidth()

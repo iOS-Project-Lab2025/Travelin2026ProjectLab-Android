@@ -45,4 +45,18 @@
     <string name="flight_error_network">No internet connection.\nPlease check your network and try again.</string>
     <string name="flight_error_date_sequence">Flight must be after the previous one</string>
     <string name="flight_result_see_more_button">"Show +%d more available"</string>
+    <string name="flight_results_subtitle_format">%1$s to %2$s • %3$d Passengers</string>
+    <string name="flight_segment_progress_format">Flight %1$d of %2$d</string>
+
+    <string name="flight_duration_label">Flight</string>
+    <string name="flight_back_content_description">Back</string>
+    <string name="flight_results_origin_to_destination_format">%1$s → %2$s</string>
+    <string name="flight_airline_logo_content_description">Airline Logo</string>
+    <string name="flight_takeoff_content_description">Takeoff</string>
+    <string name="flight_landing_content_description">Landing</string>
+    <string name="flight_price_content_description">Price</string>
+    <string name="flight_price_currency_per_person">%1$s /p.p</string>
+    <string name="flight_price_format">%1$s %2$s</string>
+
+
 </resources>

@@ -1,9 +1,7 @@
 package com.softserveacademy.feature.booking.flight.presentation.ui.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -12,16 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.softserveacademy.core.domain.model.FlightOffer
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
@@ -31,11 +25,9 @@ import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightResultsEvent
 import com.softserveacademy.feature.booking.flight.presentation.ui.components.FlightEmptyState
 import com.softserveacademy.feature.booking.flight.presentation.ui.components.FlightResultItem
-import com.softserveacademy.feature.booking.flight.presentation.ui.mappers.toDisplayName
-import com.softserveacademy.feature.booking.flight.presentation.util.rememberFlightDateFormatter
+
 import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightResultsViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+
 
 /**
  * Stateful version of the Results screen.
@@ -49,6 +41,17 @@ fun FlightResultsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect {
+            onNext() //triggers navigation to US3
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        // Escucha para retroceder (salir de resultados)
+        viewModel.backNavigationEvent.collect { onBack() }
+    }
+
     FlightResultsContent(
         visibleOffers = state.visibleOffers,
         origin = state.origin,
@@ -57,9 +60,16 @@ fun FlightResultsScreen(
         totalAvailable = state.totalAvailableCount,
         isLoading = state.isLoading,
         error = state.error,
-        onNext = onNext,
-        onBack = onBack,
+        currentSegmentIndex = state.currentSegmentIndex,
+        totalSegments = state.totalSegments,
+        selectedOfferId = state.selectedOfferId,
+        isNextEnabled = state.selectedOfferId != null,
+        currencyCode = state.currencyCode,
+        exchangeRate = state.exchangeRate,
+        onNext = { viewModel.onEvent(FlightResultsEvent.OnNextClick) },
+        onBack = { viewModel.onEvent(FlightResultsEvent.OnBackClick) },
         onLoadMore = { viewModel.onEvent(FlightResultsEvent.OnLoadMore) },
+        onRetry = { viewModel.onEvent(FlightResultsEvent.OnRetryClick) },
         onFlightSelected = { id ->
             viewModel.onEvent(FlightResultsEvent.OnFlightSelected(id))
         }
@@ -80,9 +90,16 @@ fun FlightResultsContent(
     totalAvailable: Int,
     isLoading: Boolean,
     error: Int?,
+    isNextEnabled: Boolean,
+    currentSegmentIndex: Int,
+    totalSegments: Int,
+    selectedOfferId: String?,
+    currencyCode: String,
+    exchangeRate: Double,
     onNext: () -> Unit,
     onBack: () -> Unit,
     onLoadMore: () -> Unit,
+    onRetry: () -> Unit,
     onFlightSelected: (String) -> Unit
 ) {
     if (isLoading) {
@@ -92,7 +109,10 @@ fun FlightResultsContent(
             topBar = {
                 IconButton(
                     onClick = onBack,
-                    modifier = Modifier.padding(start = TravelinDimens.PaddingSmall, top = TravelinDimens.PaddingSmall)
+                    modifier = Modifier.padding(
+                        start = TravelinDimens.PaddingSmall,
+                        top = TravelinDimens.PaddingSmall
+                    )
                 ) {
                     Icon(
                         imageVector = ArrowLeftIcon,
@@ -104,7 +124,11 @@ fun FlightResultsContent(
             bottomBar = {
                 //restores bottom buttons if there is no network error
                 if (error == null) {
-                    TravelBookingBottomBar(onBackClick = onBack, onNextClick = onNext)
+                    TravelBookingBottomBar(
+                        onBackClick = onBack,
+                        onNextClick = onNext,
+                        nextButtonEnabled = isNextEnabled
+                    )
                 }
             },
             containerColor = MaterialTheme.colorScheme.background
@@ -115,13 +139,26 @@ fun FlightResultsContent(
                     // Header Info (Always visible if no network error)
                     if (error == null) {
                         Column(modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium)) {
+                            if (totalSegments > 1) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.flight_segment_progress_format,
+                                        currentSegmentIndex + 1,
+                                        totalSegments
+                                    ),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = TravelinDimens.PaddingSmall)
+                                )
+                            }
                             Text(
-                                text = stringResource(R.string.flight_results_title),
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "$origin to $destination • $passengerCount Passengers",
+                                text = stringResource(
+                                    R.string.flight_results_subtitle_format,
+                                    origin,
+                                    destination,
+                                    passengerCount
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -132,7 +169,7 @@ fun FlightResultsContent(
                     // INTERN ORCHESTATION OF STATES
                     when {
                         error != null -> {
-                            // ERROR SCREEN
+                            // Pantalla de Error
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Center,
@@ -141,44 +178,47 @@ fun FlightResultsContent(
                                 Icon(
                                     imageVector = WarningIcon,
                                     contentDescription = null,
-                                    modifier = Modifier.size(64.dp),
+                                    modifier = Modifier.size(TravelinDimens.IconSizeExtraLarge + 24.dp),
                                     tint = MaterialTheme.colorScheme.error
                                 )
-                                Spacer(Modifier.height(16.dp))
+                                Spacer(Modifier.height(TravelinDimens.SpaceMedium))
                                 Text(
-                                    text = stringResource(error!!),
+                                    text = stringResource(error),
                                     color = MaterialTheme.colorScheme.onBackground,
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(horizontal = 32.dp)
+                                    modifier = Modifier.padding(horizontal = TravelinDimens.SpaceExtraLarge)
                                 )
-                                Spacer(Modifier.height(24.dp))
+                                Spacer(Modifier.height(TravelinDimens.SpaceLarge))
                                 TravelPrimaryButton(
                                     text = stringResource(R.string.flight_retry_button),
-                                    onClick = onLoadMore,
+                                    onClick = onRetry,
                                     modifier = Modifier.width(150.dp)
                                 )
                             }
                         }
+
                         visibleOffers.isEmpty() -> {
                             FlightEmptyState()
                         }
+
                         else -> {
-                            // Flight list
+                            // Lista de Vuelos (Ahora sí dentro de la Column principal)
                             LazyColumn(modifier = Modifier.weight(1f)) {
-                                itemsIndexed(visibleOffers) { index, offer ->
+                                itemsIndexed(visibleOffers) { _, offer ->
                                     FlightResultItem(
                                         offer = offer,
+                                        isSelected = offer.id == selectedOfferId,
+                                        currencyCode = currencyCode,
+                                        exchangeRate = exchangeRate,
                                         onClick = { onFlightSelected(offer.id) }
                                     )
-                                    if (index < visibleOffers.lastIndex) {
-                                        HorizontalDivider(
-                                            modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium),
-                                            thickness = 1.dp,
-                                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                                        )
-                                    }
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                    )
                                 }
-                                // --- show more button ---
+
                                 if (totalAvailable > visibleOffers.size) {
                                     item {
                                         val remaining = totalAvailable - visibleOffers.size
@@ -189,10 +229,16 @@ fun FlightResultsContent(
                                                 .testTag("load_more_button")
                                                 .padding(TravelinDimens.PaddingMedium),
                                             shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
-                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                                            border = BorderStroke(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.outline
+                                            )
                                         ) {
                                             Text(
-                                                text = stringResource(R.string.flight_result_see_more_button, remaining),
+                                                text = stringResource(
+                                                    R.string.flight_result_see_more_button,
+                                                    remaining
+                                                ),
                                                 color = MaterialTheme.colorScheme.primary,
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -208,6 +254,7 @@ fun FlightResultsContent(
     }
 }
 
+
 // --- Previews (Light & Dark Modes) ---
 
 @Preview(showBackground = true, name = "Results - Light Mode")
@@ -222,9 +269,16 @@ fun FlightResultsPreview() {
             totalAvailable = 20,
             isLoading = false,
             error = null,
+            currentSegmentIndex = 0,
+            totalSegments = 3,
+            selectedOfferId = null,
+            currencyCode = "USD",
+            exchangeRate = 1.0,
             onNext = {},
             onBack = {},
+            isNextEnabled = false,
             onLoadMore = {},
+            onRetry = {},
             onFlightSelected = {}
         )
     }
@@ -242,9 +296,16 @@ fun FlightResultsDarkPreview() {
             totalAvailable = 20,
             isLoading = false,
             error = null,
+            currentSegmentIndex = 0,
+            totalSegments = 3,
+            selectedOfferId = null,
+            currencyCode = "USD",
+            exchangeRate = 1.0,
             onNext = {},
             onBack = {},
+            isNextEnabled = false,
             onLoadMore = {},
+            onRetry = {},
             onFlightSelected = {}
         )
     }
