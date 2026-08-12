@@ -152,16 +152,25 @@ def get_hotel_rooms(id: str):
         })
     return rooms
 
-@router.post("/{hotel_id}/bookings")
+@router.post("/{hotel_id}/bookings/")
 def create_booking(hotel_id: str, booking: HotelBooking):
-    # Use model_dump() for Pydantic v2
-    booking_data = booking.model_dump()
+    try:
+        # Use model_dump() for Pydantic v2
+        booking_data = booking.model_dump()
 
-    response = (
-        supabase
-        .table("bookings")
-        .insert(booking_data)
-        .execute()
-    )
+        # Insert into Supabase - Corrected table name
+        response = (
+            supabase
+            .table("hotel_booking")
+            .insert(booking_data)
+            .execute()
+        )
 
-    return {"status": "success", "data": response.data}
+        return {"status": "success", "data": response.data}
+    except Exception as e:
+        # Print the error for Render logs and return a more helpful detail
+        print(f"ERROR creating booking: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error: {str(e)}. Make sure the 'bookings' table exists and has the correct columns."
+        )
