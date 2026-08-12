@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.database import supabase
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 from typing import List, Optional
 
 router = APIRouter(
@@ -8,26 +9,33 @@ router = APIRouter(
     tags=["Hotels"]
 )
 
-class BookingGuests(BaseModel):
+class BaseSchema(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
+
+class BookingGuests(BaseSchema):
     adults: int
     children: int
     pets: bool
 
-class BookingPrice(BaseModel):
+class BookingPrice(BaseSchema):
     room_price_per_night: int
     room_price: int
     taxes: Optional[int] = 0
     fees: Optional[int] = 0
     total: int
 
-class BookingContactInfo(BaseModel):
+class BookingContactInfo(BaseSchema):
     first_name: str
     last_name: str
     email: str
     country_code: str
     phone_number: str
 
-class HotelBooking(BaseModel):
+class HotelBooking(BaseSchema):
     booking_id: str
     hotel_id: str
     room_id: str
