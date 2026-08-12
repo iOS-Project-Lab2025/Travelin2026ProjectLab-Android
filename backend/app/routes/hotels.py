@@ -26,7 +26,8 @@ def get_hotels():
             "address": hotel["address"],
             "star": hotel["star"],
             "userRating": hotel["user_rating"],
-            "pricePerNight": hotel["price_per_night"]
+            "pricePerNight": hotel["price_per_night"],
+            "image": hotel.get("image_list", [])
         })
 
     return hotels
