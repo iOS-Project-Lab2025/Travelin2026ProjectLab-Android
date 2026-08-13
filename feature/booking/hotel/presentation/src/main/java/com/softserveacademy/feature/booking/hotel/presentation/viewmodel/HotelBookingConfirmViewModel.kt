@@ -69,7 +69,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 .onSuccess { bookings ->
                     android.util.Log.d("HotelBookingTest", "Successfully fetched ${bookings.size} remote bookings")
                     bookings.forEach { booking ->
-                        android.util.Log.d("HotelBookingTest", "Booking: ID=${booking.bookingId}, User=${booking.userId}, Hotel=${booking.hotelId}, Status=${booking.status}")
+                        android.util.Log.d("HotelBookingTest", "Booking: ID=${booking.bookingId}, User=${booking.userId}, Hotel=${booking.hotelId}")
                     }
                 }
                 .onFailure { error ->
