@@ -39,6 +39,7 @@
     <string name="flight_segment_progress_format">Flight %1$d of %2$d</string>
     <string name="flight_results_origin_to_destination_format">%1$s → %2$s</string>
     <string name="flight_price_currency_per_person">%1$s /p.p</string>
+
     <string name="flight_price_format">%1$s %2$s</string>
 
     <!-- ====================================================================== -->
@@ -123,4 +124,23 @@
         <item quantity="one">%d Passenger</item>
         <item quantity="other">%d Passengers</item>
     </plurals>
+
+    <!-- ====================================================================== -->
+    <!-- CONFIRMATION SCREEN                                              -->
+    <!-- ====================================================================== -->
+    <string name="flight_confirm_booking_title">Confirm Booking</string>
+    <string name="flight_confirm_booking_subtitle">Get the best out of Travelin by creating an account</string>
+    <string name="flight_confirm_contact_info_header">Contact Information</string>
+    <string name="flight_confirm_pay_now">Book Now</string>
+    <string name="flight_confirm_dates_label">Dates Selected</string>
+    <!-- Confirmation Screen Enhancements -->
+    <string name="flight_confirm_price_summary_header">Price Summary</string>
+    <string name="flight_confirm_price_breakdown_format">%1$s %2$d per ticket x %3$d passengers</string>
+    <string name="flight_confirm_total_price_label">Total Price</string>
+    <!-- Confirmation Screen Final -->
+    <string name="flight_confirm_guests_label">Travelers</string>
+    <string name="flight_confirm_guests_format">%1$d Adult, %2$d Child, %3$d Infant</string>
+    <string name="flight_confirm_selected_flights_header">Selected Flights</string>
+
+
 </resources>

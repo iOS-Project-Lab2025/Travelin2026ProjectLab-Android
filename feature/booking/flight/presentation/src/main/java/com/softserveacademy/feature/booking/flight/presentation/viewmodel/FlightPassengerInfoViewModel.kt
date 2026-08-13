@@ -116,8 +116,14 @@ class FlightPassengerInfoViewModel @Inject constructor(
     private fun saveAndFinish() {
         viewModelScope.launch {
             val state = _uiState.value
+            val sanitizedPassengers = state.passengers.map { pax ->
+                pax.copy(
+                    firstName = pax.firstName.trim().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } },
+                    lastName = pax.lastName.trim().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+                )
+            }
             val draft = draftRepository.getDraft().filterNotNull().first()
-            draftRepository.saveDraft(draft.copy(passengers = state.passengers, contactInfo = state.contactInfo))
+            draftRepository.saveDraft(draft.copy(passengers = sanitizedPassengers, contactInfo = state.contactInfo))
             _navigationEvent.emit(Unit)
         }
     }

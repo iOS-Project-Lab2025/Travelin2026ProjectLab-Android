@@ -113,5 +113,9 @@ sealed interface Routes {
     @Serializable
     data object FlightPassengerInfoScreen : Routes
 
-
+    /**
+     * Routes for the Flight Booking Confirmation (Checkout).
+     */
+    @Serializable
+    data object FlightBookingConfirmScreen : Routes
 }
