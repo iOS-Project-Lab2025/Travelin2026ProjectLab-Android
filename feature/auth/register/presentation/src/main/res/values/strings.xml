@@ -9,7 +9,7 @@
     <string name="register_birth_date_placeholder">Select date</string>
     <string name="register_email_label">Email</string>
     <string name="register_password_label">Password</string>
-    <string name="register_accept_terms">I accept term and condition</string>
+    <string name="register_accept_terms">I accept terms and conditions</string>
     <string name="register_create_button">Create Account</string>
     <string name="register_already_account">Already have an account? </string>
     <string name="register_go_back">Go back</string>
