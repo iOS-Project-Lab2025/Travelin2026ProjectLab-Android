@@ -1,5 +1,6 @@
 package com.softserveacademy.profile.domain.usecases
 
+import com.softserveacademy.core.domain.util.Validator
 import com.softserveacademy.profile.domain.model.UserProfile
 import com.softserveacademy.profile.domain.repository.ProfileRepository
 import javax.inject.Inject
@@ -17,6 +18,16 @@ class UpdateProfileUseCase @Inject constructor(
      * @return Result indicating success or failure.
      */
     suspend operator fun invoke(profile: UserProfile, password: String? = null): Result<Unit> {
+        val birthDate = profile.birthDate ?: return Result.failure(IllegalArgumentException("Birth date is required"))
+        
+        if (!Validator.isAtLeast18(birthDate)) {
+            return Result.failure(IllegalArgumentException("You must be at least 18 years old"))
+        }
+
+        if (password != null && password.length < 6) {
+            return Result.failure(IllegalArgumentException("Password must be at least 6 characters long"))
+        }
+
         return repository.updateProfile(profile, password)
     }
 }
