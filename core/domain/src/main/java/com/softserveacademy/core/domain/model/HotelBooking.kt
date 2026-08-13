@@ -1,5 +1,6 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -22,16 +23,25 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HotelBooking(
+    @SerialName("booking_id")
     val bookingId: String,
+    val userId: String? = null,
+    @SerialName("hotel_id")
     val hotelId: String,
+    @SerialName("room_id")
     val roomId: String,
+    @SerialName("check_in")
     val checkIn: Long,
+    @SerialName("check_out")
     val checkOut: Long,
     val guests: BookingGuests,
     val price: BookingPrice,
     val status: BookingStatus,
+    @SerialName("confirmation_code")
     val confirmationCode: String,
+    @SerialName("created_at")
     val createdAt: Long,
+    @SerialName("contact_info")
     val contactInfo: BookingContactInfo? = null
 )
 
@@ -60,7 +70,9 @@ data class BookingGuests(
  */
 @Serializable
 data class BookingPrice(
+    @SerialName("room_price_per_night")
     val roomPricePerNight: Int,
+    @SerialName("room_price")
     val roomPrice: Int,
     val taxes: Int = 0,
     val fees: Int = 0,
@@ -78,9 +90,13 @@ data class BookingPrice(
  */
 @Serializable
 data class BookingContactInfo(
+    @SerialName("first_name")
     val firstName: String = "",
+    @SerialName("last_name")
     val lastName: String = "",
     val email: String = "",
+    @SerialName("country_code")
     val countryCode: String = "",
+    @SerialName("phone_number")
     val phoneNumber: String = ""
 )

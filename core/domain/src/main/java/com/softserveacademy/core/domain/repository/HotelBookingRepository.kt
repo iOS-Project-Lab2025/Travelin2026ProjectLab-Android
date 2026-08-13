@@ -25,6 +25,11 @@ interface HotelBookingRepository {
     fun getBookingById(bookingId: String): Flow<AppResult<HotelBooking?>>
 
     /**
+     * Retrieve all hotel bookings from the remote server.
+     */
+    suspend fun getRemoteBookings(): AppResult<List<HotelBooking>>
+
+    /**
      * Update the status of a specific hotel booking.
      */
     suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): AppResult<Unit>

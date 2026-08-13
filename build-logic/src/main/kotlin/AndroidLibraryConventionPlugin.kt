@@ -56,7 +56,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                             buildConfigField(
                                 "String",
                                 "BASE_URL",
-                                "\"${flavor.baseUrl}\""
+                                "\"${getProperty("BASE_URL") ?: flavor.baseUrl}\""
                             )
                         }
                     }

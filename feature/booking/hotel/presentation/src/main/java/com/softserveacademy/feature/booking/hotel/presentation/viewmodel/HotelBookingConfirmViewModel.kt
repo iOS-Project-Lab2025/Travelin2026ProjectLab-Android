@@ -1,5 +1,8 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.provider.Settings
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +17,7 @@ import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetRemoteHotelBookingsUseCase
 import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
@@ -24,6 +28,7 @@ import com.softserveacademy.core.error.model.UiText
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +47,9 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
-    private val errorHandler: ErrorHandler
+    private val getRemoteHotelBookingsUseCase: GetRemoteHotelBookingsUseCase,
+    private val errorHandler: ErrorHandler,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
@@ -53,6 +60,22 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
     init {
         loadBookingDetails()
+        testRemoteBookingsFetch()
+    }
+
+    private fun testRemoteBookingsFetch() {
+        viewModelScope.launch {
+            getRemoteHotelBookingsUseCase()
+                .onSuccess { bookings ->
+                    android.util.Log.d("HotelBookingTest", "Successfully fetched ${bookings.size} remote bookings")
+                    bookings.forEach { booking ->
+                        android.util.Log.d("HotelBookingTest", "Booking: ID=${booking.bookingId}, User=${booking.userId}, Hotel=${booking.hotelId}")
+                    }
+                }
+                .onFailure { error ->
+                    android.util.Log.e("HotelBookingTest", "Failed to fetch remote bookings: $error")
+                }
+        }
     }
 
     private fun loadBookingDetails() {
@@ -216,14 +239,22 @@ class HotelBookingConfirmViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("HardwareIds")
     private fun createBookingFromState(status: BookingStatus): HotelBooking? {
         val state = _uiState.value
         val hotelDetails = state.hotel ?: return null
         val room = state.selectedRoom ?: return null
         val draft = state.bookingDraft ?: return null
 
+        val deviceId = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        ) ?: "unknown_device"
+
         return HotelBooking(
             bookingId = currentBookingId ?: UUID.randomUUID().toString(),
+            userId = deviceId,
+            //userId = "testing",
             hotelId = hotelDetails.id,
             roomId = room.id ?: "",
             checkIn = draft.checkIn ?: 0L,
@@ -236,6 +267,8 @@ class HotelBookingConfirmViewModel @Inject constructor(
             price = BookingPrice(
                 roomPricePerNight = room.pricePerNight,
                 roomPrice = state.totalPrice,
+                taxes = 0,
+                fees = 0,
                 total = state.totalPrice
             ),
             confirmationCode = "HB-${System.currentTimeMillis() % 10000}",
