@@ -29,7 +29,7 @@ class EditProfileViewModelTest {
         points = 100,
         avatarUrl = "url",
         phone = "+855 123456",
-        age = 30,
+        birthDate = 839808000000L,
         location = "Mars"
     )
 
@@ -52,7 +52,7 @@ class EditProfileViewModelTest {
         assertEquals("Doe", viewModel.lastName)
         assertEquals("+855", viewModel.countryCode)
         assertEquals("123456", viewModel.phone)
-        assertEquals("30", viewModel.age)
+        assertEquals(839808000000L, viewModel.birthDate)
         assertEquals("Mars", viewModel.location)
     }
 
