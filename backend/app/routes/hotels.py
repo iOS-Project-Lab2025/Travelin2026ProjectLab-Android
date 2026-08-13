@@ -1,7 +1,5 @@
 from fastapi import APIRouter, HTTPException
 from app.database import supabase
-from pydantic import BaseModel, ConfigDict, Field
-from pydantic.alias_generators import to_camel
 from typing import List, Optional
 
 router = APIRouter(
@@ -9,48 +7,8 @@ router = APIRouter(
     tags=["Hotels"]
 )
 
-class BaseSchema(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-    )
-
-class BookingGuests(BaseSchema):
-    adults: int = 1
-    children: int = 0
-    pets: bool = False
-
-class BookingPrice(BaseSchema):
-    room_price_per_night: int = Field(alias="room_price_per_night")
-    room_price: int = Field(alias="room_price")
-    taxes: Optional[int] = 0
-    fees: Optional[int] = 0
-    total: int
-
-class BookingContactInfo(BaseSchema):
-    first_name: str = Field(alias="first_name")
-    last_name: str = Field(alias="last_name")
-    email: str
-    country_code: str = Field(alias="country_code")
-    phone_number: str = Field(alias="phone_number")
-
-class HotelBooking(BaseSchema):
-    booking_id: str = Field(alias="booking_id")
-    userId: str = Field(alias="userId")
-    hotel_id: str = Field(alias="hotel_id")
-    room_id: str = Field(alias="room_id")
-    check_in: int = Field(alias="check_in")
-    check_out: int = Field(alias="check_out")
-    guests: BookingGuests
-    price: BookingPrice
-    status: str
-    confirmation_code: str = Field(alias="confirmation_code")
-    created_at: int = Field(alias="created_at")
-    contact_info: Optional[BookingContactInfo] = None
-
 @router.get("")
 def get_hotels():
-    # ... existing code ...
     response = (
         supabase
         .table("hotels")
@@ -152,47 +110,3 @@ def get_hotel_rooms(id: str):
             "isAvailable": room["is_available"]
         })
     return rooms
-
-@router.get("/{id}/bookings/")
-def get_hotel_bookings(id: str):
-    response = (
-        supabase
-        .table("hotels_booking")
-        .select("*")
-        .eq("hotel_id", id)
-        .execute()
-    )
-    return response.data
-
-@router.get("/bookings/")
-def get_all_bookings():
-    response = (
-        supabase
-        .table("hotels_booking")
-        .select("*")
-        .execute()
-    )
-    return response.data
-
-@router.post("/{hotel_id}/bookings/")
-def create_booking(hotel_id: str, booking: HotelBooking):
-    try:
-        # Use model_dump() for Pydantic v2
-        booking_data = booking.model_dump()
-
-        # Insert into Supabase - Corrected table name
-        response = (
-            supabase
-            .table("hotels_booking")
-            .insert(booking_data)
-            .execute()
-        )
-
-        return {"status": "success", "data": response.data}
-    except Exception as e:
-        # Print the error for Render logs and return a more helpful detail
-        print(f"ERROR creating booking: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Database error: {str(e)}. Make sure the 'bookings' table exists and has the correct columns."
-        )
