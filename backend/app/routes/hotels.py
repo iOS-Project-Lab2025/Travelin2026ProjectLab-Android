@@ -153,6 +153,27 @@ def get_hotel_rooms(id: str):
         })
     return rooms
 
+@router.get("/{id}/bookings/")
+def get_hotel_bookings(id: str):
+    response = (
+        supabase
+        .table("hotels_booking")
+        .select("*")
+        .eq("hotel_id", id)
+        .execute()
+    )
+    return response.data
+
+@router.get("/bookings/")
+def get_all_bookings():
+    response = (
+        supabase
+        .table("hotels_booking")
+        .select("*")
+        .execute()
+    )
+    return response.data
+
 @router.post("/{hotel_id}/bookings/")
 def create_booking(hotel_id: str, booking: HotelBooking):
     try:
