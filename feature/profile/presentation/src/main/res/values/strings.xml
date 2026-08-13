@@ -24,7 +24,7 @@
     <string name="first_name_label">First name</string>
     <string name="last_name_label">Last name</string>
     <string name="phone_label">Phone</string>
-    <string name="age_label">Age</string>
+    <string name="age_label">Date of birth</string>
     <string name="location_label">Location</string>
     <string name="direction_label">Direction</string>
     <string name="password_label">Password</string>

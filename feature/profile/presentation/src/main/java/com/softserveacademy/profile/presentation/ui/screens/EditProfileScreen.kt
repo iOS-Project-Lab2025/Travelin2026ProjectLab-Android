@@ -47,8 +47,9 @@ fun EditProfileScreen(
         onCountryCodeChange = { viewModel.countryCode = it },
         phone = viewModel.phone,
         onPhoneChange = { viewModel.phone = it },
-        age = viewModel.age,
-        onAgeChange = { viewModel.age = it },
+        birthDate = viewModel.birthDate,
+        onBirthDateChange = { viewModel.birthDate = it },
+        isBirthDateAlreadyChanged = viewModel.isBirthDateAlreadyChanged,
         location = viewModel.location,
         onLocationChange = { viewModel.location = it },
         password = viewModel.password,
@@ -73,8 +74,9 @@ fun EditProfileContent(
     onCountryCodeChange: (String) -> Unit,
     phone: String,
     onPhoneChange: (String) -> Unit,
-    age: String,
-    onAgeChange: (String) -> Unit,
+    birthDate: Long?,
+    onBirthDateChange: (Long) -> Unit,
+    isBirthDateAlreadyChanged: Boolean,
     location: String,
     onLocationChange: (String) -> Unit,
     password: String,
@@ -182,10 +184,11 @@ fun EditProfileContent(
                 }
 
                 LabeledInput(label = stringResource(R.string.age_label)) {
-                    AppNumberInput(
-                        value = age,
-                        onValueChange = onAgeChange,
-                        placeholder = stringResource(R.string.age_label)
+                    TravelDatePicker(
+                        selectedDate = birthDate,
+                        onDateSelected = onBirthDateChange,
+                        placeholder = stringResource(R.string.age_label),
+                        enabled = !isBirthDateAlreadyChanged
                     )
                 }
 
@@ -277,8 +280,9 @@ fun EditProfileContentPreview() {
             onCountryCodeChange = {},
             phone = "1234567890",
             onPhoneChange = {},
-            age = "25",
-            onAgeChange = {},
+            birthDate = 839808000000L,
+            onBirthDateChange = {},
+            isBirthDateAlreadyChanged = false,
             location = "New York",
             onLocationChange = {},
             password = "password123",
