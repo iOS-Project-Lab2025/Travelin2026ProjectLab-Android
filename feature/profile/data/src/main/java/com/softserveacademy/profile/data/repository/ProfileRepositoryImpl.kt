@@ -18,7 +18,8 @@ class ProfileRepositoryImpl @Inject constructor() : ProfileRepository {
         points = 100,
         avatarUrl = "https://example.com/avatar.jpg",
         phone = "+855 123 456 789",
-        age = 30,
+        birthDate = 839808000000L, // 12/08/1996
+        isBirthDateChanged = false,
         location = "Mars, Solar System"
     )
 

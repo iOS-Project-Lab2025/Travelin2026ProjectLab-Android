@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_success_title">Successfully created an account</string>
+    <string name="auth_success_description">After this you can explore any place you want enjoy it!</string>
+    <string name="auth_explore_button">Let\'s Explore</string>
+</resources>

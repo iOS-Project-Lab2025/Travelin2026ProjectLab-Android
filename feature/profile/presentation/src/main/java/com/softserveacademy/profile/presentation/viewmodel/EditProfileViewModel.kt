@@ -30,12 +30,14 @@ class EditProfileViewModel @Inject constructor(
     var lastName by mutableStateOf("")
     var countryCode by mutableStateOf("+855")
     var phone by mutableStateOf("")
-    var age by mutableStateOf("")
+    var birthDate by mutableStateOf<Long?>(null)
     var location by mutableStateOf("")
     var password by mutableStateOf("")
     var confirmPassword by mutableStateOf("")
 
     private var initialProfile: UserProfile? = null
+    var isBirthDateAlreadyChanged by mutableStateOf(false)
+        private set
 
     init {
         loadProfile()
@@ -58,7 +60,8 @@ class EditProfileViewModel @Inject constructor(
                     phone = profile.phone ?: ""
                 }
                 
-                age = profile.age?.toString() ?: ""
+                birthDate = profile.birthDate
+                isBirthDateAlreadyChanged = profile.isBirthDateChanged
                 location = profile.location ?: ""
                 state = EditProfileState.Success(profile)
             }.onFailure {
@@ -78,7 +81,7 @@ class EditProfileViewModel @Inject constructor(
         return firstName != currentProfile.firstName ||
                 lastName != currentProfile.lastName ||
                 currentPhone != initialPhone ||
-                age != (currentProfile.age?.toString() ?: "") ||
+                birthDate != currentProfile.birthDate ||
                 location != (currentProfile.location ?: "") ||
                 password.isNotEmpty()
     }
@@ -87,9 +90,9 @@ class EditProfileViewModel @Inject constructor(
      * Validates and saves the profile changes.
      */
     fun onSaveChanges() {
-        val ageInt = age.toIntOrNull()
-        if (ageInt == null) {
-            state = EditProfileState.Error("Invalid age")
+        val selectedBirthDate = birthDate
+        if (selectedBirthDate == null) {
+            state = EditProfileState.Error("Please select your date of birth")
             return
         }
 
@@ -99,17 +102,21 @@ class EditProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            val wasBirthDateChanged = selectedBirthDate != initialProfile?.birthDate
+            
             val updatedProfile = initialProfile?.copy(
                 firstName = firstName,
                 lastName = lastName,
                 phone = "$countryCode $phone".trim(),
-                age = ageInt,
+                birthDate = selectedBirthDate,
+                isBirthDateChanged = isBirthDateAlreadyChanged || wasBirthDateChanged,
                 location = location
             ) ?: return@launch
 
             state = EditProfileState.Loading
             updateProfileUseCase(updatedProfile, password.ifEmpty { null }).onSuccess {
                 state = EditProfileState.UpdateSuccess
+                isBirthDateAlreadyChanged = updatedProfile.isBirthDateChanged
             }.onFailure {
                 state = EditProfileState.Error(it.message ?: "Failed to update profile")
             }
