@@ -246,7 +246,8 @@ object HomeMockData {
 
             status = BookingStatus.COMPLETED,
 
-            createdAt = dateLong(2026, 7, 31)
+            createdAt = dateLong(2026, 7, 31),
+            userId = "Prueba"
         ),
 
         tours = listOf(
