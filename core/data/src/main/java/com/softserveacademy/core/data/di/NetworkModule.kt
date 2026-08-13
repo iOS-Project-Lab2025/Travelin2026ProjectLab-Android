@@ -50,13 +50,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("MockRetrofit")
+    @Named("MainRetrofit")
     fun provideRetrofit(json: Json, okHttpClient: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
         val factory = json.asConverterFactory(contentType)
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            //.baseUrl("https://travelin2026projectlab-android-api.onrender.com/")
             .client(okHttpClient)
             .addConverterFactory(factory)
             .build()
@@ -77,13 +76,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHotelApiService(@Named("MockRetrofit") retrofit: Retrofit): HotelApiService {
+    fun provideHotelApiService(@Named("MainRetrofit") retrofit: Retrofit): HotelApiService {
         return retrofit.create(HotelApiService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideTourApiService(@Named("MockRetrofit") retrofit: Retrofit): TourApiService {
+    fun provideTourApiService(@Named("MainRetrofit") retrofit: Retrofit): TourApiService {
         return retrofit.create(TourApiService::class.java)
     }
 
