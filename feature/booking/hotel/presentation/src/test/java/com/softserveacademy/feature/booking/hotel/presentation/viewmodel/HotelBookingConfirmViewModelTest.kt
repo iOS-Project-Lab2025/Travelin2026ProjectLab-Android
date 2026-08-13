@@ -1,9 +1,11 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetRemoteHotelBookingsUseCase
 import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
@@ -46,7 +48,9 @@ class HotelBookingConfirmViewModelTest {
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase = mockk()
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase = mockk()
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase = mockk()
+    private val getRemoteHotelBookingsUseCase: GetRemoteHotelBookingsUseCase = mockk()
     private val errorHandler: ErrorHandler = mockk()
+    private val context: Context = mockk(relaxed = true)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -75,6 +79,7 @@ class HotelBookingConfirmViewModelTest {
         coEvery { getHotelDetailsUseCase("hotel1") } returns AppResult.Success(hotel)
         coEvery { saveHotelBookingUseCase(any()) } returns AppResult.Success(Unit)
         coEvery { updateHotelBookingStatusUseCase(any(), any()) } returns AppResult.Success(Unit)
+        coEvery { getRemoteHotelBookingsUseCase() } returns AppResult.Success(emptyList())
     }
 
     @After
@@ -95,7 +100,9 @@ class HotelBookingConfirmViewModelTest {
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            getRemoteHotelBookingsUseCase,
+            errorHandler,
+            context
         )
         advanceUntilIdle()
 
@@ -123,7 +130,9 @@ class HotelBookingConfirmViewModelTest {
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            getRemoteHotelBookingsUseCase,
+            errorHandler,
+            context
         )
         advanceUntilIdle()
 
@@ -151,7 +160,9 @@ class HotelBookingConfirmViewModelTest {
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            getRemoteHotelBookingsUseCase,
+            errorHandler,
+            context
         )
         advanceUntilIdle()
 
@@ -173,7 +184,9 @@ class HotelBookingConfirmViewModelTest {
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            getRemoteHotelBookingsUseCase,
+            errorHandler,
+            context
         )
         advanceUntilIdle()
 
