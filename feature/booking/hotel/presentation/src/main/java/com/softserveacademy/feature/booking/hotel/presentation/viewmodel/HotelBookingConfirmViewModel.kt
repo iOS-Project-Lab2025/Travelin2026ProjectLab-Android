@@ -17,7 +17,6 @@ import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.GetRemoteHotelBookingsUseCase
 import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
@@ -47,7 +46,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
-    private val getRemoteHotelBookingsUseCase: GetRemoteHotelBookingsUseCase,
     private val errorHandler: ErrorHandler,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -60,22 +58,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
     init {
         loadBookingDetails()
-        testRemoteBookingsFetch()
-    }
-
-    private fun testRemoteBookingsFetch() {
-        viewModelScope.launch {
-            getRemoteHotelBookingsUseCase()
-                .onSuccess { bookings ->
-                    android.util.Log.d("HotelBookingTest", "Successfully fetched ${bookings.size} remote bookings")
-                    bookings.forEach { booking ->
-                        android.util.Log.d("HotelBookingTest", "Booking: ID=${booking.bookingId}, User=${booking.userId}, Hotel=${booking.hotelId}")
-                    }
-                }
-                .onFailure { error ->
-                    android.util.Log.e("HotelBookingTest", "Failed to fetch remote bookings: $error")
-                }
-        }
     }
 
     private fun loadBookingDetails() {

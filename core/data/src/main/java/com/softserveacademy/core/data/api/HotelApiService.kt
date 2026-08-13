@@ -5,7 +5,9 @@ import com.softserveacademy.core.domain.model.HotelBooking
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
+import kotlinx.serialization.Serializable
 
 interface HotelApiService {
     @GET("hotels/")
@@ -21,4 +23,15 @@ interface HotelApiService {
 
     @GET("bookings/")
     suspend fun getAllBookings(): List<HotelBooking>
+
+    @PUT("bookings/{id}/status")
+    suspend fun updateBookingStatus(
+        @Path("id") bookingId: String,
+        @Body request: UpdateBookingStatusRequest
+    )
 }
+
+@Serializable
+data class UpdateBookingStatusRequest(
+    val status: String
+)
