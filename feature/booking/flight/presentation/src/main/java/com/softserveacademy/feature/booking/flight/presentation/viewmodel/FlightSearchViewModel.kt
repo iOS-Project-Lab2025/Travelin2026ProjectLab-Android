@@ -2,11 +2,13 @@ package com.softserveacademy.feature.booking.flight.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.core.domain.model.FlightType
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightBookingDraftRepository
 import com.softserveacademy.feature.booking.flight.domain.usecase.SearchAirportsUseCase
 import com.softserveacademy.feature.booking.flight.domain.usecase.ValidateFlightSearchUseCase
+import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightSearchEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightSearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +17,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for flight searching criteria.
- * Acts as an orchestrator for segments, business validation, and draft persistence.
+ * ViewModel for the Flight Search criteria screen.
+ * Acts as an orchestrator for airport suggestions, business validation, and draft persistence.
+ *
+ * Key responsibilities:
+ * 1. Manage dynamic flight segments (up to 4 for Multi-city).
+ * 2. Persist user input across flight type changes.
+ * 3. Generate secondary segments for Round Trip automatically.
+ * 4. Translate technical exceptions into UI error messages.
  */
 @HiltViewModel
 class FlightSearchViewModel @Inject constructor(
@@ -32,226 +40,101 @@ class FlightSearchViewModel @Inject constructor(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     /**
-     * Handles all user intents for the search screen.
+     * Primary entry point for all UI intents.
+     * Dispatches logic based on the specific [FlightSearchEvent] received.
      */
     fun onEvent(event: FlightSearchEvent) {
         when (event) {
             is FlightSearchEvent.OnOriginQueryChanged -> {
                 updateSegment(event.index) { it.copy(origin = event.query) }
                 searchAirports(event.query, isOrigin = true, index = event.index)
-
-                // clean the error field if it has the correct information
-                _uiState.update { current ->
-                    val newErrors = current.errors.toMutableMap()
-                    val segmentError = newErrors[event.index]
-                    if (segmentError != null) {
-                        newErrors[event.index] = segmentError.copy(originError = null)
-                    }
-                    current.copy(errors = newErrors)
-                }
+                clearSegmentError(event.index, isOrigin = true)
             }
 
             is FlightSearchEvent.OnDestinationQueryChanged -> {
                 updateSegment(event.index) { it.copy(destination = event.query) }
                 searchAirports(event.query, isOrigin = false, index = event.index)
-
-                // --- clean the field if it has the correct information ---
-                _uiState.update { current ->
-                    val newErrors = current.errors.toMutableMap()
-                    val segmentError = newErrors[event.index]
-                    if (segmentError != null) {
-                        newErrors[event.index] = segmentError.copy(destinationError = null)
-                    }
-                    current.copy(errors = newErrors)
-                }
+                clearSegmentError(event.index, isOrigin = false)
             }
 
             is FlightSearchEvent.OnOriginSelected -> {
                 updateSegment(event.index) { it.copy(origin = event.airport.code) }
-                _uiState.update { current ->
-                    val newErrors = current.errors.toMutableMap()
-                    newErrors[event.index] = newErrors[event.index]?.copy(originError = null) ?: ValidateFlightSearchUseCase.SegmentError()
-                    current.copy(originSuggestions = emptyList(), errors = newErrors)
-                }
+                _uiState.update { it.copy(originSuggestions = emptyList()) }
             }
 
             is FlightSearchEvent.OnDestinationSelected -> {
                 updateSegment(event.index) { it.copy(destination = event.airport.code) }
-                _uiState.update { current ->
-                    val newErrors = current.errors.toMutableMap()
-                    newErrors[event.index] = newErrors[event.index]?.copy(destinationError = null) ?: ValidateFlightSearchUseCase.SegmentError()
-                    current.copy(destinationSuggestions = emptyList(), errors = newErrors)
-                }
+                _uiState.update { it.copy(destinationSuggestions = emptyList()) }
             }
 
             is FlightSearchEvent.OnDateSelected -> {
                 updateSegment(event.index) { it.copy(dateMillis = event.dateMillis) }
-
-                _uiState.update { current ->
-                    // 1. Convertimos el mapa de errores a mutable para editarlo
-                    val newErrors = current.errors.toMutableMap()
-
-                    // 2. Limpiamos el error específico del campo que acabamos de tocar
-                    newErrors.remove(event.index)
-
-                    // 3. LIMPIEZA DE DEPENDENCIAS:
-                    // Si cambió una fecha, los errores de "Secuencia" de otros vuelos podrían ya no aplicar.
-                    // Recorremos el mapa y quitamos cualquier error de secuencia previo.
-                    current.errors.forEach { (idx, error) ->
-                        if (error.dateError == ValidateFlightSearchUseCase.FlightError.INVALID_DATE_SEQUENCE) {
-                            newErrors[idx] = error.copy(dateError = null)
-                        }
-                    }
-
-                    current.copy(
-                        errors = newErrors,
-                        globalDateError = null, // También limpiamos el error global (Round Trip)
-                        bookingDetailsState = if (event.index == 0)
-                            current.bookingDetailsState.copy(startDateMillis = event.dateMillis)
-                        else current.bookingDetailsState
-                    )
-                }
+                handleDateSync(event.index, event.dateMillis)
             }
 
-            is FlightSearchEvent.OnFlightTypeSelected -> {
-                _uiState.update { current ->
-                    // 1. Rescatamos la fecha actual
-                    val firstDate = current.segments.getOrNull(0)?.dateMillis ?: current.bookingDetailsState.startDateMillis
-                    val hasEndDate = current.bookingDetailsState.endDateMillis != null
-
-                    // 2. Calculamos el nuevo error de fecha basado en el modo al que vamos
-                    val newGlobalError = if (current.globalDateError != null || current.errors[0]?.dateError != null) {
-                        when (event.flightType) {
-                            com.softserveacademy.core.domain.model.FlightType.ROUND_TRIP -> {
-                                if (firstDate == null || !hasEndDate) ValidateFlightSearchUseCase.FlightError.MISSING_RETURN_DATE else null
-                            }
-                            else -> {
-                                if (firstDate == null) ValidateFlightSearchUseCase.FlightError.INVALID_DATE else null
-                            }
-                        }
-                    } else null
-
-                    current.copy(
-                        selectedFlightType = event.flightType,
-                        globalDateError = newGlobalError,
-                        segments = if (event.flightType == com.softserveacademy.core.domain.model.FlightType.MULTI_CITY && current.segments.size < 2)
-                            listOf(current.segments[0].copy(dateMillis = firstDate), com.softserveacademy.core.domain.model.FlightSegment())
-                        else listOf(current.segments[0].copy(dateMillis = firstDate))
-                    )
-                }
-            }
+            is FlightSearchEvent.OnFlightTypeSelected -> handleFlightTypeChange(event.flightType)
 
             is FlightSearchEvent.OnSwapSegmentLocations -> {
-                updateSegment(event.index) {
-                    it.copy(
-                        origin = it.destination,
-                        destination = it.origin
-                    )
-                }
+                updateSegment(event.index) { it.copy(origin = it.destination, destination = it.origin) }
             }
 
             is FlightSearchEvent.OnAddSegment -> {
-                _uiState.update { it.copy(segments = it.segments + com.softserveacademy.core.domain.model.FlightSegment()) }
+                _uiState.update { current ->
+                    if (current.segments.size >= 4) return@update current
+                    current.copy(segments = current.segments + com.softserveacademy.core.domain.model.FlightSegment())
+                }
             }
 
             is FlightSearchEvent.OnRemoveSegment -> {
                 _uiState.update { it.copy(segments = it.segments.filterIndexed { i, _ -> i != event.index }) }
             }
 
+            is FlightSearchEvent.OnPerformSearch -> saveDraftAndNavigate()
+
+            // Pass-through events for common booking sheets
             is FlightSearchEvent.OnAdultsChanged -> _uiState.update { it.copy(adults = event.count) }
             is FlightSearchEvent.OnChildrenChanged -> _uiState.update { it.copy(children = event.count) }
             is FlightSearchEvent.OnInfantsChanged -> _uiState.update { it.copy(infants = event.count) }
-            is FlightSearchEvent.OnCabinClassSelected -> {
-                _uiState.update {
-                    it.copy(
-                        selectedCabinClass = event.cabinClass,
-                        showCabinSheet = false
-                    )
-                }
-            }
-
+            is FlightSearchEvent.OnCabinClassSelected -> _uiState.update { it.copy(selectedCabinClass = event.cabinClass, showCabinSheet = false) }
             is FlightSearchEvent.OnShowCabinSheet -> _uiState.update { it.copy(showCabinSheet = true) }
             is FlightSearchEvent.OnDismissCabinSheet -> _uiState.update { it.copy(showCabinSheet = false) }
-            is FlightSearchEvent.OnShowPassengerSheet -> _uiState.update {
-                it.copy(
-                    bookingDetailsState = it.bookingDetailsState.copy(showGuestBottomSheet = true)
-                )
-            }
-
+            is FlightSearchEvent.OnShowPassengerSheet -> _uiState.update { it.copy(bookingDetailsState = it.bookingDetailsState.copy(showGuestBottomSheet = true)) }
             is FlightSearchEvent.OnShowDatePicker -> _uiState.update { it.copy(showDatePicker = true) }
             is FlightSearchEvent.OnDismissDatePicker -> _uiState.update { it.copy(showDatePicker = false) }
             is FlightSearchEvent.InternalBookingEvent -> handleInternalEvent(event.event)
-            FlightSearchEvent.OnPerformSearch -> saveDraftAndNavigate()
-
-        }
-    }
-
-    private fun handleInternalEvent(event: TravelEnterBookingDetailsEvent) {
-        _uiState.update { current ->
-            val newState = when (event) {
-                is TravelEnterBookingDetailsEvent.OnDateRangeSelected -> {
-                    // Update segments with the new start date
-                    val updatedSegments = current.segments.toMutableList()
-                    if (updatedSegments.isNotEmpty()) {
-                        updatedSegments[0] =
-                            updatedSegments[0].copy(dateMillis = event.startDateMillis)
-                    }
-                    current.bookingDetailsState.copy(
-                        startDateMillis = event.startDateMillis,
-                        endDateMillis = event.endDateMillis
-                    ).let {
-                        return@let current.copy(
-                            bookingDetailsState = it,
-                            segments = updatedSegments
-                        )
-                    }
-                }
-
-                TravelEnterBookingDetailsEvent.OnAcceptClick, TravelEnterBookingDetailsEvent.OnDismissBottomSheet ->
-                    current.bookingDetailsState.copy(showGuestBottomSheet = false)
-                        .let { return@let current.copy(bookingDetailsState = it) }
-
-                else -> current.bookingDetailsState.let {
-                    return@let current.copy(
-                        bookingDetailsState = it
-                    )
-                }
-            }
-            newState
         }
     }
 
     /**
      * Logic to sanitize, validate, and persist the booking criteria.
+     * In Round Trip mode, it automatically generates the return segment.
      */
     private fun saveDraftAndNavigate() {
         val currentState = _uiState.value
-
-        // 1. SECURITY: Sanitize inputs before validation
         val sanitizedSegments = currentState.segments.map {
-            it.copy(
-                origin = it.origin.trim().uppercase(),
-                destination = it.destination.trim().uppercase()
-            )
+            it.copy(origin = it.origin.trim().uppercase(), destination = it.destination.trim().uppercase())
         }
 
-        // 2. RUN VALIDATION
         val result = validateFlightSearchUseCase.validate(
             segments = sanitizedSegments,
-            isRoundTrip = currentState.selectedFlightType == com.softserveacademy.core.domain.model.FlightType.ROUND_TRIP,
+            isRoundTrip = currentState.selectedFlightType == FlightType.ROUND_TRIP,
             endDate = currentState.bookingDetailsState.endDateMillis
         )
 
         if (result.isValid) {
             viewModelScope.launch {
-                _uiState.update { it.copy(errors = emptyMap(), globalDateError = null) }
-                // Sincronizar fechas para el primer tramo si es Round/One Way
-                val finalSegments =
-                    if (currentState.selectedFlightType != com.softserveacademy.core.domain.model.FlightType.MULTI_CITY) {
-                        listOf(sanitizedSegments[0].copy(dateMillis = currentState.bookingDetailsState.startDateMillis))
-                    } else {
-                        sanitizedSegments
-                    }
+                val finalSegments = when (currentState.selectedFlightType) {
+                    FlightType.ROUND_TRIP -> listOf(
+                        sanitizedSegments[0].copy(dateMillis = currentState.bookingDetailsState.startDateMillis),
+                        sanitizedSegments[0].copy(
+                            origin = sanitizedSegments[0].destination,
+                            destination = sanitizedSegments[0].origin,
+                            dateMillis = currentState.bookingDetailsState.endDateMillis
+                        )
+                    )
+                    FlightType.ONE_WAY -> listOf(sanitizedSegments[0].copy(dateMillis = currentState.bookingDetailsState.startDateMillis))
+                    else -> sanitizedSegments
+                }
 
                 val draft = FlightBookingDraft(
                     segments = finalSegments,
@@ -267,42 +150,84 @@ class FlightSearchViewModel @Inject constructor(
                 _navigationEvent.emit(Unit)
             }
         } else {
-            _uiState.update { currentState ->
-                // Guardamos los errores tal cual vienen del UseCase (con Enums)
-                currentState.copy(
-                    errors = result.segmentErrors,
-                    globalDateError = result.globalDateError,
-                    errorMessage = null
-                )
-            }
+            _uiState.update { it.copy(errors = result.segmentErrors, globalDateError = result.globalDateError) }
         }
-
     }
 
+    /**
+     * Fetches airport suggestions and handles network-related errors.
+     */
     private fun searchAirports(query: String, isOrigin: Boolean, index: Int) {
+        if (query.length < 3) return
         viewModelScope.launch {
-            searchAirportsUseCase(query).collect { list ->
-                _uiState.update { current ->
-                    current.copy(
+            searchAirportsUseCase(query)
+                .catch { e ->
+                    val errorRes = if (e is java.io.IOException) R.string.flight_error_network else R.string.flight_error_occurred
+                    _uiState.update { it.copy(errorMessage = errorRes) }
+                }
+                .collect { list ->
+                    _uiState.update { it.copy(
                         originSuggestions = if (isOrigin) list else emptyList(),
                         destinationSuggestions = if (!isOrigin) list else emptyList(),
-                        activeSegmentIndex = index
-                    )
+                        activeSegmentIndex = index,
+                        errorMessage = null
+                    )}
                 }
-            }
         }
     }
 
-    private fun updateSegment(
-        index: Int,
-        block: (com.softserveacademy.core.domain.model.FlightSegment) -> com.softserveacademy.core.domain.model.FlightSegment
-    ) {
+    private fun handleFlightTypeChange(type: FlightType) {
+        _uiState.update { current ->
+            val updatedSegments = if (type == FlightType.MULTI_CITY && current.segments.size < 2) {
+                current.segments + com.softserveacademy.core.domain.model.FlightSegment()
+            } else current.segments
+
+            current.copy(selectedFlightType = type, segments = updatedSegments)
+        }
+    }
+
+    private fun handleDateSync(index: Int, dateMillis: Long?) {
+        _uiState.update { current ->
+            val newErrors = current.errors.toMutableMap().apply { remove(index) }
+            current.copy(
+                errors = newErrors,
+                globalDateError = null,
+                bookingDetailsState = if (index == 0) current.bookingDetailsState.copy(startDateMillis = dateMillis) else current.bookingDetailsState
+            )
+        }
+    }
+
+    private fun clearSegmentError(index: Int, isOrigin: Boolean) {
+        _uiState.update { current ->
+            val newErrors = current.errors.toMutableMap()
+            val segmentError = newErrors[index]
+            if (segmentError != null) {
+                newErrors[index] = if (isOrigin) segmentError.copy(originError = null) else segmentError.copy(destinationError = null)
+            }
+            current.copy(errors = newErrors)
+        }
+    }
+
+    private fun updateSegment(index: Int, block: (com.softserveacademy.core.domain.model.FlightSegment) -> com.softserveacademy.core.domain.model.FlightSegment) {
         _uiState.update { current ->
             val newList = current.segments.toMutableList()
-            if (index in newList.indices) {
-                newList[index] = block(newList[index])
-            }
+            if (index in newList.indices) newList[index] = block(newList[index])
             current.copy(segments = newList, activeSegmentIndex = index)
+        }
+    }
+
+    private fun handleInternalEvent(event: TravelEnterBookingDetailsEvent) {
+        _uiState.update { current ->
+            when (event) {
+                is TravelEnterBookingDetailsEvent.OnDateRangeSelected -> {
+                    val updatedSegments = current.segments.toMutableList()
+                    if (updatedSegments.isNotEmpty()) updatedSegments[0] = updatedSegments[0].copy(dateMillis = event.startDateMillis)
+                    current.copy(bookingDetailsState = current.bookingDetailsState.copy(startDateMillis = event.startDateMillis, endDateMillis = event.endDateMillis), segments = updatedSegments)
+                }
+                TravelEnterBookingDetailsEvent.OnAcceptClick, TravelEnterBookingDetailsEvent.OnDismissBottomSheet ->
+                    current.copy(bookingDetailsState = current.bookingDetailsState.copy(showGuestBottomSheet = false))
+                else -> current
+            }
         }
     }
 }

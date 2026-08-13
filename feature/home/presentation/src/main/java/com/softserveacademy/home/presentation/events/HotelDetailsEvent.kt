@@ -15,4 +15,6 @@ sealed interface HotelDetailsEvent {
     data object ViewAllAmenities : HotelDetailsEvent
     data object DismissAmenities : HotelDetailsEvent
     data object DismissMap : HotelDetailsEvent
+    data object ViewExploreArea : HotelDetailsEvent
+    data object DismissExploreArea : HotelDetailsEvent
 }

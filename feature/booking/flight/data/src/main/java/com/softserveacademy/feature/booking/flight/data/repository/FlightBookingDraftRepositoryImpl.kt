@@ -16,8 +16,15 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// DataStore instance specifically for flight booking persistence
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "flight_booking_prefs")
 
+/**
+ * Implementation of [FlightBookingDraftRepository] using Android DataStore and Kotlin Serialization.
+ * Provides thread-safe and disk-persistent storage for the ongoing flight selection process.
+ *
+ * @param context Application context used to access DataStore.
+ */
 @Singleton
 class FlightBookingDraftRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
@@ -25,16 +32,26 @@ class FlightBookingDraftRepositoryImpl @Inject constructor(
 
     private val draftKey = stringPreferencesKey("current_flight_draft")
 
+    /**
+     * Serializes and saves the [FlightBookingDraft] to persistent storage.
+     */
     override suspend fun saveDraft(draft: FlightBookingDraft) {
         context.dataStore.edit { prefs ->
             prefs[draftKey] = Json.encodeToString(draft)
         }
     }
 
+    /**
+     * Retrieves and deserializes the current draft from storage.
+     * @return Flow emitting the draft, or null if nothing has been saved yet.
+     */
     override fun getDraft(): Flow<FlightBookingDraft?> = context.dataStore.data.map { prefs ->
         prefs[draftKey]?.let { Json.decodeFromString<FlightBookingDraft>(it) }
     }
 
+    /**
+     * Removes the current selection state from disk.
+     */
     override suspend fun clearDraft() {
         context.dataStore.edit { it.remove(draftKey) }
     }
