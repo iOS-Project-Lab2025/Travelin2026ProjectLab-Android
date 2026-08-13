@@ -27,10 +27,10 @@ import com.softserveacademy.feature.booking.flight.presentation.viewmodel.Flight
 import com.softserveacademy.home.presentation.navigation.HomeNavigationActions
 
 // Profile screens.
-import com.softserveacademy.home.presentation.ui.screens.ProfileScreen
-import com.softserveacademy.home.presentation.ui.screens.EditProfileScreen
-import com.softserveacademy.home.presentation.viewmodel.ProfileViewModel
-import com.softserveacademy.home.presentation.viewmodel.EditProfileViewModel
+import com.softserveacademy.profile.presentation.ui.screens.ProfileScreen
+import com.softserveacademy.profile.presentation.ui.screens.EditProfileScreen
+import com.softserveacademy.profile.presentation.viewmodel.ProfileViewModel
+import com.softserveacademy.profile.presentation.viewmodel.EditProfileViewModel
 
 // Home screens.
 import com.softserveacademy.home.presentation.ui.screens.RootHomeScreen

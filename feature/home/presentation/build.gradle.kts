@@ -36,8 +36,11 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.feature.profile.domain)
+    implementation(projects.feature.profile.presentation)
     implementation(projects.feature.home.domain)
     implementation(projects.core.presentation.designSystem)
+    implementation(projects.core.presentation.ui)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(projects.feature.auth.common.domain)

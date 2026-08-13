@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="register_title">Create account</string>
+    <string name="register_description">Get the best out of the world by creating an account</string>
+    <string name="register_first_name_label">First name</string>
+    <string name="register_last_name_label">Last name</string>
+    <string name="register_phone_label">Phone</string>
+    <string name="register_birth_date_label">Date of birth</string>
+    <string name="register_birth_date_placeholder">Select date</string>
+    <string name="register_email_label">Email</string>
+    <string name="register_password_label">Password</string>
+    <string name="register_accept_terms">I accept terms and conditions</string>
+    <string name="register_create_button">Create Account</string>
+    <string name="register_already_account">Already have an account? </string>
+    <string name="register_go_back">Go back</string>
+</resources>
