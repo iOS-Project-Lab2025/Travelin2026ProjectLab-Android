@@ -29,7 +29,7 @@ import com.softserveacademy.feature.booking.flight.presentation.ui.mappers.toDis
 @Composable
 fun GenderSelectionSheet(
     isVisible: Boolean,
-    selectedGender: Gender?, // Añadido para resaltar
+    selectedGender: Gender?,
     onGenderSelected: (Gender) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -41,7 +41,7 @@ fun GenderSelectionSheet(
                 Gender.entries.forEach { gender ->
                     OptionCard(
                         text = gender.toDisplayName(),
-                        isSelected = selectedGender == gender, // RESALTADO
+                        isSelected = selectedGender == gender,
                         onClick = { onGenderSelected(gender); onDismiss() }
                     )
                 }
@@ -50,11 +50,15 @@ fun GenderSelectionSheet(
     }
 }
 
+/**
+ * Bottom sheet to select Document Type. Uses the unified card style.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentTypeSelectionSheet(
     isVisible: Boolean,
-    selectedType: DocumentType, // Añadido para resaltar
+    selectedType: DocumentType,
     onTypeSelected: (DocumentType) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -66,7 +70,7 @@ fun DocumentTypeSelectionSheet(
                 DocumentType.entries.forEach { type ->
                     OptionCard(
                         text = type.toDisplayName(),
-                        isSelected = selectedType == type, // RESALTADO
+                        isSelected = selectedType == type,
                         onClick = { onTypeSelected(type); onDismiss() }
                     )
                 }
@@ -75,11 +79,15 @@ fun DocumentTypeSelectionSheet(
     }
 }
 
+/**
+ * Bottom sheet to select Nationality. Uses the unified card style.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NationalitySelectionSheet(
     isVisible: Boolean,
-    selectedNationality: String, // Añadido para resaltar
+    selectedNationality: String,
     onCountrySelected: (Country) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -87,7 +95,7 @@ fun NationalitySelectionSheet(
     if (isVisible) {
         ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState, containerColor = MaterialTheme.colorScheme.surface, dragHandle = { BottomSheetDefaults.DragHandle() }) {
             Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f).padding(horizontal = TravelinDimens.PaddingMedium).navigationBarsPadding()) {
-                Text(text = "Select Nationality", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(text = stringResource(R.string.flight_select_nationality), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(countries) { country ->
                         val countryFullName = "${country.flag} ${country.name}"
@@ -102,6 +110,10 @@ fun NationalitySelectionSheet(
         }
     }
 }
+
+/**
+ * Bottom sheet to select Birth Date. Uses the unified card style.
+ */
 
 @Composable
 private fun OptionCard(text: String, isSelected: Boolean, onClick: () -> Unit) {

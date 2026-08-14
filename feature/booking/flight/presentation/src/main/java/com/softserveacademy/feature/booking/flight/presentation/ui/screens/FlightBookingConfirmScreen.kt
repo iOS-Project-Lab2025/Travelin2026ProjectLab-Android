@@ -82,7 +82,7 @@ fun FlightBookingConfirmScreen(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FlightBookingConfirmContent(
+fun FlightBookingConfirmContent(
     state: FlightBookingConfirmState,
     onBack: () -> Unit,
     onConfirm: () -> Unit,
@@ -194,7 +194,7 @@ private fun FlightBookingConfirmContent(
                     // 3. FLIGHT TICKETS (NO EXTRA PADDING: FlightResultItem already has internal 16dp)
                     Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)) {
                         Text(
-                            text = "Flights Selected Details",
+                            text = stringResource(R.string.flight_confirm_selected_flights_header),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium)

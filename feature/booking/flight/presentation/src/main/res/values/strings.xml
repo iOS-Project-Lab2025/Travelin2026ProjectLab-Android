@@ -141,6 +141,8 @@
     <string name="flight_confirm_guests_label">Travelers</string>
     <string name="flight_confirm_guests_format">%1$d Adult, %2$d Child, %3$d Infant</string>
     <string name="flight_confirm_selected_flights_header">Selected Flights</string>
+    <string name="flight_merchant_stripe_display_name">Travelin 2026 Flights</string>
+    <string name="flight_select_nationality">Select Nationality</string>
 
 
 </resources>

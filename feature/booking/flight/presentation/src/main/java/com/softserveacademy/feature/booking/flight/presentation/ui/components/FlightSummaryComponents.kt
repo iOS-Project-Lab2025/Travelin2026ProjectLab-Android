@@ -107,6 +107,9 @@ fun ContactSummaryCard(contact: FlightContactInfo) {
     }
 }
 
+/**
+ * Renders a read-only field that looks like an input box. Used for Dates, Guests, etc.
+ */
 @Composable
 private fun ReadOnlyField(label: String, value: String) {
     Column {
