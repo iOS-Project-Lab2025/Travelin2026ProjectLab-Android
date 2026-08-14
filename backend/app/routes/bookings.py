@@ -21,8 +21,8 @@ class BookingGuests(BaseSchema):
     pets: bool = False
 
 class BookingPrice(BaseSchema):
-    room_price_per_night: int = Field(alias="room_price_per_night")
-    room_price: int = Field(alias="room_price")
+    rate_per_night: int = Field(alias="rate_per_night")
+    room_subtotal: int = Field(alias="room_subtotal")
     taxes: Optional[int] = 0
     fees: Optional[int] = 0
     total: int

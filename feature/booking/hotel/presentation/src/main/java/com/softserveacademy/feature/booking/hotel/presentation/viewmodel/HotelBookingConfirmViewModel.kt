@@ -17,7 +17,6 @@ import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.core.error.handler.ErrorHandler
@@ -42,7 +41,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
     private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase,
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
-    private val reserveRoomUseCase: ReserveRoomUseCase,
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
@@ -224,10 +222,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
         val checkOut = state.bookingDraft?.checkOut ?: 0L
 
         viewModelScope.launch {
-            if (hotelId != null && roomId != null) {
-                reserveRoomUseCase(hotelId, roomId, checkIn, checkOut)
-            }
-
             currentBookingId?.let { id ->
                 updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
             }
@@ -262,8 +256,8 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 pets = draft.guests.pets
             ),
             price = BookingPrice(
-                roomPricePerNight = room.pricePerNight,
-                roomPrice = state.totalPrice,
+                ratePerNight = room.pricePerNight,
+                roomSubtotal = state.totalPrice,
                 taxes = 0,
                 fees = 0,
                 total = state.totalPrice

@@ -237,8 +237,8 @@ object HomeMockData {
             guests = BookingGuests(adults = 2),
 
             price = BookingPrice(
-                roomPricePerNight = 50,
-                roomPrice = 250,
+                ratePerNight = 50,
+                roomSubtotal = 250,
                 total = 250
             ),
 

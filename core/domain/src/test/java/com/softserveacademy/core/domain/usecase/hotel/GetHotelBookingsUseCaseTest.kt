@@ -33,16 +33,16 @@ class GetHotelBookingsUseCaseTest {
         // Given
         val bookings = listOf(
             HotelBooking(
-                bookingId = "1",
+                bookingId = "BOOKING-TEST",
                 userId = "user1",
-                hotelId = "hotel1",
-                roomId = "room1",
+                hotelId = "1",
+                roomId = "13",
                 checkIn = 1000L,
                 checkOut = 2000L,
                 guests = BookingGuests(2, 0, false),
                 price = BookingPrice(100, 200, 0, 0, 200),
                 status = BookingStatus.COMPLETED,
-                confirmationCode = "CONF1",
+                confirmationCode = "HB-500",
                 createdAt = 500L,
                 contactInfo = BookingContactInfo("John", "Doe", "john@example.com", "+1", "123456789")
             )
