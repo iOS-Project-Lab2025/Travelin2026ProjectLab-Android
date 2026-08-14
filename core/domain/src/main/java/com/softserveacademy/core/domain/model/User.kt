@@ -9,14 +9,14 @@ package com.softserveacademy.core.domain.model
  * @property firstName User's first name.
  * @property lastName User's last name.
  * @property phone User's contact phone number.
- * @property age User's age.
+ * @property birthDate User's birth date as a timestamp.
  * @property email User's email address.
  */
 data class User (
     val firstName: String,
     val lastName: String,
     val phone: String,
-    val age: Int,
+    val birthDate: Long,
     val email: String
 
 ) {

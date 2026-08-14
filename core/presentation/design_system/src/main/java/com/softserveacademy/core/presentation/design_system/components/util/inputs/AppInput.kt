@@ -35,6 +35,7 @@ import com.softserveacademy.core.presentation.design_system.theme.shapes
  * @param keyboardActions The actions to be performed in response to software keyboard events.
  * @param singleLine Whether the input field should be restricted to a single line of text.
  * @param enabled Whether the input field is enabled for user interaction.
+ * @param readOnly Whether the input field is read-only.
  * @param interactionSource The [MutableInteractionSource] to be used for this input field.
  */
 @Composable
@@ -52,6 +53,7 @@ fun AppInput(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
     enabled: Boolean = true,
+    readOnly: Boolean = false,
     shape: Shape = MaterialTheme.shapes.small,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
@@ -63,6 +65,7 @@ fun AppInput(
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
+            readOnly = readOnly,
             singleLine = singleLine,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,

@@ -45,6 +45,7 @@ fun TravelHotelRoomCard(
     room: HotelRoom,
     nightCount: Int = 1,
     isSelected: Boolean = false,
+    isAvailable: Boolean = true,
     isClickable: Boolean = true,
     onRoomSelected: (HotelRoom) -> Unit = {},
 ) {
@@ -59,10 +60,10 @@ fun TravelHotelRoomCard(
                 )
                 else Modifier
             )
-            .clickable(enabled = isClickable) { onRoomSelected(room) },
+            .clickable(enabled = isClickable && isAvailable) { onRoomSelected(room) },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = if (isAvailable) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = TravelinDimens.ElevationSmall
@@ -75,6 +76,7 @@ fun TravelHotelRoomCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
+                    .then(if (!isAvailable) Modifier.background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)) else Modifier)
             )
 
             Column(
@@ -85,7 +87,7 @@ fun TravelHotelRoomCard(
                 Text(
                     text = room.type,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = if (isAvailable) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold
@@ -152,11 +154,11 @@ fun TravelHotelRoomCard(
                     }
 
                     Text( // Availability badge
-                        text = if (room.isAvailable) "Available" else "Unavailable",
+                        text = if (isAvailable) "Available" else "Unavailable",
                         modifier = Modifier
                             .clip(MaterialTheme.shapes.extraLarge)
                             .background(
-                                if (room.isAvailable) {
+                                if (isAvailable) {
                                     MaterialTheme.colorScheme.secondary
                                 } else {
                                     MaterialTheme.colorScheme.error
@@ -194,8 +196,7 @@ private fun TravelHotelRoomCardPreview() {
         images = listOf(
             "https://picsum.photos/200/300",
             "https://picsum.photos/200"
-        ),
-        isAvailable = true
+        )
     )
 
     Travelin2026ProjectLabTheme {
@@ -206,7 +207,8 @@ private fun TravelHotelRoomCardPreview() {
             TravelHotelRoomCard(
                 room = sampleRoom,
                 nightCount = 3,
-                isSelected = false
+                isSelected = false,
+                isAvailable = true
             )
             TravelHotelRoomCard(
                 room = sampleRoom.copy(
@@ -216,7 +218,8 @@ private fun TravelHotelRoomCardPreview() {
                     bedType = "1 Queen bed",
                 ),
                 nightCount = 3,
-                isSelected = true
+                isSelected = true,
+                isAvailable = false
             )
         }
     }

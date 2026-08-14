@@ -8,6 +8,6 @@ enum class TravelinFlavor(
     val baseUrl: String = "https://private-amnesiac-923781-travelin1.apiary-mock.com/"
 ) {
     dev(FlavorDimension.contentType, ".dev"),
-    staging(FlavorDimension.contentType, ".staging"),
-    prod(FlavorDimension.contentType)
+    staging(FlavorDimension.contentType, ".staging", "https://travelin2026projectlab-android-api.onrender.com/"),
+    prod(FlavorDimension.contentType, baseUrl = "https://travelin2026projectlab-android-api.onrender.com/")
 }

@@ -16,8 +16,7 @@ import kotlinx.serialization.Serializable
  * @param pricePerNight The price for the selected stay per night.
  * @param images A list of image URLs associated with the room for the gallery.
  * @param totalRooms The total number of rooms available.
- * @param availableRooms The number of rooms currently available.
- * @param isAvailable Whether the room is currently available.
+ * @param allowPets Whether the room allows pets.
  */
 @Serializable
 data class HotelRoom(
@@ -32,6 +31,5 @@ data class HotelRoom(
     val pricePerNight: Int,
     val images: List<String> = emptyList(),
     val totalRooms: Int = 5,
-    val availableRooms: Int = 5,
-    val isAvailable: Boolean = true
+    val allowPets: Boolean = false
 ) : java.io.Serializable

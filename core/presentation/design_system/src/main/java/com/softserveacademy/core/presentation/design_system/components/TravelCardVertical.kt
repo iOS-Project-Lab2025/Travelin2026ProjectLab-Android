@@ -51,9 +51,10 @@ fun TravelCardVertical(
     ) {
         TravelImageHandler(
             image = imageUrl,
-            imageWidth = 180.dp,
-            imageHeight = TravelinDimens.ImageSizeLarge,
-            shouldClip = false
+            shouldClip = false,
+            modifier = Modifier
+                .width(180.dp)
+                .height(TravelinDimens.ImageSizeLarge)
         )
         Column(
             modifier = Modifier
