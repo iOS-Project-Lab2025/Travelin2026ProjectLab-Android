@@ -132,11 +132,25 @@ class HotelRoomSelectionViewModel @Inject constructor(
                 applyFilters()
             }
             is HotelRoomSelectionEvent.OnRoomSelected -> {
-                _uiState.update { it.copy(selectedRoomId = event.roomId) }
-                savedStateHandle[KEY_SELECTED_ROOM_ID] = event.roomId
-                saveRoomToDraft(event.roomId)
+                // Only allow selecting a room if it's actually available for the selected dates
+                if (_uiState.value.availableRoomIds.contains(event.roomId)) {
+                    _uiState.update { it.copy(selectedRoomId = event.roomId) }
+                    savedStateHandle[KEY_SELECTED_ROOM_ID] = event.roomId
+                    saveRoomToDraft(event.roomId)
+                }
             }
-            HotelRoomSelectionEvent.OnNextClick -> onNextClick()
+            HotelRoomSelectionEvent.OnNextClick -> {
+                val state = _uiState.value
+                val selectedRoomId = state.selectedRoomId
+                
+                // Final validation: Ensure a room is selected AND it is available
+                if (selectedRoomId != null && state.availableRoomIds.contains(selectedRoomId)) {
+                    onNextClick()
+                } else if (selectedRoomId != null) {
+                    // If somehow an unavailable room was selected, clear it and show error
+                    _uiState.update { it.copy(error = "Selected room is no longer available.") }
+                }
+            }
             HotelRoomSelectionEvent.OnBackClick -> { /* Handled by navigation */ }
             HotelRoomSelectionEvent.OnRetryClick -> loadRooms()
         }
