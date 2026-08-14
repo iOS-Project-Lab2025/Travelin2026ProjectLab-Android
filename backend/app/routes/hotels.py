@@ -26,7 +26,8 @@ def get_hotels():
             "star": hotel["star"],
             "userRating": hotel["user_rating"],
             "pricePerNight": hotel["price_per_night"],
-            "image": hotel.get("image_list", [])
+            "image": hotel.get("image_list", []),
+            "amenities": hotel.get("amenities", [])
         })
 
     return hotels
@@ -80,6 +81,7 @@ def get_hotel_by_id(id: str):
         "userRating": hotel["user_rating"],
         "pricePerNight": hotel["price_per_night"],
         "image": hotel.get("image_list", []),
+        "amenities": hotel.get("amenities", []),
         "rooms": rooms
     }
 

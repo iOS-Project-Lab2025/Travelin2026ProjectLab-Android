@@ -1,5 +1,6 @@
 package com.softserveacademy.core.domain.model
 
+import com.softserveacademy.core.domain.util.FlexibleListSerializer
 import com.softserveacademy.core.domain.util.FlexibleStringSerializer
 import kotlinx.serialization.Serializable
 
@@ -27,7 +28,8 @@ data class HotelRoom(
     val maxOccupancy: Int,
     val bedType: String,
     val bedCount: Int = 1,
-    val amenities: List<HotelRoomAmenity>,
+    @Serializable(with = FlexibleListSerializer::class)
+    val amenities: List<String>,
     val pricePerNight: Int,
     val images: List<String> = emptyList(),
     val totalRooms: Int = 5,

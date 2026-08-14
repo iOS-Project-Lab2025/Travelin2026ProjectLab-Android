@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.components.TravelGalleryCarousel
 import com.softserveacademy.core.presentation.design_system.components.TravelRatingBar
-import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelHotelDetailsTopIcons
 import com.softserveacademy.core.presentation.design_system.theme.BlueDark90_Alpha50
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -63,7 +62,7 @@ fun TravelDetailsHeader(
                 .height(250.dp)
         )
 
-        TravelHotelDetailsTopIcons(onBackClick,onShareClick,onFavoriteClick)
+        TravelDetailsTopIcons(onBackClick,onShareClick,onFavoriteClick)
 
         Column(
             verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall),
