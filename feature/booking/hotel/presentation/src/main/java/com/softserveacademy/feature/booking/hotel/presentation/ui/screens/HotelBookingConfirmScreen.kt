@@ -1,5 +1,6 @@
 package com.softserveacademy.feature.booking.hotel.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -50,6 +51,11 @@ fun HotelBookingConfirmScreen(
     viewModel: HotelBookingConfirmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    BackHandler {
+        viewModel.onEvent(HotelBookingConfirmEvent.OnBackClick)
+        onBackClick()
+    }
 
     val paymentSheet = rememberPaymentSheet { result ->
         when (result) {
@@ -127,11 +133,15 @@ fun HotelBookingConfirmScreen(
 
     HotelBookingConfirmContent(
         uiState = uiState,
-        onBackClick = onBackClick,
+        onBackClick = {
+            viewModel.onEvent(HotelBookingConfirmEvent.OnBackClick)
+            onBackClick()
+        },
         onConfirmClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick) },
         onRetryClick = { viewModel.onEvent(HotelBookingConfirmEvent.OnRetryClick) },
         onDismissError = {
             if (uiState.hotel == null) {
+                viewModel.onEvent(HotelBookingConfirmEvent.OnBackClick)
                 onBackClick()
             } else {
                 viewModel.onEvent(HotelBookingConfirmEvent.OnDismissError)

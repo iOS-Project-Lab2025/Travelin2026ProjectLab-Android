@@ -24,3 +24,4 @@ def health_check():
         return {"status": "ok", "database": "connected"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+

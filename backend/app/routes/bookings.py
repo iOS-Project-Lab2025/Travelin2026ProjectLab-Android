@@ -21,8 +21,8 @@ class BookingGuests(BaseSchema):
     pets: bool = False
 
 class BookingPrice(BaseSchema):
-    room_price_per_night: int = Field(alias="room_price_per_night")
-    room_price: int = Field(alias="room_price")
+    rate_per_night: int = Field(alias="rate_per_night")
+    room_subtotal: int = Field(alias="room_subtotal")
     taxes: Optional[int] = 0
     fees: Optional[int] = 0
     total: int
@@ -48,6 +48,9 @@ class HotelBooking(BaseSchema):
     created_at: int = Field(alias="created_at")
     contact_info: Optional[BookingContactInfo] = None
 
+class UpdateStatusRequest(BaseModel):
+    status: str
+
 @router.get("/")
 def get_all_bookings():
     try:
@@ -60,6 +63,23 @@ def get_all_bookings():
         return response.data
     except Exception as e:
         print(f"ERROR fetching all bookings: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{booking_id}/status")
+def update_booking_status(booking_id: str, request: UpdateStatusRequest):
+    try:
+        response = (
+            supabase
+            .table("hotels_booking")
+            .update({"status": request.status})
+            .eq("booking_id", booking_id)
+            .execute()
+        )
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Booking not found")
+        return {"status": "success", "data": response.data}
+    except Exception as e:
+        print(f"ERROR updating booking status: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/")

@@ -69,8 +69,7 @@ def get_hotel_by_id(id: str):
             "pricePerNight": int(room["price_per_night"]),
             "images": room.get("images", []),
             "totalRooms": room["total_rooms"],
-            "availableRooms": room["available_rooms"],
-            "isAvailable": room["is_available"]
+            "allowPets": room["allow_pets"],
         })
 
     return {
@@ -106,7 +105,6 @@ def get_hotel_rooms(id: str):
             "pricePerNight": int(room["price_per_night"]),
             "images": room.get("images", []),
             "totalRooms": room["total_rooms"],
-            "availableRooms": room["available_rooms"],
-            "isAvailable": room["is_available"]
+            "allowPets": room["allow_pets"],
         })
     return rooms

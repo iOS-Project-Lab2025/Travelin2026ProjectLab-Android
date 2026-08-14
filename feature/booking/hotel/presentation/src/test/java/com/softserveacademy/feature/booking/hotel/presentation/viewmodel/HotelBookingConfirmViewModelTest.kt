@@ -7,8 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.GetRemoteHotelBookingsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.core.error.handler.ErrorHandler
@@ -48,11 +46,9 @@ class HotelBookingConfirmViewModelTest {
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase = mockk()
     private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase = mockk()
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase = mockk()
-    private val reserveRoomUseCase: ReserveRoomUseCase = mockk()
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase = mockk()
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase = mockk()
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase = mockk()
-    private val getRemoteHotelBookingsUseCase: GetRemoteHotelBookingsUseCase = mockk()
     private val errorHandler: ErrorHandler = mockk()
     private val context: Context = mockk(relaxed = true)
 
@@ -82,7 +78,7 @@ class HotelBookingConfirmViewModelTest {
             description = "Desc",
             address = "Loc",
             imageList = emptyList(),
-            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true)),
+            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100)),
             reviewRating = 4.5,
             numberOfReviews = 10
         )
@@ -91,7 +87,6 @@ class HotelBookingConfirmViewModelTest {
         coEvery { getHotelDetailsUseCase("hotel1") } returns AppResult.Success(hotel)
         coEvery { saveHotelBookingUseCase(any()) } returns AppResult.Success(Unit)
         coEvery { updateHotelBookingStatusUseCase(any(), any()) } returns AppResult.Success(Unit)
-        coEvery { getRemoteHotelBookingsUseCase() } returns AppResult.Success(emptyList())
     }
 
     @After
@@ -110,11 +105,9 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            getRemoteHotelBookingsUseCase,
             errorHandler,
             context
         )
@@ -145,11 +138,9 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            getRemoteHotelBookingsUseCase,
             errorHandler,
             context
         )
@@ -177,11 +168,9 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            getRemoteHotelBookingsUseCase,
             errorHandler,
             context
         )
@@ -201,11 +190,9 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            getRemoteHotelBookingsUseCase,
             errorHandler,
             context
         )

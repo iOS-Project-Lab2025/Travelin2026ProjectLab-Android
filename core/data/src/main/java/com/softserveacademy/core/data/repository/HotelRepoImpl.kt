@@ -2,27 +2,14 @@ package com.softserveacademy.core.data.repository
 
 import com.softserveacademy.core.data.api.HotelApiService
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.core.error.util.safeCall
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
-
-/**
- * Data class representing a booking.
- * @param roomId The ID of the booked room.
- * @param checkInDate The check-in date in milliseconds.
- * @param checkOutDate The check-out date in milliseconds.
- */
-data class Booking(
-    val roomId: String,
-    val checkInDate: Long,
-    val checkOutDate: Long
-)
 
 /**
  * Implementation of the HotelRepo interface that fetches data from a real API.
@@ -32,7 +19,6 @@ class HotelRepoImpl @Inject constructor(
     private val hotelApiService: HotelApiService,
     private val mapper: ExceptionMapper
 ) : HotelRepo {
-    private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
 
     override suspend fun getHotelById(id: String): AppResult<Hotel> = safeCall(mapper) {
         hotelApiService.getHotelById(id)
@@ -42,28 +28,12 @@ class HotelRepoImpl @Inject constructor(
         hotelApiService.getHotels()
     }
 
-    override suspend fun getHotelRooms(hotelId: String, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>> = safeCall(mapper) {
+    override suspend fun getHotelRooms(hotelId: String): AppResult<List<HotelRoom>> = safeCall(mapper) {
         val hotel = hotelApiService.getHotelById(hotelId)
-        val baseRooms = hotel.rooms
-        baseRooms
-            .filter { it.maxOccupancy >= guestCount }
-            .map { room ->
-                val bookedCount = _bookings.value.count { booking ->
-                    booking.roomId == room.id && 
-                    checkInDate < booking.checkOutDate && 
-                    booking.checkInDate < checkOutDate
-                }
-                val available = (room.totalRooms - bookedCount).coerceAtLeast(0)
-                room.copy(
-                    availableRooms = available,
-                    isAvailable = available > 0
-                )
-            }
+        hotel.rooms
     }
 
-    override suspend fun reserveRoom(hotelId: String, roomId: String, checkInDate: Long, checkOutDate: Long): AppResult<Unit> = safeCall(mapper) {
-        _bookings.update { currentBookings ->
-            currentBookings + Booking(roomId, checkInDate, checkOutDate)
-        }
+    override suspend fun getBookings(): List<HotelBooking> {
+        return hotelApiService.getAllBookings()
     }
 }

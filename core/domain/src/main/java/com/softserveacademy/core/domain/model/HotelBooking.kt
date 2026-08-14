@@ -62,18 +62,18 @@ data class BookingGuests(
 /**
  * Data class representing the detailed price breakdown for a booking.
  *
- * @property roomPricePerNight The price of the room per night.
- * @property roomPrice The total price for the room stay.
+ * @property ratePerNight The price of the room per night.
+ * @property roomSubtotal The total price for the room stay.
  * @property taxes Total taxes applied to the booking.
  * @property fees Total fees applied to the booking.
  * @property total The final total price including taxes and fees.
  */
 @Serializable
 data class BookingPrice(
-    @SerialName("room_price_per_night")
-    val roomPricePerNight: Int,
-    @SerialName("room_price")
-    val roomPrice: Int,
+    @SerialName("rate_per_night")
+    val ratePerNight: Int,
+    @SerialName("room_subtotal")
+    val roomSubtotal: Int,
     val taxes: Int = 0,
     val fees: Int = 0,
     val total: Int

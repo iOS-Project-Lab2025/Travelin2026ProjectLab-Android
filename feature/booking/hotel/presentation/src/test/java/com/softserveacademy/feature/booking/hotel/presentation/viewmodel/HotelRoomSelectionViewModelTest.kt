@@ -5,7 +5,8 @@ import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
-import com.softserveacademy.core.domain.usecase.hotel.GetHotelRoomsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetFilterRoomsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetAvailableRoomsUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.RoomFilter
@@ -26,6 +27,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -33,7 +35,8 @@ import org.junit.Test
 class HotelRoomSelectionViewModelTest {
 
     private lateinit var viewModel: HotelRoomSelectionViewModel
-    private lateinit var getHotelRoomsUseCase: GetHotelRoomsUseCase
+    private lateinit var getFilterRoomsUseCase: GetFilterRoomsUseCase
+    private lateinit var getAvailableRoomsUseCase: GetAvailableRoomsUseCase
     private lateinit var getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase
     private lateinit var saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase
     private lateinit var errorHandler: ErrorHandler
@@ -42,8 +45,8 @@ class HotelRoomSelectionViewModelTest {
 
     private val hotelId = "1"
     private val mockRooms = listOf(
-        HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true),
-        HotelRoom(id = "2", type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200, isAvailable = false)
+        HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100),
+        HotelRoom(id = "2", type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200)
     )
 
     private val checkIn = 1000L
@@ -52,13 +55,15 @@ class HotelRoomSelectionViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        getHotelRoomsUseCase = mockk()
+        getFilterRoomsUseCase = mockk()
+        getAvailableRoomsUseCase = mockk()
         getHotelBookingDraftUseCase = mockk(relaxed = true)
         saveHotelBookingDraftUseCase = mockk(relaxed = true)
         errorHandler = mockk(relaxed = true)
         savedStateHandle = SavedStateHandle(mapOf("hotelId" to hotelId))
 
-        coEvery { getHotelRoomsUseCase(hotelId, any(), any(), any()) } returns AppResult.Success(mockRooms)
+        coEvery { getFilterRoomsUseCase(hotelId, any(), any()) } returns AppResult.Success(mockRooms)
+        coEvery { getAvailableRoomsUseCase(hotelId, any(), any(), any(), any()) } returns AppResult.Success(listOf(mockRooms[0]))
         coEvery { getHotelBookingDraftUseCase(hotelId) } returns HotelBookingDraft(
             hotelId = hotelId,
             checkIn = checkIn,
@@ -75,7 +80,8 @@ class HotelRoomSelectionViewModelTest {
     fun `init loads rooms and calculates night count`() = runTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
@@ -85,15 +91,16 @@ class HotelRoomSelectionViewModelTest {
         val state = viewModel.uiState.value
         assertEquals(mockRooms, state.rooms)
         assertFalse(state.isLoading)
-        // (2000 - 1000) / (1000 * 60 * 60 * 24) is 0, coerceAtLeast(1) is 1
         assertEquals(1, state.nightCount)
+        assertTrue(state.availableRoomIds.contains("1"))
     }
 
     @Test
     fun `applyFilters filters by availability`() = runTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
@@ -109,7 +116,8 @@ class HotelRoomSelectionViewModelTest {
     fun `applyFilters filters by bed count`() = runTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
@@ -125,7 +133,8 @@ class HotelRoomSelectionViewModelTest {
     fun `onRoomSelected updates state`() = runTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
@@ -138,34 +147,32 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `applyFilters resets selectedRoomId when filteredRooms is empty and persists it`() = runTest {
-        // Mock repository to return rooms that will be filtered out by ONE_BED
         val specialRooms = listOf(
-            HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100, isAvailable = true)
+            HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100)
         )
-        coEvery { getHotelRoomsUseCase(hotelId, any(), any(), any()) } returns AppResult.Success(specialRooms)
+        coEvery { getFilterRoomsUseCase(hotelId, any(), any()) } returns AppResult.Success(specialRooms)
+        coEvery { getAvailableRoomsUseCase(any(), any(), any(), any(), any()) } returns AppResult.Success(specialRooms)
         
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
         )
         advanceUntilIdle()
 
-        // Select a room first
         viewModel.onEvent(HotelRoomSelectionEvent.OnRoomSelected("1"))
         advanceUntilIdle()
         assertEquals("1", viewModel.uiState.value.selectedRoomId)
 
-        // Apply filter that results in empty list
         viewModel.onEvent(HotelRoomSelectionEvent.OnFilterSelected(RoomFilter.ONE_BED))
         advanceUntilIdle()
         
         assertEquals(0, viewModel.uiState.value.filteredRooms.size)
         assertEquals(null, viewModel.uiState.value.selectedRoomId)
         
-        // Verify persistence reset
         coVerify { saveHotelBookingDraftUseCase(match { it.roomId == null }) }
     }
 
@@ -173,7 +180,8 @@ class HotelRoomSelectionViewModelTest {
     fun `onNextClick saves draft`() = runTest {
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
@@ -190,12 +198,13 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `loadRooms handles failure correctly`() = runTest {
-        coEvery { getHotelRoomsUseCase(any(), any(), any(), any()) } returns AppResult.Failure(mockk())
+        coEvery { getFilterRoomsUseCase(any(), any(), any()) } returns AppResult.Failure(mockk())
         every { errorHandler.handle(any()) } returns ErrorAction.ShowMessage(UiText.Raw("Room error"))
 
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
@@ -209,19 +218,21 @@ class HotelRoomSelectionViewModelTest {
 
     @Test
     fun `OnRetryClick reloads rooms`() = runTest {
-        coEvery { getHotelRoomsUseCase(any(), any(), any(), any()) } returns AppResult.Failure(mockk())
+        coEvery { getFilterRoomsUseCase(any(), any(), any()) } returns AppResult.Failure(mockk())
         every { errorHandler.handle(any()) } returns ErrorAction.ShowMessage(UiText.Raw("Error"))
 
         viewModel = HotelRoomSelectionViewModel(
             savedStateHandle,
-            getHotelRoomsUseCase,
+            getFilterRoomsUseCase,
+            getAvailableRoomsUseCase,
             getHotelBookingDraftUseCase,
             saveHotelBookingDraftUseCase,
             errorHandler
         )
         advanceUntilIdle()
 
-        coEvery { getHotelRoomsUseCase(any(), any(), any(), any()) } returns AppResult.Success(mockRooms)
+        coEvery { getFilterRoomsUseCase(any(), any(), any()) } returns AppResult.Success(mockRooms)
+        coEvery { getAvailableRoomsUseCase(any(), any(), any(), any(), any()) } returns AppResult.Success(mockRooms)
         viewModel.onEvent(HotelRoomSelectionEvent.OnRetryClick)
         advanceUntilIdle()
 
