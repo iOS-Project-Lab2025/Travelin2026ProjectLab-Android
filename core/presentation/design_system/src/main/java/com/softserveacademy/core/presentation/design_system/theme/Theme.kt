@@ -28,7 +28,8 @@ private val DarkColorScheme = darkColorScheme(
     outline = Gray80,
     primaryContainer = TravelBlue40,
     secondaryContainer = TravelGray30,
-    onPrimaryFixed = Gray40
+    onPrimaryFixed = Gray40,
+    surfaceContainer = Gray90
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -48,7 +49,8 @@ private val LightColorScheme = lightColorScheme(
     outline = Gray80,
     primaryContainer = TravelBlue40,
     secondaryContainer = TravelGray30,
-    onPrimaryFixed = BlueDark90
+    onPrimaryFixed = BlueDark90,
+    surfaceContainer = White20
 )
 
 val LocalIsDarkTheme = staticCompositionLocalOf { false }

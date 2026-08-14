@@ -35,6 +35,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     minSdk = libs.findVersion("minSdk").get().requiredVersion.toInt()
                     targetSdk = libs.findVersion("targetSdk").get().requiredVersion.toInt()
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                    
+                    val mapsApiKey = getProperty("MAPS_API_KEY")
+                        ?: project.findProperty("MAPS_API_KEY")?.toString()
+                        ?: ""
+                    manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+                    buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
                 }
 
                 val keystorePath = getProperty("KEYSTORE_PATH")
@@ -83,7 +89,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                             buildConfigField(
                                 "String",
                                 "BASE_URL",
-                                "\"${flavor.baseUrl}\""
+                                "\"${getProperty("BASE_URL") ?: flavor.baseUrl}\""
                             )
                         }
                     }

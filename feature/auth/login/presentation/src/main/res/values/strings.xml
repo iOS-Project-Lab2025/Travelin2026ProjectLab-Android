@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Login Screen -->
+    <string name="login_title_prefix">Let\'s </string>
+    <string name="login_title_mid">Travel</string>
+    <string name="login_title_suffix"> you in.</string>
+    <string name="login_description">Discover the World with Every\nSign In</string>
+    <string name="login_email_placeholder">Email or Phone Number</string>
+    <string name="login_password_placeholder">Password</string>
+    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_sign_in_button">Sign In</string>
+    <string name="login_social_prefix">or sign in with</string>
+    <string name="login_no_account">I don\'t have a account?</string>
+    <string name="login_sign_up_button">Sign Up</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="forgot_password_title">Forgot password</string>
+    <string name="forgot_password_description">Enter your email account for a password recovery</string>
+    <string name="forgot_password_email_label">Email</string>
+    <string name="forgot_password_success">Recovery email sent successfully!</string>
+    <string name="forgot_password_recover_button">Recover Password</string>
+</resources>

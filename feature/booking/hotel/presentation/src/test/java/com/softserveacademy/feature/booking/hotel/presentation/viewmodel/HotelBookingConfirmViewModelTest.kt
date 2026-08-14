@@ -1,10 +1,12 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
+import android.content.Context
+import android.provider.Settings
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.core.error.handler.ErrorHandler
@@ -20,6 +22,8 @@ import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBooki
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -42,11 +46,11 @@ class HotelBookingConfirmViewModelTest {
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase = mockk()
     private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase = mockk()
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase = mockk()
-    private val reserveRoomUseCase: ReserveRoomUseCase = mockk()
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase = mockk()
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase = mockk()
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase = mockk()
     private val errorHandler: ErrorHandler = mockk()
+    private val context: Context = mockk(relaxed = true)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -54,6 +58,14 @@ class HotelBookingConfirmViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         
+        mockkStatic(Log::class)
+        every { Log.d(any(), any()) } returns 0
+        every { Log.e(any(), any()) } returns 0
+        every { Log.e(any(), any(), any()) } returns 0
+
+        mockkStatic(Settings.Secure::class)
+        every { Settings.Secure.getString(any(), any()) } returns "test-device-id"
+
         val draft = HotelBookingDraft(
             hotelId = "hotel1",
             roomId = "room1",
@@ -66,7 +78,7 @@ class HotelBookingConfirmViewModelTest {
             description = "Desc",
             address = "Loc",
             imageList = emptyList(),
-            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100, isAvailable = true)),
+            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100)),
             reviewRating = 4.5,
             numberOfReviews = 10
         )
@@ -80,6 +92,8 @@ class HotelBookingConfirmViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        unmockkStatic(Log::class)
+        unmockkStatic(Settings.Secure::class)
     }
 
     @Test
@@ -91,21 +105,26 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            errorHandler,
+            context
         )
+        // Ensure loadBookingDetails finishes
         advanceUntilIdle()
 
+        // Check if load was successful before clicking confirm
+        assertTrue("Hotel details should be loaded", viewModel.uiState.value.hotel != null)
+
         viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick)
+        // Ensure createPaymentIntent finishes
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertTrue(state.showPaymentSimulationSheet)
-        assertFalse(state.isPaymentSheetLoading)
-        assertEquals(null, state.error)
+        assertTrue("Expected simulation sheet to be shown, state: $state", state.showPaymentSimulationSheet)
+        assertFalse("Expected payment sheet NOT to be loading", state.isPaymentSheetLoading)
+        assertEquals("Expected no error message", null, state.error)
     }
 
     @Test
@@ -119,21 +138,23 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            errorHandler,
+            context
         )
         advanceUntilIdle()
+
+        assertTrue("Hotel details should be loaded", viewModel.uiState.value.hotel != null)
 
         viewModel.onEvent(HotelBookingConfirmEvent.OnConfirmClick)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertFalse(state.showPaymentSimulationSheet)
-        assertFalse(state.isPaymentSheetLoading)
-        assertEquals("No connection", state.error)
+        assertFalse("Expected simulation sheet NOT to be shown, state: $state", state.showPaymentSimulationSheet)
+        assertFalse("Expected payment sheet NOT to be loading", state.isPaymentSheetLoading)
+        assertEquals("Expected network error message", "No connection", state.error)
     }
 
     @Test
@@ -147,11 +168,11 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            errorHandler,
+            context
         )
         advanceUntilIdle()
 
@@ -169,11 +190,11 @@ class HotelBookingConfirmViewModelTest {
             getHotelBookingDraftUseCase,
             clearHotelBookingDraftUseCase,
             getHotelDetailsUseCase,
-            reserveRoomUseCase,
             saveHotelBookingUseCase,
             updateHotelBookingStatusUseCase,
             createPaymentIntentUseCase,
-            errorHandler
+            errorHandler,
+            context
         )
         advanceUntilIdle()
 

@@ -1,7 +1,7 @@
 package com.softserveacademy.home.presentation.mockdata
 
 import com.softserveacademy.home.presentation.model.UpcomingTripUi
-import com.softserveacademy.home.presentation.model.UserProfileUi
+import com.softserveacademy.profile.presentation.model.UserProfileUi
 
 object PresentationMockData {
     val userProfile = UserProfileUi(

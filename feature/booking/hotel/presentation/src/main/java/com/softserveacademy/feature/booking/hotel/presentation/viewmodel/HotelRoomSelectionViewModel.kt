@@ -7,7 +7,8 @@ import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
-import com.softserveacademy.core.domain.usecase.hotel.GetHotelRoomsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetFilterRoomsUseCase
+import com.softserveacademy.core.domain.usecase.hotel.GetAvailableRoomsUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelRoomSelectionEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelRoomSelectionState
@@ -23,13 +24,15 @@ import kotlin.time.Duration.Companion.seconds
 import javax.inject.Inject
 
 import com.softserveacademy.core.error.model.UiText
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.core.error.handler.ErrorHandler
 
 /**
  * View model for the hotel room selection screen.
  *
  * @property savedStateHandle The handle to saved state.
- * @property getHotelRoomsUseCase Use case for fetching available hotel rooms.
+ * @property getFilterRoomsUseCase Use case for fetching filtered hotel rooms.
+ * @property getAvailableRoomsUseCase Use case for fetching available hotel rooms.
  * @property getHotelBookingDraftUseCase Use case for retrieving booking drafts.
  * @property saveHotelBookingDraftUseCase Use case for saving booking drafts.
  * @property errorHandler The error handler for the screen.
@@ -37,7 +40,8 @@ import com.softserveacademy.core.error.handler.ErrorHandler
 @HiltViewModel
 class HotelRoomSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getHotelRoomsUseCase: GetHotelRoomsUseCase,
+    private val getFilterRoomsUseCase: GetFilterRoomsUseCase,
+    private val getAvailableRoomsUseCase: GetAvailableRoomsUseCase,
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
     private val saveHotelBookingDraftUseCase: SaveHotelBookingDraftUseCase,
     private val errorHandler: ErrorHandler
@@ -69,18 +73,25 @@ class HotelRoomSelectionViewModel @Inject constructor(
             val checkIn = draft?.checkIn ?: 0L
             val checkOut = draft?.checkOut ?: 0L
             val guestCount = (draft?.guests?.adults ?: 1) + (draft?.guests?.children ?: 0)
+            val allowPets = draft?.guests?.pets ?: false
 
             // Calculate night count
             val nightCount = if (checkIn != 0L && checkOut != 0L) {
                 ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
             } else 1
 
-            getHotelRoomsUseCase(hotelId, checkIn, checkOut, guestCount)
+            getFilterRoomsUseCase(hotelId, guestCount, allowPets)
                 .onSuccess { rooms ->
+                    val availableResult = getAvailableRoomsUseCase(hotelId, checkIn, checkOut, guestCount, allowPets)
+                    val availableRoomIds = if (availableResult is AppResult.Success) {
+                        availableResult.data.mapNotNull { it.id }.toSet()
+                    } else emptySet()
+                    
                     delay(1.seconds)
                     _uiState.update {
                         it.copy(
                             rooms = rooms,
+                            availableRoomIds = availableRoomIds,
                             nightCount = nightCount,
                             isLoading = false,
                             error = null,
@@ -121,11 +132,25 @@ class HotelRoomSelectionViewModel @Inject constructor(
                 applyFilters()
             }
             is HotelRoomSelectionEvent.OnRoomSelected -> {
-                _uiState.update { it.copy(selectedRoomId = event.roomId) }
-                savedStateHandle[KEY_SELECTED_ROOM_ID] = event.roomId
-                saveRoomToDraft(event.roomId)
+                // Only allow selecting a room if it's actually available for the selected dates
+                if (_uiState.value.availableRoomIds.contains(event.roomId)) {
+                    _uiState.update { it.copy(selectedRoomId = event.roomId) }
+                    savedStateHandle[KEY_SELECTED_ROOM_ID] = event.roomId
+                    saveRoomToDraft(event.roomId)
+                }
             }
-            HotelRoomSelectionEvent.OnNextClick -> onNextClick()
+            HotelRoomSelectionEvent.OnNextClick -> {
+                val state = _uiState.value
+                val selectedRoomId = state.selectedRoomId
+                
+                // Final validation: Ensure a room is selected AND it is available
+                if (selectedRoomId != null && state.availableRoomIds.contains(selectedRoomId)) {
+                    onNextClick()
+                } else if (selectedRoomId != null) {
+                    // If somehow an unavailable room was selected, clear it and show error
+                    _uiState.update { it.copy(error = "Selected room is no longer available.") }
+                }
+            }
             HotelRoomSelectionEvent.OnBackClick -> { /* Handled by navigation */ }
             HotelRoomSelectionEvent.OnRetryClick -> loadRooms()
         }
@@ -144,7 +169,7 @@ class HotelRoomSelectionViewModel @Inject constructor(
     private fun applyFilters() {
         val currentState = _uiState.value
         val filtered = when (currentState.selectedFilter) {
-            RoomFilter.AVAILABLE -> currentState.rooms.filter { it.isAvailable }
+            RoomFilter.AVAILABLE -> currentState.rooms.filter { currentState.availableRoomIds.contains(it.id) }
             RoomFilter.ALL -> currentState.rooms
             RoomFilter.ONE_BED -> currentState.rooms.filter { it.bedCount == 1 }
             RoomFilter.TWO_BEDS -> currentState.rooms.filter { it.bedCount == 2 }

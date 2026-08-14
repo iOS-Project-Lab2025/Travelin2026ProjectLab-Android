@@ -17,7 +17,7 @@ import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.domain.model.Trip
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 import java.util.Calendar
 import kotlin.time.Duration.Companion.hours
 
@@ -237,8 +237,8 @@ object HomeMockData {
             guests = BookingGuests(adults = 2),
 
             price = BookingPrice(
-                roomPricePerNight = 50,
-                roomPrice = 250,
+                ratePerNight = 50,
+                roomSubtotal = 250,
                 total = 250
             ),
 
@@ -246,7 +246,8 @@ object HomeMockData {
 
             status = BookingStatus.COMPLETED,
 
-            createdAt = dateLong(2026, 7, 31)
+            createdAt = dateLong(2026, 7, 31),
+            userId = "Prueba"
         ),
 
         tours = listOf(

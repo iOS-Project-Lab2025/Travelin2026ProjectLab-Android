@@ -17,7 +17,7 @@ class RegisterViewModel(
     var lastName by mutableStateOf("")
     var countryCode by mutableStateOf("+855")
     var phone by mutableStateOf("")
-    var age by mutableStateOf("")
+    var birthDate by mutableStateOf<Long?>(null)
     var email by mutableStateOf("")
     var password by mutableStateOf("")
     var termsAccepted by mutableStateOf(false)
@@ -32,9 +32,9 @@ class RegisterViewModel(
             return
         }
 
-        val ageInt = age.toIntOrNull()
-        if (ageInt == null) {
-            error = "Invalid age"
+        val selectedBirthDate = birthDate
+        if (selectedBirthDate == null) {
+            error = "Please select your date of birth"
             return
         }
 
@@ -42,7 +42,7 @@ class RegisterViewModel(
             firstName = firstName,
             lastName = lastName,
             phone = "$countryCode $phone",
-            age = ageInt,
+            birthDate = selectedBirthDate,
             email = email
         )
 

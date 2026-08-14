@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,9 +54,10 @@ fun TravelCardHorizontal(
     ) {
         TravelImageHandler(
             image = imageUrl,
-            imageWidth = TravelinDimens.ImageSizeLarge,
-            imageHeight = TravelinDimens.ImageSizeLarge,
-            shape = MaterialTheme.shapes.medium
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier
+                .height(TravelinDimens.ImageSizeLarge)
+                .width(TravelinDimens.ImageSizeLarge)
         )
         Column(
             modifier = Modifier
