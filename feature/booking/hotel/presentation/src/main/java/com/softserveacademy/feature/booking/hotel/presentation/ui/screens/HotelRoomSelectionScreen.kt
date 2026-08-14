@@ -121,6 +121,7 @@ fun HotelRoomSelectionScreenContent(
                                 room = room,
                                 nightCount = state.nightCount,
                                 isSelected = state.selectedRoomId == room.id,
+                                isAvailable = state.availableRoomIds.contains(room.id),
                                 onRoomSelected = { onEvent(HotelRoomSelectionEvent.OnRoomSelected(it.id ?: "")) }
                             )
                         }
@@ -189,8 +190,7 @@ private fun HotelRoomSelectionScreenPreview() {
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
                 "https://picsum.photos/id/138/200/300"
-            ),
-            isAvailable = true
+            )
         ),
         HotelRoom(
             id = "2",
@@ -204,12 +204,12 @@ private fun HotelRoomSelectionScreenPreview() {
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
                 "https://picsum.photos/id/138/200/300"
-            ),
-            isAvailable = true
+            )
         )
     )
     val state = HotelRoomSelectionState(
         rooms = mockRooms,
+        availableRoomIds = setOf("1"),
         filteredRooms = mockRooms,
         selectedRoomId = "1",
         nightCount = 3

@@ -33,7 +33,7 @@ import com.softserveacademy.home.presentation.model.TripDetailUi
 import com.softserveacademy.home.presentation.model.toTripDetailUi
 import com.softserveacademy.home.presentation.state.SectionState
 import com.softserveacademy.home.presentation.state.UpcomingTripState
-import com.softserveacademy.home.presentation.ui.components.TravelNavigationBar
+import com.softserveacademy.core.presentation.ui.components.TravelNavigationBar
 import com.softserveacademy.home.presentation.ui.components.TravelTripDetailContent
 import com.softserveacademy.home.presentation.viewmodel.UpcomingTripViewModel
 import kotlin.time.Duration.Companion.hours

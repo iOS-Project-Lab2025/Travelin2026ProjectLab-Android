@@ -45,6 +45,9 @@ val CalendarIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_calendar)
 
+val CarIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_car)
 val CleaningServicesIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_cleaning_services)
@@ -144,6 +147,10 @@ val PoolIcon: ImageVector
 val QrcodeIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_qrcode)
+
+val RestaurantIcon : ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_restaurant)
 
 val RoomServiceIcon: ImageVector
     @Composable

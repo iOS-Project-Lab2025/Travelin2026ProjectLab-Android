@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.google.places)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -67,6 +68,10 @@ dependencies {
     implementation(projects.feature.home.domain)
     implementation(projects.feature.home.data)
     implementation(projects.feature.home.presentation)
+
+    implementation(projects.feature.profile.domain)
+    implementation(projects.feature.profile.data)
+    implementation(projects.feature.profile.presentation)
 
     implementation(projects.feature.booking.hotel.domain)
     implementation(projects.feature.booking.hotel.data)

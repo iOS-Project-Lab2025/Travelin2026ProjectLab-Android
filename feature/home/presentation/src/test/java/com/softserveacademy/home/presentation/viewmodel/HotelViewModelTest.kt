@@ -1,6 +1,10 @@
 package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import com.softserveacademy.core.domain.usecase.GetAreaDescriptionUseCase
+import com.softserveacademy.core.domain.usecase.GetNearbyPlacesUseCase
+import com.softserveacademy.core.domain.usecase.GetNearbyRestaurantsUseCase
+import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.error.model.AppError
 import com.softserveacademy.core.error.model.AppResult
@@ -29,12 +33,23 @@ class HotelViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val getHotelDetailsUseCase = mockk<GetHotelDetailsUseCase>()
+    private val getNearbyPlacesUseCase = mockk<GetNearbyPlacesUseCase>(relaxed = true)
+    private val getAreaDescriptionUseCase = mockk<GetAreaDescriptionUseCase>(relaxed = true)
+    private val getNearbyTransportUseCase = mockk<GetNearbyTransportUseCase>(relaxed = true)
+    private val getNearbyRestaurantsUseCase = mockk<GetNearbyRestaurantsUseCase>(relaxed = true)
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = HotelDetailsViewModel(SavedStateHandle(), getHotelDetailsUseCase)
+        viewModel = HotelDetailsViewModel(
+            savedStateHandle = SavedStateHandle(),
+            getHotelDetailsUseCase = getHotelDetailsUseCase,
+            getNearbyPlacesUseCase = getNearbyPlacesUseCase,
+            getAreaDescriptionUseCase = getAreaDescriptionUseCase,
+            getNearbyTransportUseCase = getNearbyTransportUseCase,
+            getNearbyRestaurantsUseCase = getNearbyRestaurantsUseCase
+        )
     }
 
     @After

@@ -1,5 +1,8 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.provider.Settings
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +17,6 @@ import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.hotel.domain.usecase.ClearHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
-import com.softserveacademy.core.domain.usecase.hotel.ReserveRoomUseCase
 import com.softserveacademy.core.domain.usecase.hotel.SaveHotelBookingUseCase
 import com.softserveacademy.core.domain.usecase.hotel.UpdateHotelBookingStatusUseCase
 import com.softserveacademy.core.error.handler.ErrorHandler
@@ -24,6 +26,7 @@ import com.softserveacademy.core.error.model.UiText
 import com.softserveacademy.feature.booking.hotel.presentation.events.HotelBookingConfirmEvent
 import com.softserveacademy.feature.booking.hotel.presentation.states.HotelBookingConfirmState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,11 +41,11 @@ class HotelBookingConfirmViewModel @Inject constructor(
     private val getHotelBookingDraftUseCase: GetHotelBookingDraftUseCase,
     private val clearHotelBookingDraftUseCase: ClearHotelBookingDraftUseCase,
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
-    private val reserveRoomUseCase: ReserveRoomUseCase,
     private val saveHotelBookingUseCase: SaveHotelBookingUseCase,
     private val updateHotelBookingStatusUseCase: UpdateHotelBookingStatusUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
-    private val errorHandler: ErrorHandler
+    private val errorHandler: ErrorHandler,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
@@ -103,7 +106,9 @@ class HotelBookingConfirmViewModel @Inject constructor(
             HotelBookingConfirmEvent.OnConfirmClick -> {
                 createPaymentIntent()
             }
-            HotelBookingConfirmEvent.OnBackClick -> { /* Handled by navigation */ }
+            HotelBookingConfirmEvent.OnBackClick -> {
+                cancelBooking()
+            }
             HotelBookingConfirmEvent.OnPaymentSuccess -> {
                 // Finalize booking after successful payment
                 finalizeBooking()
@@ -146,26 +151,31 @@ class HotelBookingConfirmViewModel @Inject constructor(
         _uiState.update { it.copy(isPaymentSheetLoading = true) }
 
         viewModelScope.launch {
-            // Save initial CREATED booking
-            val booking = createBookingFromState(BookingStatus.CREATED)
-            if (booking != null) {
-                currentBookingId = booking.bookingId
-                saveHotelBookingUseCase(booking)
-                    .onFailure { _ ->
-                        _uiState.update { it.copy(error = "Failed to save booking", isPaymentSheetLoading = false) }
-                        updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
-                        return@launch
-                    }
-            } else {
-                _uiState.update { it.copy(error = "Failed to create booking data", isPaymentSheetLoading = false) }
-                return@launch
+            val bookingId = currentBookingId
+            if (bookingId == null) {
+                // Save initial CREATED booking only if it doesn't exist yet
+                val booking = createBookingFromState(BookingStatus.CREATED)
+                if (booking != null) {
+                    currentBookingId = booking.bookingId
+                    saveHotelBookingUseCase(booking)
+                        .onFailure { _ ->
+                            _uiState.update { it.copy(error = "Failed to save booking", isPaymentSheetLoading = false) }
+                            updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
+                            return@launch
+                        }
+                } else {
+                    _uiState.update { it.copy(error = "Failed to create booking data", isPaymentSheetLoading = false) }
+                    return@launch
+                }
             }
+
+            val finalBookingId = currentBookingId ?: return@launch
 
             createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
                 .onSuccess { secret ->
                     _uiState.update { it.copy(clientSecret = secret, isPaymentSheetLoading = false) }
                     // Update status to PENDING as we are now awaiting payment
-                    updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.PENDING)
+                    updateHotelBookingStatusUseCase(finalBookingId, BookingStatus.PENDING)
                 }
                 .onFailure { error ->
                     if (error is AppError.Auth) {
@@ -191,8 +201,16 @@ class HotelBookingConfirmViewModel @Inject constructor(
                             )
                         }
                     }
-                    updateHotelBookingStatusUseCase(booking.bookingId, BookingStatus.CANCELLED)
                 }
+        }
+    }
+
+    private fun cancelBooking() {
+        val bookingId = currentBookingId
+        if (bookingId != null && !_uiState.value.isPaymentSuccessful) {
+            viewModelScope.launch {
+                updateHotelBookingStatusUseCase(bookingId, BookingStatus.CANCELLED)
+            }
         }
     }
 
@@ -204,10 +222,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
         val checkOut = state.bookingDraft?.checkOut ?: 0L
 
         viewModelScope.launch {
-            if (hotelId != null && roomId != null) {
-                reserveRoomUseCase(hotelId, roomId, checkIn, checkOut)
-            }
-
             currentBookingId?.let { id ->
                 updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
             }
@@ -216,14 +230,22 @@ class HotelBookingConfirmViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("HardwareIds")
     private fun createBookingFromState(status: BookingStatus): HotelBooking? {
         val state = _uiState.value
         val hotelDetails = state.hotel ?: return null
         val room = state.selectedRoom ?: return null
         val draft = state.bookingDraft ?: return null
 
+        val deviceId = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        ) ?: "unknown_device"
+
         return HotelBooking(
             bookingId = currentBookingId ?: UUID.randomUUID().toString(),
+            userId = deviceId,
+            //userId = "testing",
             hotelId = hotelDetails.id,
             roomId = room.id ?: "",
             checkIn = draft.checkIn ?: 0L,
@@ -234,8 +256,10 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 pets = draft.guests.pets
             ),
             price = BookingPrice(
-                roomPricePerNight = room.pricePerNight,
-                roomPrice = state.totalPrice,
+                ratePerNight = room.pricePerNight,
+                roomSubtotal = state.totalPrice,
+                taxes = 0,
+                fees = 0,
                 total = state.totalPrice
             ),
             confirmationCode = "HB-${System.currentTimeMillis() % 10000}",

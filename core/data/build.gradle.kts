@@ -1,6 +1,7 @@
 plugins {
     id("com.softserveacademy.android.library")
     id("com.softserveacademy.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -16,4 +17,6 @@ dependencies {
     implementation(libs.retrofit.kotlin.serialization)
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.google.places)
+    implementation(libs.kotlinx.coroutines.play.services)
 }

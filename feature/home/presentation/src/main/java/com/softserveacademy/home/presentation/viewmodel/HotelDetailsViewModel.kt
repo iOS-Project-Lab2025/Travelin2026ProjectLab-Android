@@ -3,6 +3,10 @@ package com.softserveacademy.home.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.core.domain.usecase.GetAreaDescriptionUseCase
+import com.softserveacademy.core.domain.usecase.GetNearbyPlacesUseCase
+import com.softserveacademy.core.domain.usecase.GetNearbyRestaurantsUseCase
+import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
@@ -19,11 +23,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.onFailure
+import kotlin.onSuccess
 
 @HiltViewModel
 class HotelDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
+    private val getNearbyPlacesUseCase: GetNearbyPlacesUseCase,
+    private val getAreaDescriptionUseCase: GetAreaDescriptionUseCase,
+    private val getNearbyTransportUseCase: GetNearbyTransportUseCase,
+    private val getNearbyRestaurantsUseCase: GetNearbyRestaurantsUseCase
 ) : ViewModel() {
 
     private val _hotelDetailsState = MutableStateFlow(
@@ -78,6 +88,12 @@ class HotelDetailsViewModel @Inject constructor(
             HotelDetailsEvent.DismissAmenities -> {
                 updateState { it.copy(showAmenitiesDialog = false) }
             }
+            HotelDetailsEvent.ViewExploreArea -> {
+                updateState { it.copy(showExploreArea = true) }
+            }
+            HotelDetailsEvent.DismissExploreArea -> {
+                updateState { it.copy(showExploreArea = false) }
+            }
         }
     }
 
@@ -98,15 +114,66 @@ class HotelDetailsViewModel @Inject constructor(
             getHotelDetailsUseCase(id)
                 .onSuccess { hotel ->
                     updateState { it.copy(isLoading = false, hotel = hotel) }
+                    loadNearbyPlaces(hotel.latitude, hotel.longitude)
                 }
                 .onFailure { error ->
-                    val message = when (error) {
-                        is AppError.Unknown -> error.throwable.message
-                        else -> "Failed to load hotel details"
+                    updateState { currentState ->
+                        if (currentState.hotel != null) {
+                            // If we already have hotel data, don't show a full screen error
+                            currentState.copy(isLoading = false)
+                        } else {
+                            val message = when (error) {
+                                is AppError.Unknown -> error.throwable.message
+                                else -> "Failed to load hotel details"
+                            }
+                            currentState.copy(isLoading = false, errorMessage = message)
+                        }
                     }
-                    updateState { it.copy(isLoading = false, errorMessage = message) }
                 }
 
+        }
+    }
+
+    private fun loadNearbyPlaces(latitude: Double, longitude: Double) {
+        viewModelScope.launch {
+            getNearbyPlacesUseCase(latitude, longitude)
+                .onSuccess { pois ->
+                    updateState { currentState ->
+                        currentState.copy(
+                            hotel = currentState.hotel?.copy(nearbyPlaces = pois)
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    android.util.Log.e("HotelDetailsViewModel", "Error loading nearby places", error)
+                }
+        }
+
+
+        viewModelScope.launch {
+            getAreaDescriptionUseCase(latitude, longitude)
+                .onSuccess { description ->
+                    updateState { it.copy(areaDescription = description ?: "This area is known for its beautiful scenery and historical landmarks.") }
+                }
+                .onFailure { error ->
+                    android.util.Log.e("HotelDetailsViewModel", "Error loading area description", error)
+                }
+        }
+
+
+        viewModelScope.launch {
+            getNearbyTransportUseCase(latitude, longitude)
+                .onSuccess { transport ->
+                    updateState { it.copy(nearbyTransport = transport) }
+                }
+        }
+
+
+        viewModelScope.launch {
+            getNearbyRestaurantsUseCase(latitude, longitude)
+                .onSuccess { restaurants ->
+                    updateState { it.copy(nearbyRestaurants = restaurants) }
+                }
         }
     }
 

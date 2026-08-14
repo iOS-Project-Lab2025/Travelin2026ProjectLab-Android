@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes.hotels import router as hotels_router
+from app.routes.bookings import router as bookings_router
 from app.database import supabase
 
 app = FastAPI(
@@ -7,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(hotels_router)
+app.include_router(bookings_router)
 
 
 @app.get("/")
@@ -22,6 +24,4 @@ def health_check():
         return {"status": "ok", "database": "connected"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-# Include routers here later
-# app.include_router(tours.router)
-# app.include_router(hotels.router)
+
