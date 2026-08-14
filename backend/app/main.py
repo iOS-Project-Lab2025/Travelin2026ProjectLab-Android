@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes.hotels import router as hotels_router
+from app.routes.tours.tours_router import router as tours_router
 from app.database import supabase
 
 app = FastAPI(
@@ -7,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(hotels_router)
+app.include_router(tours_router)
 
 
 @app.get("/")
