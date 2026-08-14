@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,6 +48,7 @@ import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 
 /**
  * Stateful wrapper for [TravelHomeScreen].
@@ -73,6 +75,11 @@ fun RootHomeScreen(
     val state by viewModel.state.collectAsState()
     var isSearchMode by remember { mutableStateOf(false) }
 
+    val isInitialLoading = state.journeyTogether is SectionState.Loading ||
+            state.hotelsRecommended is SectionState.Loading ||
+            state.userProfile is SectionState.Loading ||
+            state.upcomingTrip is SectionState.Loading
+
     if (isSearchMode) {
         DestinationSearchScreen(
             onBackClick = { isSearchMode = false },
@@ -85,6 +92,8 @@ fun RootHomeScreen(
                 }
             }
         )
+    } else if (isInitialLoading) {
+        TravelLoadingScreen()
     } else {
         TravelHomeScreen(
             state = state,
@@ -143,6 +152,11 @@ fun TravelHomeScreen(
     val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
     val tours = (state.journeyTogether as? SectionState.Success)?.data ?: emptyList()
     val hotels = (state.hotelsRecommended as? SectionState.Success)?.data ?: emptyList()
+
+    val isToursLoading = state.journeyTogether is SectionState.Loading
+    val isHotelsLoading = state.hotelsRecommended is SectionState.Loading
+    val toursError = (state.journeyTogether as? SectionState.Error)?.message
+    val hotelsError = (state.hotelsRecommended as? SectionState.Error)?.message
 
     Scaffold(
         bottomBar = {
@@ -219,18 +233,42 @@ fun TravelHomeScreen(
                         Spacer(Modifier.height(8.dp))
                     }
 
-                    TravelCarousel(
-                        items = tours
-                    ) { tour ->
-                        TravelCardVertical(
-                            title = tour.title,
-                            location = tour.location,
-                            rating = tour.rating.toString(),
-                            price = tour.price,
-                            duration = tour.duration,
-                            imageUrl = tour.imageUrl ?: "",
-                            onClick = { onTourClick(tour.id) }
-                        )
+                    if (isToursLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        }
+                    } else if (toursError != null) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = toursError,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    } else {
+                        TravelCarousel(
+                            items = tours
+                        ) { tour ->
+                            TravelCardVertical(
+                                title = tour.title,
+                                location = tour.location,
+                                rating = tour.rating.toString(),
+                                price = tour.price,
+                                duration = tour.duration,
+                                imageUrl = tour.imageUrl ?: "",
+                                onClick = { onTourClick(tour.id) }
+                            )
+                        }
                     }
 
                     Column(
@@ -255,24 +293,48 @@ fun TravelHomeScreen(
                             )
                         }
                         Spacer(Modifier.height(8.dp))
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            hotels.forEach { hotel ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { onHotelClick(hotel.id) }
-                                ) {
-                                    TravelCardHorizontal(
-                                        title = hotel.name,
-                                        address = hotel.address,
-                                        starRating = hotel.starCategory,
-                                        ratingText = "${hotel.starCategory}-star hotel",
-                                        price = "$50",// TODO: Get this value from the minimum of the list of room prices (with the respective currency)
-                                        priceSuffix = "/night",
-                                        imageUrl = hotel.imageList.firstOrNull() ?: ""
-                                    )
+                        if (isHotelsLoading) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                            }
+                        } else if (hotelsError != null) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = hotelsError,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        } else {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                hotels.forEach { hotel ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { onHotelClick(hotel.id) }
+                                    ) {
+                                        TravelCardHorizontal(
+                                            title = hotel.name,
+                                            address = hotel.address,
+                                            starRating = hotel.starCategory,
+                                            ratingText = "${hotel.starCategory}-star hotel",
+                                            price = "$50",// TODO: Get this value from the minimum of the list of room prices (with the respective currency)
+                                            priceSuffix = "/night",
+                                            imageUrl = hotel.imageList.firstOrNull() ?: ""
+                                        )
+                                    }
                                 }
                             }
                         }

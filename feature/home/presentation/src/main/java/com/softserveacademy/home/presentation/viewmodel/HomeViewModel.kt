@@ -48,7 +48,7 @@ class HomeViewModel @Inject constructor(
         loadAllSections()
     }
 
-    private fun loadAllSections() {
+    fun loadAllSections() {
         loadUserProfile()
         loadUpcomingTrip()
         loadJourneyTogether()
