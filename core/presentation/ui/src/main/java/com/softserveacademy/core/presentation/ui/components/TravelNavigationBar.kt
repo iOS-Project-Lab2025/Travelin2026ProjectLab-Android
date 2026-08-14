@@ -13,7 +13,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.R as DesignSystemR
 import com.softserveacademy.core.presentation.ui.R
 
@@ -23,7 +25,7 @@ fun TravelNavigationBar(
     onTabClick: (Int) -> Unit = {}
 ) {
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.onPrimary,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         modifier = Modifier.shadow(
             elevation = 12.dp,
             clip = false
@@ -56,12 +58,12 @@ fun TravelNavigationBar(
             onClick = { onTabClick(1) },
             icon = {
                 Icon(
-                    painter = painterResource(DesignSystemR.drawable.travel_ic_ticket),
+                    painter = painterResource(DesignSystemR.drawable.travel_ic_notebook),
                     contentDescription = null
                 )
             }, label = {
                 Text(
-                    text = stringResource(R.string.orders_ic_label)
+                    text = stringResource(R.string.itinerary_ic_label)
                 )
             })
         NavigationBarItem(
@@ -69,12 +71,12 @@ fun TravelNavigationBar(
             onClick = { onTabClick(2) },
             icon = {
                 Icon(
-                    painter = painterResource(DesignSystemR.drawable.travel_ic_percentage),
+                    painter = painterResource(DesignSystemR.drawable.travel_ic_fav),
                     contentDescription = null
                 )
             }, label = {
                 Text(
-                    text = stringResource(R.string.deals_ic_label)
+                    text = stringResource(R.string.fav_ic_label)
                 )
             })
         NavigationBarItem(
@@ -91,4 +93,13 @@ fun TravelNavigationBar(
                 )
             })
     }
+}
+
+@Preview
+@Composable
+private fun TravelNavigationBarPreview() {
+    Travelin2026ProjectLabTheme(darkTheme = false) {
+        TravelNavigationBar()
+    }
+
 }
