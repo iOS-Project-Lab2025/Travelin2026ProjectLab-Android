@@ -60,6 +60,7 @@ class FlightBookingConfirmViewModelTest {
 
         // Default success behaviors for repository and payment intent
         coEvery { draftRepository.getDraft() } returns flowOf(mockDraft)
+        coEvery { draftRepository.clearDraft() } returns Unit
         coEvery { flightBookingRepository.saveBooking(any()) } returns AppResult.Success(Unit)
     }
 
@@ -115,7 +116,7 @@ class FlightBookingConfirmViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals("Error message should be present", "Failed to save record", state.error)
+        assertEquals("Error message should be present", "Failed to finalize booking", state.error)
         assertEquals("Success flag should remain false", false, state.isPaymentSuccessful)
     }
 
