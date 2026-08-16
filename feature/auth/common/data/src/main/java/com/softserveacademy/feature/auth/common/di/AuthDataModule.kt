@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.softserveacademy.feature.auth.common.data.repository.SessionRepositoryImpl
 import com.softserveacademy.feature.auth.common.domain.usecase.CheckSessionUseCase
 import com.softserveacademy.feature.auth.common.domain.repository.SessionRepository
+import io.github.jan.supabase.SupabaseClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +18,11 @@ object AuthDataModule {
 
     @Provides
     @Singleton
-    fun provideSessionRepository(dataStore: DataStore<Preferences>): SessionRepository {
-        return SessionRepositoryImpl(dataStore)
+    fun provideSessionRepository(
+        dataStore: DataStore<Preferences>,
+        supabase: SupabaseClient
+    ): SessionRepository {
+        return SessionRepositoryImpl(dataStore, supabase)
     }
 
     @Provides
