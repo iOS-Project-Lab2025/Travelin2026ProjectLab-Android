@@ -62,10 +62,35 @@ fun CabinClassBottomSheet(state: FlightSearchState, onEvent: (FlightSearchEvent)
 @Composable
 fun PassengerSelectionSheet(state: FlightSearchState, onEvent: (FlightSearchEvent) -> Unit) {
     if (state.bookingDetailsState.showGuestBottomSheet) {
+        val currentTotal = state.adults + state.children + state.infants
+        val remainingSpace = 9 - currentTotal
+        val subtitleText = if (currentTotal >= 9)
+            "Maximum of 9 passengers allowed" // Debería ir a strings.xml
+        else stringResource(R.string.flight_max_passengers_subtitle)
+
         val passengerItems = listOf(
-            TravelBookingCountItem.Counter(label = stringResource(R.string.flight_label_adults), subtitle = stringResource(R.string.flight_subtitle_adults), count = state.adults, onCountChange = { onEvent(FlightSearchEvent.OnAdultsChanged(it)) }, minCount = 1),
-            TravelBookingCountItem.Counter(label = stringResource(R.string.flight_label_children), subtitle = stringResource(R.string.flight_subtitle_children), count = state.children, onCountChange = { onEvent(FlightSearchEvent.OnChildrenChanged(it)) }),
-            TravelBookingCountItem.Counter(label = stringResource(R.string.flight_label_infants), subtitle = stringResource(R.string.flight_subtitle_infants), count = state.infants, onCountChange = { onEvent(FlightSearchEvent.OnInfantsChanged(it)) })
+            TravelBookingCountItem.Counter(
+                label = stringResource(R.string.flight_label_adults),
+                subtitle = stringResource(R.string.flight_subtitle_adults),
+                count = state.adults,
+                onCountChange = { onEvent(FlightSearchEvent.OnAdultsChanged(it)) },
+                minCount = 1,
+                maxCount = state.adults + remainingSpace
+            ),
+            TravelBookingCountItem.Counter(
+                label = stringResource(R.string.flight_label_children),
+                subtitle = stringResource(R.string.flight_subtitle_children),
+                count = state.children,
+                onCountChange = { onEvent(FlightSearchEvent.OnChildrenChanged(it)) },
+                maxCount = state.children + remainingSpace
+            ),
+            TravelBookingCountItem.Counter(
+                label = stringResource(R.string.flight_label_infants),
+                subtitle = stringResource(R.string.flight_subtitle_infants),
+                count = state.infants,
+                onCountChange = { onEvent(FlightSearchEvent.OnInfantsChanged(it)) },
+                maxCount = state.infants + remainingSpace
+            )
         )
         TravelBookingCountSheet(
             items = passengerItems,

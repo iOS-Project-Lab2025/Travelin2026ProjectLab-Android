@@ -51,10 +51,14 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelCo
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingSuccessScreen
+import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightBookingConfirmScreen
+import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightPassengerInfoScreen
 
 // FlightBooking screens.
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightSearchScreen
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightResultsScreen
+import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightBookingConfirmViewModel
+import com.softserveacademy.feature.booking.flight.presentation.viewmodel.FlightPassengerInfoViewModel
 
 /**
  * Root navigation host for the application.
@@ -437,7 +441,6 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
 
 /**
  * Navigation graph for Flight Booking.
- * Follows the same pattern as bookingGraph for Hotels.
  */
 fun NavGraphBuilder.flightGraph(navController: NavHostController) {
     navigation<Routes.FlightBookingGraph>(
@@ -459,8 +462,32 @@ fun NavGraphBuilder.flightGraph(navController: NavHostController) {
             val viewModel: FlightResultsViewModel = hiltViewModel()
 
             FlightResultsScreen(
-                onNext = { /* Próximo US3: Passengers */ },
+                onNext = { navController.navigate(Routes.FlightPassengerInfoScreen) },
                 onBack = { navController.popBackStack() },
+                viewModel = viewModel
+            )
+        }
+
+        composable<Routes.FlightPassengerInfoScreen> {
+            val viewModel: FlightPassengerInfoViewModel = hiltViewModel()
+            FlightPassengerInfoScreen(
+                viewModel = viewModel,
+                onNext = {
+                    navController.navigate(Routes.FlightBookingConfirmScreen)
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Routes.FlightBookingConfirmScreen> {
+            val viewModel: FlightBookingConfirmViewModel = hiltViewModel()
+            FlightBookingConfirmScreen(
+                onBack = { navController.popBackStack() },
+                onSuccess = {
+                    navController.navigate(Routes.TravelBookingSuccessScreen) {
+                        popUpTo(Routes.FlightBookingGraph) { inclusive = true }
+                    }
+                },
                 viewModel = viewModel
             )
         }

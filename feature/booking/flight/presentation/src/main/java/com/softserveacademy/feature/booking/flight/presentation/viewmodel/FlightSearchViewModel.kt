@@ -92,9 +92,21 @@ class FlightSearchViewModel @Inject constructor(
             is FlightSearchEvent.OnPerformSearch -> saveDraftAndNavigate()
 
             // Pass-through events for common booking sheets
-            is FlightSearchEvent.OnAdultsChanged -> _uiState.update { it.copy(adults = event.count) }
-            is FlightSearchEvent.OnChildrenChanged -> _uiState.update { it.copy(children = event.count) }
-            is FlightSearchEvent.OnInfantsChanged -> _uiState.update { it.copy(infants = event.count) }
+            is FlightSearchEvent.OnAdultsChanged -> _uiState.update { current ->
+                val otherPax = current.children + current.infants
+                // if totoal passengers is <= 9, we accept the change
+                if (event.count + otherPax <= 9) current.copy(adults = event.count) else current
+            }
+
+            is FlightSearchEvent.OnChildrenChanged -> _uiState.update { current ->
+                val otherPax = current.adults + current.infants
+                if (event.count + otherPax <= 9) current.copy(children = event.count) else current
+            }
+
+            is FlightSearchEvent.OnInfantsChanged -> _uiState.update { current ->
+                val otherPax = current.adults + current.children
+                if (event.count + otherPax <= 9) current.copy(infants = event.count) else current
+            }
             is FlightSearchEvent.OnCabinClassSelected -> _uiState.update { it.copy(selectedCabinClass = event.cabinClass, showCabinSheet = false) }
             is FlightSearchEvent.OnShowCabinSheet -> _uiState.update { it.copy(showCabinSheet = true) }
             is FlightSearchEvent.OnDismissCabinSheet -> _uiState.update { it.copy(showCabinSheet = false) }

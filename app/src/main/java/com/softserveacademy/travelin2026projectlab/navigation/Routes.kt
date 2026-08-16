@@ -107,6 +107,15 @@ sealed interface Routes {
     @Serializable
     data object FlightResultsScreen : Routes
 
+    /**
+     * Routes for the Flight Passenger Info flow. Show passenger information.
+     */
+    @Serializable
+    data object FlightPassengerInfoScreen : Routes
 
-
+    /**
+     * Routes for the Flight Booking Confirmation (Checkout).
+     */
+    @Serializable
+    data object FlightBookingConfirmScreen : Routes
 }
