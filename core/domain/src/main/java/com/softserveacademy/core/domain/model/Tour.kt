@@ -30,7 +30,7 @@ data class Tour(
     val title: String = "",
     val description: String = "",
     val location: String = "",
-    @SerialName("imageUrl")
+    @SerialName("image_url")
     @Serializable(with = FlexibleListSerializer::class)
     val imageList: List<String> = emptyList(),
     @Serializable(with = DurationSerializer::class)
@@ -38,6 +38,7 @@ data class Tour(
     val price: Double = 0.0,
     val rating: Double = 0.0,
     val category: TourCategory = TourCategory.ADVENTURE,
+    @SerialName("number_of_reviews")
     val numberOfReviews: Int = 0,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
