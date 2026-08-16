@@ -40,6 +40,8 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 @Composable
 fun TravelDetailsFeaturesSection(
     features: List<String>,
+    title: String = stringResource(id = R.string.about_this_property_label),
+    seeAllLabel: String = stringResource(id = R.string.see_all_about_property),
     onSeeAllClick: () -> Unit
 ) {
     if (features.isEmpty()) return
@@ -54,7 +56,7 @@ fun TravelDetailsFeaturesSection(
         )
     ) {
         Text(
-            text = stringResource(id = R.string.What_is_included_label),
+            text = title,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onPrimaryFixed,
             fontWeight = FontWeight.Bold
@@ -83,7 +85,7 @@ fun TravelDetailsFeaturesSection(
         if (hasMore) {
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
             TravelOutlinedButton(
-                text = stringResource(id = R.string.see_all_about_property),
+                text = seeAllLabel,
                 onClick = onSeeAllClick,
                 contentPadding = PaddingValues(
                     horizontal = TravelinDimens.PaddingLarge,
@@ -111,6 +113,7 @@ fun TravelDetailsFeaturesSection(
 @Composable
 fun FeaturesOverlay(
     features: List<String>,
+    title: String = stringResource(id = R.string.about_this_property_label),
     onDismiss: () -> Unit
 ) {
     BackHandler(onBack = onDismiss)
@@ -139,7 +142,7 @@ fun FeaturesOverlay(
                 )
 
                 Text(
-                    text = stringResource(id = R.string.What_is_included_label),
+                    text = title,
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,

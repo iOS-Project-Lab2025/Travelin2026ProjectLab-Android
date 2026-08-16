@@ -15,7 +15,7 @@
     <string name="read_more_label">Read more</string>
     <string name="read_less_label">Read less</string>
     <string name="show_more_label">Show more</string>
-    <string name="What_is_included_label">About this property</string>
+    <string name="about_this_property_label">About this property</string>
     <string name="Where_it_is_label">Where it is</string>
     <string name="see_all_label">See all</string>
     <string name="see_all_about_property">See all about this property</string>
@@ -31,6 +31,8 @@
     <string name="share_hotel_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/hotel%2$s</string>
 
     <!-- Tour Details -->
+    <string name="tour_included_services_label">What is included</string>
+    <string name="tour_see_all_services_label">See all included services</string>
     <string name="share_tour_title">Share Tour</string>
     <string name="share_tour_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/tour%2$s</string>
 

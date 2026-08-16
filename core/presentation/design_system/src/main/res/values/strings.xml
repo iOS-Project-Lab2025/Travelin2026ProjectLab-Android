@@ -8,36 +8,36 @@
 
     <!-- Hotel Features -->
     <string name="feat_hotel_free_wifi">Free WiFi</string>
-    <string name="feat_hotel_room_service">Room service</string>
-    <string name="feat_hotel_cleaning_services">Cleaning services</string>
-    <string name="feat_hotel_parking">Self-parking</string>
+    <string name="feat_hotel_room_service">Room Service</string>
+    <string name="feat_hotel_cleaning_services">Cleaning Services</string>
+    <string name="feat_hotel_parking">Self-Parking</string>
     <string name="feat_hotel_ac_unit">Air Conditioning</string>
-    <string name="feat_hotel_fitness_center">Fitness center</string>
+    <string name="feat_hotel_fitness_center">Fitness Center</string>
     <string name="feat_hotel_spa">Spa</string>
     <string name="feat_hotel_pool">Pool</string>
     <string name="feat_hotel_restaurant">Restaurant</string>
-    <string name="feat_hotel_bar_and_lounge">Bar and lounge</string>
-    <string name="feat_hotel_buffet_breakfast">Buffet breakfast</string>
+    <string name="feat_hotel_bar_and_lounge">Bar and Lounge</string>
+    <string name="feat_hotel_buffet_breakfast">Buffet Breakfast</string>
     <string name="feat_hotel_breakfast">Breakfast</string>
 
     <!-- Tour Features -->
     <string name="feat_tour_transport">Transport</string>
-    <string name="feat_tour_bus">Bus transport</string>
-    <string name="feat_tour_car">Car transport</string>
+    <string name="feat_tour_bus">Bus Transport</string>
+    <string name="feat_tour_car">Car Transport</string>
     <string name="feat_tour_breakfast">Breakfast</string>
     <string name="feat_tour_launch">Launch</string>
     <string name="feat_tour_dinner">Dinner</string>
     <string name="feat_tour_snack">Snack</string>
     <string name="feat_tour_guide">Guide</string>
-    <string name="feat_tour_audio_guide">Audio guide</string>
-    <string name="feat_tour_local_guide">Local guide</string>
-    <string name="feat_tour_professional_guide">Professional guide</string>
-    <string name="feat_tour_translation">Translation service</string>
+    <string name="feat_tour_audio_guide">Audio Guide</string>
+    <string name="feat_tour_local_guide">Local Guide</string>
+    <string name="feat_tour_professional_guide">Professional Guide</string>
+    <string name="feat_tour_translation">Translation</string>
     <string name="feat_tour_ticket">Ticket</string>
-    <string name="feat_tour_park_ticket">Park ticket</string>
-    <string name="feat_tour_show_ticket">Show ticket</string>
-    <string name="feat_tour_safety_equipment">Safety equipment</string>
-    <string name="feat_tour_equipment_rental">Equipment rental</string>
+    <string name="feat_tour_park_ticket">Park Ticket</string>
+    <string name="feat_tour_show_ticket">Show Ticket</string>
+    <string name="feat_tour_safety_equipment">Safety Equipment</string>
+    <string name="feat_tour_equipment_rental">Equipment Rental</string>
 
 
     <!-- Error state -->

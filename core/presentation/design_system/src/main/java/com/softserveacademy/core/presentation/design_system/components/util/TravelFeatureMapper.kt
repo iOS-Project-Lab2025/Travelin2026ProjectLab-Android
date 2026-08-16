@@ -6,7 +6,7 @@ import com.softserveacademy.core.presentation.design_system.R
 /**
  * Maps a string ID to a [FeatureUi] containing localized labels and icons.
  *
- * @param value The string ID representing the amenity or service (e.g., "WIFI", "BREAKFAST").
+ * @param value The string ID representing the amenity or service (e.g., "HOTEL_WIFI", "TOUR_BREAKFAST").
  * @return The corresponding [FeatureUi], or null if not found.
  */
 fun mapToFeature(value: String): FeatureUi? {

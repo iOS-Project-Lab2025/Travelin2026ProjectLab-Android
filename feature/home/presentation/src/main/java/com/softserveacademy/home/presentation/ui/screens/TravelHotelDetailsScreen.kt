@@ -257,6 +257,8 @@ private fun TravelHotelDetailsWrapper(
                 item {
                     TravelDetailsFeaturesSection(
                         features = hotel.amenities,
+                        title = stringResource(id = R.string.about_this_property_label),
+                        seeAllLabel = stringResource(id = R.string.see_all_about_property),
                         onSeeAllClick = onSeeAllAmenitiesClick
                     )
                 }
@@ -291,6 +293,7 @@ private fun TravelHotelDetailsWrapper(
         if (showAllAmenities) {
             FeaturesOverlay(
                 features = hotel.amenities,
+                title = stringResource(id = R.string.about_this_property_label),
                 onDismiss = onDismissAmenitiesOverlay
             )
         }

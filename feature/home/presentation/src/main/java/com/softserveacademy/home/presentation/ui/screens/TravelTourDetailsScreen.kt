@@ -220,6 +220,8 @@ private fun TravelTourDetailsWrapper(
                 item {
                     TravelDetailsFeaturesSection(
                         features = tour.includedServices,
+                        title = stringResource(id = R.string.tour_included_services_label),
+                        seeAllLabel = stringResource(id = R.string.tour_see_all_services_label),
                         onSeeAllClick = onSeeAllAmenitiesClick
                     )
                 }
@@ -247,6 +249,7 @@ private fun TravelTourDetailsWrapper(
         if (showAllAmenities) {
             FeaturesOverlay(
                 features = tour.includedServices,
+                title = stringResource(id = R.string.tour_included_services_label),
                 onDismiss = onDismissAmenitiesOverlay
             )
         }
