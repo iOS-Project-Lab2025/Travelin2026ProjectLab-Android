@@ -80,6 +80,11 @@ def get_hotel_by_id(id: str):
         "userRating": hotel["user_rating"],
         "pricePerNight": hotel["price_per_night"],
         "image": hotel.get("image_list", []),
+        "description": hotel.get("description", ""),
+        "numberOfReviews": hotel.get("number_of_reviews", 0),
+        "latitude": hotel.get("latitude", 0.0),
+        "longitude": hotel.get("longitude", 0.0),
+        "amenities": hotel.get("amenities", []),
         "rooms": rooms
     }
 
