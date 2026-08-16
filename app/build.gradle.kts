@@ -3,6 +3,8 @@ plugins {
     id("com.softserveacademy.android.hilt")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -86,5 +88,10 @@ dependencies {
     // coil for jetpack compose to allow render images
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+
 }
 
