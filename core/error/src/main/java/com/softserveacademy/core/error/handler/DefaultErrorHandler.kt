@@ -6,7 +6,9 @@ import com.softserveacademy.core.error.model.UiText
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Default [ErrorHandler] that provides user-facing messages for every known [AppError] subtype. */
+/**
+ * Default [ErrorHandler] that provides user-facing messages for every known [AppError] subtype.
+ */
 @Singleton
 class DefaultErrorHandler @Inject constructor(
     private val globalErrorHandler: GlobalErrorHandler
