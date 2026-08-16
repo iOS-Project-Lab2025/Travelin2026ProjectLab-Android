@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelGalleryCarousel
 import com.softserveacademy.core.presentation.design_system.components.TravelRatingBar
 import com.softserveacademy.core.presentation.design_system.theme.BlueDark90_Alpha50

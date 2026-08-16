@@ -1,46 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="amenity_wifi">Free Wi-Fi</string>
-    <string name="amenity_breakfast">Breakfast</string>
-    <string name="amenity_parking">Parking</string>
-    <string name="amenity_pool">Swimming Pool</string>
-    <string name="amenity_gym">Gym</string>
-    <string name="amenity_ac">Air Conditioning</string>
-    <string name="amenity_room_service">Room Service</string>
     <string name="logo_part_travel">Travel</string>
     <string name="logo_part_in">in</string>
     <string name="splash_tagline">Your Passport to Seamless Adventures!</string>
     <string name="onboarding_title">Ready to explore\nbeyond boundaries?</string>
     <string name="onboarding_button">Your Journey Starts Here</string>
 
-    <!-- TravelHotelDetailScreen -->
-    <string name="about_label">Description</string>
-    <string name="read_more_label">Read more</string>
-    <string name="read_less_label">Read less</string>
-    <string name="show_more_label">Show more</string>
-    <string name="What_is_included_label">About this property</string>
-    <string name="Where_it_is_label">Where it is</string>
-    <string name="see_all_label">See all</string>
-    <string name="see_all_about_property">See all about this property</string>
-    <string name="plus_photos_label">+ photos</string>
-    <string name="nearby_places_label">Nearby Places</string>
-    <string name="see_more_nearby_places">See more nearby places</string>
-    <string name="explore_area_title">Explore the area</string>
-    <string name="about_area_label">About the area</string>
-    <string name="whats_nearby_label">What\'s nearby</string>
-    <string name="getting_around_label">Getting around</string>
-    <string name="nearby_restaurants_label">Nearby Restaurants</string>
+    <!-- Hotel Features -->
+    <string name="feat_hotel_free_wifi">Free WiFi</string>
+    <string name="feat_hotel_room_service">Room service</string>
+    <string name="feat_hotel_cleaning_services">Cleaning services</string>
+    <string name="feat_hotel_parking">Self-parking</string>
+    <string name="feat_hotel_ac_unit">Air Conditioning</string>
+    <string name="feat_hotel_fitness_center">Fitness center</string>
+    <string name="feat_hotel_spa">Spa</string>
+    <string name="feat_hotel_pool">Pool</string>
+    <string name="feat_hotel_restaurant">Restaurant</string>
+    <string name="feat_hotel_bar_and_lounge">Bar and lounge</string>
+    <string name="feat_hotel_buffet_breakfast">Buffet breakfast</string>
+    <string name="feat_hotel_breakfast">Breakfast</string>
 
+    <!-- Tour Features -->
+    <string name="feat_tour_transport">Transport</string>
+    <string name="feat_tour_bus">Bus transport</string>
+    <string name="feat_tour_car">Car transport</string>
+    <string name="feat_tour_breakfast">Breakfast</string>
+    <string name="feat_tour_launch">Launch</string>
+    <string name="feat_tour_dinner">Dinner</string>
+    <string name="feat_tour_snack">Snack</string>
+    <string name="feat_tour_guide">Guide</string>
+    <string name="feat_tour_audio_guide">Audio guide</string>
+    <string name="feat_tour_local_guide">Local guide</string>
+    <string name="feat_tour_professional_guide">Professional guide</string>
+    <string name="feat_tour_translation">Translation service</string>
+    <string name="feat_tour_ticket">Ticket</string>
+    <string name="feat_tour_park_ticket">Park ticket</string>
+    <string name="feat_tour_show_ticket">Show ticket</string>
+    <string name="feat_tour_safety_equipment">Safety equipment</string>
+    <string name="feat_tour_equipment_rental">Equipment rental</string>
 
-    <!-- Include items -->
-    <string name="buffet_breakfast_label">Buffet breakfast</string>
-    <string name="free_wifi_label">Free wifi</string>
-    <string name="fitness_center_label">Fitness center</string>
-    <string name="pool_label">Pool</string>
-    <string name="cleaning_services_label">Cleaning services</string>
-    <string name="parking_label">Self-parking</string>
-    <string name="room_service_label">Room service</string>
-    <string name="ac_unit_label">AC unit</string>
 
     <!-- Error state -->
     <string name="retry_label">Retry</string>

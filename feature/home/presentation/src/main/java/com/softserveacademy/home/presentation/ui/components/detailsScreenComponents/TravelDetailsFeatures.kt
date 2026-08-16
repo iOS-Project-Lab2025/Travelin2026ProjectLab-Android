@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
 import com.softserveacademy.core.presentation.design_system.components.TravelFeatureChip
 import com.softserveacademy.core.presentation.design_system.components.util.mapToFeature
