@@ -33,6 +33,8 @@ import com.softserveacademy.home.presentation.ui.components.detailsScreenCompone
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsMap
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.MapOverlay
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsHeader
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsFeaturesSection
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.FeaturesOverlay
 import com.softserveacademy.home.presentation.viewmodel.TourDetailsViewModel
 import kotlin.time.Duration
 
@@ -111,6 +113,7 @@ fun TravelTourDetailsScreen(
                 isDarkTheme = isDark,
                 isDescriptionExpanded = tourDetailState.isDescriptionExpanded,
                 showFullMap = tourDetailState.showFullMap,
+                showAllAmenities = tourDetailState.showAllAmenities,
                 onBackClick = {
                     viewModel.onEvent(TourDetailsEvent.NavigateBack)
                 },
@@ -125,6 +128,12 @@ fun TravelTourDetailsScreen(
                 },
                 onDescriptionExpandClick = {
                     viewModel.onEvent(TourDetailsEvent.ToggleDescription)
+                },
+                onSeeAllAmenitiesClick = {
+                    viewModel.onEvent(TourDetailsEvent.ViewAllAmenities)
+                },
+                onDismissAmenitiesOverlay = {
+                    viewModel.onEvent(TourDetailsEvent.DismissAmenities)
                 },
                 onMapClick = {
                     viewModel.onEvent(TourDetailsEvent.ViewFullMap)
@@ -209,6 +218,13 @@ private fun TravelTourDetailsWrapper(
                 }
 
                 item {
+                    TravelDetailsFeaturesSection(
+                        features = tour.includedServices,
+                        onSeeAllClick = onSeeAllAmenitiesClick
+                    )
+                }
+
+                item {
                     TravelDetailsMap(
                         address = tour.location,
                         latitude = tour.latitude,
@@ -225,6 +241,13 @@ private fun TravelTourDetailsWrapper(
                 hotelCoordinates = LatLng(tour.latitude, tour.longitude),
                 isDarkTheme = isDarkTheme,
                 onDismiss = onDismissMap
+            )
+        }
+
+        if (showAllAmenities) {
+            FeaturesOverlay(
+                features = tour.includedServices,
+                onDismiss = onDismissAmenitiesOverlay
             )
         }
     }
@@ -255,7 +278,16 @@ private fun TravelTourDetailsWrapperPreview() {
                 longitude = 103.87,
                 duration = Duration.ZERO,
                 price = 0.0,
-                category = TourCategory.GASTRONOMY
+                category = TourCategory.GASTRONOMY,
+                includedServices = listOf(
+                    "TOUR_TRANSPORT",
+                    "TOUR_GUIDE",
+                    "TOUR_TICKET",
+                    "TOUR_SAFETY_EQUIPMENT",
+                    "TOUR_PROFESSIONAL_GUIDE",
+                    "TOUR_AUDIO_GUIDE",
+                    "TOUR_LAUNCH"
+                )
             ),
             isDarkTheme = false
         )

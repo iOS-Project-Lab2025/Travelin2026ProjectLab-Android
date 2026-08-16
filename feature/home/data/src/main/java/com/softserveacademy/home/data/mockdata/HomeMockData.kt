@@ -263,7 +263,12 @@ object HomeMockData {
                     duration = 3.hours,
                     price = 120.0,
                     rating = 4.8,
-                    category = TourCategory.CULTURE
+                    category = TourCategory.CULTURE,
+                    includedServices = listOf(
+                        "TOUR_TRANSPORT",
+                        "TOUR_GUIDE",
+                        "TOUR_TICKET"
+                    )
                 ),
 
                 date = dateLong(2026, 8, 8),
