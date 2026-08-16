@@ -23,9 +23,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.HotelRoom
-import com.softserveacademy.core.domain.model.HotelRoomAmenity
-import com.softserveacademy.core.presentation.design_system.components.util.displayName
-import com.softserveacademy.core.presentation.design_system.components.util.icon
+import com.softserveacademy.core.domain.model.Amenities
+import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.icon
+import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.title
 import com.softserveacademy.core.presentation.design_system.theme.BedIcon
 import com.softserveacademy.core.presentation.design_system.theme.PersonsIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -124,7 +124,7 @@ fun TravelHotelRoomCard(
                     room.amenities.forEach { amenity ->
                         TravelAmenityChip(
                             icon = amenity.icon,
-                            text = amenity.displayName
+                            text = amenity.title
                         )
                     }
                 }
@@ -186,11 +186,11 @@ private fun TravelHotelRoomCardPreview() {
         maxOccupancy = 5,
         bedType = "1 King bed",
         amenities = listOf(
-            HotelRoomAmenity.WIFI,
-            HotelRoomAmenity.BREAKFAST,
-            HotelRoomAmenity.PARKING,
-            HotelRoomAmenity.AC,
-            HotelRoomAmenity.ROOM_SERVICE
+            Amenities.FreeWifi,
+            Amenities.BuffetBreakfast,
+            Amenities.SelfParking,
+            Amenities.AcUnit,
+            Amenities.RoomService
         ),
         pricePerNight = 150,
         images = listOf(

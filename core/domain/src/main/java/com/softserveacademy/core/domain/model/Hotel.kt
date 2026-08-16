@@ -29,15 +29,16 @@ data class Hotel(
     val address: String = "",
     @SerialName("star")
     val starCategory: Int = 0,
-    @SerialName("rating")
+    @SerialName("userRating")
     val reviewRating: Double = 0.0,
     val numberOfReviews: Int = 0,
     @SerialName("image")
     @Serializable(with = FlexibleListSerializer::class)
     val imageList: List<String> = emptyList(),
     val description: String = "",
-    @SerialName("includedItems")
+    @SerialName("amenities")
     val amenities: List<Amenities> = emptyList(),
+    val pricePerNight: Int = 0,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val rooms: List<HotelRoom> = emptyList(),

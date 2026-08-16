@@ -94,29 +94,31 @@ fun TravelDetailsHeader(
                 )
             }
         }
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    start = TravelinDimens.PaddingMedium,
-                    end = TravelinDimens.PaddingMedium,
-                    bottom = TravelinDimens.Padding2ExtraLarge
-                )
-                .clickable { onSeeAllPhotosClick() },
-            color = BlueDark90_Alpha50,
-            shape = MaterialTheme.shapes.small
-        ) {
-            Text(
-                text = stringResource(id = R.string.see_all_label) + " " + stringResource(id = R.string.plus_photos_label).lowercase(),
-                color = MaterialTheme.colorScheme.onPrimary,
+        if (imageList.size > 1) {
+            Surface(
                 modifier = Modifier
+                    .align(Alignment.BottomEnd)
                     .padding(
-                        horizontal = TravelinDimens.PaddingSmall,
-                        vertical = TravelinDimens.PaddingExtraSmall
-                    ),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold
-            )
+                        start = TravelinDimens.PaddingMedium,
+                        end = TravelinDimens.PaddingMedium,
+                        bottom = TravelinDimens.Padding2ExtraLarge
+                    )
+                    .clickable { onSeeAllPhotosClick() },
+                color = BlueDark90_Alpha50,
+                shape = MaterialTheme.shapes.small
+            ) {
+                Text(
+                    text = stringResource(id = R.string.see_all_label) + " " + stringResource(id = R.string.plus_photos_label).lowercase(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .padding(
+                            horizontal = TravelinDimens.PaddingSmall,
+                            vertical = TravelinDimens.PaddingExtraSmall
+                        ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
     }

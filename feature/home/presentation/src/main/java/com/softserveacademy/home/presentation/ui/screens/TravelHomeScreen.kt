@@ -150,8 +150,8 @@ fun TravelHomeScreen(
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
     val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
-    val tours = (state.journeyTogether as? SectionState.Success)?.data ?: emptyList()
-    val hotels = (state.hotelsRecommended as? SectionState.Success)?.data ?: emptyList()
+    val tours = (state.journeyTogether as? SectionState.Success)?.data?.take(5) ?: emptyList()
+    val hotels = (state.hotelsRecommended as? SectionState.Success)?.data?.take(5) ?: emptyList()
 
     val isToursLoading = state.journeyTogether is SectionState.Loading
     val isHotelsLoading = state.hotelsRecommended is SectionState.Loading
