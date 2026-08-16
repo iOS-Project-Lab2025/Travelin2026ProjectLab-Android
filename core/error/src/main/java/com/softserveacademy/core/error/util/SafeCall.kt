@@ -4,7 +4,9 @@ import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.core.error.model.AppResult
 import kotlinx.coroutines.CancellationException
 
-/** Executes [block] and wraps the result in [AppResult], mapping exceptions to [AppError] via [mapper]. */
+/**
+ * Executes [block] and wraps the result in [AppResult], mapping exceptions to [AppError] via [mapper].
+ */
 suspend fun <T> safeCall(
     mapper: ExceptionMapper,
     block: suspend () -> T
