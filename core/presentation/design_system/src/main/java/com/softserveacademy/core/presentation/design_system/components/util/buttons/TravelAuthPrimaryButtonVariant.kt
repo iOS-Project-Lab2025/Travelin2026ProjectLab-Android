@@ -8,27 +8,27 @@ import androidx.compose.runtime.Composable
 * - Color Background: This variant use the primary color as the background color.
 * - Color Content: This variant use the primary color as the content color.
 */
-enum class AuthPrimaryButtonVariant {
+enum class TravelAuthPrimaryButtonVariant {
     ColorBackground,
     ColorContent,
 }
 
 /**
  * Returns the colors for the auth primary button variant.
- * @return The colors for the auth primary button variant as a [PrimaryButtonColors] object
+ * @return The colors for the auth primary button variant as a [TravelPrimaryButtonColors] object
  */
 @Composable
-internal fun AuthPrimaryButtonVariant.colors(): PrimaryButtonColors {
+internal fun TravelAuthPrimaryButtonVariant.colors(): TravelPrimaryButtonColors {
 
     return when (this) {
-        AuthPrimaryButtonVariant.ColorBackground ->
-            PrimaryButtonColors(
+        TravelAuthPrimaryButtonVariant.ColorBackground ->
+            TravelPrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             )
 
-        AuthPrimaryButtonVariant.ColorContent ->
-            PrimaryButtonColors(
+        TravelAuthPrimaryButtonVariant.ColorContent ->
+            TravelPrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary,
             )

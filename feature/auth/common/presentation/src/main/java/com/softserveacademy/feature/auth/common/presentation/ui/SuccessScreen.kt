@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.stringResource
 import com.softserveacademy.feature.auth.common.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelAuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
@@ -58,7 +58,7 @@ fun SuccessScreen(
         TravelAuthPrimaryButton(
             text = stringResource(R.string.auth_explore_button),
             onClick = onExploreClick,
-            variant = AuthPrimaryButtonVariant.ColorContent,
+            variant = TravelAuthPrimaryButtonVariant.ColorContent,
             modifier = Modifier.fillMaxWidth()
         )
     }
