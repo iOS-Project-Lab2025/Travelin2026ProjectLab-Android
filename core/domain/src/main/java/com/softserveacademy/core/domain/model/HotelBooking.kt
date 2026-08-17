@@ -35,7 +35,7 @@ data class HotelBooking(
     @SerialName("check_out")
     val checkOut: Long,
     val guests: BookingGuests,
-    val price: BookingPrice,
+    val price: HotelBookingPrice,
     val status: BookingStatus,
     @SerialName("confirmation_code")
     val confirmationCode: String,
@@ -69,7 +69,7 @@ data class BookingGuests(
  * @property total The final total price including taxes and fees.
  */
 @Serializable
-data class BookingPrice(
+data class HotelBookingPrice(
     @SerialName("rate_per_night")
     val ratePerNight: Int,
     @SerialName("room_subtotal")

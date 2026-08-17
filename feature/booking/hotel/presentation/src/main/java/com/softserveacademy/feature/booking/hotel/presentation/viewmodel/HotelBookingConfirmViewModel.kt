@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.BookingGuests
-import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.HotelBookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
@@ -255,7 +255,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 children = draft.guests.children,
                 pets = draft.guests.pets
             ),
-            price = BookingPrice(
+            price = HotelBookingPrice(
                 ratePerNight = room.pricePerNight,
                 roomSubtotal = state.totalPrice,
                 taxes = 0,

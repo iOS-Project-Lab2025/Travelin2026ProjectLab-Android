@@ -20,7 +20,7 @@ class BookingGuests(BaseSchema):
     children: int = 0
     pets: bool = False
 
-class BookingPrice(BaseSchema):
+class HotelBookingPrice(BaseSchema):
     rate_per_night: int = Field(alias="rate_per_night")
     room_subtotal: int = Field(alias="room_subtotal")
     taxes: Optional[int] = 0
@@ -42,7 +42,7 @@ class HotelBooking(BaseSchema):
     check_in: int = Field(alias="check_in")
     check_out: int = Field(alias="check_out")
     guests: BookingGuests
-    price: BookingPrice
+    price: HotelBookingPrice
     status: str
     confirmation_code: str = Field(alias="confirmation_code")
     created_at: int = Field(alias="created_at")

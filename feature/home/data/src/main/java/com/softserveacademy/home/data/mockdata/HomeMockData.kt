@@ -3,7 +3,8 @@ package com.softserveacademy.home.data.mockdata
 import com.softserveacademy.core.domain.model.Airline
 import com.softserveacademy.core.domain.model.Airport
 import com.softserveacademy.core.domain.model.BookingGuests
-import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.BookingParticipants
+import com.softserveacademy.core.domain.model.HotelBookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
@@ -16,6 +17,7 @@ import com.softserveacademy.core.domain.model.SeatClass
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
+import com.softserveacademy.core.domain.model.TourBookingPrice
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.profile.domain.model.UserProfile
@@ -244,7 +246,7 @@ object HomeMockData {
 
             guests = BookingGuests(adults = 2),
 
-            price = BookingPrice(
+            price = HotelBookingPrice(
                 ratePerNight = 50,
                 roomSubtotal = 250,
                 total = 250
@@ -261,35 +263,25 @@ object HomeMockData {
         tours = listOf(
             TourBooking(
                 bookingId = "tour_booking_001",
-
-                tour = Tour(
-                    id = "tour_001",
-                    title = "Eiffel Tower Experience",
-                    description = "Visit the Eiffel Tower with a guided tour.",
-                    location = "Paris, France",
-                    imageList = listOf("https://picsum.photos/id/1031/800/600"),
-                    duration = 3.hours,
-                    rates = RatePerParticipant(
-                        adults = 120.0,
-                        children = 60.0,
-                        infants = 0.0
-                    ),
-                    rating = 4.8,
-                    category = TourCategory.CULTURE,
-                    includedServices = listOf(
-                        "TOUR_TRANSPORT",
-                        "TOUR_GUIDE",
-                        "TOUR_TICKET"
-                    )
+                userId = "Prueba",
+                tourId = "tour_1",
+                startDate = dateLong(2026, 8, 8),
+                endDate = dateLong(2026, 8, 10),
+                participants = BookingParticipants(
+                    adults = 1,
+                    children = 0,
+                    infants = 0
                 ),
-
-                date = dateLong(2026, 8, 8),
-
-                participants = 2,
-
+                price = TourBookingPrice(
+                    ratePerAdult = 120.0,
+                    ratePerChildren = 60.0,
+                    ratePerInfant = 0.0,
+                    subtotal = 250,
+                    total = 250
+                ),
                 confirmationCode = "TOUR789",
-
-                status = BookingStatus.COMPLETED
+                status = BookingStatus.COMPLETED,
+                createdAt = dateLong(2026, 7, 31),
             )
         )
     )
