@@ -1,6 +1,7 @@
 package com.softserveacademy.home.presentation.ui.screens
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +41,7 @@ import com.softserveacademy.home.presentation.viewmodel.SearchViewModel
  * @param onItemClick Callback when a search result item is clicked.
  * @param viewModel The [SearchViewModel] that manages the search logic and state.
  */
+@SuppressLint("MissingPermission")
 @Composable
 fun DestinationSearchScreen(
     onBackClick: () -> Unit,
