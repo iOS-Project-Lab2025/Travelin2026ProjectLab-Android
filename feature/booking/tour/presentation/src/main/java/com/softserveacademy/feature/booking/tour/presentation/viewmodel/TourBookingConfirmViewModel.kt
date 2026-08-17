@@ -4,7 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.error.extension.onFailure
+import com.softserveacademy.core.error.extension.onSuccess
+import com.softserveacademy.core.error.handler.ErrorHandler
+import com.softserveacademy.core.error.model.AppError
 import com.softserveacademy.core.error.model.AppResult
+import com.softserveacademy.core.error.model.ErrorAction
+import com.softserveacademy.core.error.model.UiText
+import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
 import com.softserveacademy.feature.booking.tour.domain.usecase.ClearTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.domain.usecase.GetTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.presentation.events.TourBookingConfirmEvent
@@ -22,7 +29,9 @@ class TourBookingConfirmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getTourBookingDraftUseCase: GetTourBookingDraftUseCase,
     private val clearTourBookingDraftUseCase: ClearTourBookingDraftUseCase,
-    private val tourRepo: TourRepo
+    private val tourRepo: TourRepo,
+    private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val tourId: String = checkNotNull(savedStateHandle["tourId"])
@@ -68,17 +77,24 @@ class TourBookingConfirmViewModel @Inject constructor(
     fun onEvent(event: TourBookingConfirmEvent) {
         when (event) {
             TourBookingConfirmEvent.OnConfirmClick -> {
-                _uiState.update { it.copy(showPaymentSimulationSheet = true) }
+                createPaymentIntent()
             }
             TourBookingConfirmEvent.OnBackClick -> {
                 // Handled in UI
             }
-            TourBookingConfirmEvent.OnRetryClick -> loadBookingDetails()
+            TourBookingConfirmEvent.OnRetryClick -> {
+                if (_uiState.value.tour == null) {
+                    loadBookingDetails()
+                } else if (_uiState.value.error != null) {
+                    _uiState.update { it.copy(error = null) }
+                    createPaymentIntent()
+                }
+            }
             TourBookingConfirmEvent.OnDismissError -> _uiState.update { it.copy(error = null) }
             TourBookingConfirmEvent.OnPaymentSuccess -> finalizeBooking()
-            TourBookingConfirmEvent.OnPaymentReset -> _uiState.update { it.copy(clientSecret = null) }
+            TourBookingConfirmEvent.OnPaymentReset -> _uiState.update { it.copy(clientSecret = null, isPaymentSheetLoading = false) }
             TourBookingConfirmEvent.OnSimulateSuccessClick -> {
-                _uiState.update { it.copy(showPaymentSimulationSheet = false) }
+                _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
                 finalizeBooking()
             }
             TourBookingConfirmEvent.OnSimulateFailureClick -> {
@@ -87,6 +103,47 @@ class TourBookingConfirmViewModel @Inject constructor(
             TourBookingConfirmEvent.OnDismissPaymentSimulationSheet -> {
                 _uiState.update { it.copy(showPaymentSimulationSheet = false, paymentSimulationError = null) }
             }
+        }
+    }
+
+    private fun createPaymentIntent() {
+        val amount = (_uiState.value.totalPrice * 100).toLong()
+        if (amount <= 0) {
+            _uiState.update { it.copy(error = "Invalid price calculation") }
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isPaymentSheetLoading = true) }
+            createPaymentIntentUseCase(amount, "usd")
+                .onSuccess { secret ->
+                    _uiState.update { it.copy(clientSecret = secret, isPaymentSheetLoading = false) }
+                }
+                .onFailure { error ->
+                    if (error is AppError.Auth) {
+                        _uiState.update {
+                            it.copy(
+                                showPaymentSimulationSheet = true,
+                                isPaymentSheetLoading = false
+                            )
+                        }
+                    } else {
+                        val action = errorHandler.handle(error)
+                        val message = if (action is ErrorAction.ShowMessage) {
+                            when (val uiText = action.message) {
+                                is UiText.Raw -> uiText.value
+                                is UiText.Resource -> "An error occurred during payment initialization."
+                            }
+                        } else "Network error. Please try again."
+
+                        _uiState.update {
+                            it.copy(
+                                error = message,
+                                isPaymentSheetLoading = false
+                            )
+                        }
+                    }
+                }
         }
     }
 

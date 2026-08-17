@@ -1,5 +1,6 @@
 package com.softserveacademy.feature.booking.tour.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +29,17 @@ import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.feature.booking.tour.domain.model.Participants
 import com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.rememberPaymentSheet
+import com.softserveacademy.core.presentation.design_system.theme.BlueDark80
+import com.softserveacademy.core.presentation.design_system.theme.Gray40
+import com.softserveacademy.core.presentation.design_system.theme.Gray80
+import com.softserveacademy.core.presentation.design_system.theme.GrayLight20
+import com.softserveacademy.core.presentation.design_system.theme.Red50
+import com.softserveacademy.core.presentation.design_system.theme.Teal40
+import com.softserveacademy.core.presentation.design_system.theme.White100
+import com.softserveacademy.core.presentation.design_system.R as coreR
 
 @Composable
 fun TourBookingConfirmScreen(
@@ -37,6 +49,79 @@ fun TourBookingConfirmScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    BackHandler {
+        viewModel.onEvent(TourBookingConfirmEvent.OnBackClick)
+        onBackClick()
+    }
+
+    val paymentSheet = rememberPaymentSheet { result ->
+        when (result) {
+            is PaymentSheetResult.Completed -> {
+                viewModel.onEvent(TourBookingConfirmEvent.OnPaymentSuccess)
+            }
+            is PaymentSheetResult.Canceled -> {
+                viewModel.onEvent(TourBookingConfirmEvent.OnPaymentReset)
+            }
+            is PaymentSheetResult.Failed -> {
+                viewModel.onEvent(TourBookingConfirmEvent.OnPaymentReset)
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.clientSecret) {
+        uiState.clientSecret?.let { secret ->
+            paymentSheet.presentWithPaymentIntent(
+                secret,
+                PaymentSheet.Configuration(
+                    merchantDisplayName = "Travelin 2026",
+                    appearance = PaymentSheet.Appearance(
+                        colorsLight = PaymentSheet.Colors(
+                            primary = Teal40,
+                            surface = White100,
+                            component = White100,
+                            componentBorder = Gray40,
+                            componentDivider = Gray40,
+                            onComponent = Gray80,
+                            subtitle = Gray40,
+                            placeholderText = Gray40,
+                            onSurface = Gray80,
+                            appBarIcon = Gray80,
+                            error = Red50,
+                        ),
+                        colorsDark = PaymentSheet.Colors(
+                            primary = Teal40,
+                            surface = BlueDark80,
+                            component = BlueDark80,
+                            componentBorder = Gray80,
+                            componentDivider = Gray40,
+                            onComponent = GrayLight20,
+                            subtitle = Gray40,
+                            placeholderText = Gray40,
+                            onSurface = GrayLight20,
+                            appBarIcon = GrayLight20,
+                            error = Red50,
+                        ),
+                        shapes = PaymentSheet.Shapes(
+                            cornerRadiusDp = 10f,
+                            borderStrokeWidthDp = 1f
+                        ),
+                        typography = PaymentSheet.Typography(
+                            sizeScaleFactor = 1f,
+                            fontResId = coreR.font.inter_medium,
+                        ),
+                        primaryButton = PaymentSheet.PrimaryButton(
+                            shape = PaymentSheet.PrimaryButtonShape(
+                                cornerRadiusDp = 15f,
+                                heightDp = 56f
+                            ),
+                        )
+                    )
+                )
+            )
+            viewModel.onEvent(TourBookingConfirmEvent.OnPaymentReset)
+        }
+    }
+
     LaunchedEffect(uiState.isPaymentSuccessful) {
         if (uiState.isPaymentSuccessful) {
             onPaymentSuccess()
@@ -45,9 +130,20 @@ fun TourBookingConfirmScreen(
 
     TourBookingConfirmContent(
         uiState = uiState,
-        onBackClick = onBackClick,
+        onBackClick = {
+            viewModel.onEvent(TourBookingConfirmEvent.OnBackClick)
+            onBackClick()
+        },
         onConfirmClick = { viewModel.onEvent(TourBookingConfirmEvent.OnConfirmClick) },
         onRetryClick = { viewModel.onEvent(TourBookingConfirmEvent.OnRetryClick) },
+        onDismissError = {
+            if (uiState.tour == null) {
+                viewModel.onEvent(TourBookingConfirmEvent.OnBackClick)
+                onBackClick()
+            } else {
+                viewModel.onEvent(TourBookingConfirmEvent.OnDismissError)
+            }
+        },
         onSimulateSuccess = { viewModel.onEvent(TourBookingConfirmEvent.OnSimulateSuccessClick) },
         onSimulateFailure = { viewModel.onEvent(TourBookingConfirmEvent.OnSimulateFailureClick) },
         onDismissBottomSheet = { viewModel.onEvent(TourBookingConfirmEvent.OnDismissPaymentSimulationSheet) }
@@ -60,6 +156,7 @@ fun TourBookingConfirmContent(
     onBackClick: () -> Unit,
     onConfirmClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onDismissError: () -> Unit = onBackClick,
     onSimulateSuccess: () -> Unit = {},
     onSimulateFailure: () -> Unit = {},
     onDismissBottomSheet: () -> Unit = {}
@@ -84,7 +181,8 @@ fun TourBookingConfirmContent(
             onConfirmClick = onConfirmClick,
             isConfirmLoading = uiState.isPaymentSheetLoading,
             error = uiState.error,
-            onRetryClick = onRetryClick
+            onRetryClick = onRetryClick,
+            onDismissError = onDismissError
         ) { padding ->
             Column(
                 modifier = Modifier
