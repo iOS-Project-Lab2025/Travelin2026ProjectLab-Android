@@ -25,7 +25,7 @@ fun TravelImageHandler(
             .then(
                 if (shouldClip) Modifier.clip(shape = shape) else Modifier
             ),
-        error = painterResource(R.drawable.test_hotel),
+        error = painterResource(R.drawable.placeholder),
         placeholder = painterResource(R.drawable.placeholder)
     )
 }
