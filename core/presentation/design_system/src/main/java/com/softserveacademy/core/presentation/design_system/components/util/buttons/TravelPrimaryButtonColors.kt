@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
  * @param borderColor The border color of the button
  */
 
-data class PrimaryButtonColors(
+data class TravelPrimaryButtonColors(
     val containerColor: Color,
     val contentColor: Color,
     val borderColor: Color? = null,

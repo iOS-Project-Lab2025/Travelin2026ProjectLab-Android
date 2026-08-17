@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.SuccessIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -80,7 +80,7 @@ fun TravelBookingSuccessScreen(
         TravelPrimaryButton(
             text = stringResource(R.string.booking_success_button),
             onClick = onBackToHome,
-            variant = PrimaryButtonVariant.BackToHome,
+            variant = TravelPrimaryButtonVariant.BackToHome,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(

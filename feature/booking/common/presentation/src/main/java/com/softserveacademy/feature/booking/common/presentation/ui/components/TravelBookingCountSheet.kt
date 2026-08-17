@@ -20,7 +20,7 @@ import com.softserveacademy.core.presentation.design_system.components.InlineErr
 import com.softserveacademy.core.presentation.design_system.components.TravelLabelCounter
 import com.softserveacademy.core.presentation.design_system.components.TravelLabelSwitch
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.common.presentation.R
@@ -140,7 +140,7 @@ fun TravelBookingCountSheetContent(
         TravelPrimaryButton(
             text = stringResource(R.string.accept_button_label),
             onClick = onAccept,
-            variant = PrimaryButtonVariant.CallToAction
+            variant = TravelPrimaryButtonVariant.CallToAction
         )
     }
 }

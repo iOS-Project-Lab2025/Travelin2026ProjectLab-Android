@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities
+package com.softserveacademy.home.presentation.ui.components.detailsScreenComponents
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,7 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 @Composable
-fun TravelHotelDetailsTopIcons(
+fun TravelDetailsTopIcons(
     onBackClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {}
@@ -45,8 +45,8 @@ fun TravelHotelDetailsTopIcons(
 
 @Preview(showBackground = false)
 @Composable
-private fun TravelHotelDetailScreenPreview() {
+private fun TravelDetailsTopIconsPreview() {
     Travelin2026ProjectLabTheme {
-        TravelHotelDetailsTopIcons()
+        TravelDetailsTopIcons()
     }
 }

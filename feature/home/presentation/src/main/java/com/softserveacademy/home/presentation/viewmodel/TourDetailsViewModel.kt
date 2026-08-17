@@ -66,6 +66,12 @@ class TourDetailsViewModel @Inject constructor(
             TourDetailsEvent.ToggleDescription -> {
                 updateState { it.copy(isDescriptionExpanded = !it.isDescriptionExpanded) }
             }
+            TourDetailsEvent.ViewAllAmenities -> {
+                updateState { it.copy(showAllAmenities = true) }
+            }
+            TourDetailsEvent.DismissAmenities -> {
+                updateState { it.copy(showAllAmenities = false) }
+            }
         }
     }
 

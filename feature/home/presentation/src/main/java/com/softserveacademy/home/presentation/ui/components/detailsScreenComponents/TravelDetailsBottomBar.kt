@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities
+package com.softserveacademy.home.presentation.ui.components.detailsScreenComponents
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param modifier The modifier to be applied to the bar.
  */
 @Composable
-fun TravelBookingBar(
+fun TravelDetailsBottomBar(
     price: String,
     onBookClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -89,9 +89,9 @@ fun TravelBookingBar(
 
 @Preview(showBackground = true)
 @Composable
-private fun TravelBookingBarPreview() {
+private fun TravelDetailsBottomBarPreview() {
     Travelin2026ProjectLabTheme {
-        TravelBookingBar(
+        TravelDetailsBottomBar(
             price = "$600",
             onBookClick = {}
         )

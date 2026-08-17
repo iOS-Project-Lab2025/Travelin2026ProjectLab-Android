@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.core.presentation.design_system.theme.AngleLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.AngleRightIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
