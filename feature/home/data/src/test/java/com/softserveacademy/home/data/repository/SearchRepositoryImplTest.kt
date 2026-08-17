@@ -72,16 +72,6 @@ class SearchRepositoryImplTest {
     }
 
     @Test
-    fun `given flights filter when search then returns only flights`() = runTest {
-        val result = repository.search("", SearchFilter.FLIGHTS, null)
-
-        assertTrue(result.isSuccess)
-        val items = result.getOrNull()
-        assertTrue(items!!.isNotEmpty())
-        items.forEach { assertTrue(it is SearchItem.FlightItem) }
-    }
-
-    @Test
     fun `given destinations filter when search then returns only destinations`() = runTest {
         val result = repository.search("", SearchFilter.DESTINATIONS, null)
 

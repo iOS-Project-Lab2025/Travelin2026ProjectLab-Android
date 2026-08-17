@@ -27,6 +27,11 @@ class SearchViewModel @Inject constructor(
     var currentFilter by mutableStateOf(SearchFilter.ALL)
     var uiState by mutableStateOf<SearchUiState>(SearchUiState.Idle)
 
+    var isNearbyMode by mutableStateOf(false)
+    var searchRadius by mutableStateOf(10f) // Radio en km
+    var currentLatitude by mutableStateOf<Double?>(null)
+    var currentLongitude by mutableStateOf<Double?>(null)
+
     private var searchJob: Job? = null
 
     init {
@@ -47,6 +52,18 @@ class SearchViewModel @Inject constructor(
         performSearch()
     }
 
+    fun onRadiusChanged(newRadius: Float) {
+        searchRadius = newRadius
+        performSearch()
+    }
+
+    fun toggleNearbyMode(enabled: Boolean, lat: Double? = null, lon: Double? = null) {
+        isNearbyMode = enabled
+        currentLatitude = lat
+        currentLongitude = lon
+        performSearch()
+    }
+
     fun performSearch(isInitial: Boolean = false) {
         if (!networkMonitor.isConnected()) {
             uiState = SearchUiState.Error("No internet connection.")
@@ -54,9 +71,16 @@ class SearchViewModel @Inject constructor(
         }
         viewModelScope.launch {
             uiState = SearchUiState.Loading
-            val location = if (isInitial) "Santiago" else null
+            val location = if (isInitial && !isNearbyMode) "Santiago" else null
 
-            searchRepository.search(searchQuery, currentFilter, location).onSuccess { results ->
+            searchRepository.search(
+                query = searchQuery,
+                filter = currentFilter,
+                location = location,
+                latitude = if (isNearbyMode) currentLatitude else null,
+                longitude = if (isNearbyMode) currentLongitude else null,
+                radius = if (isNearbyMode) searchRadius.toDouble() else null
+            ).onSuccess { results ->
                 uiState = if (results.isEmpty()) SearchUiState.Empty else SearchUiState.Success(results)
             }.onFailure {
                 uiState = SearchUiState.Error("An error occurred. Please try again.")

@@ -359,6 +359,7 @@ fun NavGraphBuilder.mainGraph(
                     val destination = when (route.type) {
                         TravelItemType.HOTEL -> Routes.TravelHotelDetailsScreen(id = id)
                         TravelItemType.TOUR -> Routes.TravelTourDetailsScreen(id = id)
+                        TravelItemType.DESTINATION -> Routes.TravelTourDetailsScreen(id = id)
                     }
                     navController.navigate(destination)
                 }
