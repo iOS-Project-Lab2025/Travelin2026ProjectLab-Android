@@ -17,7 +17,13 @@ class LoginRepositoryImpl(
             }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            val message = e.message ?: ""
+            if (message.contains("invalid_credentials", ignoreCase = true) ||
+                message.contains("Invalid login credentials", ignoreCase = true)) {
+                Result.failure(Exception("Incorrect email or password. Please try again."))
+            } else {
+                Result.failure(e)
+            }
         }
     }
 

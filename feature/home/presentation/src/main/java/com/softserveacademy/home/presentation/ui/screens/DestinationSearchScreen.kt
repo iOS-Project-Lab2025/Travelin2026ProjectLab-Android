@@ -251,7 +251,7 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     title = item.hotel.name,
                     location = item.hotel.address,
                     image = item.hotel.imageList.firstOrNull(),
-                    price = "$500", // TODO: change for minimum price from rooms
+                    price = "${item.hotel.pricePerNight}",
                     rating = item.hotel.reviewRating,
                     onClick = { item.hotel.id.let { onItemClick(it, TravelItemType.HOTEL) } }
                 )

@@ -1,6 +1,7 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -79,6 +80,16 @@ fun NavigationRoot(
     registerViewModel: RegisterViewModel,
     forgotPasswordViewModel: ForgotPasswordViewModel
 ) {
+
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn && !isFirstTime) {
+            navController.navigate(Routes.AuthGraph) {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = when {
@@ -97,7 +108,7 @@ fun NavigationRoot(
             forgotPasswordViewModel = forgotPasswordViewModel
         )
 
-        mainGraph(navController)
+        mainGraph(navController, loginViewModel)
         bookingGraph(navController)
         flightGraph(navController)
     }
@@ -218,7 +229,8 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
  * @param navController The navigation controller used for screen navigation.
  */
 fun NavGraphBuilder.mainGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    loginViewModel: LoginViewModel
 ) {
 
     navigation<Routes.MainGraph>(
@@ -268,8 +280,9 @@ fun NavGraphBuilder.mainGraph(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onLogoutSuccess = {
+                    loginViewModel.resetState()
                     navController.navigate(Routes.AuthGraph) {
-                        popUpTo(Routes.MainGraph) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 onEditProfileClick = {

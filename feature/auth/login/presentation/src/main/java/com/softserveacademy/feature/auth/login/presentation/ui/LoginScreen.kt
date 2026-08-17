@@ -39,6 +39,10 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onLoginSuccess: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
+
     if (viewModel.isSuccess) {
         LaunchedEffect(Unit) {
             onLoginSuccess()

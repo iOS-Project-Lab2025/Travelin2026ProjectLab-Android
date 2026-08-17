@@ -200,6 +200,18 @@ fun EditProfileContent(
                     )
                 }
 
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = TravelinDimens.PaddingSmall),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+
+                Text(
+                    text = stringResource(R.string.change_password_section_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
                 LabeledInput(label = stringResource(R.string.password_label)) {
                     AppPasswordInput(
                         value = password,

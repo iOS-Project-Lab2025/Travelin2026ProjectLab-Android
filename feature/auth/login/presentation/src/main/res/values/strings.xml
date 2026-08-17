@@ -12,6 +12,7 @@
     <string name="login_social_prefix">or sign in with</string>
     <string name="login_no_account">I don\'t have a account?</string>
     <string name="login_sign_up_button">Sign Up</string>
+    <string name="login_error_invalid_credentials">Incorrect email or password. Please try again.</string>
 
     <!-- Forgot Password Screen -->
     <string name="forgot_password_title">Forgot password</string>

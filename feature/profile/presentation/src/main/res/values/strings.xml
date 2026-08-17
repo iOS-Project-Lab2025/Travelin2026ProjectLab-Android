@@ -31,6 +31,10 @@
     <string name="confirm_password_label">Confirm password</string>
     <string name="save_changes_label">Save changes</string>
     <string name="profile_updated_success">Profile updated successfully!</string>
+    <string name="password_updated_success">Password updated successfully!</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_password_empty">Password cannot be empty</string>
+    <string name="change_password_section_title">Change Password</string>
     <string name="dismiss_label">Dismiss</string>
     <string name="close_label">Close</string>
 </resources>
