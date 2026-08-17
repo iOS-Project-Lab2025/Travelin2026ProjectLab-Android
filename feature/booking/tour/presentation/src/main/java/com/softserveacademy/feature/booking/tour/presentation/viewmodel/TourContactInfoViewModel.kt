@@ -4,17 +4,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.BookingContactInfo
+import com.softserveacademy.feature.booking.common.domain.usecase.ValidateContactInfoUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelBookingContactInfoEvent
 import com.softserveacademy.feature.booking.common.presentation.states.TravelBookingContactInfoState
 import com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft
 import com.softserveacademy.feature.booking.tour.domain.usecase.GetTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.domain.usecase.SaveTourBookingDraftUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,77 +22,121 @@ import javax.inject.Inject
 class TourContactInfoViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getTourBookingDraftUseCase: GetTourBookingDraftUseCase,
-    private val saveTourBookingDraftUseCase: SaveTourBookingDraftUseCase
+    private val saveTourBookingDraftUseCase: SaveTourBookingDraftUseCase,
+    private val validateContactInfoUseCase: ValidateContactInfoUseCase
 ) : ViewModel() {
 
     private val tourId: String = checkNotNull(savedStateHandle["tourId"])
 
-    private val _uiState = MutableStateFlow(TravelBookingContactInfoState())
+    private val _uiState = MutableStateFlow(savedStateHandle.get<TravelBookingContactInfoState>(KEY_STATE) ?: TravelBookingContactInfoState())
     val uiState: StateFlow<TravelBookingContactInfoState> = _uiState.asStateFlow()
 
-    private val _validationSuccess = MutableSharedFlow<Boolean>()
-    val validationSuccess: SharedFlow<Boolean> = _validationSuccess.asSharedFlow()
+    private val _validationSuccess = MutableStateFlow(false)
+    val validationSuccess: StateFlow<Boolean> = _validationSuccess.asStateFlow()
 
-    private var tourBookingDraft: TourBookingDraft = TourBookingDraft(tourId = tourId)
+    private var tourBookingDraft: TourBookingDraft? = null
 
     init {
+        if (savedStateHandle.get<TravelBookingContactInfoState>(KEY_STATE) == null) {
+            loadBookingDraft()
+        }
+    }
+
+    private fun loadBookingDraft() {
+        updateState { it.copy(isLoading = true) }
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val draft = getTourBookingDraftUseCase(tourId)
-            if (draft != null) {
-                tourBookingDraft = draft
-                _uiState.update { state ->
-                    state.copy(
+            tourBookingDraft = getTourBookingDraftUseCase(tourId)
+            tourBookingDraft?.let { draft ->
+                updateState {
+                    it.copy(
                         firstName = draft.contactInfo.firstName,
                         lastName = draft.contactInfo.lastName,
                         email = draft.contactInfo.email,
-                        countryCode = draft.contactInfo.countryCode,
-                        phoneNumber = draft.contactInfo.phoneNumber,
-                        isLoading = false
+                        countryCode = if (draft.contactInfo.countryCode.isNotEmpty()) {
+                            draft.contactInfo.countryCode
+                        } else {
+                            it.countryCode
+                        },
+                        phoneNumber = draft.contactInfo.phoneNumber
                     )
                 }
-            } else {
-                _uiState.update { it.copy(isLoading = false) }
             }
+            updateState { it.copy(isLoading = false) }
         }
     }
 
     fun onEvent(event: TravelBookingContactInfoEvent) {
         when (event) {
-            is TravelBookingContactInfoEvent.FirstNameChanged -> _uiState.update { it.copy(firstName = event.firstName) }
-            is TravelBookingContactInfoEvent.LastNameChanged -> _uiState.update { it.copy(lastName = event.lastName) }
-            is TravelBookingContactInfoEvent.EmailChanged -> _uiState.update { it.copy(email = event.email) }
-            is TravelBookingContactInfoEvent.CountryCodeChanged -> _uiState.update { it.copy(countryCode = event.countryCode) }
-            is TravelBookingContactInfoEvent.PhoneNumberChanged -> _uiState.update { it.copy(phoneNumber = event.phoneNumber) }
-            TravelBookingContactInfoEvent.OnNextClick -> onNextClick()
-            else -> {}
+            is TravelBookingContactInfoEvent.FirstNameChanged -> {
+                updateState { it.copy(firstName = event.firstName, firstNameError = null) }
+            }
+            is TravelBookingContactInfoEvent.LastNameChanged -> {
+                updateState { it.copy(lastName = event.lastName, lastNameError = null) }
+            }
+            is TravelBookingContactInfoEvent.EmailChanged -> {
+                updateState { it.copy(email = event.email, emailError = null) }
+            }
+            is TravelBookingContactInfoEvent.PhoneNumberChanged -> {
+                updateState { it.copy(phoneNumber = event.phoneNumber, phoneNumberError = null) }
+            }
+            is TravelBookingContactInfoEvent.CountryCodeChanged -> {
+                updateState { it.copy(countryCode = event.countryCode) }
+            }
+            TravelBookingContactInfoEvent.OnNextClick -> {
+                validateAndSave()
+            }
+            TravelBookingContactInfoEvent.OnBackClick -> { /* Handled by navigation */ }
         }
     }
 
-    private fun onNextClick() {
-        // Simple validation
-        if (uiState.value.firstName.isBlank() || uiState.value.lastName.isBlank() || uiState.value.email.isBlank()) {
-            // Error handling could be improved
+    private fun updateState(update: (TravelBookingContactInfoState) -> TravelBookingContactInfoState) {
+        _uiState.update(update)
+        savedStateHandle[KEY_STATE] = _uiState.value
+    }
+
+    private fun validateAndSave() {
+        val firstNameResult = validateContactInfoUseCase.validateFirstName(_uiState.value.firstName)
+        val lastNameResult = validateContactInfoUseCase.validateLastName(_uiState.value.lastName)
+        val emailResult = validateContactInfoUseCase.validateEmail(_uiState.value.email)
+        val phoneNumberResult = validateContactInfoUseCase.validatePhoneNumber(_uiState.value.phoneNumber)
+
+        val hasError = listOf(firstNameResult, lastNameResult, emailResult, phoneNumberResult)
+            .any { it is ValidateContactInfoUseCase.ValidationResult.Invalid }
+
+        if (hasError) {
+            _uiState.update { state ->
+                state.copy(
+                    firstNameError = (firstNameResult as? ValidateContactInfoUseCase.ValidationResult.Invalid)?.errorMessage,
+                    lastNameError = (lastNameResult as? ValidateContactInfoUseCase.ValidationResult.Invalid)?.errorMessage,
+                    emailError = (emailResult as? ValidateContactInfoUseCase.ValidationResult.Invalid)?.errorMessage,
+                    phoneNumberError = (phoneNumberResult as? ValidateContactInfoUseCase.ValidationResult.Invalid)?.errorMessage
+                )
+            }
             return
         }
 
-        tourBookingDraft = tourBookingDraft.copy(
-            contactInfo = BookingContactInfo(
-                firstName = uiState.value.firstName,
-                lastName = uiState.value.lastName,
-                email = uiState.value.email,
-                countryCode = uiState.value.countryCode,
-                phoneNumber = uiState.value.phoneNumber
-            )
-        )
-
         viewModelScope.launch {
-            saveTourBookingDraftUseCase(tourBookingDraft)
-            _validationSuccess.emit(true)
+            val repositoryDraft = getTourBookingDraftUseCase(tourId)
+            val updatedContactInfo = BookingContactInfo(
+                firstName = _uiState.value.firstName,
+                lastName = _uiState.value.lastName,
+                email = _uiState.value.email,
+                countryCode = _uiState.value.countryCode,
+                phoneNumber = _uiState.value.phoneNumber
+            )
+            val updatedDraft = (repositoryDraft ?: TourBookingDraft(tourId = tourId)).copy(
+                contactInfo = updatedContactInfo
+            )
+            saveTourBookingDraftUseCase(updatedDraft)
+            _validationSuccess.value = true
         }
     }
 
     fun resetValidationStatus() {
-        // No-op for now
+        _validationSuccess.value = false
+    }
+
+    companion object {
+        private const val KEY_STATE = "contact_info_state"
     }
 }
