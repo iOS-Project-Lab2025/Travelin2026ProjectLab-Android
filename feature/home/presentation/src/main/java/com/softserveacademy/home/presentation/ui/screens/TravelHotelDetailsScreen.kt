@@ -224,7 +224,7 @@ private fun TravelHotelDetailsWrapper(
                 Surface(shadowElevation = TravelinDimens.ElevationLarge) {
                     TravelDetailsBottomBar(
                         // TODO: Get this value from the minimum of the list of room prices (with the respective currency)
-                        price = "$400",
+                        price = "$${hotel.pricePerNight}",
                         onBookClick = onBookClick
                     )
                 }
