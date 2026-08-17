@@ -1,30 +1,21 @@
 plugins {
-    alias(libs.plugins.android.library)
+    id("com.softserveacademy.android.library")
+    id("com.softserveacademy.android.hilt")
 }
 
 android {
-    namespace = "com.example.data"
-    compileSdk {
-        version = release(37)
-    }
-
-    defaultConfig {
-        minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
+    namespace = "com.softserveacademy.feature.favorites.hotels.data"
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
+    implementation(projects.feature.favorites.hotels.domain)
+    implementation(projects.feature.favorites.common.domain)
+    
     implementation(libs.androidx.core.ktx)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
+    implementation(libs.javax.inject)
+    
+    testImplementation(libs.bundles.testing.stack)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

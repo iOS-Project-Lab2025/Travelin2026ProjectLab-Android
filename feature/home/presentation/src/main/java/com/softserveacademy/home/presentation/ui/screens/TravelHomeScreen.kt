@@ -92,6 +92,7 @@ fun RootHomeScreen(
             onTourClick = actions.onTourClick,
             onFlightClick = actions.onFlightsClick,  
             onAccountClick = actions.onAccountClick,
+            onFavoritesClick = actions.onFavoritesClick,
             onProfileClick = actions.onProfileClick,
             onJourneySeeAllClick = actions.onJourneySeeAllClick,
             onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
@@ -132,6 +133,7 @@ fun TravelHomeScreen(
     onTourClick: (String) -> Unit,
     onAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onFavoritesClick: () -> Unit = {},
     onFlightClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
@@ -149,7 +151,10 @@ fun TravelHomeScreen(
             TravelNavigationBar(
                 selectedTab = 0,
                 onTabClick = { index ->
-                    if (index == 3) onAccountClick()
+                    when (index) {
+                        2 -> onFavoritesClick()
+                        3 -> onAccountClick()
+                    }
                 }
             )
         }

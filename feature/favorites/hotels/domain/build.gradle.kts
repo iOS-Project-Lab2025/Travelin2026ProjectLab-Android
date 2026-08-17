@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.softserveacademy.feature.favorites.common.hotels.domain"
+    namespace = "com.softserveacademy.feature.favorites.hotels.domain"
 }
 
 dependencies {

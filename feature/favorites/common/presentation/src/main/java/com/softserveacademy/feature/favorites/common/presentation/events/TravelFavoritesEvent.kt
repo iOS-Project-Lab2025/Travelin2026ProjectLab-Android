@@ -6,8 +6,7 @@ import com.softserveacademy.feature.favorites.common.domain.model.FavoriteItem
  */
 enum class FavoriteType {
     HOTEL,
-    FLIGHT,
-    TRIP
+    TOUR
 }
 
 /**

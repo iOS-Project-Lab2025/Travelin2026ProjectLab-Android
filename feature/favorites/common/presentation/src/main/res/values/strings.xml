@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="flights_label">Flights</string>
     <string name="hotels_label">Hotels</string>
     <string name="tours_label">Tours</string>
     <string name="search_favorites_placeholder">Search into your favorites</string>

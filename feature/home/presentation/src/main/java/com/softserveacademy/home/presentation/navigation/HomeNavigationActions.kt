@@ -6,6 +6,7 @@ data class HomeNavigationActions(
     val onTourClick: (String) -> Unit = {},
     val onFlightsClick: () -> Unit = {},
     val onAccountClick: () -> Unit = {},
+    val onFavoritesClick: () -> Unit = {},
     val onProfileClick: () -> Unit = {},
     val onJourneySeeAllClick: () -> Unit = {},
     val onHotelsSeeAllClick: () -> Unit = {},

@@ -4,12 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.feature.favorites.common.domain.usecase.GetFavoritesUseCase
 import com.softserveacademy.feature.favorites.common.domain.usecase.ToggleFavoriteUseCase
+import com.softserveacademy.feature.favorites.common.presentation.events.FavoriteType
+import com.softserveacademy.feature.favorites.common.presentation.events.TravelFavoritesEffect
 import com.softserveacademy.feature.favorites.common.presentation.events.TravelFavoritesEvent
 import com.softserveacademy.feature.favorites.common.presentation.states.TravelFavoritesState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,6 +31,9 @@ class FavoritesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TravelFavoritesState())
     val uiState: StateFlow<TravelFavoritesState> = _uiState.asStateFlow()
 
+    private val _effect = MutableSharedFlow<TravelFavoritesEffect>()
+    val effect = _effect.asSharedFlow()
+
     init {
         observeFavorites()
         checkAuthStatus()
@@ -39,6 +46,12 @@ class FavoritesViewModel @Inject constructor(
         when (event) {
             is TravelFavoritesEvent.OnCategorySelected -> {
                 _uiState.update { it.copy(selectedCategory = event.type) }
+                viewModelScope.launch {
+                    when (event.type) {
+                        FavoriteType.HOTEL -> _effect.emit(TravelFavoritesEffect.NavigateToHotels)
+                        FavoriteType.TOUR -> _effect.emit(TravelFavoritesEffect.NavigateToTours)
+                    }
+                }
             }
 
             is TravelFavoritesEvent.OnRemoveFavorite -> {
@@ -48,7 +61,9 @@ class FavoritesViewModel @Inject constructor(
             }
 
             is TravelFavoritesEvent.OnFavoriteItemClick -> {
-                // Handled in UI via navigation callbacks
+                viewModelScope.launch {
+                    _effect.emit(TravelFavoritesEffect.NavigateToDetail(event.id, event.type))
+                }
             }
 
             TravelFavoritesEvent.OnSignInClick -> {
@@ -56,7 +71,9 @@ class FavoritesViewModel @Inject constructor(
             }
 
             TravelFavoritesEvent.OnGoBackClick -> {
-                // Handled in UI via navigation callbacks
+                viewModelScope.launch {
+                    _effect.emit(TravelFavoritesEffect.NavigateBack)
+                }
             }
 
             TravelFavoritesEvent.OnRefresh -> {

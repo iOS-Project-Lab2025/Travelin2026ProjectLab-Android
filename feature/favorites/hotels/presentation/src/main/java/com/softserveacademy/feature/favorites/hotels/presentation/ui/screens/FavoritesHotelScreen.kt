@@ -28,6 +28,8 @@ import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
 import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
+import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -36,18 +38,44 @@ import com.softserveacademy.feature.favorites.hotels.domain.model.FavoriteHotel
 import com.softserveacademy.feature.favorites.hotels.presentation.events.FavoriteHotelsEvent
 import com.softserveacademy.feature.favorites.hotels.presentation.states.FavoriteHotelsState
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.softserveacademy.feature.favorites.hotels.presentation.events.FavoriteHotelsEffect
+import com.softserveacademy.feature.favorites.hotels.presentation.viewmodel.FavoriteHotelsViewModel
+
+@Composable
+fun RootFavoritesHotelScreen(
+    onBackClick: () -> Unit,
+    onHotelClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: FavoriteHotelsViewModel = hiltViewModel()
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is FavoriteHotelsEffect.NavigateToHotelDetail -> onHotelClick(effect.hotelId)
+                FavoriteHotelsEffect.NavigateBack -> onBackClick()
+            }
+        }
+    }
+
+    FavoritesHotelScreen(
+        state = state,
+        onEvent = viewModel::onEvent,
+        modifier = modifier
+    )
+}
+
 @Composable
 fun FavoritesHotelScreen(
     state: FavoriteHotelsState,
     onEvent: (FavoriteHotelsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val filterOptions = listOf(
-        stringResource(id = R.string.filter_available),
-        stringResource(id = R.string.filter_all),
-        stringResource(id = R.string.filter_1_bed),
-        stringResource(id = R.string.filter_2_beds)
-    )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -60,7 +88,7 @@ fun FavoritesHotelScreen(
         ) {
             Spacer(modifier = Modifier.height(TravelinDimens.PaddingSmall))
 
-            // TopBar Header
+            // 1. Header (Ahora sí será visible)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,15 +113,16 @@ fun FavoritesHotelScreen(
 
             Spacer(modifier = Modifier.height(TravelinDimens.PaddingMedium))
 
-            // Filter Chips
+            // 2. Filtros (Importante para la lógica del Backend)
+            val filters = listOf("All", "Available", "1 Bed", "2 Beds")
             LazyRow(
                 contentPadding = PaddingValues(horizontal = TravelinDimens.PaddingMedium),
                 horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
             ) {
-                items(filterOptions) { filter ->
+                items(filters) { filter ->
                     TravelFilterChip(
                         text = filter,
-                        isSelected = filter == state.selectedFilter,
+                        isSelected = state.selectedFilter == filter,
                         onClick = { onEvent(FavoriteHotelsEvent.OnFilterSelected(filter)) }
                     )
                 }
@@ -101,19 +130,30 @@ fun FavoritesHotelScreen(
 
             Spacer(modifier = Modifier.height(TravelinDimens.PaddingMedium))
 
-            // Horizontal Hotel Card List
+            // 3. Lista de Favoritos (Dentro de la misma Column)
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.weight(1f), // Usamos weight para que ocupe el resto del espacio
                 contentPadding = PaddingValues(horizontal = TravelinDimens.PaddingMedium),
                 verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
             ) {
                 items(items = state.filteredHotels, key = { it.id }) { item ->
+                    val hotel = item.hotel
+                    val displayPrice = hotel.rooms.firstOrNull()?.pricePerNight ?: 0
+
                     Box(
                         modifier = Modifier.clickable {
                             onEvent(FavoriteHotelsEvent.OnHotelClick(item))
                         }
                     ) {
-                        TravelCardHorizontal(hotel = item.hotel)
+                        TravelCardHorizontal(
+                            title = hotel.name,
+                            address = hotel.address,
+                            starRating = hotel.starCategory,
+                            ratingText = "${hotel.starCategory}-star hotel",
+                            price = "$ $displayPrice",
+                            priceSuffix = "/night",
+                            imageUrl = hotel.imageList.firstOrNull() ?: ""
+                        )
                     }
                 }
             }
@@ -134,10 +174,8 @@ private fun FavoritesHotelScreenPreview() {
             hotel = Hotel(
                 name = "Hotel 1",
                 address = "Krong Siem Reap",
-                star = 4,
-                pricePerNight = 25,
-                image = listOf("https://picsum.photos/200"),
-                imagesList = emptyList()
+                starCategory = 4,
+                imageList = listOf("https://picsum.photos/200")
             )
         ),
         FavoriteHotel(
@@ -145,10 +183,8 @@ private fun FavoritesHotelScreenPreview() {
             hotel = Hotel(
                 name = "Hotel 2",
                 address = "Krong Siem Reap",
-                star = 5,
-                pricePerNight = 25,
-                image = listOf("https://picsum.photos/201"),
-                imagesList = emptyList()
+                starCategory = 5,
+                imageList = listOf("https://picsum.photos/201")
             )
         )
     )
