@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,12 +21,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.maps.model.LatLng
+import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.presentation.design_system.components.HotelDetailLoading
 import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
 import com.softserveacademy.core.presentation.design_system.theme.LocalIsDarkTheme
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.events.TourDetailsEvent
 import com.softserveacademy.home.presentation.events.TourDetailsEventEffect
@@ -35,6 +38,7 @@ import com.softserveacademy.home.presentation.ui.components.detailsScreenCompone
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsHeader
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsFeaturesSection
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.FeaturesOverlay
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsBottomBar
 import com.softserveacademy.home.presentation.viewmodel.TourDetailsViewModel
 import kotlin.time.Duration
 
@@ -191,6 +195,14 @@ private fun TravelTourDetailsWrapper(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
+            bottomBar = {
+                Surface(shadowElevation = TravelinDimens.ElevationLarge) {
+                    TravelDetailsBottomBar(
+                        price = "$${tour.rates.adults}",
+                        onBookClick = onBookClick
+                    )
+                }
+            }
         ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier
@@ -280,7 +292,11 @@ private fun TravelTourDetailsWrapperPreview() {
                 latitude = 1.35,
                 longitude = 103.87,
                 duration = Duration.ZERO,
-                price = 0.0,
+                rates = RatePerParticipant(
+                    adults = 100.0,
+                    children = 50.0,
+                    babies = 0.0
+                ),
                 category = TourCategory.GASTRONOMY,
                 includedServices = listOf(
                     "TOUR_TRANSPORT",

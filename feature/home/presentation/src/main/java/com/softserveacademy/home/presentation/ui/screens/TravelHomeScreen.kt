@@ -48,6 +48,7 @@ import com.softserveacademy.home.presentation.viewmodel.HomeViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 
 /**
@@ -263,7 +264,7 @@ fun TravelHomeScreen(
                                 title = tour.title,
                                 location = tour.location,
                                 rating = tour.rating.toString(),
-                                price = tour.price,
+                                price = "$ ${tour.rates.adults}",
                                 duration = tour.duration,
                                 imageUrl = tour.imageUrl ?: "",
                                 onClick = { onTourClick(tour.id) }
@@ -368,7 +369,7 @@ private fun TravelHomeScreenPreview() {
                             imageUrl = "https://picsum.photos/id/1015/800/600",
                             location = "East Java",
                             rating = 4.9,
-                            price = "$ 150",
+                            rates = RatePerParticipant(adults = 150.0),
                             duration = "1 day"
                         ),
                         TourUi(
@@ -377,7 +378,7 @@ private fun TravelHomeScreenPreview() {
                             imageUrl = "https://picsum.photos/id/1016/800/600",
                             location = "Ubud, Bali",
                             rating = 4.7,
-                            price = "$ 45",
+                            rates = RatePerParticipant(adults = 45.0),
                             duration = "4 hours"
                         )
                     )
