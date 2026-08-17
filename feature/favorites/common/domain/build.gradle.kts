@@ -3,13 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "com.softserveacademy.feature.favorites.common.data"
+    namespace = "com.softserveacademy.feature.favorites.common.domain"
 }
 
 dependencies {
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.kotlinx.serialization.json)
     implementation(projects.core.domain)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
+    implementation(libs.kotlinx.serialization.json)
 }

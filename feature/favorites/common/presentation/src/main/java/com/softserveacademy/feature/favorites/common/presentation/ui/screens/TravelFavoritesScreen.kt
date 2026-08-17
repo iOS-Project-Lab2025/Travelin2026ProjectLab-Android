@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,13 +42,13 @@ import com.softserveacademy.feature.favorites.common.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.components.TravelTextActionButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
-import com.softserveacademy.core.presentation.design_system.theme.FlightIcon
 import com.softserveacademy.core.presentation.design_system.theme.HotelIcon
 import com.softserveacademy.core.presentation.design_system.theme.SearchIcon
 import com.softserveacademy.core.presentation.design_system.theme.TicketIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.feature.favorites.common.domain.model.FavoriteItem
 import com.softserveacademy.feature.favorites.common.presentation.events.FavoriteType
+import com.softserveacademy.feature.favorites.common.presentation.events.TravelFavoritesEffect
 import com.softserveacademy.feature.favorites.common.presentation.events.TravelFavoritesEvent
 import com.softserveacademy.feature.favorites.common.presentation.states.TravelFavoritesState
 import com.softserveacademy.feature.favorites.common.presentation.ui.components.FavoriteCategoryShortcut
@@ -58,10 +59,25 @@ import com.softserveacademy.feature.favorites.common.presentation.viewmodel.Favo
 
 @Composable
 fun RootFavoritesScreen(
+    onNavigateToHotels: () -> Unit,
+    onNavigateToTours: () -> Unit,
+    onNavigateToDetail: (String, FavoriteType) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                TravelFavoritesEffect.NavigateToHotels -> onNavigateToHotels()
+                TravelFavoritesEffect.NavigateToTours -> onNavigateToTours()
+                is TravelFavoritesEffect.NavigateToDetail -> onNavigateToDetail(effect.id, effect.type)
+                TravelFavoritesEffect.NavigateBack -> onBackClick()
+            }
+        }
+    }
 
     TravelFavoritesScreen(
         state = state,
@@ -77,9 +93,8 @@ fun TravelFavoritesScreen(
     modifier: Modifier = Modifier
 ) {
     val categoryShortcuts = listOf(
-        FavoriteCategoryShortcut(FavoriteType.FLIGHT.name, stringResource(R.string.flights_label), FlightIcon),
         FavoriteCategoryShortcut(FavoriteType.HOTEL.name, stringResource(R.string.hotels_label), HotelIcon),
-        FavoriteCategoryShortcut(FavoriteType.TRIP.name, stringResource(R.string.tours_label), TicketIcon)
+        FavoriteCategoryShortcut(FavoriteType.TOUR.name, stringResource(R.string.tours_label), TicketIcon)
     )
 
     // Estado local para filtrar en tiempo real por la barra de búsqueda
@@ -94,9 +109,8 @@ fun TravelFavoritesScreen(
         }
     }
 
-    val tours = filteredList.filter { it.type.equals("TRIP", ignoreCase = true) || it.type.equals("TOURS", ignoreCase = true) }
     val hotels = filteredList.filter { it.type.equals("HOTEL", ignoreCase = true) || it.type.equals("HOTELS", ignoreCase = true) }
-    val flights = filteredList.filter { it.type.equals("FLIGHT", ignoreCase = true) || it.type.equals("FLIGHTS", ignoreCase = true) }
+    val tours = filteredList.filter { it.type.equals("TOUR", ignoreCase = true) || it.type.equals("TOURS", ignoreCase = true) }
 
     Scaffold(
         modifier = modifier.fillMaxSize()
@@ -110,7 +124,7 @@ fun TravelFavoritesScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 8.dp)
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -189,7 +203,7 @@ fun TravelFavoritesScreen(
                         )
                     }
 
-                    state.isEmpty || filteredList.isEmpty() -> {
+                   state.isEmpty || (searchQuery.isNotEmpty() && filteredList.isEmpty()) -> {
                         TravelEmptyFavorites(
                             title = stringResource(R.string.no_favorites_title),
                             subtitle = stringResource(R.string.no_favorites_subtitle),
@@ -209,10 +223,10 @@ fun TravelFavoritesScreen(
                                     title = stringResource(R.string.tours_label),
                                     items = tours,
                                     onSeeAllClick = {
-                                        onEvent(TravelFavoritesEvent.OnCategorySelected(FavoriteType.TRIP))
+                                        onEvent(TravelFavoritesEvent.OnCategorySelected(FavoriteType.TOUR))
                                     },
                                     onCardClick = { item ->
-                                        onEvent(TravelFavoritesEvent.OnFavoriteItemClick(item.id, FavoriteType.TRIP))
+                                        onEvent(TravelFavoritesEvent.OnFavoriteItemClick(item.id, FavoriteType.TOUR))
                                     },
                                     onRemoveClick = { item ->
                                         onEvent(TravelFavoritesEvent.OnRemoveFavorite(item))
@@ -230,23 +244,6 @@ fun TravelFavoritesScreen(
                                     },
                                     onCardClick = { item ->
                                         onEvent(TravelFavoritesEvent.OnFavoriteItemClick(item.id, FavoriteType.HOTEL))
-                                    },
-                                    onRemoveClick = { item ->
-                                        onEvent(TravelFavoritesEvent.OnRemoveFavorite(item))
-                                    }
-                                )
-                                Spacer(modifier = Modifier.height(20.dp))
-                            }
-
-                            if (flights.isNotEmpty()) {
-                                FavoritesCarouselSection(
-                                    title = stringResource(R.string.flights_label),
-                                    items = flights,
-                                    onSeeAllClick = {
-                                        onEvent(TravelFavoritesEvent.OnCategorySelected(FavoriteType.FLIGHT))
-                                    },
-                                    onCardClick = { item ->
-                                        onEvent(TravelFavoritesEvent.OnFavoriteItemClick(item.id, FavoriteType.FLIGHT))
                                     },
                                     onRemoveClick = { item ->
                                         onEvent(TravelFavoritesEvent.OnRemoveFavorite(item))
@@ -294,7 +291,7 @@ private fun FavoritesCarouselSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 4.dp)
         ) {
-            items(items = items, key = { it.id }) { item ->
+            items(items = items.take(3), key = { it.id }) { item ->
                 FavoriteItemCard(
                     favoriteItem = item,
                     onCardClick = onCardClick,
@@ -322,7 +319,7 @@ private fun TravelFavoritesScreenLoadedPreview() {
             rating = 4.9,
             price = 150,
             imageUrl = "",
-            type = "TRIP",
+            type = "TOUR",
             addedAt = System.currentTimeMillis()
         ),
         FavoriteItem(
@@ -332,7 +329,7 @@ private fun TravelFavoritesScreenLoadedPreview() {
             rating = 4.8,
             price = 250,
             imageUrl = "",
-            type = "TRIP",
+            type = "TOUR",
             addedAt = System.currentTimeMillis()
         ),
         FavoriteItem(
@@ -342,7 +339,7 @@ private fun TravelFavoritesScreenLoadedPreview() {
             rating = 5.0,
             price = 400,
             imageUrl = "",
-            type = "TRIP",
+            type = "TOUR",
             addedAt = System.currentTimeMillis()
         ),
 
@@ -365,18 +362,6 @@ private fun TravelFavoritesScreenLoadedPreview() {
             price = 180,
             imageUrl = "",
             type = "HOTEL",
-            addedAt = System.currentTimeMillis()
-        ),
-
-        // === FLIGHTS ===
-        FavoriteItem(
-            id = "6",
-            title = "SCL to SCL-PUQ",
-            location = "LATAM Airlines",
-            rating = 4.5,
-            price = 90,
-            imageUrl = "",
-            type = "FLIGHT",
             addedAt = System.currentTimeMillis()
         )
     )
