@@ -26,6 +26,11 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.google.android.gms.location.LocationServices
+import android.location.Geocoder
+import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
@@ -50,15 +55,53 @@ fun DestinationSearchScreen(
 ) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    var currentCity by remember { mutableStateOf("Location not found") }
+    val scope = rememberCoroutineScope()
+
+    val updateCityName: (Double, Double) -> Unit = { lat, lon ->
+        scope.launch(Dispatchers.IO) {
+            try {
+                val geocoder = Geocoder(context, Locale.getDefault())
+                @Suppress("DEPRECATION")
+                val addresses = geocoder.getFromLocation(lat, lon, 1)
+                val cityName = addresses?.firstOrNull()?.locality
+                    ?: addresses?.firstOrNull()?.subAdminArea
+                    ?: addresses?.firstOrNull()?.adminArea
+
+                if (cityName != null) {
+                    withContext(Dispatchers.Main) {
+                        currentCity = cityName
+                    }
+                }
+            } catch (e: Exception) {
+                // Network or Geocoder service unavailable
+            }
+        }
+    }
+
+    // Attempt to get location and city name on start if permission is already granted
+    LaunchedEffect(Unit) {
+        val permissionCheck = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    updateCityName(location.latitude, location.longitude)
+                }
+            }
+        }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Permission granted, get location and trigger search
             try {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     if (location != null) {
+                        updateCityName(location.latitude, location.longitude)
                         viewModel.toggleNearbyMode(true, location.latitude, location.longitude)
                     } else {
                         // Fallback or mock if location is null (common on emulators)
@@ -114,6 +157,7 @@ fun DestinationSearchScreen(
                                 if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                                     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                                         if (location != null) {
+                                            updateCityName(location.latitude, location.longitude)
                                             viewModel.toggleNearbyMode(
                                                 !viewModel.isNearbyMode,
                                                 location.latitude,
@@ -127,7 +171,8 @@ fun DestinationSearchScreen(
                                     permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                                 }
                             },
-                            isNearbyMode = viewModel.isNearbyMode
+                            isNearbyMode = viewModel.isNearbyMode,
+                            locationName = currentCity
                         )
                     }
                     ResultsList(items, onItemClick)
@@ -263,7 +308,7 @@ fun FilterChip(label: String, icon: ImageVector, isSelected: Boolean, onClick: (
  * Header section showing the user's current location and prompt for nearby searches.
  */
 @Composable
-fun NearbyHeader(onClick: () -> Unit, isNearbyMode: Boolean) {
+fun NearbyHeader(onClick: () -> Unit, isNearbyMode: Boolean, locationName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -294,7 +339,7 @@ fun NearbyHeader(onClick: () -> Unit, isNearbyMode: Boolean) {
                 color = if (isNearbyMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Current location - Santiago",
+                text = "Current location - $locationName",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -354,8 +399,9 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     title = item.hotel.name,
                     location = item.hotel.address,
                     image = item.hotel.imageList.firstOrNull(),
-                    price = "$500", // TODO: change for minimum price from rooms
+                    price = "500", // TODO: change for minimum price from rooms
                     rating = item.hotel.reviewRating,
+                    ratingText = item.hotel.limitedReviews,
                     onClick = { onItemClick(item.hotel.id, TravelItemType.HOTEL) }
                 )
 
@@ -365,6 +411,7 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     image = item.tour.imageList.firstOrNull(),
                     price = item.tour.price.toString(),
                     rating = item.tour.rating,
+                    ratingText = item.tour.limitedReviews,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
                 )
 
@@ -398,6 +445,7 @@ fun SearchResultCard(
     image: String?,
     price: String,
     rating: Double?,
+    ratingText: String? = null,
     onClick: () -> Unit = {}
 ) {
     Surface(
@@ -453,7 +501,12 @@ fun SearchResultCard(
                         modifier = Modifier.size(TravelinDimens.IconSizeSmall)
                     )
                     Text(
-                        text = " $rating",
+                        text = buildString {
+                            append(" $rating")
+                            if (!ratingText.isNullOrEmpty()) {
+                                append(" ($ratingText)")
+                            }
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

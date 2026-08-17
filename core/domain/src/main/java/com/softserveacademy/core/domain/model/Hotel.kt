@@ -29,7 +29,7 @@ data class Hotel(
     val address: String = "",
     @SerialName("star")
     val starCategory: Int = 0,
-    @SerialName("rating")
+    @SerialName("userRating")
     val reviewRating: Double = 0.0,
     val numberOfReviews: Int = 0,
     @SerialName("image")
