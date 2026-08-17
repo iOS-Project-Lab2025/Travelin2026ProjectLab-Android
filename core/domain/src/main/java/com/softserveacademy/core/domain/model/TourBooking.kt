@@ -28,5 +28,7 @@ data class TourBooking(
 
     val confirmationCode: String,
 
-    val status: BookingStatus
+    val status: BookingStatus,
+
+    val contactInfo: BookingContactInfo? = null
 )

@@ -3,9 +3,9 @@ package com.softserveacademy.feature.booking.tour.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.feature.booking.common.presentation.events.TravelBookingContactInfoEvent
 import com.softserveacademy.feature.booking.common.presentation.states.TravelBookingContactInfoState
-import com.softserveacademy.feature.booking.tour.domain.model.ContactInfo
 import com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft
 import com.softserveacademy.feature.booking.tour.domain.usecase.GetTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.domain.usecase.SaveTourBookingDraftUseCase
@@ -79,7 +79,7 @@ class TourContactInfoViewModel @Inject constructor(
         }
 
         tourBookingDraft = tourBookingDraft.copy(
-            contactInfo = ContactInfo(
+            contactInfo = BookingContactInfo(
                 firstName = uiState.value.firstName,
                 lastName = uiState.value.lastName,
                 email = uiState.value.email,
