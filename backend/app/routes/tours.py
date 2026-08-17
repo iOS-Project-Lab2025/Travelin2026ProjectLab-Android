@@ -53,7 +53,7 @@ def get_tour_by_id(tour_id: str):
              raise HTTPException(status_code=404, detail="Tour not found")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("", response_model=List[TourModel])
+@router.get("")
 def get_tours():
     try:
         response = (

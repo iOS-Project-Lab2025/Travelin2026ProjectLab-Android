@@ -11,6 +11,7 @@ import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelBooking
+import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.domain.model.SeatClass
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
@@ -268,7 +269,11 @@ object HomeMockData {
                     location = "Paris, France",
                     imageList = listOf("https://picsum.photos/id/1031/800/600"),
                     duration = 3.hours,
-                    price = 120.0,
+                    rates = RatePerParticipant(
+                        adults = 120.0,
+                        children = 60.0,
+                        babies = 0.0
+                    ),
                     rating = 4.8,
                     category = TourCategory.CULTURE,
                     includedServices = listOf(
