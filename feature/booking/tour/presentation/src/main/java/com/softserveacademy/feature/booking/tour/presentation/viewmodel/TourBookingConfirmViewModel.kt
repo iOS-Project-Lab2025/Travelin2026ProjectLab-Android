@@ -3,15 +3,16 @@ package com.softserveacademy.feature.booking.tour.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.domain.model.Tour
+import com.softserveacademy.core.domain.usecase.tour.GetTourDetailsUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.core.error.handler.ErrorHandler
 import com.softserveacademy.core.error.model.AppError
-import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.core.error.model.ErrorAction
 import com.softserveacademy.core.error.model.UiText
 import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
+import com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft
 import com.softserveacademy.feature.booking.tour.domain.usecase.ClearTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.domain.usecase.GetTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.presentation.events.TourBookingConfirmEvent
@@ -29,7 +30,7 @@ class TourBookingConfirmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getTourBookingDraftUseCase: GetTourBookingDraftUseCase,
     private val clearTourBookingDraftUseCase: ClearTourBookingDraftUseCase,
-    private val tourRepo: TourRepo,
+    private val getTourDetailsUseCase: GetTourDetailsUseCase,
     private val createPaymentIntentUseCase: CreatePaymentIntentUseCase,
     private val errorHandler: ErrorHandler
 ) : ViewModel() {
@@ -48,18 +49,29 @@ class TourBookingConfirmViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             
             val draft = getTourBookingDraftUseCase(tourId)
-            val tourResult = tourRepo.getTourById(tourId)
 
-            if (tourResult is AppResult.Success && draft != null) {
-                val tour = tourResult.data
-                val totalPrice = calculateTotalPrice(tour, draft)
-                _uiState.update { 
-                    it.copy(
-                        tour = tour,
-                        bookingDraft = draft,
-                        totalPrice = totalPrice,
-                        isLoading = false
-                    )
+            if (draft != null) {
+                getTourDetailsUseCase(tourId)
+                    .onSuccess { tourDetails ->
+                        val totalPrice = calculateTotalPrice(tourDetails, draft)
+                        _uiState.update {
+                            it.copy(
+                                tour = tourDetails,
+                                bookingDraft = draft,
+                                totalPrice = totalPrice,
+                                isLoading = false
+                            )
+                    }
+                }
+                .onFailure { error ->
+                    val action = errorHandler.handle(error)
+                    val message = if (action is ErrorAction.ShowMessage) {
+                        when (val uiText = action.message) {
+                            is UiText.Raw -> uiText.value
+                            is UiText.Resource -> "Failed to load booking details."
+                        }
+                    } else "Failed to load booking details"
+                    _uiState.update { it.copy(isLoading = false, error = message) }
                 }
             } else {
                 _uiState.update { it.copy(isLoading = false, error = "Failed to load booking details") }
@@ -67,7 +79,7 @@ class TourBookingConfirmViewModel @Inject constructor(
         }
     }
 
-    private fun calculateTotalPrice(tour: com.softserveacademy.core.domain.model.Tour, draft: com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft): Double {
+    private fun calculateTotalPrice(tour: Tour, draft: TourBookingDraft): Double {
         val adults = draft.participants.adults * tour.rates.adults
         val children = draft.participants.children * tour.rates.children
         val infants = draft.participants.infants * tour.rates.infants

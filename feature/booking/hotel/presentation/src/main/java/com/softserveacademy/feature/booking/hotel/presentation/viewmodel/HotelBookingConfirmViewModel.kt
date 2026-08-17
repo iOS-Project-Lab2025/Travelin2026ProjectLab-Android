@@ -92,11 +92,11 @@ class HotelBookingConfirmViewModel @Inject constructor(
                                 is UiText.Raw -> uiText.value
                                 is UiText.Resource -> "Failed to load booking details."
                             }
-                        } else "Failed to load details"
+                        } else "Failed to load booking details"
                         _uiState.update { it.copy(isLoading = false, error = message) }
                     }
             } else {
-                _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
+                _uiState.update { it.copy(isLoading = false, error = "Failed to load booking details") }
             }
         }
     }
