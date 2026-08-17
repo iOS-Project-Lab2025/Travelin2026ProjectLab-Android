@@ -45,7 +45,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.presentation.design_system.R as DesignSystemR
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.ui.components.TravelNavigationBar
 import com.softserveacademy.home.presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +57,7 @@ fun TravelTopAppBar(navSelected: () -> Unit) {
         title = { Text("Travel") },
         navigationIcon = {
             Icon(
-                painter = painterResource(R.drawable.travel_ic_home),
+                painter = painterResource(DesignSystemR.drawable.travel_ic_home),
                 contentDescription = null,
                 modifier = Modifier.clickable {
                     navSelected()
@@ -63,11 +65,11 @@ fun TravelTopAppBar(navSelected: () -> Unit) {
         },
         actions = {
             Icon(
-                painter = painterResource(R.drawable.travel_ic_home),
+                painter = painterResource(DesignSystemR.drawable.travel_ic_home),
                 contentDescription = null
             )
             Icon(
-                painter = painterResource(R.drawable.travel_ic_home),
+                painter = painterResource(DesignSystemR.drawable.travel_ic_home),
                 contentDescription = null
             )
         },
@@ -83,86 +85,6 @@ fun TravelFab(modifier: Modifier = Modifier) {
     FloatingActionButton(onClick = {
     }) {
         Icon(painter = painterResource(R.drawable.ic_add), contentDescription = null)
-    }
-}
-
-@Composable
-fun     TravelNavigationBar(
-    selectedTab: Int = 0,
-    onTabClick: (Int) -> Unit = {}
-) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.onPrimary,
-        modifier = Modifier.shadow(
-            elevation = 12.dp,
-            clip = false
-        ),
-        windowInsets = WindowInsets(0, 0, 0, 0)
-    ) {
-        NavigationBarItem(
-            selected = selectedTab == 0,
-            onClick = { onTabClick(0) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedIconColor = MaterialTheme.colorScheme.secondaryContainer,
-                selectedTextColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedTextColor = MaterialTheme.colorScheme.secondaryContainer,
-                indicatorColor = Color.Transparent
-            ),
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.travel_ic_home),
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.home_ic_label)/*, color =
-             MaterialTheme.colorScheme.primaryContainer*/
-                )
-            })
-        NavigationBarItem(
-            selected = selectedTab == 1,
-            onClick = { onTabClick(1) },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.travel_ic_ticket),
-                    contentDescription = null
-                )
-            }, label = {
-                Text(
-                    text = stringResource(R.string.orders_ic_label)/*, color =
-             MaterialTheme.colorScheme.primaryContainer*/
-                )
-            })
-        NavigationBarItem(
-            selected = selectedTab == 2,
-            onClick = { onTabClick(2) },
-            icon = {
-                Icon(
-                    painter = painterResource(com.softserveacademy.core.presentation.design_system.R.drawable.ic_heart_filled),
-                    contentDescription = null
-                )
-            }, label = {
-                Text(
-                    text = stringResource(R.string.fav_ic_label)/*, color =
-             MaterialTheme.colorScheme.primaryContainer*/
-                )
-            })
-        NavigationBarItem(
-            selected = selectedTab == 3,
-            onClick = { onTabClick(3) },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.travel_ic_person),
-                    contentDescription = null
-                )
-            }, label = {
-                Text(
-                    text = stringResource(R.string.accounts_ic_label)/*, color =
-             MaterialTheme.colorScheme.primaryContainer*/
-                )
-            })
     }
 }
 

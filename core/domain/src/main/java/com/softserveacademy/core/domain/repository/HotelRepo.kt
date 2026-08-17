@@ -1,6 +1,7 @@
 package com.softserveacademy.core.domain.repository
 
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.error.model.AppResult
 
@@ -26,19 +27,13 @@ interface HotelRepo{
     /**
      * Fetch all rooms for a specific hotel.
      * @param hotelId The ID of the hotel.
-     * @param checkInDate The check-in date in milliseconds.
-     * @param checkOutDate The check-out date in milliseconds.
-     * @param guestCount The number of guests for the booking.
      * @return A list of rooms for the hotel.
      */
-    suspend fun getHotelRooms(hotelId: String, checkInDate: Long, checkOutDate: Long, guestCount: Int): AppResult<List<HotelRoom>>
+    suspend fun getHotelRooms(hotelId: String): AppResult<List<HotelRoom>>
 
     /**
-     * Reserve a room in a hotel.
-     * @param hotelId The ID of the hotel.
-     * @param roomId The ID of the room.
-     * @param checkInDate The check-in date in milliseconds.
-     * @param checkOutDate The check-out date in milliseconds.
+     * Get all bookings register.
+     * @return A list of bookings.
      */
-    suspend fun reserveRoom(hotelId: String, roomId: String, checkInDate: Long, checkOutDate: Long): AppResult<Unit>
+    suspend fun getBookings(): List<HotelBooking>
 }

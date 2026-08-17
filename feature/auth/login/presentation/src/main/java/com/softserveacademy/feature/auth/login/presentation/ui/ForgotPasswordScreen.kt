@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.feature.auth.login.presentation.R
 import com.softserveacademy.feature.auth.login.presentation.viewmodel.ForgotPasswordViewModel
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
@@ -62,23 +64,23 @@ fun ForgotPasswordContent(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
         Text(
-            text = "Forgot password",
+            text = stringResource(R.string.forgot_password_title),
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Enter your email account for a password recovery",
+            text = stringResource(R.string.forgot_password_description),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceLarge))
 
-        Text(text = "Email", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.forgot_password_email_label), style = MaterialTheme.typography.titleLarge)
         AppTextInput(
             value = email,
             onValueChange = onEmailChange,
-            placeholder = "Email",
+            placeholder = stringResource(R.string.forgot_password_email_label),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -94,14 +96,14 @@ fun ForgotPasswordContent(
 
         if (isSuccess) {
             Text(
-                text = "Recovery email sent successfully!",
+                text = stringResource(R.string.forgot_password_success),
                 color = Green50,
                 style = MaterialTheme.typography.bodySmall
             )
         }
 
         TravelAuthPrimaryButton(
-            text = "Recover Password",
+            text = stringResource(R.string.forgot_password_recover_button),
             onClick = navonRecoverClick,
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()

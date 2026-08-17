@@ -8,15 +8,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.feature.auth.register.presentation.R
 import com.softserveacademy.feature.auth.register.presentation.viewmodel.RegisterViewModel
 import com.softserveacademy.core.presentation.design_system.components.AppPasswordInput
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
-import com.softserveacademy.core.presentation.design_system.components.AppNumberInput
+import com.softserveacademy.core.presentation.design_system.components.TravelDatePicker
 import com.softserveacademy.core.presentation.design_system.components.TravelPhoneNumberInput
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
@@ -43,8 +45,8 @@ fun RegisterScreen(
         onCountryCodeChange = { viewModel.countryCode = it },
         phone = viewModel.phone,
         onPhoneChange = { viewModel.phone = it },
-        age = viewModel.age,
-        onAgeChange = { viewModel.age = it },
+        birthDate = viewModel.birthDate,
+        onBirthDateChange = { viewModel.birthDate = it },
         email = viewModel.email,
         onEmailChange = { viewModel.email = it },
         password = viewModel.password,
@@ -70,8 +72,8 @@ fun RegisterContent(
     onCountryCodeChange: (String) -> Unit,
     phone: String,
     onPhoneChange: (String) -> Unit,
-    age: String,
-    onAgeChange: (String) -> Unit,
+    birthDate: Long?,
+    onBirthDateChange: (Long) -> Unit,
     email: String,
     onEmailChange: (String) -> Unit,
     password: String,
@@ -102,12 +104,12 @@ fun RegisterContent(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
         Text(
-            text = "Create account",
+            text = stringResource(R.string.register_title),
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Get the best out of the world by creating an account",
+            text = stringResource(R.string.register_description),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -116,35 +118,35 @@ fun RegisterContent(
 
         // Labels adjusted to be smaller and closer to inputs
         Text(
-            text = "First name",
+            text = stringResource(R.string.register_first_name_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
         AppTextInput(
             value = firstName,
             onValueChange = onFirstNameChange,
-            placeholder = "First name",
+            placeholder = stringResource(R.string.register_first_name_label),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
 
         Text(
-            text = "Last name",
+            text = stringResource(R.string.register_last_name_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
         AppTextInput(
             value = lastName,
             onValueChange = onLastNameChange,
-            placeholder = "Last name",
+            placeholder = stringResource(R.string.register_last_name_label),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
 
         Text(
-            text = "Phone",
+            text = stringResource(R.string.register_phone_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
@@ -153,48 +155,49 @@ fun RegisterContent(
             onCountryCodeChange = onCountryCodeChange,
             phoneNumber = phone,
             onPhoneNumberChange = onPhoneChange,
+            placeholder = stringResource(R.string.register_phone_label),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
 
         Text(
-            text = "Age",
+            text = stringResource(R.string.register_birth_date_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
-        AppNumberInput(
-            value = age,
-            onValueChange = onAgeChange,
-            placeholder = "30",
+        TravelDatePicker(
+            selectedDate = birthDate,
+            onDateSelected = onBirthDateChange,
+            placeholder = stringResource(R.string.register_birth_date_placeholder),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
 
         Text(
-            text = "Email",
+            text = stringResource(R.string.register_email_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
         AppTextInput(
             value = email,
             onValueChange = onEmailChange,
-            placeholder = "Email",
+            placeholder = stringResource(R.string.register_email_label),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
 
         Text(
-            text = "Password",
+            text = stringResource(R.string.register_password_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
         AppPasswordInput(
             value = password,
             onValueChange = onPasswordChange,
-            placeholder = "Password",
+            placeholder = stringResource(R.string.register_password_label),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -209,7 +212,7 @@ fun RegisterContent(
                 onCheckedChange = onTermsAcceptedChange
             )
             Text(
-                text = "I accept term and condition",
+                text = stringResource(R.string.register_accept_terms),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -226,7 +229,7 @@ fun RegisterContent(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
         TravelAuthPrimaryButton(
-            text = "Create Account",
+            text = stringResource(R.string.register_create_button),
             onClick = onRegisterClick,
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()
@@ -239,9 +242,9 @@ fun RegisterContent(
         ) {
             Text(
                 text = buildAnnotatedString {
-                    append("Already have an account? ")
+                    append(stringResource(R.string.register_already_account))
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Go back")
+                        append(stringResource(R.string.register_go_back))
                     }
                 },
                 style = MaterialTheme.typography.bodyMedium,
@@ -267,8 +270,8 @@ fun RegisterScreenPreview() {
             onCountryCodeChange = {},
             phone = "",
             onPhoneChange = {},
-            age = "",
-            onAgeChange = {},
+            birthDate = null,
+            onBirthDateChange = {},
             email = "",
             onEmailChange = {},
             password = "",

@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -48,13 +48,13 @@ fun TravelPaymentSimulationSheet(
             TravelPrimaryButton(
                 text = "Simulate Success",
                 onClick = onSimulateSuccess,
-                variant = PrimaryButtonVariant.CallToAction
+                variant = TravelPrimaryButtonVariant.CallToAction
             )
 
             TravelPrimaryButton(
                 text = "Simulate Failure",
                 onClick = onSimulateFailure,
-                variant = PrimaryButtonVariant.Neutral
+                variant = TravelPrimaryButtonVariant.Neutral
             )
 
             if (simulationError != null) {

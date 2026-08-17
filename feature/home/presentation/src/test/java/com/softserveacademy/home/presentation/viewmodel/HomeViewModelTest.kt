@@ -7,18 +7,19 @@ import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
+import com.softserveacademy.core.domain.model.FlightContactInfo
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.domain.model.Trip
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 import com.softserveacademy.home.domain.usecases.GetJourneyTogetherUseCase
 import com.softserveacademy.home.domain.usecases.GetRecommendedHotelsUseCase
 import com.softserveacademy.home.domain.usecases.GetUpcomingTripUseCase
-import com.softserveacademy.home.domain.usecases.GetUserProfileUseCase
+import com.softserveacademy.profile.domain.usecases.GetProfileUseCase
 import com.softserveacademy.home.presentation.model.UpcomingTripUi
-import com.softserveacademy.home.presentation.model.UserProfileUi
+import com.softserveacademy.profile.presentation.model.UserProfileUi
 import com.softserveacademy.home.presentation.state.SectionState
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -39,7 +40,7 @@ import org.junit.Test
 class HomeViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val getUserProfileUseCase = mockk<GetUserProfileUseCase>()
+    private val getProfileUseCase = mockk<GetProfileUseCase>()
     private val getUpcomingTripUseCase = mockk<GetUpcomingTripUseCase>()
     private val getJourneyTogetherUseCase = mockk<GetJourneyTogetherUseCase>()
     private val getRecommendedHotelsUseCase = mockk<GetRecommendedHotelsUseCase>()
@@ -70,7 +71,14 @@ class HomeViewModelTest {
         flights = listOf(flight),
         tickets = listOf(ticket),
         confirmationCode = "ABC123",
-        status = BookingStatus.COMPLETED
+        status = BookingStatus.COMPLETED,
+        totalAmount = 1500.0,
+        currencyCode = "USD",
+        contactInfo = FlightContactInfo(
+            email = "john@example.com",
+            phone = "123456789",
+            countryCode = "+56"
+        )
     )
 
     private val destination = Destination(
@@ -128,13 +136,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given all success when init then all sections are Success`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -149,13 +157,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given profile fails when init then userProfile is Error`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.failure(Exception("Profile error"))
+        coEvery { getProfileUseCase() } returns Result.failure(Exception("Profile error"))
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -168,13 +176,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given trip is null when init then upcomingTrip is Empty`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.success(null)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -186,13 +194,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given trip fails when init then upcomingTrip is Error`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.failure(Exception("Trip error"))
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -205,13 +213,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given journey fails when init then journeyTogether is Error`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.failure(Exception("Tours error"))
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -224,13 +232,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given hotels fail when init then hotelsRecommended is Error`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.failure(Exception("Hotels error"))
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -243,13 +251,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given all fail when init then all sections are Error`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.failure(Exception("Profile error"))
+        coEvery { getProfileUseCase() } returns Result.failure(Exception("Profile error"))
         coEvery { getUpcomingTripUseCase() } returns Result.failure(Exception("Trip error"))
         coEvery { getJourneyTogetherUseCase() } returns Result.failure(Exception("Tours error"))
         coEvery { getRecommendedHotelsUseCase() } returns Result.failure(Exception("Hotels error"))
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -264,13 +272,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given profile fails with no message then uses default message`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.failure(Exception())
+        coEvery { getProfileUseCase() } returns Result.failure(Exception())
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -283,13 +291,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given success when init then userProfile is mapped correctly`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase
@@ -304,13 +312,13 @@ class HomeViewModelTest {
 
     @Test
     fun `given success when init then upcomingTrip is mapped correctly`() = runTest {
-        coEvery { getUserProfileUseCase() } returns Result.success(profile)
+        coEvery { getProfileUseCase() } returns Result.success(profile)
         coEvery { getUpcomingTripUseCase() } returns Result.success(trip)
         coEvery { getJourneyTogetherUseCase() } returns Result.success(tours)
         coEvery { getRecommendedHotelsUseCase() } returns Result.success(hotels)
 
         val viewModel = HomeViewModel(
-            getUserProfileUseCase,
+            getProfileUseCase,
             getUpcomingTripUseCase,
             getJourneyTogetherUseCase,
             getRecommendedHotelsUseCase

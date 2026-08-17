@@ -17,7 +17,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.TextActionButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelTextActionButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.color
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -29,7 +29,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param onClick The action to perform when the button is clicked
  * @param modifier The modifier to apply to the button
  * @param enabled Whether the button is enabled or disabled
- * @param variant The variant of the button (`TextActionButtonVariant.Neutral`, `TextActionButtonVariant.CallToAction`)
+ * @param variant The variant of the button (`TravelTextActionButtonVariant.Neutral`, `TravelTextActionButtonVariant.CallToAction`)
  */
 @Composable
 fun TravelTextActionButton(
@@ -37,7 +37,7 @@ fun TravelTextActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    variant: TextActionButtonVariant = TextActionButtonVariant.Neutral,
+    variant: TravelTextActionButtonVariant = TravelTextActionButtonVariant.Neutral,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -92,14 +92,14 @@ fun TravelTextActionButtonPreview() {
                 text = "Press here",
                 onClick = {},
                 modifier = Modifier,
-                variant = TextActionButtonVariant.CallToAction
+                variant = TravelTextActionButtonVariant.CallToAction
             )
             TravelTextActionButton(
                 text = "Disabled button",
                 onClick = {},
                 enabled = false,
                 modifier = Modifier,
-                variant = TextActionButtonVariant.CallToAction
+                variant = TravelTextActionButtonVariant.CallToAction
             )
         }
     }

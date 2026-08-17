@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_ic_label">Home</string>
+    <string name="orders_ic_label">Order</string>
+    <string name="deals_ic_label">Deals</string>
+    <string name="accounts_ic_label">Accounts</string>
+    <string name="fav_ic_label">Favorites</string>
+    <string name="itinerary_ic_label">Itinerary</string>
+</resources>

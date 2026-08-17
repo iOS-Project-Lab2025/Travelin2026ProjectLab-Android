@@ -11,8 +11,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import com.softserveacademy.feature.auth.common.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelAuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.*
 
 @Composable
@@ -35,7 +37,7 @@ fun SuccessScreen(
         Spacer(modifier = Modifier.height(TravelinDimens.Space2ExtraLarge))
         
         Text(
-            text = "Successfully created an account",
+            text = stringResource(R.string.auth_success_title),
             style = MaterialTheme.typography.displayMedium,
             color = Color.White,
             textAlign = TextAlign.Center,
@@ -45,7 +47,7 @@ fun SuccessScreen(
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
         
         Text(
-            text = "After this you can explore any place you want enjoy it!",
+            text = stringResource(R.string.auth_success_description),
             color = Color.White.copy(alpha = 0.8f),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineLarge
@@ -54,9 +56,9 @@ fun SuccessScreen(
         Spacer(modifier = Modifier.weight(1f))
         
         TravelAuthPrimaryButton(
-            text = "Let's Explore",
+            text = stringResource(R.string.auth_explore_button),
             onClick = onExploreClick,
-            variant = AuthPrimaryButtonVariant.ColorContent,
+            variant = TravelAuthPrimaryButtonVariant.ColorContent,
             modifier = Modifier.fillMaxWidth()
         )
     }

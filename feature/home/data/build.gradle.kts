@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(projects.core.domain)
+    implementation(projects.feature.profile.domain)
     implementation(projects.feature.home.domain)
     implementation(projects.core.data)
     testImplementation(libs.bundles.testing.stack)

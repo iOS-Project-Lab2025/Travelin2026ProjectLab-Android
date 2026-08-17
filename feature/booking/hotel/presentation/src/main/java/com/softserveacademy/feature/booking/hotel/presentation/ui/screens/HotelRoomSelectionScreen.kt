@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.HotelRoom
-import com.softserveacademy.core.domain.model.HotelRoomAmenity
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelRoomCard
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -121,6 +120,7 @@ fun HotelRoomSelectionScreenContent(
                                 room = room,
                                 nightCount = state.nightCount,
                                 isSelected = state.selectedRoomId == room.id,
+                                isAvailable = state.availableRoomIds.contains(room.id),
                                 onRoomSelected = { onEvent(HotelRoomSelectionEvent.OnRoomSelected(it.id ?: "")) }
                             )
                         }
@@ -184,13 +184,12 @@ private fun HotelRoomSelectionScreenPreview() {
             maxOccupancy = 5,
             bedType = "1 King bed",
             bedCount = 1,
-            amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
+            amenities = listOf("hotel.breakfast", "hotel.wifi"),
             pricePerNight = 150,
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
                 "https://picsum.photos/id/138/200/300"
-            ),
-            isAvailable = true
+            )
         ),
         HotelRoom(
             id = "2",
@@ -199,17 +198,17 @@ private fun HotelRoomSelectionScreenPreview() {
             maxOccupancy = 5,
             bedType = "1 Queen bed",
             bedCount = 1,
-            amenities = listOf(HotelRoomAmenity.BREAKFAST, HotelRoomAmenity.WIFI),
+            amenities = listOf("hotel.breakfast", "hotel.wifi"),
             pricePerNight = 150,
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
                 "https://picsum.photos/id/138/200/300"
-            ),
-            isAvailable = true
+            )
         )
     )
     val state = HotelRoomSelectionState(
         rooms = mockRooms,
+        availableRoomIds = setOf("1"),
         filteredRooms = mockRooms,
         selectedRoomId = "1",
         nightCount = 3

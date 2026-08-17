@@ -14,6 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.Calendar
 
 /**
  * Unit tests for [RegisterViewModel] following the project's testing policy.
@@ -24,6 +25,12 @@ class RegisterViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val registerUseCase = mockk<RegisterUseCase>()
     private lateinit var viewModel: RegisterViewModel
+
+    private fun getBirthDate(age: Int): Long {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.YEAR, -age)
+        return calendar.timeInMillis
+    }
 
     @Before
     fun setup() {
@@ -41,7 +48,7 @@ class RegisterViewModelTest {
         // GIVEN
         viewModel.firstName = "John"
         viewModel.lastName = "Doe"
-        viewModel.age = "25"
+        viewModel.birthDate = getBirthDate(25)
         viewModel.email = "john@example.com"
         viewModel.password = "password"
         viewModel.termsAccepted = true

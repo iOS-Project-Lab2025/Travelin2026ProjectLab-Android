@@ -3,7 +3,7 @@ package com.softserveacademy.home.domain.repository
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.Trip
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 
 interface HomeRepository {
     suspend fun getUserProfile(): Result<UserProfile>

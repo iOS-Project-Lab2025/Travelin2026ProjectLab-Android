@@ -10,6 +10,10 @@ val White100_Alpha70 = White100.copy(alpha = 0.7f) // Background icons.
 val BlueDark90 = Color(0xFF12181B) // Primary Background Dark Mode
 val BlueDark90_Alpha50 = BlueDark90.copy(alpha = 0.5f)
 val BlueDark80 = Color(0xFF1E262A) // Cards, Inputs and Login Background Dark Mode
+
+val Gray90 = Color(0xFF1E262B) //Navbar background  Dark Mode
+
+val White20 = Color(0xFFF6F6F6) //Navbar background  Light Mode
 // ============================================================================
 // 2. Brans Colors
 // ============================================================================

@@ -1,5 +1,6 @@
 package com.softserveacademy.core.presentation.design_system.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,8 @@ fun AppTextInput(
     state: AppInputState = AppInputState.Normal,
     errorMessage: String? = null,
     enabled: Boolean = true,
+    readOnly: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     imeAction: ImeAction = ImeAction.Done,
@@ -46,6 +49,8 @@ fun AppTextInput(
         state = state,
         errorMessage = errorMessage,
         enabled = enabled,
+        readOnly = readOnly,
+        interactionSource = interactionSource,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         keyboardOptions = KeyboardOptions(

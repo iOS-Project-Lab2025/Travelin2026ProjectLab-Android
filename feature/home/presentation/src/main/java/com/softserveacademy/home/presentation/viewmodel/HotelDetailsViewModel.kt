@@ -142,11 +142,18 @@ class HotelDetailsViewModel @Inject constructor(
                     loadNearbyPlaces(hotel.latitude, hotel.longitude)
                 }
                 .onFailure { error ->
-                    val message = when (error) {
-                        is AppError.Unknown -> error.throwable.message
-                        else -> "Failed to load hotel details"
+                    updateState { currentState ->
+                        if (currentState.hotel != null) {
+                            // If we already have hotel data, don't show a full screen error
+                            currentState.copy(isLoading = false)
+                        } else {
+                            val message = when (error) {
+                                is AppError.Unknown -> error.throwable.message
+                                else -> "Failed to load hotel details"
+                            }
+                            currentState.copy(isLoading = false, errorMessage = message)
+                        }
                     }
-                    updateState { it.copy(isLoading = false, errorMessage = message) }
                 }
 
         }

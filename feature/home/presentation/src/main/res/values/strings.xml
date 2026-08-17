@@ -6,35 +6,33 @@
     <string name="ferry_label">Ferry</string>
     <string name="bus_label">Bus</string>
 
-    <string name="home_ic_label">Home</string>
-    <string name="orders_ic_label">Order</string>
-    <string name="fav_ic_label">Favorites</string>
-    <string name="accounts_ic_label">Accounts</string>
-
-    <!-- Logout Dialogues -->
-    <string name="logout_dialog_title">Logout</string>
-    <string name="logout_dialog_message">Are you sure you want to log out?</string>
-    <string name="logout_confirm">Logout</string>
-    <string name="logout_cancel">Cancel</string>
-
-    <!-- Theme selection -->
-    <string name="theme_dialog_title">Select Theme</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_system">Same as system</string>
-
     <!-- HomeScreen sections -->
     <string name="journey_together_title">Journey together</string>
     <string name="hotels_recommendation_title">Hotels recommendation for you</string>
 
     <!-- Hotel Details -->
+    <string name="about_label">Description</string>
+    <string name="read_more_label">Read more</string>
+    <string name="read_less_label">Read less</string>
+    <string name="show_more_label">Show more</string>
+    <string name="about_this_property_label">About this property</string>
+    <string name="Where_it_is_label">Where it is</string>
     <string name="see_all_label">See all</string>
     <string name="see_all_about_property">See all about this property</string>
-    <string name="plus_photos_label">photos</string>
+    <string name="plus_photos_label">+ photos</string>
+    <string name="nearby_places_label">Nearby Places</string>
+    <string name="see_more_nearby_places">See more nearby places</string>
+    <string name="explore_area_title">Explore the area</string>
+    <string name="about_area_label">About the area</string>
+    <string name="whats_nearby_label">What\'s nearby</string>
+    <string name="getting_around_label">Getting around</string>
+    <string name="nearby_restaurants_label">Nearby Restaurants</string>
     <string name="share_hotel_title">Share Hotel</string>
     <string name="share_hotel_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/hotel%2$s</string>
 
     <!-- Tour Details -->
+    <string name="tour_included_services_label">What is included</string>
+    <string name="tour_see_all_services_label">See all included services</string>
     <string name="share_tour_title">Share Tour</string>
     <string name="share_tour_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/tour%2$s</string>
 

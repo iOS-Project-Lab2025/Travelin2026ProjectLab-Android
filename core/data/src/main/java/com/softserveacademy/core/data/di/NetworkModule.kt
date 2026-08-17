@@ -14,6 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -45,12 +46,15 @@ object NetworkModule {
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .connectTimeout(90, TimeUnit.SECONDS)
+            .readTimeout(90, TimeUnit.SECONDS)
+            .writeTimeout(90, TimeUnit.SECONDS)
             .build()
     }
 
     @Provides
     @Singleton
-    @Named("MockRetrofit")
+    @Named("MainRetrofit")
     fun provideRetrofit(json: Json, okHttpClient: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
         val factory = json.asConverterFactory(contentType)
@@ -76,13 +80,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHotelApiService(@Named("MockRetrofit") retrofit: Retrofit): HotelApiService {
+    fun provideHotelApiService(@Named("MainRetrofit") retrofit: Retrofit): HotelApiService {
         return retrofit.create(HotelApiService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideTourApiService(@Named("MockRetrofit") retrofit: Retrofit): TourApiService {
+    fun provideTourApiService(@Named("MainRetrofit") retrofit: Retrofit): TourApiService {
         return retrofit.create(TourApiService::class.java)
     }
 

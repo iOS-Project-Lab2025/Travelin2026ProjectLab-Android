@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.Trip
-import com.softserveacademy.core.domain.model.UserProfile
+import com.softserveacademy.profile.domain.model.UserProfile
 import com.softserveacademy.home.domain.usecases.GetJourneyTogetherUseCase
 import com.softserveacademy.home.domain.usecases.GetRecommendedHotelsUseCase
 import com.softserveacademy.home.domain.usecases.GetUpcomingTripUseCase
-import com.softserveacademy.home.domain.usecases.GetUserProfileUseCase
+import com.softserveacademy.profile.domain.usecases.GetProfileUseCase
 import com.softserveacademy.home.presentation.model.TourUi
 import com.softserveacademy.home.presentation.model.UpcomingTripUi
-import com.softserveacademy.home.presentation.model.UserProfileUi
+import com.softserveacademy.profile.presentation.model.UserProfileUi
 import com.softserveacademy.home.presentation.state.HomeUiState
 import com.softserveacademy.home.presentation.state.SectionState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +35,7 @@ import kotlin.time.Duration
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getUserProfileUseCase: GetUserProfileUseCase,
+    private val getProfileUseCase: GetProfileUseCase,
     private val getUpcomingTripUseCase: GetUpcomingTripUseCase,
     private val getJourneyTogetherUseCase: GetJourneyTogetherUseCase,
     private val getRecommendedHotelsUseCase: GetRecommendedHotelsUseCase
@@ -48,7 +48,7 @@ class HomeViewModel @Inject constructor(
         loadAllSections()
     }
 
-    private fun loadAllSections() {
+    fun loadAllSections() {
         loadUserProfile()
         loadUpcomingTrip()
         loadJourneyTogether()
@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadUserProfile() {
         viewModelScope.launch {
-            getUserProfileUseCase()
+            getProfileUseCase()
                 .onSuccess { profile ->
                     _state.update { it.copy(userProfile = SectionState.Success(profile.toUserProfileUi())) }
                 }

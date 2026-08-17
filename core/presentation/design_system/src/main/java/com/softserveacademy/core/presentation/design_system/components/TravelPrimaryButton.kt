@@ -21,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.colors
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -33,7 +33,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param onClick The action to perform when the button is clicked
  * @param modifier The modifier to apply to the button
  * @param enabled Whether the button is enabled or disabled
- * @param variant The variant of the button (`PrimaryButtonVariant.CallToAction`, `PrimaryButtonVariant.Neutral`)
+ * @param variant The variant of the button (`TravelPrimaryButtonVariant.CallToAction`, `TravelPrimaryButtonVariant.Neutral`)
  * @param debounceInterval The time in milliseconds to wait before allowing another click.
  */
 @Composable
@@ -43,7 +43,7 @@ fun TravelPrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    variant: PrimaryButtonVariant = PrimaryButtonVariant.CallToAction,
+    variant: TravelPrimaryButtonVariant = TravelPrimaryButtonVariant.CallToAction,
     debounceInterval: Long = 1000L
 ) {
     val colors = variant.colors()
@@ -96,40 +96,40 @@ fun TravelPrimaryButtonPreview() {
             TravelPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = PrimaryButtonVariant.CallToAction,
+                variant = TravelPrimaryButtonVariant.CallToAction,
                 enabled = true
             )
             TravelPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = PrimaryButtonVariant.Neutral,
+                variant = TravelPrimaryButtonVariant.Neutral,
                 enabled = true
             )
             TravelPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = PrimaryButtonVariant.SecondaryAction,
+                variant = TravelPrimaryButtonVariant.SecondaryAction,
                 enabled = true
             )
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
             TravelPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = PrimaryButtonVariant.CallToAction,
+                variant = TravelPrimaryButtonVariant.CallToAction,
                 enabled = true,
                 isLoading = true
             )
             TravelPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = PrimaryButtonVariant.Neutral,
+                variant = TravelPrimaryButtonVariant.Neutral,
                 enabled = true,
                 isLoading = true
             )
             TravelPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = PrimaryButtonVariant.SecondaryAction,
+                variant = TravelPrimaryButtonVariant.SecondaryAction,
                 enabled = true,
                 isLoading = true
             )

@@ -37,7 +37,8 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
+import com.softserveacademy.core.presentation.design_system.R as DesignSystemR
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.LocationMarkerIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -66,7 +67,7 @@ fun TravelDetailsMap(
             mapStyleOptions = if (isDarkTheme) {
                 MapStyleOptions.loadRawResourceStyle(
                     context,
-                    R.raw.map_style_dark
+                    DesignSystemR.raw.map_style_dark
                 )
             } else {
                 null
@@ -163,7 +164,7 @@ fun MapOverlay(
             mapStyleOptions = if (isDarkTheme) {
                 MapStyleOptions.loadRawResourceStyle(
                     context,
-                    R.raw.map_style_dark
+                    DesignSystemR.raw.map_style_dark
                 )
             } else {
                 null

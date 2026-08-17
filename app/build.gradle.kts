@@ -69,6 +69,10 @@ dependencies {
     implementation(projects.feature.home.data)
     implementation(projects.feature.home.presentation)
 
+    implementation(projects.feature.profile.domain)
+    implementation(projects.feature.profile.data)
+    implementation(projects.feature.profile.presentation)
+
     implementation(projects.feature.booking.hotel.domain)
     implementation(projects.feature.booking.hotel.data)
     implementation(projects.feature.booking.hotel.presentation)

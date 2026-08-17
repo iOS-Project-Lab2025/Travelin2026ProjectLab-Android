@@ -86,7 +86,21 @@ data class FlightSegment(
     val destination: String = "",
     val dateMillis: Long? = null
 )
+/**
+ * Entity representing a passenger in the flight domain.
+ */
+@Serializable
+data class FlightPassenger(
+    val firstName: String = "",
+    val lastName: String = "",
+    val passengerType: PassengerType = PassengerType.ADU,
+    val documentType: DocumentType = DocumentType.PASSPORT,
+    val documentNumber: String = "",
+    val nationality: String = "Chile",
+    val birthDateMillis: Long? = null,
+    val gender: Gender? = null
 
+)
 /**
  * Represents the available travel cabin classes for a flight.
  */
@@ -112,3 +126,9 @@ enum class PassengerType {
 }
 @Serializable
 enum class FlightType { ROUND_TRIP, ONE_WAY, MULTI_CITY }
+
+@Serializable
+enum class DocumentType { PASSPORT, NATIONAL_ID }
+
+@Serializable
+enum class Gender { MALE, FEMALE, OTHER }

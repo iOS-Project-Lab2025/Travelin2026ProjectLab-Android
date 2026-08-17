@@ -7,8 +7,8 @@ This project uses Gradle Product Flavors and Build Types to manage different env
 ### Flavors
 
 - **dev**: Development environment. Points to the Apiary mock backend.
-- **staging**: Staging/Testing environment. Points to the Apiary mock backend.
-- **prod**: Production environment. Points to the Apiary mock backend.
+- **staging**: Staging/Testing environment. Points to the Render production backend.
+- **prod**: Production environment. Points to the Render production backend.
 
 ### Signing & Secrets
 
@@ -27,4 +27,12 @@ For lab demos, please use the **`devDebug`** or **`prodDebug`** variant. You can
 
 The backend URL is configured via `BuildConfig.BASE_URL` in the `core:data` module (and others). It is automatically set based on the selected flavor.
 
-Current Base URL for all flavors: `https://private-amnesiac-923781-travelin1.apiary-mock.com/`
+- **dev**: `https://private-amnesiac-923781-travelin1.apiary-mock.com/`
+- **staging** & **prod**: `https://travelin2026projectlab-android-api.onrender.com/`
+
+#### Local Override
+You can override the backend URL for all flavors by adding the following line to your `local.properties` file:
+```properties
+BASE_URL="https://your-custom-url.com/"
+```
+This is useful for testing local backend instances or specific environment versions without changing the source code.

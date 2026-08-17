@@ -18,16 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.domain.model.HotelRoom
-import com.softserveacademy.core.domain.model.HotelRoomAmenity
-import com.softserveacademy.core.presentation.design_system.components.util.displayName
-import com.softserveacademy.core.presentation.design_system.components.util.icon
-import com.softserveacademy.core.presentation.design_system.theme.BedIcon
-import com.softserveacademy.core.presentation.design_system.theme.PersonsIcon
+import com.softserveacademy.core.presentation.design_system.components.util.mapToFeature
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -45,6 +43,7 @@ fun TravelHotelRoomCard(
     room: HotelRoom,
     nightCount: Int = 1,
     isSelected: Boolean = false,
+    isAvailable: Boolean = true,
     isClickable: Boolean = true,
     onRoomSelected: (HotelRoom) -> Unit = {},
 ) {
@@ -59,10 +58,10 @@ fun TravelHotelRoomCard(
                 )
                 else Modifier
             )
-            .clickable(enabled = isClickable) { onRoomSelected(room) },
+            .clickable(enabled = isClickable && isAvailable) { onRoomSelected(room) },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = if (isAvailable) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = TravelinDimens.ElevationSmall
@@ -75,6 +74,7 @@ fun TravelHotelRoomCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
+                    .then(if (!isAvailable) Modifier.background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)) else Modifier)
             )
 
             Column(
@@ -85,7 +85,7 @@ fun TravelHotelRoomCard(
                 Text(
                     text = room.type,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = if (isAvailable) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold
@@ -107,23 +107,25 @@ fun TravelHotelRoomCard(
                     horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall),
                     verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
                 ) {
-                    TravelAmenityChip(
-                        icon = PersonsIcon,
+                    TravelRoomFeatureChip(
+                        iconRes = R.drawable.ic_persons,
                         text = "1-${room.maxOccupancy} persons",
                         contentColor = MaterialTheme.colorScheme.secondary,
                         outlineColor = MaterialTheme.colorScheme.secondary
                     )
-                    TravelAmenityChip(
-                        icon = BedIcon,
+                    TravelRoomFeatureChip(
+                        iconRes = R.drawable.ic_bed,
                         text = room.bedType,
                         contentColor = MaterialTheme.colorScheme.secondary,
                         outlineColor = MaterialTheme.colorScheme.secondary
                     )
-                    room.amenities.forEach { amenity ->
-                        TravelAmenityChip(
-                            icon = amenity.icon,
-                            text = amenity.displayName
-                        )
+                    room.amenities.forEach { amenityId ->
+                        mapToFeature(amenityId)?.let { feature ->
+                            TravelRoomFeatureChip(
+                                iconRes = feature.iconRes,
+                                text = stringResource(id = feature.labelRes)
+                            )
+                        }
                     }
                 }
                 // Price and Availability
@@ -152,11 +154,11 @@ fun TravelHotelRoomCard(
                     }
 
                     Text( // Availability badge
-                        text = if (room.isAvailable) "Available" else "Unavailable",
+                        text = if (isAvailable) "Available" else "Unavailable",
                         modifier = Modifier
                             .clip(MaterialTheme.shapes.extraLarge)
                             .background(
-                                if (room.isAvailable) {
+                                if (isAvailable) {
                                     MaterialTheme.colorScheme.secondary
                                 } else {
                                     MaterialTheme.colorScheme.error
@@ -184,18 +186,17 @@ private fun TravelHotelRoomCardPreview() {
         maxOccupancy = 5,
         bedType = "1 King bed",
         amenities = listOf(
-            HotelRoomAmenity.WIFI,
-            HotelRoomAmenity.BREAKFAST,
-            HotelRoomAmenity.PARKING,
-            HotelRoomAmenity.AC,
-            HotelRoomAmenity.ROOM_SERVICE
+            "hotel.wifi",
+            "hotel.breakfast",
+            "hotel.parking",
+            "hotel.ac",
+            "hotel.room_service"
         ),
         pricePerNight = 150,
         images = listOf(
             "https://picsum.photos/200/300",
             "https://picsum.photos/200"
-        ),
-        isAvailable = true
+        )
     )
 
     Travelin2026ProjectLabTheme {
@@ -206,7 +207,8 @@ private fun TravelHotelRoomCardPreview() {
             TravelHotelRoomCard(
                 room = sampleRoom,
                 nightCount = 3,
-                isSelected = false
+                isSelected = false,
+                isAvailable = true
             )
             TravelHotelRoomCard(
                 room = sampleRoom.copy(
@@ -216,7 +218,8 @@ private fun TravelHotelRoomCardPreview() {
                     bedType = "1 Queen bed",
                 ),
                 nightCount = 3,
-                isSelected = true
+                isSelected = true,
+                isAvailable = false
             )
         }
     }

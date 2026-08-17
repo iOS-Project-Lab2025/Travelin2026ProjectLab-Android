@@ -19,14 +19,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.softserveacademy.feature.auth.login.presentation.R
 import com.softserveacademy.feature.auth.login.presentation.viewmodel.LoginViewModel
 import com.softserveacademy.core.presentation.design_system.components.AppPasswordInput
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.TravelSocialButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelAuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.*
 
@@ -136,20 +138,20 @@ fun LoginContent(
                         Text(
                             text = buildAnnotatedString {
                                 withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
-                                    append("Let's ")
+                                    append(stringResource(R.string.login_title_prefix))
                                 }
                                 withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                    append("Travel")
+                                    append(stringResource(R.string.login_title_mid))
                                 }
                                 withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary)) {
-                                    append(" you in.")
+                                    append(stringResource(R.string.login_title_suffix))
                                 }
                             },
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Discover the World with Every\nSign In",
+                            text = stringResource(R.string.login_description),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -159,7 +161,7 @@ fun LoginContent(
                         AppTextInput(
                             value = email,
                             onValueChange = onEmailChange,
-                            placeholder = "Email or Phone Number",
+                            placeholder = stringResource(R.string.login_email_placeholder),
                             modifier = Modifier.fillMaxWidth(),
                             state = if (error != null) AppInputState.Error else AppInputState.Normal,
                             errorMessage = error
@@ -168,13 +170,13 @@ fun LoginContent(
                         AppPasswordInput(
                             value = password,
                             onValueChange = onPasswordChange,
-                            placeholder = "Password",
+                            placeholder = stringResource(R.string.login_password_placeholder),
                             modifier = Modifier.fillMaxWidth(),
                             state = if (error != null) AppInputState.Error else AppInputState.Normal
                         )
 
                         Text(
-                            text = "Forgot password?",
+                            text = stringResource(R.string.login_forgot_password),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
@@ -185,7 +187,7 @@ fun LoginContent(
 
                     Column(verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)) {
                         TravelAuthPrimaryButton(
-                            text = "Sign In",
+                            text = stringResource(R.string.login_sign_in_button),
                             onClick = onLoginClick,
                             enabled = !isLoading,
                             modifier = Modifier
@@ -199,7 +201,7 @@ fun LoginContent(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "or sign in with",
+                                text = stringResource(R.string.login_social_prefix),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -232,7 +234,7 @@ fun LoginContent(
                     }
 
                     Text(
-                        text = "I don't have a account?",
+                        text = stringResource(R.string.login_no_account),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -244,9 +246,9 @@ fun LoginContent(
 
             // Sign Up Section
             TravelAuthPrimaryButton(
-                text = "Sign Up",
+                text = stringResource(R.string.login_sign_up_button),
                 onClick = onNavigateToRegister,
-                variant = AuthPrimaryButtonVariant.ColorContent,
+                variant = TravelAuthPrimaryButtonVariant.ColorContent,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = TravelinDimens.PaddingLarge)

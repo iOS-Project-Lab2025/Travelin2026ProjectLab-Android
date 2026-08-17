@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.PrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.common.presentation.R
@@ -44,13 +44,13 @@ fun TravelBookingBottomBar(
             TravelPrimaryButton(
                 text = stringResource(R.string.back_button_label),
                 onClick = onBackClick,
-                variant = PrimaryButtonVariant.SecondaryAction,
+                variant = TravelPrimaryButtonVariant.SecondaryAction,
                 modifier = Modifier.weight(1f)
             )
             TravelPrimaryButton(
                 text = stringResource(R.string.next_button_label),
                 onClick = onNextClick,
-                variant = PrimaryButtonVariant.CallToAction,
+                variant = TravelPrimaryButtonVariant.CallToAction,
                 enabled = nextButtonEnabled,
                 modifier = Modifier.weight(1f)
             )

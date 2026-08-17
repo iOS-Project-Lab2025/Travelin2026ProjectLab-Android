@@ -26,19 +26,18 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.maps.model.LatLng
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Poi
-import com.softserveacademy.core.domain.model.Amenities
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.core.presentation.design_system.components.HotelDetailLoading
 import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
-import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelBookingBar
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsBottomBar
 import com.softserveacademy.core.presentation.design_system.theme.LocalIsDarkTheme
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.AmenitiesOverlay
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.FeaturesOverlay
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.ExploreAreaOverlay
-import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsAmenities
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsFeaturesSection
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsDescription
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsHeader
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsMap
@@ -223,9 +222,9 @@ private fun TravelHotelDetailsWrapper(
         Scaffold(
             bottomBar = {
                 Surface(shadowElevation = TravelinDimens.ElevationLarge) {
-                    TravelBookingBar(
+                    TravelDetailsBottomBar(
                         // TODO: Get this value from the minimum of the list of room prices (with the respective currency)
-                        price = "$400",
+                        price = "$${hotel.pricePerNight}",
                         onBookClick = onBookClick
                     )
                 }
@@ -256,8 +255,10 @@ private fun TravelHotelDetailsWrapper(
                     )
                 }
                 item {
-                    TravelDetailsAmenities(
-                        includedItems = hotel.amenities,
+                    TravelDetailsFeaturesSection(
+                        features = hotel.amenities,
+                        title = stringResource(id = R.string.about_this_property_label),
+                        seeAllLabel = stringResource(id = R.string.see_all_about_property),
                         onSeeAllClick = onSeeAllAmenitiesClick
                     )
                 }
@@ -290,8 +291,9 @@ private fun TravelHotelDetailsWrapper(
         }
 
         if (showAllAmenities) {
-            AmenitiesOverlay(
-                includedItems = hotel.amenities,
+            FeaturesOverlay(
+                features = hotel.amenities,
+                title = stringResource(id = R.string.about_this_property_label),
                 onDismiss = onDismissAmenitiesOverlay
             )
         }
@@ -339,13 +341,13 @@ private fun TravelHotelDetailsWrapperPreview() {
                 reviewRating = 3.6,
                 description = LoremIpsum(words = 50).values.first(),
                 amenities = listOf(
-                    Amenities.FitnessCenter,
-                    Amenities.Pool,
-                    Amenities.BuffetBreakfast,
-                    Amenities.AcUnit,
-                    Amenities.FreeWifi,
-                    Amenities.CleaningServices,
-                    Amenities.RoomService
+                    "hotel.fitness_center",
+                    "hotel.pool",
+                    "hotel.breakfast",
+                    "hotel.ac",
+                    "hotel.wifi",
+                    "hotel.cleaning_services",
+                    "hotel.room_service"
                 ),
                 address = "Jalan Sunset Road No. 101, Kuta, Bali",
                 latitude = 1.35,
