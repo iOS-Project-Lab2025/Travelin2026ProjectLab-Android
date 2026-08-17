@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "744542591165",
+    "project_id": "travelin-staging",
+    "storage_bucket": "travelin-staging.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744542591165:android:6719489c265b73e2c1ffd4",
+        "android_client_info": {
+          "package_name": "com.softserveacademy.travelin2026projectlab.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC13OUo_cuwhdKLFXop4w3CH8H8dxpRNq8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744542591165:android:261b87138adcf985c1ffd4",
+        "android_client_info": {
+          "package_name": "com.softserveacademy.travelin2026projectlab.staging.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC13OUo_cuwhdKLFXop4w3CH8H8dxpRNq8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
