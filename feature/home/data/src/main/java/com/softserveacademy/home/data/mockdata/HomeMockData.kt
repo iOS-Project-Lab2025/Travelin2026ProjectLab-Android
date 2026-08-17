@@ -272,7 +272,7 @@ object HomeMockData {
                     rates = RatePerParticipant(
                         adults = 120.0,
                         children = 60.0,
-                        babies = 0.0
+                        infants = 0.0
                     ),
                     rating = 4.8,
                     category = TourCategory.CULTURE,

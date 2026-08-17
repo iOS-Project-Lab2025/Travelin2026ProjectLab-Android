@@ -19,7 +19,7 @@ import kotlin.time.Duration
  * @property location Location where the tour takes place.
  * @property imageList List of URLs for the tour's images.
  * @property duration Estimated duration of the tour.
- * @property rates Rate per participant (adults, children, babies).
+ * @property rates Rate per participant (adults, children, infants).
  * @property rating Average user rating of the tour.
  * @property category Category of the tour.
  * @property numberOfReviews Number of reviews for the tour.
@@ -80,11 +80,11 @@ enum class TourCategory {
  *
  * @property adults The rate for adults.
  * @property children The rate for children.
- * @property babies The rate for babies.
+ * @property infants The rate for infants.
  */
 @Serializable
 data class RatePerParticipant(
     val adults: Double = 0.0,
     val children: Double = 0.0,
-    val babies: Double = 0.0
+    val infants: Double = 0.0
 )

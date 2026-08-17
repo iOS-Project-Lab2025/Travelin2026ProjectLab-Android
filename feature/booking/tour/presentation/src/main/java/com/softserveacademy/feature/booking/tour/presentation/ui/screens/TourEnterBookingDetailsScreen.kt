@@ -11,6 +11,7 @@ import com.softserveacademy.feature.booking.common.presentation.events.TravelEnt
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelEnterBookingDetailsScreen
 import com.softserveacademy.feature.booking.tour.presentation.R
+import com.softserveacademy.feature.booking.tour.presentation.events.TourEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.tour.presentation.viewmodel.TourEnterBookingDetailsViewModel
 import kotlinx.coroutines.flow.collectLatest
 
@@ -36,30 +37,30 @@ fun TourEnterBookingDetailsScreen(
         TravelBookingCountItem.Counter(
             label = stringResource(R.string.adults_label),
             count = uiState.adultsCount,
-            onCountChange = { viewModel.onEvent(TravelEnterBookingDetailsEvent.OnAdultsCountChange(it)) },
+            onCountChange = { viewModel.onEvent(TourEnterBookingDetailsEvent.OnAdultsCountChange(it)) },
             minCount = 1
         ),
         TravelBookingCountItem.Counter(
             label = stringResource(R.string.children_label),
             subtitle = stringResource(R.string.children_subtitle),
             count = uiState.childrenCount,
-            onCountChange = { viewModel.onEvent(TravelEnterBookingDetailsEvent.OnChildrenCountChange(it)) }
+            onCountChange = { viewModel.onEvent(TourEnterBookingDetailsEvent.OnChildrenCountChange(it)) }
         ),
         TravelBookingCountItem.Counter(
-            label = stringResource(R.string.babies_label),
-            subtitle = stringResource(R.string.babies_subtitle),
-            count = uiState.babiesCount,
-            onCountChange = { viewModel.onEvent(TravelEnterBookingDetailsEvent.OnBabiesCountChange(it)) }
+            label = stringResource(R.string.infants_label),
+            subtitle = stringResource(R.string.infants_subtitle),
+            count = uiState.infantsCount,
+            onCountChange = { viewModel.onEvent(TourEnterBookingDetailsEvent.OnInfantsCountChange(it)) }
         )
     )
 
     TravelEnterBookingDetailsScreen(
         modifier = modifier,
-        state = uiState,
+        state = uiState.screenState,
         onEvent = { event ->
             when (event) {
                 TravelEnterBookingDetailsEvent.OnBackClick -> onBackClick()
-                else -> viewModel.onEvent(event)
+                else -> viewModel.onEvent(TourEnterBookingDetailsEvent.ScreenEvent(event))
             }
         },
         bookingCountItems = bookingCountItems,

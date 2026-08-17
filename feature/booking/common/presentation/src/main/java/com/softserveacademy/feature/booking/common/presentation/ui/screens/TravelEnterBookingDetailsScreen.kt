@@ -17,29 +17,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.InlineErrorBanner
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.booking.common.presentation.R
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingBottomBar
-import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingDateRangePicker
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingCountSheet
+import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingDateRangePicker
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
-import com.softserveacademy.feature.booking.common.presentation.R
 import androidx.compose.foundation.layout.fillMaxSize
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.collections.listOf
 
-/**
- * A stateless composable that represents the content of an enter booking details screen.
- * Allows the user to select a date range and the number of guests/passangers for the booking.
- *
- * Decoupled from specific booking types (e.g., Hotel, Flight) to reuse in different booking flows.
- *
- * @param state The state of the enter booking details screen.
- * @param onEvent Callback when a UI event occurs.
- * @param modifier The modifier to be applied to the content.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

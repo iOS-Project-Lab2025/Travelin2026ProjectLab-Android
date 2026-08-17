@@ -11,7 +11,7 @@ router = APIRouter(
 class RatePerParticipant(BaseModel):
     adults: float = 0.0
     children: float = 0.0
-    babies: float = 0.0
+    infants: float = 0.0
 
 class TourModel(BaseModel):
     id: str

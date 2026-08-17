@@ -61,8 +61,8 @@ class TourBookingConfirmViewModel @Inject constructor(
     private fun calculateTotalPrice(tour: com.softserveacademy.core.domain.model.Tour, draft: com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft): Double {
         val adults = draft.participants.adults * tour.rates.adults
         val children = draft.participants.children * tour.rates.children
-        val babies = draft.participants.babies * tour.rates.babies
-        return adults + children + babies
+        val infants = draft.participants.infants * tour.rates.infants
+        return adults + children + infants
     }
 
     fun onEvent(event: TourBookingConfirmEvent) {

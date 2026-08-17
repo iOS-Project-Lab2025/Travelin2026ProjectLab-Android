@@ -302,7 +302,7 @@ private fun TravelTourDetailsWrapperPreview() {
                 rates = RatePerParticipant(
                     adults = 100.0,
                     children = 50.0,
-                    babies = 0.0
+                    infants = 0.0
                 ),
                 category = TourCategory.GASTRONOMY,
                 includedServices = listOf(

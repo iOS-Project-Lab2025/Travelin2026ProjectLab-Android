@@ -5,10 +5,10 @@
     <string name="adults_label">Adults</string>
     <string name="children_label">Children</string>
     <string name="children_subtitle">2 – 12 years</string>
-    <string name="babies_label">Babies</string>
-    <string name="babies_subtitle">0 – 2 years</string>
+    <string name="infants_label">Infants</string>
+    <string name="infants_subtitle">0 – 2 years</string>
 
     <string name="contact_info_subtitle">Who is taking the tour?</string>
 
-    <string name="booking_confirm_participants_format">%1$d adults, %2$d children, %3$d babies</string>
+    <string name="booking_confirm_participants_format">%1$d adults, %2$d children, %3$d infants</string>
 </resources>

@@ -22,7 +22,7 @@ data class TourBookingDraft(
 data class Participants(
     val adults: Int = 1,
     val children: Int = 0,
-    val babies: Int = 0
+    val infants: Int = 0
 ) : JavaSerializable
 
 /**

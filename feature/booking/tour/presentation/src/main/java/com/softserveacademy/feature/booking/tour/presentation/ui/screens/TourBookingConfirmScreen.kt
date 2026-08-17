@@ -102,7 +102,7 @@ fun TourBookingConfirmContent(
                                 R.string.booking_confirm_participants_format,
                                 draft.participants.adults,
                                 draft.participants.children,
-                                draft.participants.babies
+                                draft.participants.infants
                             ),
                             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
                         )

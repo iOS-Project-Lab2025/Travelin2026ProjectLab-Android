@@ -8,7 +8,8 @@ import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookin
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
-import com.softserveacademy.feature.booking.common.presentation.states.TravelEnterBookingDetailsState
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelEnterBookingDetailsEvent
+import com.softserveacademy.feature.booking.hotel.presentation.states.HotelEnterBookingDetailsState
 import com.softserveacademy.feature.booking.common.presentation.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -38,8 +39,8 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
 
     private val hotelId: String = checkNotNull(savedStateHandle["hotelId"])
 
-    private val _uiState = MutableStateFlow(savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) ?: TravelEnterBookingDetailsState())
-    val uiState: StateFlow<TravelEnterBookingDetailsState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(savedStateHandle.get<HotelEnterBookingDetailsState>(KEY_STATE) ?: HotelEnterBookingDetailsState())
+    val uiState: StateFlow<HotelEnterBookingDetailsState> = _uiState.asStateFlow()
 
     private val _validationSuccess = MutableStateFlow(false)
     val validationSuccess: StateFlow<Boolean> = _validationSuccess.asStateFlow()
@@ -55,8 +56,8 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private var hotelBookingDraft = HotelBookingDraft()
 
     init {
-        if (savedStateHandle.get<TravelEnterBookingDetailsState>(KEY_STATE) == null) {
-            _uiState.update { it.copy(isLoading = true) }
+        if (savedStateHandle.get<HotelEnterBookingDetailsState>(KEY_STATE) == null) {
+            updateState { it.copy(screenState = it.screenState.copy(isLoading = true)) }
             viewModelScope.launch {
                 val repositoryDraft = getHotelBookingDraftUseCase(hotelId)
 
@@ -64,7 +65,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
                 syncSavedState()
                 updateUiState()
                 delay(500.milliseconds) // Small delay for smooth transition
-                updateState { it.copy(isLoading = false) }
+                updateState { it.copy(screenState = it.screenState.copy(isLoading = false)) }
             }
         }
     }
@@ -74,21 +75,23 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
      *
      * @param event The event to handle.
      */
-    fun onEvent(event: TravelEnterBookingDetailsEvent) {
+    fun onEvent(event: HotelEnterBookingDetailsEvent) {
         when (event) {
-            is TravelEnterBookingDetailsEvent.OnDateRangeSelected -> onDateRangeSelected(
-                event.startDateMillis,
-                event.endDateMillis
-            )
-
-            is TravelEnterBookingDetailsEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
-            is TravelEnterBookingDetailsEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
-            is TravelEnterBookingDetailsEvent.OnBabiesCountChange -> {}
-            is TravelEnterBookingDetailsEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
-            TravelEnterBookingDetailsEvent.OnNextClick -> onNextClick()
-            TravelEnterBookingDetailsEvent.OnBackClick -> { /* Handled by navigation */ }
-            TravelEnterBookingDetailsEvent.OnDismissBottomSheet -> onDismissBottomSheet()
-            TravelEnterBookingDetailsEvent.OnAcceptClick -> onAcceptClick()
+            is HotelEnterBookingDetailsEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
+            is HotelEnterBookingDetailsEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
+            is HotelEnterBookingDetailsEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
+            is HotelEnterBookingDetailsEvent.ScreenEvent -> {
+                when (val travelEvent = event.event) {
+                    is TravelEnterBookingDetailsEvent.OnDateRangeSelected -> onDateRangeSelected(
+                        travelEvent.startDateMillis,
+                        travelEvent.endDateMillis
+                    )
+                    TravelEnterBookingDetailsEvent.OnNextClick -> onNextClick()
+                    TravelEnterBookingDetailsEvent.OnBackClick -> { /* Handled by navigation */ }
+                    TravelEnterBookingDetailsEvent.OnDismissBottomSheet -> onDismissBottomSheet()
+                    TravelEnterBookingDetailsEvent.OnAcceptClick -> onAcceptClick()
+                }
+            }
         }
     }
 
@@ -102,9 +105,11 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         )
         updateState {
             it.copy(
-                startDateMillis = startDateMillis,
-                endDateMillis = endDateMillis,
-                isDateErrorVisible = false
+                screenState = it.screenState.copy(
+                    startDateMillis = startDateMillis,
+                    endDateMillis = endDateMillis,
+                    isDateErrorVisible = false
+                )
             )
         }
         syncSavedState()
@@ -115,7 +120,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         updateState {
             it.copy(
                 adultsCount = count,
-                isGuestErrorVisible = false
+                screenState = it.screenState.copy(isGuestErrorVisible = false)
             )
         }
         syncSavedState()
@@ -145,19 +150,21 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
 
         when (validationResult) {
             is ValidateEnterBookingDetailsUseCase.ValidationResult.Success -> {
-                updateState { it.copy(showGuestBottomSheet = true) }
+                updateState { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = true)) }
             }
 
             is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid -> {
                 updateState {
                     it.copy(
-                        isDateErrorVisible = true,
-                        dateErrorMessage = when (validationResult.error) {
-                            ValidateEnterBookingDetailsUseCase.ValidationError.EMPTY_DATES ->
-                                R.string.booking_error_select_dates
+                        screenState = it.screenState.copy(
+                            isDateErrorVisible = true,
+                            dateErrorMessage = when (validationResult.error) {
+                                ValidateEnterBookingDetailsUseCase.ValidationError.EMPTY_DATES ->
+                                    R.string.booking_error_select_dates
 
-                            else -> null
-                        }
+                                else -> null
+                            }
+                        )
                     )
                 }
             }
@@ -165,7 +172,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onDismissBottomSheet() {
-        updateState { it.copy(showGuestBottomSheet = false, isGuestErrorVisible = false) }
+        updateState { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = false, isGuestErrorVisible = false)) }
     }
 
     private fun onAcceptClick() {
@@ -174,20 +181,22 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         when (validationResult) {
             is ValidateEnterBookingDetailsUseCase.ValidationResult.Success -> {
                 // Validation passed for both dates and guests
-                updateState { it.copy(showGuestBottomSheet = false) }
+                updateState { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = false)) }
                 _validationSuccess.value = true
             }
 
             is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid -> {
                 updateState {
                     it.copy(
-                        isGuestErrorVisible = true,
-                        guestErrorMessage = when (validationResult.error) {
-                            ValidateEnterBookingDetailsUseCase.ValidationError.AT_LEAST_ONE_ADULT ->
-                                R.string.booking_error_at_least_one_adult
+                        screenState = it.screenState.copy(
+                            isGuestErrorVisible = true,
+                            guestErrorMessage = when (validationResult.error) {
+                                ValidateEnterBookingDetailsUseCase.ValidationError.AT_LEAST_ONE_ADULT ->
+                                    R.string.booking_error_at_least_one_adult
 
-                            else -> null
-                        }
+                                else -> null
+                            }
+                        )
                     )
                 }
             }
@@ -197,8 +206,10 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
     private fun updateUiState() {
         updateState {
             it.copy(
-                startDateMillis = hotelBookingDraft.checkIn,
-                endDateMillis = hotelBookingDraft.checkOut,
+                screenState = it.screenState.copy(
+                    startDateMillis = hotelBookingDraft.checkIn,
+                    endDateMillis = hotelBookingDraft.checkOut
+                ),
                 adultsCount = hotelBookingDraft.guests.adults,
                 childrenCount = hotelBookingDraft.guests.children,
                 hasPets = hotelBookingDraft.guests.pets
@@ -206,7 +217,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun updateState(update: (TravelEnterBookingDetailsState) -> TravelEnterBookingDetailsState) {
+    private fun updateState(update: (HotelEnterBookingDetailsState) -> HotelEnterBookingDetailsState) {
         _uiState.update(update)
         savedStateHandle[KEY_STATE] = _uiState.value
     }
