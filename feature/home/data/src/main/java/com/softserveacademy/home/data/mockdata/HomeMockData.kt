@@ -219,7 +219,14 @@ object HomeMockData {
                     )
                 ),
                 confirmationCode = "ABC123",
-                status = BookingStatus.COMPLETED
+                status = BookingStatus.COMPLETED,
+                totalAmount = 900.0,
+                currencyCode = "USD",
+                contactInfo = com.softserveacademy.core.domain.model.FlightContactInfo(
+                    email = "john.doe@travelin.com",
+                    phone = "987654321",
+                    countryCode = "+56"
+                )
             )
         ),
 
@@ -263,7 +270,12 @@ object HomeMockData {
                     duration = 3.hours,
                     price = 120.0,
                     rating = 4.8,
-                    category = TourCategory.CULTURE
+                    category = TourCategory.CULTURE,
+                    includedServices = listOf(
+                        "TOUR_TRANSPORT",
+                        "TOUR_GUIDE",
+                        "TOUR_TICKET"
+                    )
                 ),
 
                 date = dateLong(2026, 8, 8),

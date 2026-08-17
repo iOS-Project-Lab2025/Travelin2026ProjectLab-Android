@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import com.softserveacademy.core.domain.model.Poi
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.LocationMarkerIcon

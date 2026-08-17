@@ -19,7 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
+import com.softserveacademy.core.presentation.design_system.R as DesignSystemR
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -63,8 +64,8 @@ fun TravelDetailsGallery(
                             .height(110.dp)
                             .clip(RoundedCornerShape(12.dp)),
                         contentScale = ContentScale.Crop,
-                        placeholder = painterResource(R.drawable.test_hotel),
-                        error = painterResource(R.drawable.test_hotel)
+                        placeholder = painterResource(DesignSystemR.drawable.test_hotel),
+                        error = painterResource(DesignSystemR.drawable.test_hotel)
                     )
                 }
                 if (imageList.size > 1) {
@@ -76,8 +77,8 @@ fun TravelDetailsGallery(
                             .height(110.dp)
                             .clip(RoundedCornerShape(12.dp)),
                         contentScale = ContentScale.Crop,
-                        placeholder = painterResource(R.drawable.test_hotel),
-                        error = painterResource(R.drawable.test_hotel)
+                        placeholder = painterResource(DesignSystemR.drawable.test_hotel),
+                        error = painterResource(DesignSystemR.drawable.test_hotel)
                     )
                 }
             }
@@ -91,8 +92,8 @@ fun TravelDetailsGallery(
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.test_hotel),
-                    error = painterResource(R.drawable.test_hotel)
+                    placeholder = painterResource(DesignSystemR.drawable.test_hotel),
+                    error = painterResource(DesignSystemR.drawable.test_hotel)
                 )
             }
         }

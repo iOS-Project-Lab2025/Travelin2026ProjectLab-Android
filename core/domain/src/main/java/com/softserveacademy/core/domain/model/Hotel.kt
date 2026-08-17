@@ -29,15 +29,16 @@ data class Hotel(
     val address: String = "",
     @SerialName("star")
     val starCategory: Int = 0,
-    @SerialName("rating")
+    @SerialName("userRating")
     val reviewRating: Double = 0.0,
     val numberOfReviews: Int = 0,
     @SerialName("image")
     @Serializable(with = FlexibleListSerializer::class)
     val imageList: List<String> = emptyList(),
     val description: String = "",
-    @SerialName("includedItems")
-    val amenities: List<Amenities> = emptyList(),
+    @Serializable(with = FlexibleListSerializer::class)
+    val amenities: List<String> = emptyList(),
+    val pricePerNight: Int = 0,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val rooms: List<HotelRoom> = emptyList(),
@@ -48,19 +49,4 @@ data class Hotel(
     val limitedImages: String
         get() = if (imageList.size > 400) "400+ Photos" else "${imageList.size-1}+ Photos"
 
-}
-
-/**
- * Amenities included in the hotel.
- */
-@Serializable
-enum class Amenities{
-    BuffetBreakfast,
-    FreeWifi,
-    FitnessCenter,
-    Pool,
-    CleaningServices,
-    SelfParking,
-    RoomService,
-    AcUnit
 }

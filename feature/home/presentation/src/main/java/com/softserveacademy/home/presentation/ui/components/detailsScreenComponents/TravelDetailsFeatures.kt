@@ -24,28 +24,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
-import com.softserveacademy.core.domain.model.Amenities
-import com.softserveacademy.core.presentation.design_system.R
+import com.softserveacademy.home.presentation.R
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
-import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelIncludedItem
+import com.softserveacademy.core.presentation.design_system.components.TravelFeatureChip
+import com.softserveacademy.core.presentation.design_system.components.util.mapToFeature
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 /**
- * Displays the amenities of a destination section, showing amenities in a two-column grid.
+ * Displays the features of a hotel or tour, showing them in a two-column grid.
  *
- * @param includedItems List of UI models representing the amenities.
+ * @param features List of string IDs representing the features.
  * @param onSeeAllClick Callback when the "See all" button is clicked.
  */
 @Composable
-fun TravelDetailsAmenities(
-    includedItems: List<Amenities>,
+fun TravelDetailsFeaturesSection(
+    features: List<String>,
+    title: String = stringResource(id = R.string.about_this_property_label),
+    seeAllLabel: String = stringResource(id = R.string.see_all_about_property),
     onSeeAllClick: () -> Unit
 ) {
-    if (includedItems.isEmpty()) return
+    if (features.isEmpty()) return
 
-    val displayItems = includedItems.take(6)
-    val hasMore = includedItems.size > 6
+    val mappedFeatures = features.mapNotNull { mapToFeature(it) }
+    val displayFeatures = mappedFeatures.take(6)
+    val hasMore = mappedFeatures.size > 6
 
     Column(modifier = Modifier
         .padding(
@@ -53,7 +56,7 @@ fun TravelDetailsAmenities(
         )
     ) {
         Text(
-            text = stringResource(id = R.string.What_is_included_label),
+            text = title,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onPrimaryFixed,
             fontWeight = FontWeight.Bold
@@ -61,14 +64,14 @@ fun TravelDetailsAmenities(
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
-        displayItems.chunked(2).forEach { rowItems ->
+        displayFeatures.chunked(2).forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
             ) {
-                rowItems.forEach { item ->
-                    TravelIncludedItem(
-                        item = item,
+                rowItems.forEach { feature ->
+                    TravelFeatureChip(
+                        feature = feature,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -82,7 +85,7 @@ fun TravelDetailsAmenities(
         if (hasMore) {
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
             TravelOutlinedButton(
-                text = stringResource(id = R.string.see_all_about_property),
+                text = seeAllLabel,
                 onClick = onSeeAllClick,
                 contentPadding = PaddingValues(
                     horizontal = TravelinDimens.PaddingLarge,
@@ -102,17 +105,20 @@ fun TravelDetailsAmenities(
 }
 
 /**
- * Full-screen overlay displaying all amenities included in the hotel.
+ * Full-screen overlay displaying all features of a hotel or tour.
  *
- * @param includedItems Full list of amenities.
+ * @param features Full list of the features string IDs.
  * @param onDismiss Callback to close the overlay.
  */
 @Composable
-fun AmenitiesOverlay(
-    includedItems: List<Amenities>,
+fun FeaturesOverlay(
+    features: List<String>,
+    title: String = stringResource(id = R.string.about_this_property_label),
     onDismiss: () -> Unit
 ) {
     BackHandler(onBack = onDismiss)
+
+    val mappedFeatures = features.mapNotNull { mapToFeature(it) }
 
     Surface(
         modifier = Modifier
@@ -136,7 +142,7 @@ fun AmenitiesOverlay(
                 )
 
                 Text(
-                    text = stringResource(id = R.string.What_is_included_label),
+                    text = title,
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
@@ -150,14 +156,14 @@ fun AmenitiesOverlay(
                 verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium),
                 modifier = Modifier.weight(1f)
             ) {
-                items(includedItems.chunked(2)) { rowItems ->
+                items(mappedFeatures.chunked(2)) { rowItems ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
                     ) {
-                        rowItems.forEach { item ->
-                            TravelIncludedItem(
-                                item = item,
+                        rowItems.forEach { feature ->
+                            TravelFeatureChip(
+                                feature = feature,
                                 modifier = Modifier.weight(1f)
                             )
                         }

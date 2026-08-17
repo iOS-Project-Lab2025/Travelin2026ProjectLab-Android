@@ -131,7 +131,7 @@ fun HotelDetailLoading(
                 
                 Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
                 
-                // Included items
+                // Features
                 repeat(3) {
                     Row(
                         modifier = Modifier.fillMaxWidth()

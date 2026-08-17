@@ -18,16 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.domain.model.HotelRoom
-import com.softserveacademy.core.domain.model.HotelRoomAmenity
-import com.softserveacademy.core.presentation.design_system.components.util.displayName
-import com.softserveacademy.core.presentation.design_system.components.util.icon
-import com.softserveacademy.core.presentation.design_system.theme.BedIcon
-import com.softserveacademy.core.presentation.design_system.theme.PersonsIcon
+import com.softserveacademy.core.presentation.design_system.components.util.mapToFeature
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
@@ -109,23 +107,25 @@ fun TravelHotelRoomCard(
                     horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall),
                     verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
                 ) {
-                    TravelAmenityChip(
-                        icon = PersonsIcon,
+                    TravelRoomFeatureChip(
+                        iconRes = R.drawable.ic_persons,
                         text = "1-${room.maxOccupancy} persons",
                         contentColor = MaterialTheme.colorScheme.secondary,
                         outlineColor = MaterialTheme.colorScheme.secondary
                     )
-                    TravelAmenityChip(
-                        icon = BedIcon,
+                    TravelRoomFeatureChip(
+                        iconRes = R.drawable.ic_bed,
                         text = room.bedType,
                         contentColor = MaterialTheme.colorScheme.secondary,
                         outlineColor = MaterialTheme.colorScheme.secondary
                     )
-                    room.amenities.forEach { amenity ->
-                        TravelAmenityChip(
-                            icon = amenity.icon,
-                            text = amenity.displayName
-                        )
+                    room.amenities.forEach { amenityId ->
+                        mapToFeature(amenityId)?.let { feature ->
+                            TravelRoomFeatureChip(
+                                iconRes = feature.iconRes,
+                                text = stringResource(id = feature.labelRes)
+                            )
+                        }
                     }
                 }
                 // Price and Availability
@@ -186,11 +186,11 @@ private fun TravelHotelRoomCardPreview() {
         maxOccupancy = 5,
         bedType = "1 King bed",
         amenities = listOf(
-            HotelRoomAmenity.WIFI,
-            HotelRoomAmenity.BREAKFAST,
-            HotelRoomAmenity.PARKING,
-            HotelRoomAmenity.AC,
-            HotelRoomAmenity.ROOM_SERVICE
+            "hotel.wifi",
+            "hotel.breakfast",
+            "hotel.parking",
+            "hotel.ac",
+            "hotel.room_service"
         ),
         pricePerNight = 150,
         images = listOf(

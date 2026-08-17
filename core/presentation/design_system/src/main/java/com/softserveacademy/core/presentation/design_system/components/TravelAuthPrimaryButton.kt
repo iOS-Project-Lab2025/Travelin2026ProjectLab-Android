@@ -16,7 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.ui.Modifier
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelAuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.buttons.colors
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -28,7 +28,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param onClick The action to perform when the button is clicked
  * @param modifier The modifier to apply to the button
  * @param enabled Whether the button is enabled or disabled
- * @param variant The variant of the button (`AuthPrimaryButtonVariant.ColorBackground`, `AuthPrimaryButtonVariant.ColorContent`)
+ * @param variant The variant of the button (`TravelAuthPrimaryButtonVariant.ColorBackground`, `TravelAuthPrimaryButtonVariant.ColorContent`)
  * @param debounceInterval The time in milliseconds to wait before allowing another click
  */
 @Composable
@@ -37,7 +37,7 @@ fun TravelAuthPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    variant: AuthPrimaryButtonVariant = AuthPrimaryButtonVariant.ColorBackground,
+    variant: TravelAuthPrimaryButtonVariant = TravelAuthPrimaryButtonVariant.ColorBackground,
     debounceInterval: Long = 1000L
 ) {
     val colors = variant.colors()
@@ -79,13 +79,13 @@ fun TravelAuthPrimaryButtonPreview() {
             TravelAuthPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = AuthPrimaryButtonVariant.ColorBackground,
+                variant = TravelAuthPrimaryButtonVariant.ColorBackground,
                 enabled = true
             )
             TravelAuthPrimaryButton(
                 text = "Button",
                 onClick = {},
-                variant = AuthPrimaryButtonVariant.ColorContent,
+                variant = TravelAuthPrimaryButtonVariant.ColorContent,
                 enabled = true
             )
         }

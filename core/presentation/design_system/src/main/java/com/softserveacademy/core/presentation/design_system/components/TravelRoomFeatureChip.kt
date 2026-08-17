@@ -12,27 +12,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
-import com.softserveacademy.core.presentation.design_system.theme.WifiIcon
 
 /**
  * A small chip-like component used for displaying room details or amenities with an optional icon.
  *
  * @param text The text to display inside the chip.
- * @param icon An optional [ImageVector] to display before the text.
+ * @param iconRes An optional drawable resource ID to display before the text.
  * @param modifier The modifier to be applied to the chip.
  * @param contentColor The color for the text and icon.
  * @param outlineColor The color for the chip border.
  */
 @Composable
-fun TravelAmenityChip(
+fun TravelRoomFeatureChip(
     text: String,
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
+    iconRes: Int? = null,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     outlineColor: Color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
 ) {
@@ -50,9 +50,9 @@ fun TravelAmenityChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)
     ) {
-        if (icon != null) {
+        if (iconRes != null) {
             Icon(
-                imageVector = icon,
+                painter = painterResource(id = iconRes),
                 contentDescription = null,
                 modifier = Modifier.size(TravelinDimens.IconSizeExtraSmall),
                 tint = contentColor
@@ -68,11 +68,11 @@ fun TravelAmenityChip(
 
 @Preview(showBackground = true)
 @Composable
-private fun TravelAmenityChipPreview() {
+private fun TravelRoomFeatureChipPreview() {
     Travelin2026ProjectLabTheme {
         Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TravelAmenityChip(text = "Free Wi-Fi", icon = WifiIcon)
-            TravelAmenityChip(
+            TravelRoomFeatureChip(text = "Free Wi-Fi", iconRes = R.drawable.ic_wifi)
+            TravelRoomFeatureChip(
                 text = "1-5 persons",
                 contentColor = MaterialTheme.colorScheme.secondary,
                 outlineColor = MaterialTheme.colorScheme.secondary

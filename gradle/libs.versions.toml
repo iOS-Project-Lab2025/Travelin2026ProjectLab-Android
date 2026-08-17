@@ -47,6 +47,7 @@ uiTestJunit4 = "1.11.4"
 maps-compose = "6.12.0"
 google-places = "5.3.0"
 secretsGradlePlugin = "2.0.1"
+foundation = "1.11.4"
 
 [libraries]
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
@@ -118,6 +119,7 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 ##Added for testing purpose
 [bundles]
