@@ -1,4 +1,4 @@
-package com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities
+package com.softserveacademy.core.presentation.design_system.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -14,21 +14,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.domain.model.Amenities
+import com.softserveacademy.core.presentation.design_system.components.util.mapToFeature
+import com.softserveacademy.core.presentation.design_system.model.FeatureUi
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 /**
- * A reusable component to display the services included in a hotel package.
+ * A reusable component to display the features included in a hotel package or tour.
  *
- * @param item The [Amenities] containing title, icon, and optional subtitle.
+ * @param feature The [FeatureUi] containing localized label and icon.
  * @param modifier The modifier to be applied to the component.
  */
 @Composable
-fun TravelIncludedItem(
-    item: Amenities,
+fun TravelFeatureChip(
+    feature: FeatureUi,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -47,7 +50,7 @@ fun TravelIncludedItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = item.icon,
+                painter = painterResource(id = feature.iconRes),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryFixed,
                 modifier = Modifier
@@ -58,7 +61,7 @@ fun TravelIncludedItem(
 
             Column {
                 Text(
-                    text = item.title,
+                    text = stringResource(id = feature.labelRes),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimaryFixed
                 )
@@ -69,8 +72,11 @@ fun TravelIncludedItem(
 
 @Preview(showBackground = true)
 @Composable
-private fun TravelHotelDetailScreenPreview() {
+private fun TravelFeatureChipPreview() {
     Travelin2026ProjectLabTheme(darkTheme = false) {
-        TravelIncludedItem(Amenities.BuffetBreakfast)
+        val sampleFeature = mapToFeature("hotel.breakfast")
+        if (sampleFeature != null) {
+            TravelFeatureChip(sampleFeature)
+        }
     }
 }

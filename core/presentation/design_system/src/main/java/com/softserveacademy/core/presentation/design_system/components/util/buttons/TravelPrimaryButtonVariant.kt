@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
  * - Neutral: This variant use the surface color as the background color.
  * - SecondaryAction: This variant use the background color as the background color.
 */
-enum class PrimaryButtonVariant {
+enum class TravelPrimaryButtonVariant {
     CallToAction,
     Neutral,
     SecondaryAction,
@@ -18,31 +18,31 @@ enum class PrimaryButtonVariant {
 
 /**
  * Returns the colors for the primary button variant.
- * @return The colors for the primary button variant as a [PrimaryButtonColors] object
+ * @return The colors for the primary button variant as a [TravelPrimaryButtonColors] object
  */
 @Composable
-internal fun PrimaryButtonVariant.colors(): PrimaryButtonColors {
+internal fun TravelPrimaryButtonVariant.colors(): TravelPrimaryButtonColors {
 
     return when (this) {
-        PrimaryButtonVariant.CallToAction ->
-            PrimaryButtonColors(
+        TravelPrimaryButtonVariant.CallToAction ->
+            TravelPrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             )
 
-        PrimaryButtonVariant.Neutral ->
-            PrimaryButtonColors(
+        TravelPrimaryButtonVariant.Neutral ->
+            TravelPrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             )
 
-        PrimaryButtonVariant.SecondaryAction ->
-            PrimaryButtonColors(
+        TravelPrimaryButtonVariant.SecondaryAction ->
+            TravelPrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.onBackground,
             )
-        PrimaryButtonVariant.BackToHome ->
-            PrimaryButtonColors(
+        TravelPrimaryButtonVariant.BackToHome ->
+            TravelPrimaryButtonColors(
                 containerColor = MaterialTheme.colorScheme.onPrimary,
                 contentColor = MaterialTheme.colorScheme.primary,
             )

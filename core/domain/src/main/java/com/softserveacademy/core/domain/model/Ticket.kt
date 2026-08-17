@@ -1,5 +1,8 @@
 package com.softserveacademy.core.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Ticket(
     val ticketNumber: String,
     val passengerName: String,
@@ -9,6 +12,7 @@ data class Ticket(
     val seatClass: SeatClass = SeatClass.ECONOMY
 )
 
+@Serializable
 enum class SeatClass {
     ECONOMY,
     PREMIUM_ECONOMY,

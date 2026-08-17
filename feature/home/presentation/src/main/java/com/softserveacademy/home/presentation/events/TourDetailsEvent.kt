@@ -12,4 +12,6 @@ sealed interface TourDetailsEvent {
     data object ViewFullMap : TourDetailsEvent
     data object ToggleDescription : TourDetailsEvent
     data object DismissMap : TourDetailsEvent
+    data object ViewAllAmenities : TourDetailsEvent
+    data object DismissAmenities : TourDetailsEvent
 }

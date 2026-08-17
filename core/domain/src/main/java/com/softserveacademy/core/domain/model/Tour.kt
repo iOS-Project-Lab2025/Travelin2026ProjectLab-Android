@@ -22,6 +22,10 @@ import kotlin.time.Duration
  * @property price Price per participant.
  * @property rating Average user rating of the tour.
  * @property category Category of the tour.
+ * @property numberOfReviews Number of reviews for the tour.
+ * @property includedServices List of included services.
+ * @property latitude Latitude coordinate of the tour's location.
+ * @property longitude Longitude coordinate of the tour's location.
  */
 @Serializable
 data class Tour(
@@ -40,6 +44,9 @@ data class Tour(
     val category: TourCategory = TourCategory.ADVENTURE,
     @SerialName("number_of_reviews")
     val numberOfReviews: Int = 0,
+    @SerialName("included_services")
+    @Serializable(with = FlexibleListSerializer::class)
+    val includedServices: List<String> = emptyList(),
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
 

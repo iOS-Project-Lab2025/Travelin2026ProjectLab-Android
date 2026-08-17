@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.HotelRoom
-import com.softserveacademy.core.domain.model.Amenities
 import com.softserveacademy.core.presentation.design_system.components.TravelHotelRoomCard
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -185,7 +184,7 @@ private fun HotelRoomSelectionScreenPreview() {
             maxOccupancy = 5,
             bedType = "1 King bed",
             bedCount = 1,
-            amenities = listOf(Amenities.BuffetBreakfast, Amenities.FreeWifi),
+            amenities = listOf("hotel.breakfast", "hotel.wifi"),
             pricePerNight = 150,
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
@@ -199,7 +198,7 @@ private fun HotelRoomSelectionScreenPreview() {
             maxOccupancy = 5,
             bedType = "1 Queen bed",
             bedCount = 1,
-            amenities = listOf(Amenities.BuffetBreakfast, Amenities.FreeWifi),
+            amenities = listOf("hotel.breakfast", "hotel.wifi"),
             pricePerNight = 150,
             images = listOf(
                 "https://picsum.photos/id/137/200/300",

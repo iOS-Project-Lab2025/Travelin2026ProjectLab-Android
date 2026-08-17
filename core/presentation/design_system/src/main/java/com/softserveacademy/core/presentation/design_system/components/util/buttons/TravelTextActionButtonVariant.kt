@@ -9,15 +9,15 @@ import androidx.compose.ui.graphics.Color
  * - Neutral: This variant use the onSurface color as the text color.
  * - CallToAction: This variant use the primary color as the text color.
  */
-enum class TextActionButtonVariant {
+enum class TravelTextActionButtonVariant {
     Neutral,
     CallToAction,
 }
 
 @Composable
-internal fun TextActionButtonVariant.color(): Color {
+internal fun TravelTextActionButtonVariant.color(): Color {
     return when (this) {
-        TextActionButtonVariant.Neutral -> MaterialTheme.colorScheme.onSurface
-        TextActionButtonVariant.CallToAction -> MaterialTheme.colorScheme.primary
+        TravelTextActionButtonVariant.Neutral -> MaterialTheme.colorScheme.onSurface
+        TravelTextActionButtonVariant.CallToAction -> MaterialTheme.colorScheme.primary
     }
 }

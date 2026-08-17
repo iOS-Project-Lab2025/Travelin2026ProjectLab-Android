@@ -28,7 +28,7 @@ import com.softserveacademy.core.presentation.design_system.components.AppPasswo
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.TravelAuthPrimaryButton
 import com.softserveacademy.core.presentation.design_system.components.TravelSocialButton
-import com.softserveacademy.core.presentation.design_system.components.util.buttons.AuthPrimaryButtonVariant
+import com.softserveacademy.core.presentation.design_system.components.util.buttons.TravelAuthPrimaryButtonVariant
 import com.softserveacademy.core.presentation.design_system.components.util.inputs.AppInputState
 import com.softserveacademy.core.presentation.design_system.theme.*
 
@@ -248,7 +248,7 @@ fun LoginContent(
             TravelAuthPrimaryButton(
                 text = stringResource(R.string.login_sign_up_button),
                 onClick = onNavigateToRegister,
-                variant = AuthPrimaryButtonVariant.ColorContent,
+                variant = TravelAuthPrimaryButtonVariant.ColorContent,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = TravelinDimens.PaddingLarge)

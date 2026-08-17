@@ -23,7 +23,7 @@ import com.softserveacademy.core.presentation.design_system.components.HotelGall
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPhotoViewer
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
-import com.softserveacademy.core.presentation.design_system.components.util.detailsScreenUtilities.TravelHotelDetailsTopIcons
+import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.TravelDetailsTopIcons
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
 
@@ -95,7 +95,7 @@ fun TravelHotelGalleryScreen(
             }
             
             // Reusing the top icons for consistency, primarily for the back button.
-            TravelHotelDetailsTopIcons(
+            TravelDetailsTopIcons(
                 onBackClick = {
                     if (isPhotoViewerOpen) {
                         isPhotoViewerOpen = false

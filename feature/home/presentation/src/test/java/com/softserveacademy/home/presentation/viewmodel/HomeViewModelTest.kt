@@ -7,6 +7,7 @@ import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
+import com.softserveacademy.core.domain.model.FlightContactInfo
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
@@ -70,7 +71,14 @@ class HomeViewModelTest {
         flights = listOf(flight),
         tickets = listOf(ticket),
         confirmationCode = "ABC123",
-        status = BookingStatus.COMPLETED
+        status = BookingStatus.COMPLETED,
+        totalAmount = 1500.0,
+        currencyCode = "USD",
+        contactInfo = FlightContactInfo(
+            email = "john@example.com",
+            phone = "123456789",
+            countryCode = "+56"
+        )
     )
 
     private val destination = Destination(

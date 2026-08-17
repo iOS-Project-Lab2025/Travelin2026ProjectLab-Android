@@ -12,5 +12,6 @@ data class TourDetailsState(
     val errorMessage: String? = null,
     val isDescriptionExpanded: Boolean = false,
     val isFavorite: Boolean = false,
-    val showFullMap: Boolean = false
+    val showFullMap: Boolean = false,
+    val showAllAmenities: Boolean = false
 ) : Serializable
