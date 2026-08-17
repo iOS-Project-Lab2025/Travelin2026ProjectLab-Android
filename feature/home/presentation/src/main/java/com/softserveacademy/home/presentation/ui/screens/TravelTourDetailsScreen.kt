@@ -60,6 +60,7 @@ fun TravelTourDetailsScreen(
     itemId: String,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
+    onBookClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: TourDetailsViewModel = hiltViewModel(),
 ){
@@ -94,6 +95,9 @@ fun TravelTourDetailsScreen(
                         }
                         val shareIntent = Intent.createChooser(sendIntent, shareTitle)
                         context.startActivity(shareIntent)
+                    }
+                    is TourDetailsEventEffect.NavigateToBooking -> {
+                        onBookClick(effect.tourId)
                     }
                 }
             }
@@ -144,6 +148,9 @@ fun TravelTourDetailsScreen(
                 },
                 onDismissMap = {
                     viewModel.onEvent(TourDetailsEvent.DismissMap)
+                },
+                onBookClick = {
+                    viewModel.onEvent(TourDetailsEvent.Book)
                 },
                 modifier = modifier
             )

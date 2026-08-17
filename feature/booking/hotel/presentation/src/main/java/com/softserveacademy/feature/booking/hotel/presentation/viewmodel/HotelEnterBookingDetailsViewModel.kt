@@ -83,6 +83,7 @@ class HotelEnterBookingDetailsViewModel @Inject constructor(
 
             is TravelEnterBookingDetailsEvent.OnAdultsCountChange -> onAdultsCountChange(event.count)
             is TravelEnterBookingDetailsEvent.OnChildrenCountChange -> onChildrenCountChange(event.count)
+            is TravelEnterBookingDetailsEvent.OnBabiesCountChange -> {}
             is TravelEnterBookingDetailsEvent.OnHasPetsChange -> onHasPetsChange(event.hasPets)
             TravelEnterBookingDetailsEvent.OnNextClick -> onNextClick()
             TravelEnterBookingDetailsEvent.OnBackClick -> { /* Handled by navigation */ }

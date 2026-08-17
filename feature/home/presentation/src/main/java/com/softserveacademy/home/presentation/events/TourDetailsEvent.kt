@@ -14,4 +14,5 @@ sealed interface TourDetailsEvent {
     data object DismissMap : TourDetailsEvent
     data object ViewAllAmenities : TourDetailsEvent
     data object DismissAmenities : TourDetailsEvent
+    data object Book : TourDetailsEvent
 }

@@ -22,6 +22,7 @@ data class TravelEnterBookingDetailsState(
     val endDateMillis: Long? = null,
     val adultsCount: Int = 1,
     val childrenCount: Int = 0,
+    val babiesCount: Int = 0,
     val hasPets: Boolean = false,
     val isDateErrorVisible: Boolean = false,
     val dateErrorMessage: Int? = null,
