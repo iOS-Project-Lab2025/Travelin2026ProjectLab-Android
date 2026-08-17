@@ -1,6 +1,14 @@
 package com.softserveacademy.home.data.repository
 
+import com.softserveacademy.core.domain.model.Destination
+import com.softserveacademy.core.domain.model.Flight
+import com.softserveacademy.core.domain.model.Airline
+import com.softserveacademy.core.domain.model.Airport
+import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.*
+import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.domain.repository.SearchRepository
@@ -8,51 +16,59 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 
-class SearchRepositoryImpl @Inject constructor() : SearchRepository {
+class SearchRepositoryImpl @Inject constructor(
+    private val hotelRepo: HotelRepo,
+    private val tourRepo: TourRepo,
+) : SearchRepository {
 
     override suspend fun search(
         query: String,
         filter: SearchFilter,
         location: String?
     ): Result<List<SearchItem>> {
-        // Simulamos un delay de red
-        kotlinx.coroutines.delay(1000.milliseconds)
+        // Obtenemos hoteles de la API si el filtro lo permite
+        val hotels = if (filter == SearchFilter.ALL || filter == SearchFilter.HOTELS) {
+            when (val result = hotelRepo.getHotels()) {
+                is AppResult.Success -> result.data.map { SearchItem.HotelItem(it) }
+                is AppResult.Failure -> emptyList()
+            }
+        } else emptyList()
 
-        val allItems = getMockData()
+        // Obtenemos tours de la API si el filtro lo permite
+        val tours = if (filter == SearchFilter.ALL || filter == SearchFilter.TOURS) {
+            when (val result = tourRepo.getTours()) {
+                is AppResult.Success -> result.data.map { SearchItem.TourItem(it) }
+                is AppResult.Failure -> emptyList()
+            }
+        } else emptyList()
 
-        // Filtramos por texto y por categoría
+        // Para vuelos y destinos, seguimos usando mocks por ahora
+        val otherItems = if (filter == SearchFilter.ALL || filter == SearchFilter.FLIGHTS || filter == SearchFilter.DESTINATIONS) {
+            getMockData().filter { 
+                (it is SearchItem.FlightItem && (filter == SearchFilter.ALL || filter == SearchFilter.FLIGHTS)) ||
+                (it is SearchItem.DestinationItem && (filter == SearchFilter.ALL || filter == SearchFilter.DESTINATIONS))
+            }
+        } else emptyList()
+
+        val allItems = hotels + tours + otherItems
+
+        // Filtramos por texto
         val filtered = allItems.filter { item ->
-            val matchesQuery = when (item) {
+            when (item) {
                 is SearchItem.HotelItem -> item.hotel.name.contains(query, ignoreCase = true) || item.hotel.address.contains(query, ignoreCase = true)
                 is SearchItem.FlightItem -> item.flight.destination.city.contains(query, ignoreCase = true) || item.flight.airline.name.contains(query, ignoreCase = true)
                 is SearchItem.TourItem -> item.tour.title.contains(query, ignoreCase = true) || item.tour.location.contains(query, ignoreCase = true)
                 is SearchItem.DestinationItem -> item.destination.name.contains(query, ignoreCase = true) || item.destination.location.contains(query, ignoreCase = true)
             }
-
-            val matchesFilter = when (filter) {
-                SearchFilter.ALL -> true
-                SearchFilter.HOTELS -> item is SearchItem.HotelItem
-                SearchFilter.FLIGHTS -> item is SearchItem.FlightItem
-                SearchFilter.TOURS -> item is SearchItem.TourItem
-                SearchFilter.DESTINATIONS -> item is SearchItem.DestinationItem
-            }
-
-            matchesQuery && matchesFilter
         }
 
         return Result.success(filtered)
     }
 
     private fun getMockData(): List<SearchItem> = listOf(
-        // Hotels
-        SearchItem.HotelItem(Hotel("1", "San Alfonso del Mar", "Algarrobo, Chile", 5, 4.8, 200, listOf("https://picsum.photos/id/164/400/300"))),
-        SearchItem.HotelItem(Hotel("2", "Icon Hotel", "Santiago, Chile", 4, 4.5, 120, listOf("https://picsum.photos/id/165/400/300"))),
-        SearchItem.HotelItem(Hotel("3", "The Ritz-Carlton", "Santiago, Chile", 5, 4.9, 350, listOf("https://picsum.photos/id/166/400/300"))),
-
-        // Tours
-        SearchItem.TourItem(Tour("t1", "Cajón del Maipo Trekking", "Full day trekking in the Andes", "San José de Maipo", listOf("https://picsum.photos/id/10/400/300"), 8.hours, 45.0, 4.8, TourCategory.ADVENTURE)),
-        SearchItem.TourItem(Tour("t2", "Wine Tasting Tour", "Visit 3 premium vineyards", "Valle de Casablanca", listOf("https://picsum.photos/id/11/400/300"), 6.hours, 65.0, 4.9, TourCategory.GASTRONOMY)),
-        SearchItem.TourItem(Tour("t3", "Valparaiso Walking Tour", "Graffiti and elevators", "Valparaíso", listOf("https://picsum.photos/id/12/400/300"), 3.hours, 25.0, 4.7, TourCategory.CULTURE)),
+        // Hotels (Solo mantenemos los que no vienen de la API si fuera necesario, pero aquí los quitamos para usar solo la API)
+        
+        // Tours (Solo mantenemos los que no vienen de la API)
 
         // Destinations
         SearchItem.DestinationItem(Destination("d1", "https://picsum.photos/id/13/400/300", "Torres del Paine", "Patagonia, Chile", 4.9, 1500.0, "USD", "5D4N")),
@@ -64,8 +80,6 @@ class SearchRepositoryImpl @Inject constructor() : SearchRepository {
         SearchItem.FlightItem(Flight("f2", Airline("H2", "SKY", ""), "H2101", Airport("SCL", "Santiago", "Santiago", "Chile"), Airport("LIM", "Jorge Chavez", "Lima", "Peru"), 0, 0, 3.hours, CabinClass.ECONOMY)),
 
         // More randoms to reach 15
-        SearchItem.HotelItem(Hotel("4", "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
-        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours, 30.0, 4.5, TourCategory.CITY)),
         SearchItem.DestinationItem(Destination("d4", "https://picsum.photos/id/17/400/300", "Pucón", "Araucanía, Chile", 4.7, 500.0, "USD", "3D2N"))
     )
 }

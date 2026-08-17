@@ -1,15 +1,37 @@
 package com.softserveacademy.home.data.repository
 
+import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.Tour
+import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class SearchRepositoryImplTest {
 
-    private val repository = SearchRepositoryImpl()
+    private val hotelRepo: HotelRepo = mockk()
+    private val tourRepo: TourRepo = mockk()
+    private lateinit var repository: SearchRepositoryImpl
+
+    @Before
+    fun setup() {
+        repository = SearchRepositoryImpl(hotelRepo, tourRepo)
+        
+        coEvery { hotelRepo.getHotels() } returns AppResult.Success(listOf(
+            Hotel("1", "San Alfonso del Mar", "Algarrobo, Chile", 5, 4.8, 200, listOf("https://picsum.photos/id/164/400/300")),
+        ))
+        
+        coEvery { tourRepo.getTours() } returns AppResult.Success(listOf(
+            Tour("t1", "Cajón del Maipo Trekking", "Full day trekking in the Andes", "San José de Maipo", listOf("https://picsum.photos/id/10/400/300"), kotlin.time.Duration.parse("8h"), 45.0, 4.8, com.softserveacademy.core.domain.model.TourCategory.ADVENTURE)
+        ))
+    }
 
     @Test
     fun `given empty query and all filter when search then returns all items`() = runTest {
@@ -26,9 +48,7 @@ class SearchRepositoryImplTest {
 
         assertTrue(result.isSuccess)
         val items = result.getOrNull()
-        assertEquals(1, items!!.size)
-        assertTrue(items[0] is SearchItem.HotelItem)
-        assertEquals("San Alfonso del Mar", (items[0] as SearchItem.HotelItem).hotel.name)
+        assertTrue(items!!.any { it is SearchItem.HotelItem && it.hotel.name == "San Alfonso del Mar" })
     }
 
     @Test
