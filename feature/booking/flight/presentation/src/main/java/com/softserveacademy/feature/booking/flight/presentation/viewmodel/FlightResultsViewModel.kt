@@ -116,30 +116,20 @@ class FlightResultsViewModel @Inject constructor(
             val draft = draftRepository.getDraft().filterNotNull().first()
             val currentSegment = draft.segments.getOrNull(draft.currentSelectingIndex) ?: draft.segments[0]
 
-            // Check if there's already a selection for this segment to restore UI state
-            val selectedId = draft.selectedOffers[draft.currentSelectingIndex]?.id
-
             _uiState.update { it.copy(
                 origin = currentSegment.origin,
                 destination = currentSegment.destination,
-                totalPassengers = draft.adults + draft.children + draft.infants,
-                selectedOfferId = selectedId,
+                totalPassengers = draft.passengerCounts.total,
                 currentSegmentIndex = draft.currentSelectingIndex,
                 totalSegments = draft.segments.size,
                 currencyCode = "USD", // Logic ready for future multi-currency support
                 exchangeRate = 1.0
             )}
 
-            val passengers = mapOf(
-                PassengerType.ADU to draft.adults,
-                PassengerType.CHD to draft.children,
-                PassengerType.INF to draft.infants
-            )
-
             searchFlightsUseCase(
                 origin = currentSegment.origin,
                 destination = currentSegment.destination,
-                passengerCounts = passengers,
+                passengerCounts = draft.passengerCounts,
                 cabinClass = draft.cabinClass,
                 departureDate = currentSegment.dateMillis,
                 returnDate = null // In this flow, we search segment by segment

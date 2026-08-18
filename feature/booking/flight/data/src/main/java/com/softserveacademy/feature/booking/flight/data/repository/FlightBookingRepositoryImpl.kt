@@ -1,6 +1,8 @@
 package com.softserveacademy.feature.booking.flight.data.repository
 
+import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.FlightBooking
+import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightBookingRepository
 import javax.inject.Inject
@@ -15,12 +17,33 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class FlightBookingRepositoryImpl @Inject constructor() : FlightBookingRepository {
 
-    /**
-     * Officializes a flight booking by saving it to the persistent storage.
-     */
-    override suspend fun saveBooking(booking: FlightBooking): AppResult<Unit> {
-        // Here is where you would call Supabase or your API Client
-        delay(1000.milliseconds) // Simulate network delay
-        return AppResult.Success(Unit)
+    override suspend fun saveBooking(booking: FlightBooking): AppResult<FlightBooking> {
+        delay(1500.milliseconds) // We simulate a network delay
+
+        // Simulation: Server generates official e-tickets
+        val issuedTickets = booking.passengers.flatMap { pax ->
+            booking.flights.map { flight ->
+                Ticket(
+                    ticketNumber = "TK-${(100000..999999).random()}",
+                    passengerName = "${pax.firstName} ${pax.lastName}",
+                    flightId = flight.id,
+                    flightNumber = flight.flightNumber,
+                    originCode = flight.origin.code,
+                    destinationCode = flight.destination.code,
+                    seatNumber = "${(1..30).random()}${('A'..'F').random()}",
+                    gate = "${('A'..'C').random()}${(1..20).random()}",
+                    boardingGroup = "Group ${(1..4).random()}",
+                    cabinClass = flight.cabinClass
+                )
+            }
+        }
+
+        // return the object enriched with tickets by API
+        val confirmedBooking = booking.copy(
+            tickets = issuedTickets,
+            status = BookingStatus.COMPLETED
+        )
+
+        return AppResult.Success(confirmedBooking)
     }
 }

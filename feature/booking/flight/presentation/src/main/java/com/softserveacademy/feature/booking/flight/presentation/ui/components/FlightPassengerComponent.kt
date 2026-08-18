@@ -10,7 +10,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.presentation.design_system.components.AppTextInput
 import com.softserveacademy.core.presentation.design_system.components.TravelPhoneNumberInput
@@ -147,10 +147,10 @@ fun PassengerFormItem(
  */
 @Composable
 fun ContactInfoSection(
-    contactInfo: FlightContactInfo,
+    contactInfo: BookingContactInfo,
     error: ContactError?,
     enabled: Boolean = true,
-    onChanged: (FlightContactInfo) -> Unit
+    onChanged: (BookingContactInfo) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().alpha(if (enabled) 1f else 0.5f), // Gray out if disabled
@@ -174,11 +174,11 @@ fun ContactInfoSection(
             TravelPhoneNumberInput(
                 countryCode = contactInfo.countryCode.ifBlank { "+56" },
                 onCountryCodeChange = { if (enabled) onChanged(contactInfo.copy(countryCode = it)) },
-                phoneNumber = contactInfo.phone,
+                phoneNumber = contactInfo.phoneNumber,
                 onPhoneNumberChange = { newValue ->
                     if (enabled) {
                         val digitsOnly = newValue.filter { it.isDigit() }
-                        onChanged(contactInfo.copy(phone = digitsOnly))
+                        onChanged(contactInfo.copy(phoneNumber = digitsOnly))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

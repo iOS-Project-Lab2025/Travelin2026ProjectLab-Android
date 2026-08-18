@@ -22,7 +22,7 @@ class FlightRepositoryImpl @Inject constructor(
     override fun searchFlights(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>,
+        passengerCounts: PassengerCounts,
         cabinClass: CabinClass,
         departureDate: Long?,
         returnDate: Long?
