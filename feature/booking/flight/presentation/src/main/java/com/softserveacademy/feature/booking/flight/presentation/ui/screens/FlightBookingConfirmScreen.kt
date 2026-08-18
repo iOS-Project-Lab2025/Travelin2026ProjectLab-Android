@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.*
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
@@ -214,7 +215,7 @@ fun FlightBookingConfirmContent(
                                 text = stringResource(
                                     R.string.flight_confirm_price_breakdown_format,
                                     state.currency,
-                                    pricePerTicket,
+                                    formatPrice(pricePerTicket.toDouble()),
                                     totalPax
                                 ),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -239,7 +240,7 @@ fun FlightBookingConfirmContent(
  * Clean Bottom Bar showing only the Currency and Total Price.
  */
 @Composable
-private fun FlightBookingConfirmBottomBar(totalPrice: Int, currency: String, isLoading: Boolean, onConfirm: () -> Unit) {
+private fun FlightBookingConfirmBottomBar(totalPrice: Double, currency: String, isLoading: Boolean, onConfirm: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shadowElevation = 8.dp,
@@ -254,7 +255,7 @@ private fun FlightBookingConfirmBottomBar(totalPrice: Int, currency: String, isL
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.flight_confirm_total_price_label), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
-                    text = "$currency $totalPrice",
+                    text = "$currency ${formatPrice(totalPrice)}",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
@@ -302,7 +303,7 @@ fun FlightBookingConfirmPreview() {
     com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             FlightBookingConfirmContent(
-                state = FlightBookingConfirmState(isLoading = false, draft = mockDraft, totalPrice = 900, currency = "USD"),
+                state = FlightBookingConfirmState(isLoading = false, draft = mockDraft, totalPrice = 900.0, currency = "USD"),
                 onBack = {},
                 onConfirm = {},
                 onSimulateSuccess = {},

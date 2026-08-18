@@ -26,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.maps.model.LatLng
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Poi
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
@@ -231,7 +232,7 @@ private fun TravelHotelDetailsWrapper(
             bottomBar = {
                 Surface(shadowElevation = TravelinDimens.ElevationLarge) {
                     TravelDetailsBottomBar(
-                        price = "$${hotel.pricePerNight}",
+                        price = "$${formatPrice(hotel.pricePerNight)}",
                         onBookClick = onBookClick
                     )
                 }

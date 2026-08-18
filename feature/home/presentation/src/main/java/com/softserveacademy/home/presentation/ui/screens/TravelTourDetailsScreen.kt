@@ -23,6 +23,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.maps.model.LatLng
 import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.domain.model.Tour
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.core.presentation.design_system.components.HotelDetailLoading
 import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
@@ -205,7 +206,7 @@ private fun TravelTourDetailsWrapper(
             bottomBar = {
                 Surface(shadowElevation = TravelinDimens.ElevationLarge) {
                     TravelDetailsBottomBar(
-                        price = "$${tour.rates.adults}",
+                        price = "$${formatPrice(tour.rates.adults)}",
                         onBookClick = onBookClick
                     )
                 }

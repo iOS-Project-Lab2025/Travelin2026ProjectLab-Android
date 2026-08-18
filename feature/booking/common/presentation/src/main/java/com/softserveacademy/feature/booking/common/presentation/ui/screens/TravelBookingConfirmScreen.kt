@@ -13,6 +13,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -111,7 +112,7 @@ fun TravelBookingConfirmBottomBar(
                         fontWeight = FontWeight.Bold,
                     )
                 ) {
-                    append(" $$totalPrice")
+                    append(" $${formatPrice(totalPrice)}")
                 }
             }
 

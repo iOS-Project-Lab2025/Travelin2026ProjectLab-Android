@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.presentation.design_system.R
 import com.softserveacademy.core.domain.model.HotelRoom
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.util.mapToFeature
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -140,14 +141,14 @@ fun TravelHotelRoomCard(
                         verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall)
                     ) {
                         Text( // Per night price
-                            text = "$${room.pricePerNight}/night",
+                            text = "$${formatPrice(room.pricePerNight)}/night",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             // Total price
-                            text = "Total $${room.pricePerNight * nightCount}",
+                            text = "Total $${formatPrice(room.pricePerNight * nightCount)}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )

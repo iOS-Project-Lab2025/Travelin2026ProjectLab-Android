@@ -20,7 +20,7 @@ fun formatCurrency(price: Double, rate: Double): String {
     // 2. Apply international standard formatting (thousands with commas)
     val formatter = NumberFormat.getNumberInstance(Locale.US).apply {
         maximumFractionDigits = 2
-        minimumFractionDigits = 0
+        minimumFractionDigits = if (converted % 1.0 == 0.0) 0 else 2
     }
 
     return formatter.format(converted)

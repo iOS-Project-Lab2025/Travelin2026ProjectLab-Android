@@ -98,7 +98,7 @@ class FlightBookingConfirmViewModelTest {
 
         val state = viewModel.uiState.value
         // Expectation: 100.0 base * 3 pax = 300
-        assertEquals("Total price calculation is inaccurate", 300, state.totalPrice)
+        assertEquals("Total price calculation is inaccurate", 300.0, state.totalPrice, 0.0)
         assertEquals("Currency should default to USD", "USD", state.currency)
     }
 
