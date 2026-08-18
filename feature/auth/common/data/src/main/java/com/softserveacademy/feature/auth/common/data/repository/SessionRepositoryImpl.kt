@@ -49,12 +49,20 @@ class SessionRepositoryImpl(
                             wasAuthenticated = false
                         }
                     }
-                    else -> {}
+                    is SessionStatus.Initializing -> {
+                        // Wait for initialization to complete
+                    }
+                    is SessionStatus.RefreshFailure -> {
+                        if (wasAuthenticated) {
+                            clearTokens()
+                            wasAuthenticated = false
+                        }
+                    }
                 }
             }
             .launchIn(scope)
 
-        // Restore session from DataStore on startup
+        // Restore session from DataStore on startup and verify
         scope.launch {
             try {
                 val prefs = dataStore.data.first()
@@ -71,10 +79,14 @@ class SessionRepositoryImpl(
                             user = null
                         )
                     )
+                    // Verify session with server to catch revoked tokens early
+                    try {
+                        supabase.auth.retrieveUserForCurrentSession(updateSession = true)
+                    } catch (_: Exception) {
+                        // Verification failed, Supabase will flip to NotAuthenticated
+                    }
                 }
-            } catch (e: Exception) {
-                // If restoration fails, we don't clear tokens immediately to avoid 
-                // race conditions; the sessionStatus listener will handle it if needed.
+            } catch (_: Exception) {
             }
         }
     }
@@ -84,11 +96,13 @@ class SessionRepositoryImpl(
             dataStore.data.map { preferences ->
                 !preferences[ACCESS_TOKEN].isNullOrBlank()
             },
-            supabase.auth.sessionStatus.map { it is SessionStatus.Authenticated }
-        ) { dataStoreAuthenticated, supabaseAuthenticated ->
-            // Robust check: both local storage and Supabase must agree.
-            // This ensures immediate UI logout when DataStore is cleared.
-            dataStoreAuthenticated && supabaseAuthenticated
+            supabase.auth.sessionStatus
+        ) { dataStoreAuthenticated, status ->
+            when (status) {
+                is SessionStatus.Authenticated -> dataStoreAuthenticated
+                is SessionStatus.Initializing -> dataStoreAuthenticated
+                else -> false
+            }
         }.distinctUntilChanged()
     }
 

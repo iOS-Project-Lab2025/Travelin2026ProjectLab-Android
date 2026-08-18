@@ -80,12 +80,26 @@ fun NavigationRoot(
     registerViewModel: RegisterViewModel,
     forgotPasswordViewModel: ForgotPasswordViewModel
 ) {
-
-    LaunchedEffect(isLoggedIn) {
-        if (!isLoggedIn && !isFirstTime) {
-            navController.navigate(Routes.AuthGraph) {
-                popUpTo(0) { inclusive = true }
-                launchSingleTop = true
+    // Global navigation listener for authentication state
+    LaunchedEffect(isLoggedIn, isFirstTime) {
+        if (!isFirstTime) {
+            if (isLoggedIn) {
+                // If we're authenticated but not in the MainGraph, move there.
+                // We check if the current destination is null or within AuthGraph.
+                val currentRoute = navController.currentDestination?.route
+                if (currentRoute == null || currentRoute.contains("AuthGraph") || currentRoute.contains("LoginScreen")) {
+                    navController.navigate(Routes.MainGraph) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            } else {
+                // If we're NOT authenticated but not in the AuthGraph, move there.
+                val currentRoute = navController.currentDestination?.route
+                if (currentRoute != null && !currentRoute.contains("AuthGraph")) {
+                    navController.navigate(Routes.AuthGraph) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             }
         }
     }
