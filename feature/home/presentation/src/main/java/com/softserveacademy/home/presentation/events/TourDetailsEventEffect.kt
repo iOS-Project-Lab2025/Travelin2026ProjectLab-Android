@@ -9,4 +9,5 @@ sealed interface TourDetailsEventEffect {
     data object NavigateBack : TourDetailsEventEffect
     data class ShareTour(val tour: Tour) : TourDetailsEventEffect
     data class NavigateToGallery(val imageList: List<String>) : TourDetailsEventEffect
+    data class NavigateToBooking(val tourId: String) : TourDetailsEventEffect
 }

@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.countries
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.TravelBookingContactInfoCard
-import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.feature.booking.hotel.presentation.R
 import com.softserveacademy.core.presentation.design_system.R as coreR
 
@@ -286,7 +286,7 @@ fun HotelBookingConfirmPreview() {
         roomId = "1",
         checkIn = 1782115200000L, // Thursday, July 23, 2026
         checkOut = 1782374400000L, // Sunday, July 26, 2026
-        contactInfo = ContactInfo(
+        contactInfo = BookingContactInfo(
             firstName = "John",
             lastName = "Doe",
             email = "john.doe@gmail.com",

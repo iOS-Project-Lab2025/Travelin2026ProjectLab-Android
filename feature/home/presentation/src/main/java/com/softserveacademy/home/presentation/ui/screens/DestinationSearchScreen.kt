@@ -260,7 +260,7 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     title = item.tour.title,
                     location = item.tour.location,
                     image = item.tour.imageList.firstOrNull(),
-                    price = "${item.tour.price}",
+                    price = "${item.tour.rates.adults}",
                     rating = item.tour.rating,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
                 )

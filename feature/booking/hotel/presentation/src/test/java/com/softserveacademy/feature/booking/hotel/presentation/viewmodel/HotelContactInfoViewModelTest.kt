@@ -1,7 +1,7 @@
 package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
@@ -74,7 +74,7 @@ class HotelContactInfoViewModelTest {
     fun `loads draft data on initialization`() = runTest {
         val draft = HotelBookingDraft(
             hotelId = hotelId,
-            contactInfo = ContactInfo(
+            contactInfo = BookingContactInfo(
                 firstName = "John",
                 lastName = "Doe",
                 email = "john@example.com",

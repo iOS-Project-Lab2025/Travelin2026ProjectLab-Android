@@ -111,6 +111,6 @@ fun Trip.toTripDetailUi(): TripDetailUi {
                 confirmationCode = h.confirmationCode
             )
         },
-        tourInfo = tours?.firstOrNull()?.let { "${it.tour.title} - ${it.tour.location}" }
+        tourInfo = tours?.firstOrNull()?.let { "Tour ID: ${it.tourId}" }
     )
 }

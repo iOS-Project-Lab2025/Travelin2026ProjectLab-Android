@@ -2,7 +2,6 @@ package com.softserveacademy.core.data.repository
 
 import com.softserveacademy.core.data.api.HotelApiService
 import com.softserveacademy.core.domain.model.Hotel
-import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.domain.repository.HotelRepo
 import com.softserveacademy.core.error.mapper.ExceptionMapper
@@ -31,9 +30,5 @@ class HotelRepoImpl @Inject constructor(
     override suspend fun getHotelRooms(hotelId: String): AppResult<List<HotelRoom>> = safeCall(mapper) {
         val hotel = hotelApiService.getHotelById(hotelId)
         hotel.rooms
-    }
-
-    override suspend fun getBookings(): List<HotelBooking> {
-        return hotelApiService.getAllBookings()
     }
 }

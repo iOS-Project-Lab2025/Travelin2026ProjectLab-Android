@@ -147,7 +147,7 @@ class HomeViewModel @Inject constructor(
         imageUrl = imageList.firstOrNull(),
         location = location,
         rating = rating,
-        price = "$ $price",
+        rates = rates,
         duration = formatDuration(duration)
     )
 
