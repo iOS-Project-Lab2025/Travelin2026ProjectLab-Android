@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.usecase.tour.GetTourDetailsUseCase
-import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
+import com.softserveacademy.feature.booking.tour.presentation.R as tourBookingR
 import com.softserveacademy.feature.booking.common.presentation.R
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.tour.presentation.events.TourEnterBookingDetailsEvent
@@ -108,8 +108,9 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
         } else if (startDate != null && tourDuration != Duration.ZERO) {
             // Fix the date to ensure it is within the tour duration
             val dateRangeDuration = if (endDateCorrected != null) endDateCorrected - startDate else 0L
-            if (dateRangeDuration != tourDuration.toLong(DurationUnit.MILLISECONDS)){
-                endDateCorrected = startDate + (tourDuration - Duration.parse("PT24H")).toLong(DurationUnit.MILLISECONDS)
+            val tourDurationWithoutStart = if (tourDuration != Duration.ZERO) tourDuration - Duration.parse("PT24H") else Duration.ZERO
+            if (dateRangeDuration != tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)){
+                endDateCorrected = startDate + tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)
             }
         }
         _uiState.update { it.copy(screenState = it.screenState.copy(startDateMillis = startDate, endDateMillis = endDateCorrected, isDateErrorVisible = false)) }
@@ -132,7 +133,16 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
     private fun onNextClick() {
         val dateResult = validateEnterBookingDetailsUseCase.validateDates(uiState.value.screenState.startDateMillis, uiState.value.screenState.endDateMillis)
         if (dateResult is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid) {
-            _uiState.update { it.copy(screenState = it.screenState.copy(isDateErrorVisible = true, dateErrorMessage = R.string.booking_error_select_dates)) }
+            _uiState.update { it.copy(screenState = it.screenState.copy(isDateErrorVisible = true, dateErrorMessage = tourBookingR.string.error_select_dates)) }
+            return
+        }
+        val durationResult = validateEnterBookingDetailsUseCase.validateDatesDuration(
+            uiState.value.screenState.startDateMillis,
+            uiState.value.screenState.endDateMillis,
+            if (singleDateSelection) tourDuration else tourDuration - Duration.parse("PT24H")
+        )
+        if (durationResult is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid) {
+            _uiState.update { it.copy(screenState = it.screenState.copy(isDateErrorVisible = true, dateErrorMessage = tourBookingR.string.error_dates_duration)) }
             return
         }
         _uiState.update { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = true)) }
@@ -164,7 +174,7 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun resetValidationStatus() {
-        // No-op for now, matched hotel implementation but we use SharedFlow
+    fun resetValidationStatus(){
+        // Reset the validation status
     }
 }

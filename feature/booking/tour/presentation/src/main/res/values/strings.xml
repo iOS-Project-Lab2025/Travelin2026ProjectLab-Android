@@ -8,6 +8,9 @@
     <string name="infants_label">Infants</string>
     <string name="infants_subtitle">0 – 2 years</string>
 
+    <string name="error_select_dates">Please select the start and end dates</string>
+    <string name="error_dates_duration">Please select the dates within the tour duration</string>
+
     <string name="contact_info_subtitle">Who is taking the tour?</string>
 
     <string name="booking_confirm_participants_format">%1$d adults, %2$d children, %3$d infants</string>
