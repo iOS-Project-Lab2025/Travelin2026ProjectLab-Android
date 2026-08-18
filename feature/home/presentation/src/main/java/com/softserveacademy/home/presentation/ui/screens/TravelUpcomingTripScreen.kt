@@ -3,10 +3,8 @@ package com.softserveacademy.home.presentation.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,32 +19,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Airline
 import com.softserveacademy.core.domain.model.Airport
 import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.BookingGuests
-import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.BookingParticipants
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
 import com.softserveacademy.core.domain.model.HotelBooking
+import com.softserveacademy.core.domain.model.HotelBookingPrice
 import com.softserveacademy.core.domain.model.Ticket
-import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
+import com.softserveacademy.core.domain.model.TourBookingPrice
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
-import com.softserveacademy.core.presentation.design_system.theme.AngleLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
-import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.home.presentation.model.toTripDetailUi
 import com.softserveacademy.home.presentation.state.SectionState
 import com.softserveacademy.home.presentation.state.UpcomingTripState
 import com.softserveacademy.core.presentation.ui.components.TravelNavigationBar
-import com.softserveacademy.home.presentation.ui.components.TravelBackground
 import com.softserveacademy.home.presentation.ui.components.TravelTripDetailContent
 import com.softserveacademy.home.presentation.viewmodel.UpcomingTripViewModel
 import kotlin.time.Duration.Companion.hours
@@ -239,7 +234,7 @@ private fun TravelUpcomingTripScreenPreview() {
             checkIn = parseMillis("yyyy-MM-dd", "2024-11-23"),
             checkOut = parseMillis("yyyy-MM-dd", "2024-11-28"),
             guests = BookingGuests(adults = 2),
-            price = BookingPrice(ratePerNight = 100, roomSubtotal = 500, taxes = 0, fees = 0, total = 500),
+            price = HotelBookingPrice(ratePerNight = 100, roomSubtotal = 500, taxes = 0, fees = 0, total = 500),
             status = BookingStatus.COMPLETED,
             confirmationCode = "HOTEL456",
             createdAt = parseMillis("yyyy-MM-dd", "2024-11-01"),
@@ -248,11 +243,21 @@ private fun TravelUpcomingTripScreenPreview() {
         tours = listOf(
             TourBooking(
                 bookingId = "TB-001",
-                tour = Tour(id = "tour_001", title = "Bali Cultural Dance", location = "Ubud, Bali"),
-                date = parseMillis("yyyy-MM-dd", "2024-11-24"),
-                participants = 2,
+                userId = "user_001",
+                tourId = "tour_001",
+                startDate = parseMillis("yyyy-MM-dd", "2024-11-24"),
+                endDate = parseMillis("yyyy-MM-dd", "2024-11-24"),
+                participants = BookingParticipants(adults = 2),
+                price = TourBookingPrice(
+                    ratePerAdult = 50.0,
+                    ratePerChildren = 0.0,
+                    ratePerInfant = 0.0,
+                    subtotal = 100,
+                    total = 100
+                ),
                 confirmationCode = "TOUR789",
-                status = BookingStatus.COMPLETED
+                status = BookingStatus.COMPLETED,
+                createdAt = parseMillis("yyyy-MM-dd", "2024-11-01")
             )
         )
     )
