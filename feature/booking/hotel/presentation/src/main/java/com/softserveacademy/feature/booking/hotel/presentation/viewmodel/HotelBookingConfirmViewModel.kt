@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.BookingGuests
-import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.HotelBookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.feature.booking.common.domain.usecase.CreatePaymentIntentUseCase
@@ -92,11 +92,11 @@ class HotelBookingConfirmViewModel @Inject constructor(
                                 is UiText.Raw -> uiText.value
                                 is UiText.Resource -> "Failed to load booking details."
                             }
-                        } else "Failed to load details"
+                        } else "Failed to load booking details"
                         _uiState.update { it.copy(isLoading = false, error = message) }
                     }
             } else {
-                _uiState.update { it.copy(isLoading = false, error = "No booking draft found") }
+                _uiState.update { it.copy(isLoading = false, error = "Failed to load booking details") }
             }
         }
     }
@@ -110,7 +110,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 cancelBooking()
             }
             HotelBookingConfirmEvent.OnPaymentSuccess -> {
-                // Finalize booking after successful payment
                 finalizeBooking()
             }
             HotelBookingConfirmEvent.OnPaymentReset -> {
@@ -215,17 +214,11 @@ class HotelBookingConfirmViewModel @Inject constructor(
     }
 
     private fun finalizeBooking() {
-        val state = _uiState.value
-        val hotelId = state.hotel?.id
-        val roomId = state.selectedRoom?.id
-        val checkIn = state.bookingDraft?.checkIn ?: 0L
-        val checkOut = state.bookingDraft?.checkOut ?: 0L
-
         viewModelScope.launch {
             currentBookingId?.let { id ->
                 updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
             }
-            clearHotelBookingDraftUseCase(hotelId.toString())
+            clearHotelBookingDraftUseCase(hotelId)
             _uiState.update { it.copy(isPaymentSuccessful = true) }
         }
     }
@@ -245,7 +238,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
         return HotelBooking(
             bookingId = currentBookingId ?: UUID.randomUUID().toString(),
             userId = deviceId,
-            //userId = "testing",
             hotelId = hotelDetails.id,
             roomId = room.id ?: "",
             checkIn = draft.checkIn ?: 0L,
@@ -255,7 +247,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 children = draft.guests.children,
                 pets = draft.guests.pets
             ),
-            price = BookingPrice(
+            price = HotelBookingPrice(
                 ratePerNight = room.pricePerNight,
                 roomSubtotal = state.totalPrice,
                 taxes = 0,

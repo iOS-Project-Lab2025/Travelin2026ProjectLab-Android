@@ -148,7 +148,7 @@ fun TravelListScreen(
                                 address = tour.location
                                 rating = tour.rating.toInt() // TODO: Stars and user rating it's different, maybe make new cards?
                                 ratingText = tour.rating.toString()
-                                price = tour.price
+                                price = "$ ${tour.rates.adults}"
                                 priceSuffix = null
                                 imageUrl = tour.imageUrl ?: ""
                             }

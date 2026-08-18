@@ -19,7 +19,7 @@ import kotlin.time.Duration
  * @property location Location where the tour takes place.
  * @property imageList List of URLs for the tour's images.
  * @property duration Estimated duration of the tour.
- * @property price Price per participant.
+ * @property rates Rate per participant (adults, children, infants).
  * @property rating Average user rating of the tour.
  * @property category Category of the tour.
  * @property numberOfReviews Number of reviews for the tour.
@@ -39,7 +39,7 @@ data class Tour(
     val imageList: List<String> = emptyList(),
     @Serializable(with = DurationSerializer::class)
     val duration: Duration = Duration.ZERO,
-    val price: Double = 0.0,
+    val rates: RatePerParticipant = RatePerParticipant(),
     val rating: Double = 0.0,
     val category: TourCategory = TourCategory.ADVENTURE,
     @SerialName("number_of_reviews")
@@ -74,3 +74,17 @@ enum class TourCategory {
     CITY,
     FAMILY
 }
+
+/**
+ * Represents the rate per participant for a tour.
+ *
+ * @property adults The rate for adults.
+ * @property children The rate for children.
+ * @property infants The rate for infants.
+ */
+@Serializable
+data class RatePerParticipant(
+    val adults: Double = 0.0,
+    val children: Double = 0.0,
+    val infants: Double = 0.0
+)

@@ -1,7 +1,6 @@
 package com.softserveacademy.core.domain.repository
 
 import com.softserveacademy.core.domain.model.Hotel
-import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.model.HotelRoom
 import com.softserveacademy.core.error.model.AppResult
 
@@ -30,10 +29,4 @@ interface HotelRepo{
      * @return A list of rooms for the hotel.
      */
     suspend fun getHotelRooms(hotelId: String): AppResult<List<HotelRoom>>
-
-    /**
-     * Get all bookings register.
-     * @return A list of bookings.
-     */
-    suspend fun getBookings(): List<HotelBooking>
 }

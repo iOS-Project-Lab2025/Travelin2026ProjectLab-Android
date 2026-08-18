@@ -16,15 +16,15 @@ interface HotelApiService {
     @GET("hotels/{id}/")
     suspend fun getHotelById(@Path("id") id: String): Hotel
 
-    @POST("bookings/")
+    @POST("bookings/hotels")
     suspend fun createBooking(
         @Body booking: HotelBooking
     )
 
-    @GET("bookings/")
+    @GET("bookings/hotels")
     suspend fun getAllBookings(): List<HotelBooking>
 
-    @PUT("bookings/{id}/status")
+    @PUT("bookings/hotels/{id}/status")
     suspend fun updateBookingStatus(
         @Path("id") bookingId: String,
         @Body request: UpdateBookingStatusRequest

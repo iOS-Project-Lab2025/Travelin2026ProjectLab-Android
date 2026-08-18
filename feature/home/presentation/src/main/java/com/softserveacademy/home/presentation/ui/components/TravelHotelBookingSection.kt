@@ -38,7 +38,7 @@ fun TravelHotelBookingSection(hotel: HotelInfoUi) {
         Card(
             shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
             elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(TravelinDimens.PaddingMedium)) {

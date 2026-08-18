@@ -2,6 +2,7 @@ package com.softserveacademy.core.domain.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.io.Serializable as JavaSerializable
 
 /**
  * Generic model for contact information across all booking types (Hotel, Flight, Tours).
@@ -23,4 +24,4 @@ data class BookingContactInfo(
     val countryCode: String = "",
     @SerialName("phone_number")
     val phoneNumber: String = ""
-)
+) : JavaSerializable

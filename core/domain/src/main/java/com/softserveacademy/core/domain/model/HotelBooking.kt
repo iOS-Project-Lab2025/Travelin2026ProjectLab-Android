@@ -25,6 +25,7 @@ import kotlinx.serialization.Serializable
 data class HotelBooking(
     @SerialName("booking_id")
     val bookingId: String,
+    @SerialName("user_id")
     val userId: String? = null,
     @SerialName("hotel_id")
     val hotelId: String,
@@ -35,7 +36,7 @@ data class HotelBooking(
     @SerialName("check_out")
     val checkOut: Long,
     val guests: BookingGuests,
-    val price: BookingPrice,
+    val price: HotelBookingPrice,
     val status: BookingStatus,
     @SerialName("confirmation_code")
     val confirmationCode: String,
@@ -69,7 +70,7 @@ data class BookingGuests(
  * @property total The final total price including taxes and fees.
  */
 @Serializable
-data class BookingPrice(
+data class HotelBookingPrice(
     @SerialName("rate_per_night")
     val ratePerNight: Int,
     @SerialName("room_subtotal")
@@ -78,4 +79,3 @@ data class BookingPrice(
     val fees: Int = 0,
     val total: Int
 )
-
