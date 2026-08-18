@@ -3,7 +3,6 @@ package com.softserveacademy.home.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.usecase.GetAreaDescriptionUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyPlacesUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyRestaurantsUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
@@ -21,17 +20,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.onFailure
-import kotlin.onSuccess
 
 @HiltViewModel
 class HotelDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getHotelDetailsUseCase: GetHotelDetailsUseCase,
     private val getNearbyPlacesUseCase: GetNearbyPlacesUseCase,
-    private val getAreaDescriptionUseCase: GetAreaDescriptionUseCase,
     private val getNearbyTransportUseCase: GetNearbyTransportUseCase,
     private val getNearbyRestaurantsUseCase: GetNearbyRestaurantsUseCase
 ) : ViewModel() {
@@ -94,6 +91,11 @@ class HotelDetailsViewModel @Inject constructor(
             HotelDetailsEvent.DismissExploreArea -> {
                 updateState { it.copy(showExploreArea = false) }
             }
+            HotelDetailsEvent.RetryPois -> {
+                _hotelDetailsState.value.hotel?.let {
+                    loadNearbyPlaces(it.latitude, it.longitude)
+                }
+            }
         }
     }
 
@@ -119,7 +121,6 @@ class HotelDetailsViewModel @Inject constructor(
                 .onFailure { error ->
                     updateState { currentState ->
                         if (currentState.hotel != null) {
-                            // If we already have hotel data, don't show a full screen error
                             currentState.copy(isLoading = false)
                         } else {
                             val message = when (error) {
@@ -136,44 +137,55 @@ class HotelDetailsViewModel @Inject constructor(
 
     private fun loadNearbyPlaces(latitude: Double, longitude: Double) {
         viewModelScope.launch {
-            getNearbyPlacesUseCase(latitude, longitude)
-                .onSuccess { pois ->
-                    updateState { currentState ->
-                        currentState.copy(
-                            hotel = currentState.hotel?.copy(nearbyPlaces = pois)
-                        )
-                    }
+            updateState { it.copy(isPoiLoading = true, poiErrorMessage = null) }
+            
+            val placesDeferred = async {
+                getNearbyPlacesUseCase(latitude, longitude, 10)
+            }
+            val transportDeferred = async {
+                getNearbyTransportUseCase(latitude, longitude, 3)
+            }
+            val restaurantsDeferred = async {
+                getNearbyRestaurantsUseCase(latitude, longitude, 3)
+            }
+
+            val placesResult = placesDeferred.await()
+            val transportResult = transportDeferred.await()
+            val restaurantsResult = restaurantsDeferred.await()
+
+            var errorMessage: String? = null
+            
+            placesResult.onSuccess { pois ->
+                updateState { currentState ->
+                    currentState.copy(
+                        hotel = currentState.hotel?.copy(nearbyPlaces = pois)
+                    )
                 }
-                .onFailure { error ->
-                    android.util.Log.e("HotelDetailsViewModel", "Error loading nearby places", error)
-                }
+            }.onFailure { error ->
+                errorMessage = mapPoiError(error)
+            }
+
+            transportResult.onSuccess { transport ->
+                updateState { it.copy(nearbyTransport = transport) }
+            }.onFailure { error ->
+                if (errorMessage == null) errorMessage = mapPoiError(error)
+            }
+
+            restaurantsResult.onSuccess { restaurants ->
+                updateState { it.copy(nearbyRestaurants = restaurants) }
+            }.onFailure { error ->
+                if (errorMessage == null) errorMessage = mapPoiError(error)
+            }
+
+            updateState { it.copy(isPoiLoading = false, poiErrorMessage = errorMessage) }
         }
+    }
 
-
-        viewModelScope.launch {
-            getAreaDescriptionUseCase(latitude, longitude)
-                .onSuccess { description ->
-                    updateState { it.copy(areaDescription = description ?: "This area is known for its beautiful scenery and historical landmarks.") }
-                }
-                .onFailure { error ->
-                    android.util.Log.e("HotelDetailsViewModel", "Error loading area description", error)
-                }
-        }
-
-
-        viewModelScope.launch {
-            getNearbyTransportUseCase(latitude, longitude)
-                .onSuccess { transport ->
-                    updateState { it.copy(nearbyTransport = transport) }
-                }
-        }
-
-
-        viewModelScope.launch {
-            getNearbyRestaurantsUseCase(latitude, longitude)
-                .onSuccess { restaurants ->
-                    updateState { it.copy(nearbyRestaurants = restaurants) }
-                }
+    private fun mapPoiError(error: AppError): String {
+        return when (error) {
+            is AppError.Network.NoConnection -> "No internet connection. Please check your network."
+            is AppError.Network.Timeout -> "Connection timed out. Please try again."
+            else -> "Failed to load nearby places"
         }
     }
 

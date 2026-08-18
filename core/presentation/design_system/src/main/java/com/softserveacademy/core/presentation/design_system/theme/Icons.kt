@@ -52,6 +52,10 @@ val CleaningServicesIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_cleaning_services)
 
+val CloseIcon : ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_close)
+
 val DotsMenuIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.ic_dots_menu)

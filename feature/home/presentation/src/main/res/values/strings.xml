@@ -36,4 +36,8 @@
     <string name="share_tour_title">Share Tour</string>
     <string name="share_tour_message">Check out %1$s on Travelin! \n https://travelin.softserveacademy.com/tour%2$s</string>
 
+    <!-- Error and Loading -->
+    <string name="retry_label">Retry</string>
+    <string name="no_nearby_places_found">No nearby places found</string>
+
 </resources>
