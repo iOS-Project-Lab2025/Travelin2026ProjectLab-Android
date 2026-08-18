@@ -1,6 +1,6 @@
 package com.softserveacademy.feature.booking.flight.domain.usecase
 
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.feature.booking.flight.domain.model.PassengerFieldError
@@ -66,7 +66,7 @@ class ValidateFlightPassengerInfoUseCaseTest {
 
         val passenger = FlightPassenger(
             firstName = "John", lastName = "Doe",
-            passengerType = PassengerType.ADU, // Adult
+            passengerType = PassengerType.ADT, // Adult
             birthDateMillis = calendar.timeInMillis
         )
 
@@ -97,7 +97,7 @@ class ValidateFlightPassengerInfoUseCaseTest {
      */
     @Test
     fun `when email format is invalid, should return INVALID_FORMAT in contact error`() {
-        val contact = FlightContactInfo(email = "invalid-email-at-domain.com")
+        val contact = BookingContactInfo(email = "invalid-email-at-domain.com")
         val result = useCase.validate(emptyList(), contact)
 
         assertEquals(PassengerFieldError.INVALID_FORMAT, result.contactError?.emailError)
@@ -112,10 +112,10 @@ class ValidateFlightPassengerInfoUseCaseTest {
         val passenger = FlightPassenger(
             firstName = "John", lastName = "Doe",
             documentNumber = "123456789",
-            passengerType = PassengerType.ADU,
+            passengerType = PassengerType.ADT,
             birthDateMillis = adultCalendar.timeInMillis
         )
-        val contact = FlightContactInfo(email = "john@doe.com", phone = "12345678")
+        val contact = BookingContactInfo(email = "john@doe.com", phoneNumber = "12345678")
 
         val result = useCase.validate(listOf(passenger), contact)
         assertTrue("Form should be valid", result.isValid)

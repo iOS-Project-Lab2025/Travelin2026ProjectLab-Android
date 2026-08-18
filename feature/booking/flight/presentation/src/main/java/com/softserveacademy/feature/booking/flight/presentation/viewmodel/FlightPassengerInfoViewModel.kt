@@ -2,7 +2,7 @@ package com.softserveacademy.feature.booking.flight.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft
@@ -42,7 +42,7 @@ class FlightPassengerInfoViewModel @Inject constructor(
 
             _uiState.update { it.copy(
                 passengers = initialPassengers,
-                contactInfo = draft.contactInfo ?: FlightContactInfo(),
+                contactInfo = draft.contactInfo ?: BookingContactInfo(),
                 isLoading = false
             )}
         }
@@ -116,14 +116,25 @@ class FlightPassengerInfoViewModel @Inject constructor(
     private fun saveAndFinish() {
         viewModelScope.launch {
             val state = _uiState.value
+            // data cleaning to
             val sanitizedPassengers = state.passengers.map { pax ->
                 pax.copy(
-                    firstName = pax.firstName.trim().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } },
-                    lastName = pax.lastName.trim().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+                    firstName = pax.firstName.trim().lowercase().split(" ")
+                        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } },
+                    lastName = pax.lastName.trim().lowercase().split(" ")
+                        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
                 )
             }
-            val draft = draftRepository.getDraft().filterNotNull().first()
-            draftRepository.saveDraft(draft.copy(passengers = sanitizedPassengers, contactInfo = state.contactInfo))
+
+            // get back existent draft to not lose flights and counters
+            val currentDraft = draftRepository.getDraft().filterNotNull().first()
+
+            // save the draft updated with checkout data
+            draftRepository.saveDraft(currentDraft.copy(
+                passengers = sanitizedPassengers,
+                contactInfo = state.contactInfo
+            ))
+
             _navigationEvent.emit(Unit)
         }
     }
@@ -138,9 +149,9 @@ class FlightPassengerInfoViewModel @Inject constructor(
 
     private fun generateEmptyPassengerList(draft: FlightBookingDraft): List<FlightPassenger> {
         val list = mutableListOf<FlightPassenger>()
-        repeat(draft.adults) { list.add(FlightPassenger(passengerType = PassengerType.ADU)) }
-        repeat(draft.children) { list.add(FlightPassenger(passengerType = PassengerType.CHD)) }
-        repeat(draft.infants) { list.add(FlightPassenger(passengerType = PassengerType.INF)) }
+        repeat(draft.passengerCounts.adults) { list.add(FlightPassenger(passengerType = PassengerType.ADT)) }
+        repeat(draft.passengerCounts.children) { list.add(FlightPassenger(passengerType = PassengerType.CHD)) }
+        repeat(draft.passengerCounts.infants) { list.add(FlightPassenger(passengerType = PassengerType.INF)) }
         return list
     }
 }

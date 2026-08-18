@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightOffer
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -56,7 +56,8 @@ fun SummaryInfoCard(
  */
 @Composable
 fun FlightTicketSummaryCard(offer: FlightOffer, currencyCode: String) {
-    FlightResultItem(offer = offer, isSelected = true, currencyCode = currencyCode, onClick = {})
+    FlightResultItem(offer = offer, isSelected = false, currencyCode = currencyCode, onClick = {})
+
 }
 
 /**
@@ -92,7 +93,7 @@ fun PassengerSummaryCard(passengers: List<FlightPassenger>) {
  * Read-only Contact Card matching the design system style.
  */
 @Composable
-fun ContactSummaryCard(contact: FlightContactInfo) {
+fun ContactSummaryCard(contact: BookingContactInfo) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -102,7 +103,7 @@ fun ContactSummaryCard(contact: FlightContactInfo) {
             Text(text = "Contact Information", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
             ReadOnlyField(label = "Email", value = contact.email)
-            ReadOnlyField(label = "Phone", value = "${contact.countryCode} ${contact.phone}")
+            ReadOnlyField(label = "Phone", value = "${contact.countryCode} ${contact.phoneNumber}")
         }
     }
 }

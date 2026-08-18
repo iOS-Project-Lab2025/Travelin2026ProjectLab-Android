@@ -9,9 +9,10 @@ import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
+import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelBooking
-import com.softserveacademy.core.domain.model.SeatClass
+import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
@@ -148,6 +149,7 @@ object HomeMockData {
         flights = listOf(
             FlightBooking(
                 bookingId = "flight_booking_001",
+                userId = "user_123",
                 flights = listOf(
                     Flight(
                         id = "flight_001",
@@ -200,33 +202,52 @@ object HomeMockData {
                         cabinClass = CabinClass.ECONOMY
                     )
                 ),
+                passengers = listOf(
+                    FlightPassenger(firstName = "John", lastName = "Doe", passengerType = com.softserveacademy.core.domain.model.PassengerType.ADT),
+                    FlightPassenger(
+                        firstName = "Jane",
+                        lastName = "Doe",
+                        passengerType = PassengerType.ADT
+                    )
+                ),
                 tickets = listOf(
                     Ticket(
                         ticketNumber = "TK-987654321",
                         passengerName = "John Doe",
+                        flightId = "11",
+                        flightNumber = "LA500",
+                        originCode = "SCL",
+                        destinationCode = "CDG",
                         seatNumber = "12A",
                         gate = "B15",
                         boardingGroup = "Group 2",
-                        seatClass = SeatClass.ECONOMY
+                        cabinClass = CabinClass.ECONOMY
                     ),
                     Ticket(
                         ticketNumber = "TK-987654322",
                         passengerName = "Jane Doe",
+                        flightId = "12",
+                        flightNumber = "LA500",
+                        originCode = "SCL",
+                        destinationCode = "CDG",
                         seatNumber = "12B",
                         gate = "B15",
                         boardingGroup = "Group 2",
-                        seatClass = SeatClass.ECONOMY
+                        cabinClass = CabinClass.ECONOMY
                     )
                 ),
                 confirmationCode = "ABC123",
                 status = BookingStatus.COMPLETED,
                 totalAmount = 900.0,
                 currencyCode = "USD",
-                contactInfo = com.softserveacademy.core.domain.model.FlightContactInfo(
+                contactInfo = com.softserveacademy.core.domain.model.BookingContactInfo(
+                    firstName = "John",
+                    lastName = "Doe",
                     email = "john.doe@travelin.com",
-                    phone = "987654321",
+                    phoneNumber = "987654321",
                     countryCode = "+56"
-                )
+                ),
+                createdAt = dateTimeLong(2026, 7, 31, 10, 0)
             )
         ),
 
