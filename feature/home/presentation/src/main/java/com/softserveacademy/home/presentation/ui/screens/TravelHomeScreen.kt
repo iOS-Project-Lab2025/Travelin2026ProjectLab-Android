@@ -152,8 +152,8 @@ fun TravelHomeScreen(
 ) {
     val userProfile = (state.userProfile as? SectionState.Success)?.data
     val upcomingTrip = (state.upcomingTrip as? SectionState.Success)?.data
-    val tours = (state.journeyTogether as? SectionState.Success)?.data ?: emptyList()
-    val hotels = (state.hotelsRecommended as? SectionState.Success)?.data ?: emptyList()
+    val tours = (state.journeyTogether as? SectionState.Success)?.data?.take(5) ?: emptyList()
+    val hotels = (state.hotelsRecommended as? SectionState.Success)?.data?.take(5) ?: emptyList()
 
     val isToursLoading = state.journeyTogether is SectionState.Loading
     val isHotelsLoading = state.hotelsRecommended is SectionState.Loading
@@ -332,7 +332,7 @@ fun TravelHomeScreen(
                                             address = hotel.address,
                                             starRating = hotel.starCategory,
                                             ratingText = "${hotel.starCategory}-star hotel",
-                                            price = "$50",// TODO: Get this value from the minimum of the list of room prices (with the respective currency)
+                                            price = "\$${hotel.pricePerNight}",
                                             priceSuffix = "/night",
                                             imageUrl = hotel.imageList.firstOrNull() ?: ""
                                         )

@@ -159,6 +159,11 @@ fun TravelHotelDetailScreen(
                 areaDescription = hotelDetailState.areaDescription,
                 nearbyTransport = hotelDetailState.nearbyTransport,
                 nearbyRestaurants = hotelDetailState.nearbyRestaurants,
+                isPoiLoading = hotelDetailState.isPoiLoading,
+                poiErrorMessage = hotelDetailState.poiErrorMessage,
+                onRetryPois = {
+                    viewModel.onEvent(HotelDetailsEvent.RetryPois)
+                },
                 onDismissExploreArea = {
                     viewModel.onEvent(HotelDetailsEvent.DismissExploreArea)
                 },
@@ -216,6 +221,9 @@ private fun TravelHotelDetailsWrapper(
     areaDescription: String? = null,
     nearbyTransport: List<Poi> = emptyList(),
     nearbyRestaurants: List<Poi> = emptyList(),
+    isPoiLoading: Boolean = false,
+    poiErrorMessage: String? = null,
+    onRetryPois: () -> Unit = {},
     onDismissExploreArea: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -223,8 +231,7 @@ private fun TravelHotelDetailsWrapper(
             bottomBar = {
                 Surface(shadowElevation = TravelinDimens.ElevationLarge) {
                     TravelDetailsBottomBar(
-                        // TODO: Get this value from the minimum of the list of room prices (with the respective currency)
-                        price = "$400",
+                        price = "$${hotel.pricePerNight}",
                         onBookClick = onBookClick
                     )
                 }
@@ -275,6 +282,9 @@ private fun TravelHotelDetailsWrapper(
                 item {
                     NearbyPlacesSection(
                         nearbyPlaces = hotel.nearbyPlaces,
+                        isLoading = isPoiLoading,
+                        errorMessage = poiErrorMessage,
+                        onRetry = onRetryPois,
                         onSeeMoreClick = onSeeMoreNearbyClick
                     )
                     Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
@@ -304,6 +314,9 @@ private fun TravelHotelDetailsWrapper(
                 areaDescription = areaDescription,
                 nearbyTransport = nearbyTransport,
                 nearbyRestaurants = nearbyRestaurants,
+                isLoading = isPoiLoading,
+                errorMessage = poiErrorMessage,
+                onRetry = onRetryPois,
                 onDismiss = onDismissExploreArea
             )
         }
@@ -353,7 +366,10 @@ private fun TravelHotelDetailsWrapperPreview() {
                 latitude = 1.35,
                 longitude = 103.87
             ),
-            isDarkTheme = false
+            isDarkTheme = false,
+            isPoiLoading = false,
+            poiErrorMessage = null,
+            onRetryPois = {}
         )
     }
 }

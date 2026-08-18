@@ -438,6 +438,7 @@ fun ResultsList(
                     location = item.hotel.address,
                     image = item.hotel.imageList.firstOrNull(),
                     price = "500", // TODO: change for minimum price from rooms
+                    price = "$\$item.hotel.pricePerNight",
                     rating = item.hotel.reviewRating,
                     ratingText = item.hotel.limitedReviews,
                     onClick = { onItemClick(item.hotel.id, TravelItemType.HOTEL) }

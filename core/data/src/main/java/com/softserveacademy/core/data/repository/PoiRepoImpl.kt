@@ -51,9 +51,6 @@ class PoiRepoImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : PoiRepo {
 
-    var searchRadius = 5000.0
-    var maxPoiSearch = 10
-
     private val apiKey: String by lazy {
         try {
             val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
@@ -75,7 +72,9 @@ class PoiRepoImpl @Inject constructor(
         latitude: Double,
         longitude: Double,
         radius: Double?
+        requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
+
         val fields = listOf(
             Place.Field.DISPLAY_NAME,
             Place.Field.TYPES,
@@ -117,27 +116,23 @@ class PoiRepoImpl @Inject constructor(
         mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
     }
 
-    /**
-     * Fetches an editorial summary of the area from the most prominent nearby place.
-     *
-     * @param latitude The latitude of the center point.
-     * @param longitude The longitude of the center point.
-     * @return [AppResult] containing the area description string or null.
-     */
-    override suspend fun getAreaDescription(
-        latitude: Double,
-        longitude: Double
-    ): AppResult<String?> = safeCall(mapper) {
-        val fields = listOf(Place.Field.EDITORIAL_SUMMARY, Place.Field.DISPLAY_NAME, Place.Field.TYPES)
+        val excludedTypes = listOf("condominium_complex", "lodging", "real_estate_agency")
+
         val places = fetchPlaces(
             latitude,
             longitude,
-            10000.0,
-            20,
-            listOf("tourist_attraction", "museum", "park", "art_gallery"),
+            5000.0,
+            requestNumber,
+            listOf("tourist_attraction", "museum", "park"),
+            excludedTypes,
             fields
         )
-        places.firstOrNull { !it.editorialSummary.isNullOrEmpty() }?.editorialSummary
+
+        if (places.isEmpty()) return@safeCall emptyList()
+
+        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
+
+        mapPlacesToPois(places, routeMatrix, "walk")
     }
 
     /**
@@ -149,19 +144,40 @@ class PoiRepoImpl @Inject constructor(
      */
     override suspend fun getNearbyTransport(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
-        val fields = listOf(Place.Field.DISPLAY_NAME, Place.Field.TYPES, Place.Field.LOCATION)
+
+        val fields = listOf(
+            Place.Field.DISPLAY_NAME,
+            Place.Field.TYPES,
+            Place.Field.LOCATION,
+            Place.Field.PHOTO_METADATAS,
+            Place.Field.EDITORIAL_SUMMARY
+        )
+
         val types = listOf("bus_station", "train_station", "transit_station", "airport")
-        val places = fetchPlaces(latitude, longitude, 20000.0, 3, types, fields)
+
+        val places = fetchPlaces(
+            latitude,
+            longitude,
+            20000.0,
+            requestNumber,
+            types,
+            emptyList(),
+            fields
+        )
         if (places.isEmpty()) return@safeCall emptyList()
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places, "DRIVE")
         mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
+
+        mapPlacesToPois(places, routeMatrix, "drive")
+
     }
 
     /**
-     * Fetches nearby restaurants, cafes, and bars.
+     * Fetches nearby restaurants, cafés, and bars.
      *
      * @param latitude The latitude of the center point.
      * @param longitude The longitude of the center point.
@@ -169,24 +185,44 @@ class PoiRepoImpl @Inject constructor(
      */
     override suspend fun getNearbyRestaurants(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
-        val fields = listOf(Place.Field.DISPLAY_NAME, Place.Field.TYPES, Place.Field.LOCATION, Place.Field.PHOTO_METADATAS)
-        val places = fetchPlaces(latitude, longitude, searchRadius, 3, listOf("restaurant", "cafe", "bar"), fields)
+        val fields = listOf(
+            Place.Field.DISPLAY_NAME,
+            Place.Field.TYPES,
+            Place.Field.LOCATION,
+            Place.Field.PHOTO_METADATAS,
+            Place.Field.EDITORIAL_SUMMARY
+        )
+
+        val places = fetchPlaces(
+            latitude,
+            longitude,
+            5000.0,
+            requestNumber,
+            listOf("restaurant", "cafe"),
+            listOf("hair_salon","hotel","night_club"),
+            fields
+        )
+        
         if (places.isEmpty()) return@safeCall emptyList()
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
         mapPlacesToPois(latitude, longitude, places, routeMatrix, "walk")
+
+        mapPlacesToPois(places, routeMatrix, "walk")
     }
 
     /**
-     * Internal helper to fetch places using the Google Places SDK.
+     * Fetch places using the Google Places SDK.
      *
      * @param lat Center latitude.
      * @param lng Center longitude.
      * @param radius Search radius in meters.
      * @param maxResults Maximum number of results to return.
-     * @param types List of place types to include in the search.
+     * @param includedTypes List of place types to include in the search.
+     * @param excludedTypes List of place types to exclude from the search.
      * @param fields List of [Place.Field] to populate in the results.
      * @return A list of [Place] objects.
      */
@@ -195,12 +231,14 @@ class PoiRepoImpl @Inject constructor(
         lng: Double,
         radius: Double,
         maxResults: Int,
-        types: List<String>,
+        includedTypes: List<String>,
+        excludedTypes: List<String> = emptyList(),
         fields: List<Place.Field>
     ): List<Place> {
         val circle = CircularBounds.newInstance(LatLng(lat, lng), radius)
         val request = SearchNearbyRequest.builder(circle, fields)
-            .setIncludedTypes(types)
+            .setIncludedTypes(includedTypes)
+            .setExcludedTypes(excludedTypes)
             .setMaxResultCount(maxResults)
             .build()
         return placesClient.searchNearby(request).await().places
