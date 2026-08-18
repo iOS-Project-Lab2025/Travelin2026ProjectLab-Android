@@ -11,10 +11,7 @@ import javax.inject.Inject
 class GetNearbyPlacesUseCase @Inject constructor(
     private val poiRepo: PoiRepo
 ) {
-    suspend operator fun invoke(latitude: Double, longitude: Double): Result<List<Poi>> {
-        return when (val result = poiRepo.getNearbyPlaces(latitude, longitude)) {
-            is AppResult.Success -> Result.success(result.data)
-            is AppResult.Failure -> Result.failure(Exception("Failed to load nearby places: ${result.error}"))
-        }
+    suspend operator fun invoke(latitude: Double, longitude: Double, requestNumber: Int): AppResult<List<Poi>> {
+        return poiRepo.getNearbyPlaces(latitude, longitude, requestNumber)
     }
 }

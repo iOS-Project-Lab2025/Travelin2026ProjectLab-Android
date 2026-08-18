@@ -1,6 +1,7 @@
 package com.softserveacademy.home.presentation.ui.components.detailsScreenComponents
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,22 +18,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import com.softserveacademy.core.domain.model.Poi
 import com.softserveacademy.home.presentation.R
+import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
+import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelOutlinedButton
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.LocationMarkerIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import androidx.compose.ui.tooling.preview.Preview
 import com.softserveacademy.core.presentation.design_system.components.TravelImageHandler
+import com.softserveacademy.core.presentation.design_system.components.TravelPoiDialog
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelIcon
 import com.softserveacademy.core.presentation.design_system.theme.BusIcon
 import com.softserveacademy.core.presentation.design_system.theme.CarIcon
@@ -45,13 +54,27 @@ import com.softserveacademy.core.presentation.design_system.theme.Travelin2026Pr
  * Displays a section showing important or touristic places near the destination.
  *
  * @param nearbyPlaces List of nearby places to display.
+ * @param isLoading Whether POI data is currently loading.
+ * @param errorMessage Optional error message if loading failed.
+ * @param onRetry Callback to retry loading POI data.
  * @param onSeeMoreClick Callback when the "See more" button is clicked.
  */
 @Composable
 fun NearbyPlacesSection(
     nearbyPlaces: List<Poi>,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
+    onRetry: () -> Unit = {},
     onSeeMoreClick: () -> Unit
 ) {
+    var selectedPoi by remember { mutableStateOf<Poi?>(null) }
+
+    if (selectedPoi != null) {
+        TravelPoiDialog(
+            poi = selectedPoi!!,
+            onDismiss = { selectedPoi = null }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -66,58 +89,94 @@ fun NearbyPlacesSection(
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
-        nearbyPlaces.take(5).forEach { place ->
-            Row(
+        if (isLoading) {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = TravelinDimens.PaddingSmall),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .height(300.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    TravelIcon(LocationMarkerIcon)
-
-                    Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
-
-                    Column {
-                        Text(
-                            text = place.name,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = place.type,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                TravelPoiLoading()
+            }
+        } else if (errorMessage != null) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
-                    text = place.travelTime,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    text = errorMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
+
+                TravelOutlinedButton(
+                    text = stringResource(id = R.string.retry_label),
+                    onClick = onRetry
                 )
             }
-        }
-
-
-        Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
-
-        TravelOutlinedButton(
-            text = stringResource(id = R.string.see_more_nearby_places),
-            onClick = onSeeMoreClick,
-            contentPadding = PaddingValues(
-                horizontal = TravelinDimens.PaddingLarge,
-                vertical = TravelinDimens.PaddingSmall
+        } else if (nearbyPlaces.isEmpty()) {
+            Text(
+                text = stringResource(id = R.string.no_nearby_places_found),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        )
+        } else {
+            nearbyPlaces.take(5).forEach { place ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { selectedPoi = place }
+                        .padding(vertical = TravelinDimens.PaddingSmall),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
+                        TravelIcon(LocationMarkerIcon)
+
+                        Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
+
+                        Column {
+                            Text(
+                                text = place.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = place.type,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    Text(
+                        text = place.travelTime,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
+
+            TravelOutlinedButton(
+                text = stringResource(id = R.string.see_more_nearby_places),
+                onClick = onSeeMoreClick,
+                contentPadding = PaddingValues(
+                    horizontal = TravelinDimens.PaddingLarge,
+                    vertical = TravelinDimens.PaddingSmall
+                )
+            )
+        }
     }
 }
 
@@ -128,6 +187,9 @@ fun NearbyPlacesSection(
  * @param areaDescription Description of the area.
  * @param nearbyTransport List of nearby transport options.
  * @param nearbyRestaurants List of nearby restaurants.
+ * @param isLoading Whether POI data is currently loading.
+ * @param errorMessage Optional error message if loading failed.
+ * @param onRetry Callback to retry loading POI data.
  * @param onDismiss Callback to close the overlay.
  */
 @Composable
@@ -136,9 +198,21 @@ fun ExploreAreaOverlay(
     areaDescription: String?,
     nearbyTransport: List<Poi> = emptyList(),
     nearbyRestaurants: List<Poi> = emptyList(),
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
+    onRetry: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     BackHandler(onBack = onDismiss)
+
+    var selectedPoi by remember { mutableStateOf<Poi?>(null) }
+
+    if (selectedPoi != null) {
+        TravelPoiDialog(
+            poi = selectedPoi!!,
+            onDismiss = { selectedPoi = null }
+        )
+    }
 
     Surface(
         modifier = Modifier
@@ -149,12 +223,15 @@ fun ExploreAreaOverlay(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = TravelinDimens.PaddingLarge)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = TravelinDimens.PaddingSmall),
+                    .padding(
+                        top = TravelinDimens.PaddingSmall,
+                        start = TravelinDimens.PaddingLarge,
+                        end = TravelinDimens.PaddingLarge
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 TravelArrowIconButton(
@@ -173,37 +250,63 @@ fun ExploreAreaOverlay(
 
             Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
 
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)
-            ) {
-                if (nearbyPlaces.isNotEmpty()) {
-                    item {
-                        PoiImages(nearbyPlaces)
+            if (isLoading) {
+                TravelLoadingScreen(
+                    modifier = Modifier.weight(1f)
+                )
+            } else if (errorMessage != null) {
+                TravelErrorScreen(
+                    message = errorMessage,
+                    onRetry = onRetry,
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = TravelinDimens.PaddingLarge),
+                    verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceLarge)
+                ) {
+                    if (nearbyPlaces.isNotEmpty()) {
+                        item {
+                            PoiImages(
+                                nearbyPlaces = nearbyPlaces,
+                                onPoiClick = { selectedPoi = it }
+                            )
+                        }
                     }
-                }
 
-                if (areaDescription != null) {
-                    item {
-                        DescriptionAreaSection(areaDescription)
+                    if (areaDescription != null) {
+                        item {
+                            DescriptionAreaSection(areaDescription)
+                        }
                     }
-                }
 
-                if (nearbyPlaces.isNotEmpty()) {
-                    item {
-                        NearbyPoiSection(nearbyPlaces)
+                    if (nearbyPlaces.isNotEmpty()) {
+                        item {
+                            NearbyPoiSection(
+                                nearbyPlaces = nearbyPlaces,
+                                onPoiClick = { selectedPoi = it }
+                            )
+                        }
                     }
-                }
 
-                if (nearbyTransport.isNotEmpty()) {
-                    item {
-                        GettingAroundSection(nearbyTransport)
+                    if (nearbyTransport.isNotEmpty()) {
+                        item {
+                            GettingAroundSection(
+                                nearbyTransport = nearbyTransport,
+                                onPoiClick = { selectedPoi = it }
+                            )
+                        }
                     }
-                }
 
-                if (nearbyRestaurants.isNotEmpty()) {
-                    item {
-                        NearbyRestaurantsList(nearbyRestaurants)
+                    if (nearbyRestaurants.isNotEmpty()) {
+                        item {
+                            NearbyRestaurantsList(
+                                nearbyRestaurants = nearbyRestaurants,
+                                onPoiClick = { selectedPoi = it }
+                            )
+                        }
                     }
                 }
             }
@@ -214,17 +317,21 @@ fun ExploreAreaOverlay(
  * Displays a grid of images for nearby places.
  *
  * @param nearbyPlaces List of nearby places to display.
+ * @param onPoiClick Callback when a POI is clicked.
  */
 @Composable
 private fun PoiImages(
-    nearbyPlaces : List<Poi>
-){
-    Column {
+    nearbyPlaces: List<Poi>,
+    onPoiClick: (Poi) -> Unit
+) {
+    Column(
+        modifier = Modifier.clickable { onPoiClick(nearbyPlaces[0]) }
+    ) {
         TravelImageHandler(
             image = nearbyPlaces[0].imageUrl,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(TravelinDimens.ImageSizeExtraLarge,)
+                .height(TravelinDimens.ImageSizeExtraLarge)
         )
 
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
@@ -252,13 +359,17 @@ private fun PoiImages(
                 horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
             ) {
                 rowItems.forEach { place ->
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onPoiClick(place) }
+                    ) {
 
                         TravelImageHandler(
                             image = place.imageUrl,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(TravelinDimens.ImageSizeMedium,)
+                                .height(TravelinDimens.ImageSizeMedium)
                         )
 
                         Spacer(modifier = Modifier.height(TravelinDimens.SpaceExtraSmall))
@@ -310,11 +421,13 @@ private fun DescriptionAreaSection(
  * Displays a list of nearby points of interest.
  *
  * @param nearbyPlaces List of nearby places.
+ * @param onPoiClick Callback when a POI is clicked.
  */
 @Composable
 private fun NearbyPoiSection(
-    nearbyPlaces : List<Poi>
-){
+    nearbyPlaces: List<Poi>,
+    onPoiClick: (Poi) -> Unit
+) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
@@ -336,6 +449,8 @@ private fun NearbyPoiSection(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onPoiClick(place) }
                     .padding(
                         vertical = TravelinDimens.SpaceExtraSmall,
                         horizontal = TravelinDimens.SpaceSmall + TravelinDimens.IconSizeSmall
@@ -349,12 +464,14 @@ private fun NearbyPoiSection(
  * Displays transport options in the area.
  *
  * @param nearbyTransport List of nearby transport options.
+ * @param onPoiClick Callback when a transport POI is clicked.
  */
 @Composable
 private fun GettingAroundSection(
-    nearbyTransport : List<Poi>
-){
-    Column{
+    nearbyTransport: List<Poi>,
+    onPoiClick: (Poi) -> Unit
+) {
+    Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
             TravelIcon(CarIcon)
@@ -373,14 +490,17 @@ private fun GettingAroundSection(
         nearbyTransport.forEach { transport ->
             val icon = when {
                 transport.type.contains("bus", true) -> BusIcon
-                transport.type.contains("train", true) || transport.type.contains("transit", true) -> TrainIcon
+                transport.type.contains("train", true)
+                        || transport.type.contains("transit", true)
+                        || transport.type.contains("subway", true)    -> TrainIcon
                 transport.type.contains("airport", true) -> PlaneIcon
                 else -> BusIcon
             }
             TransportItem(
                 icon = icon,
                 name = transport.name,
-                time = transport.travelTime
+                time = transport.travelTime,
+                onClick = { onPoiClick(transport) }
             )
         }
     }
@@ -389,16 +509,19 @@ private fun GettingAroundSection(
  * Displays a list of nearby restaurants.
  *
  * @param nearbyRestaurants List of nearby restaurants.
+ * @param onPoiClick Callback when a restaurant is clicked.
  */
 @Composable
 private fun NearbyRestaurantsList(
-    nearbyRestaurants : List<Poi>
-){
+    nearbyRestaurants: List<Poi>,
+    onPoiClick: (Poi) -> Unit
+) {
     Column(
         modifier = Modifier
-        .padding(
-            bottom = TravelinDimens.PaddingLarge
-        ))
+            .padding(
+                bottom = TravelinDimens.PaddingLarge
+            )
+    )
     {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -414,12 +537,14 @@ private fun NearbyRestaurantsList(
         }
         Spacer(modifier = Modifier.height(TravelinDimens.SpaceSmall))
 
-        nearbyRestaurants.forEach { restaurant ->
+        nearbyRestaurants.take(3).forEach { restaurant ->
             Text(
                 text = "${restaurant.name} - ${restaurant.travelTime}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onPoiClick(restaurant) }
                     .padding(
                         vertical = TravelinDimens.SpaceExtraSmall,
                         horizontal = TravelinDimens.SpaceSmall + TravelinDimens.IconSizeSmall
@@ -436,12 +561,19 @@ private fun NearbyRestaurantsList(
  * @param icon Icon for the transport type.
  * @param name Name of the transport hub.
  * @param time Travel time.
+ * @param onClick Callback when the transport item is clicked.
  */
 @Composable
-private fun TransportItem(icon: ImageVector, name: String, time: String) {
+private fun TransportItem(
+    icon: ImageVector,
+    name: String,
+    time: String,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(
                 vertical = TravelinDimens.SpaceExtraSmall,
                 horizontal = TravelinDimens.SpaceSmall + TravelinDimens.IconSizeSmall
@@ -452,7 +584,11 @@ private fun TransportItem(icon: ImageVector, name: String, time: String) {
 
         Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
 
-        Text(text = "$name - $time", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = "$name - $time",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
