@@ -36,7 +36,7 @@ class HotelBookingPrice(BaseSchema):
 
 class HotelBooking(BaseSchema):
     booking_id: str = Field(alias="booking_id")
-    user_id: Optional[str] = Field(None, alias="userId")
+    user_id: str = Field(None, alias="user_id")
     hotel_id: str = Field(alias="hotel_id")
     room_id: str = Field(alias="room_id")
     check_in: int = Field(alias="check_in")

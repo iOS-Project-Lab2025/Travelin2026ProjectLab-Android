@@ -25,6 +25,7 @@ import kotlinx.serialization.Serializable
 data class HotelBooking(
     @SerialName("booking_id")
     val bookingId: String,
+    @SerialName("user_id")
     val userId: String? = null,
     @SerialName("hotel_id")
     val hotelId: String,
