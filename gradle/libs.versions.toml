@@ -41,6 +41,11 @@ uiToolingPreview = "1.11.4"
 uiTooling = "1.11.4"
 uiTestJunit4 = "1.11.4"
 
+##Firebase Crashlytics
+firebaseBom = "34.17.0"
+googleServices = "4.5.0"
+firebaseCrashlytics = "3.0.7"
+
 ##Added for Google Maps implementation
 maps-compose = "6.12.0"
 google-places = "5.3.0"
@@ -112,7 +117,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
-
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 ##Added for testing purpose
 [bundles]
 testing-stack = ["junit", "mockk", "robolectric", "kotlinx-coroutines-test"]
@@ -128,4 +134,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ##Added for feature of NavGraph
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
-
+##Crashlytics
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
