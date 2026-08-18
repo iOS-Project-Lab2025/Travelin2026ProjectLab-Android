@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.usecase.tour.GetTourDetailsUseCase
+import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.R
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 @HiltViewModel
 class TourEnterBookingDetailsViewModel @Inject constructor(
@@ -43,6 +45,7 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
     private val _validationSuccess = MutableSharedFlow<Boolean>()
     val validationSuccess: SharedFlow<Boolean> = _validationSuccess.asSharedFlow()
 
+    var tourDuration: Duration = Duration.ZERO
     var singleDateSelection: Boolean = false
 
     private var tourBookingDraft: TourBookingDraft = TourBookingDraft(tourId = tourId)
@@ -56,7 +59,8 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
                 getTourDetailsUseCase(tourId)
                     .onSuccess { tourDetails ->
                         // If tour duration is less than 24 hrs enable single date selection
-                        singleDateSelection = tourDetails.duration <= Duration.parse("PT24H")
+                        tourDuration = tourDetails.duration
+                        singleDateSelection = tourDuration <= Duration.parse("PT24H")
                     }
                 _uiState.update { state ->
                     state.copy(
@@ -98,7 +102,16 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onDateRangeSelected(startDate: Long?, endDate: Long?) {
-        val endDateCorrected = if (singleDateSelection) startDate else endDate
+        var endDateCorrected = endDate
+        if (singleDateSelection){
+           endDateCorrected = startDate
+        } else if (startDate != null && tourDuration != Duration.ZERO) {
+            // Fix the date to ensure it is within the tour duration
+            val dateRangeDuration = if (endDateCorrected != null) endDateCorrected - startDate else 0L
+            if (dateRangeDuration != tourDuration.toLong(DurationUnit.MILLISECONDS)){
+                endDateCorrected = startDate + (tourDuration - Duration.parse("PT24H")).toLong(DurationUnit.MILLISECONDS)
+            }
+        }
         _uiState.update { it.copy(screenState = it.screenState.copy(startDateMillis = startDate, endDateMillis = endDateCorrected, isDateErrorVisible = false)) }
         tourBookingDraft = tourBookingDraft.copy(startDate = startDate, endDate = endDateCorrected)
         viewModelScope.launch { saveTourBookingDraftUseCase(tourBookingDraft) }
