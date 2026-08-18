@@ -60,7 +60,7 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     @Serializable
-    private data class ProfileDto(
+    internal data class ProfileDto(
         val id: String,
         val first_name: String,
         val last_name: String,
