@@ -9,6 +9,7 @@ import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
 import com.softserveacademy.core.domain.model.FlightContactInfo
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourCategory
@@ -110,7 +111,11 @@ class HomeViewModelTest {
             location = "Paris, France",
             imageList = listOf("https://example.com/tour.png"),
             duration = 3.hours,
-            price = 120.0,
+            rates = RatePerParticipant(
+                adults = 100.0,
+                children = 50.0,
+                infants = 0.0
+            ),
             rating = 4.8,
             category = TourCategory.CULTURE
         )
