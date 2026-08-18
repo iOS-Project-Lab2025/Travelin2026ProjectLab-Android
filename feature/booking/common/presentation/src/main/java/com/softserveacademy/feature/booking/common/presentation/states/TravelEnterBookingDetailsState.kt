@@ -8,6 +8,7 @@ import java.io.Serializable
  *
  * @property startDateMillis The selected start date in milliseconds.
  * @property endDateMillis The selected end date in milliseconds.
+ * @property singleDatePicker Whether to show a single date picker or a date range picker.
  * @property isDateErrorVisible Whether the date selection error is visible.
  * @property dateErrorMessage The error message for date selection.
  * @property isGuestErrorVisible Whether the guest selection error is visible.
@@ -18,6 +19,7 @@ import java.io.Serializable
 data class TravelEnterBookingDetailsState(
     val startDateMillis: Long? = null,
     val endDateMillis: Long? = null,
+    val singleDatePicker: Boolean = false,
     val isDateErrorVisible: Boolean = false,
     val dateErrorMessage: Int? = null,
     val isGuestErrorVisible: Boolean = false,

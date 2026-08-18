@@ -26,14 +26,14 @@ class TourBookingRepositoryImpl @Inject constructor(
         // Send to remote API
         try {
             val bookingJson = Json.encodeToString(booking)
-            Log.d("HotelBookingRepo", "Sending Booking JSON: $bookingJson")
+            Log.d("TourBookingRepo", "Sending Booking JSON: $bookingJson")
             tourApiService.createBooking(booking)
         } catch (e: Exception) {
             if (e is HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
-                Log.e("HotelBookingRepo", "Remote createBooking failed with ${e.code()}: $errorBody")
+                Log.e("TourBookingRepo", "Remote createBooking failed with ${e.code()}: $errorBody")
             } else {
-                Log.e("HotelBookingRepo", "Remote createBooking failed: ${e.message}", e)
+                Log.e("TourBookingRepo", "Remote createBooking failed: ${e.message}", e)
             }
             throw e
         }

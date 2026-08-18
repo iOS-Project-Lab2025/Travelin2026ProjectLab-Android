@@ -129,7 +129,8 @@ fun TravelEnterBookingDetailsScreen(
                 )
                 TravelBookingDateRangePicker(
                     title = stringResource(R.string.booking_date_picker_title),
-                    state = dateRangePickerState
+                    state = dateRangePickerState,
+                    singleDate = state.singleDatePicker
                 )
             }
         }

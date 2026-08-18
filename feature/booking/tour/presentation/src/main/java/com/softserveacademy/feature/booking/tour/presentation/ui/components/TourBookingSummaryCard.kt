@@ -37,7 +37,7 @@ import java.util.TimeZone
 @Composable
 fun TourBookingSummaryCard(
     startDate: Long,
-    endDate: Long? = null,
+    endDate: Long,
     participants: String,
     modifier: Modifier = Modifier
 ) {
@@ -48,7 +48,7 @@ fun TourBookingSummaryCard(
         shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(TravelinDimens.PaddingMedium)) {
-            if (endDate == null || endDate == 0L) {
+            if (startDate == endDate) {
                 BookingDateRow(
                     label = stringResource(R.string.date_label),
                     date = startDate
@@ -121,6 +121,7 @@ fun TourBookingSummaryCardSingleDatePreview() {
     Travelin2026ProjectLabTheme {
         TourBookingSummaryCard(
             startDate = 1782115200000L, // Thursday, July 23, 2026
+            endDate = 1782115200000L, // Thursday, July 23, 2026
             participants = "2 adults, 1 child"
         )
     }

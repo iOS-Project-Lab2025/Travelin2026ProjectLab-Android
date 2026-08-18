@@ -28,6 +28,7 @@ import com.softserveacademy.core.presentation.design_system.theme.EditIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.feature.booking.common.presentation.R
+import java.util.Locale
 
 /**
  * A custom date range picker component that uses Material 3's [DateRangePicker].
@@ -41,7 +42,8 @@ import com.softserveacademy.feature.booking.common.presentation.R
 fun TravelBookingDateRangePicker(
     title: String,
     state: DateRangePickerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    singleDate: Boolean = false
 ) {
     DateRangePicker(
         state = state,
@@ -55,7 +57,8 @@ fun TravelBookingDateRangePicker(
         headline = {
             TravelBookingDateRangePickerHeadline(
                 state = state,
-                modifier = Modifier
+                modifier = Modifier,
+                singleDate = singleDate
             )
         },
         showModeToggle = false,
@@ -123,6 +126,7 @@ fun TravelBookingDateRangePickerTitle(
 fun TravelBookingDateRangePickerHeadline(
     state: DateRangePickerState,
     modifier: Modifier = Modifier,
+    singleDate: Boolean = false
 ) {
     Row (
         modifier = modifier
@@ -135,14 +139,27 @@ fun TravelBookingDateRangePickerHeadline(
             "Calendar Icon",
             tint = MaterialTheme.colorScheme.primary
         )
-        DateRangePickerDefaults.DateRangePickerHeadline(
-            selectedStartDateMillis = state.selectedStartDateMillis,
-            selectedEndDateMillis = state.selectedEndDateMillis,
-            displayMode = state.displayMode,
-            dateFormatter = DatePickerDefaults.dateFormatter(),
-            modifier = Modifier.padding(TravelinDimens.PaddingSmall, 0.dp),
-            contentColor = MaterialTheme.colorScheme.primary,
-        )
+        if (singleDate){
+            val formatedDate = DatePickerDefaults.dateFormatter().formatDate(
+                dateMillis = state.selectedStartDateMillis,
+                locale = Locale.getDefault()
+            )
+            Text(
+                text= formatedDate?: stringResource(R.string.booking_select_single_date_label),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = TravelinDimens.PaddingSmall)
+            )
+        }
+        else {
+            DateRangePickerDefaults.DateRangePickerHeadline(
+                selectedStartDateMillis = state.selectedStartDateMillis,
+                selectedEndDateMillis = state.selectedEndDateMillis,
+                displayMode = state.displayMode,
+                dateFormatter = DatePickerDefaults.dateFormatter(),
+                modifier = Modifier.padding(TravelinDimens.PaddingSmall, 0.dp),
+                contentColor = MaterialTheme.colorScheme.primary,
+            )
+        }
         Icon(
             CalendarIcon,
             "Calendar Icon",

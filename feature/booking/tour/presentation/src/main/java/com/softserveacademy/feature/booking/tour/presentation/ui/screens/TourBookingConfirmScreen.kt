@@ -205,7 +205,7 @@ fun TourBookingConfirmContent(
                         )
                         TourBookingSummaryCard(
                             startDate = draft.startDate ?: 0L,
-                            endDate = draft.endDate,
+                            endDate = draft.endDate ?: 0L,
                             participants = participantsString
                         )
                     }

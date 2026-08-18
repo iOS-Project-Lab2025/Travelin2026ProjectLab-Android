@@ -43,7 +43,7 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
     private val _validationSuccess = MutableSharedFlow<Boolean>()
     val validationSuccess: SharedFlow<Boolean> = _validationSuccess.asSharedFlow()
 
-    var singleDateSelection: Boolean = true
+    var singleDateSelection: Boolean = false
 
     private var tourBookingDraft: TourBookingDraft = TourBookingDraft(tourId = tourId)
 
@@ -53,11 +53,17 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
             val draft = getTourBookingDraftUseCase(tourId)
             if (draft != null) {
                 tourBookingDraft = draft
+                getTourDetailsUseCase(tourId)
+                    .onSuccess { tourDetails ->
+                        // If tour duration is less than 24 hrs enable single date selection
+                        singleDateSelection = tourDetails.duration <= Duration.parse("PT24H")
+                    }
                 _uiState.update { state ->
                     state.copy(
                         screenState = state.screenState.copy(
                             startDateMillis = draft.startDate,
                             endDateMillis = draft.endDate,
+                            singleDatePicker = singleDateSelection,
                             isLoading = false
                         ),
                         adultsCount = draft.participants.adults,
@@ -65,11 +71,6 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
                         infantsCount = draft.participants.infants
                     )
                 }
-                getTourDetailsUseCase(tourId)
-                    .onSuccess { tourDetails ->
-                        // If tour duration is less than 24 hrs enable single date selection
-                        singleDateSelection = tourDetails.duration < Duration.parse("PT24H")
-                    }
             } else {
                 _uiState.update { it.copy(screenState = it.screenState.copy(isLoading = false)) }
             }
