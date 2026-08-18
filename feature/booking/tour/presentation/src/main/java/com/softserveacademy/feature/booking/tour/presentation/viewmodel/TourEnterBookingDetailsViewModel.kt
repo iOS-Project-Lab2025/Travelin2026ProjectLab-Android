@@ -3,6 +3,9 @@ package com.softserveacademy.feature.booking.tour.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softserveacademy.core.domain.usecase.tour.GetTourDetailsUseCase
+import com.softserveacademy.core.error.extension.onFailure
+import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.feature.booking.common.domain.usecase.ValidateEnterBookingDetailsUseCase
 import com.softserveacademy.feature.booking.common.presentation.R
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
@@ -22,13 +25,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration
 
 @HiltViewModel
 class TourEnterBookingDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val validateEnterBookingDetailsUseCase: ValidateEnterBookingDetailsUseCase,
     private val getTourBookingDraftUseCase: GetTourBookingDraftUseCase,
-    private val saveTourBookingDraftUseCase: SaveTourBookingDraftUseCase
+    private val saveTourBookingDraftUseCase: SaveTourBookingDraftUseCase,
+    private val getTourDetailsUseCase: GetTourDetailsUseCase
 ) : ViewModel() {
 
     private val tourId: String = checkNotNull(savedStateHandle["tourId"])
@@ -38,6 +43,8 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
 
     private val _validationSuccess = MutableSharedFlow<Boolean>()
     val validationSuccess: SharedFlow<Boolean> = _validationSuccess.asSharedFlow()
+
+    var singleDateSelection: Boolean = true
 
     private var tourBookingDraft: TourBookingDraft = TourBookingDraft(tourId = tourId)
 
@@ -59,6 +66,11 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
                         infantsCount = draft.participants.infants
                     )
                 }
+                getTourDetailsUseCase(tourId)
+                    .onSuccess { tourDetails ->
+                        // If tour duration is less than 24 hrs enable single date selection
+                        singleDateSelection = tourDetails.duration < Duration.parse("PT24H")
+                    }
             } else {
                 _uiState.update { it.copy(screenState = it.screenState.copy(isLoading = false)) }
             }
@@ -86,8 +98,9 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onDateRangeSelected(startDate: Long?, endDate: Long?) {
-        _uiState.update { it.copy(screenState = it.screenState.copy(startDateMillis = startDate, endDateMillis = endDate, isDateErrorVisible = false)) }
-        tourBookingDraft = tourBookingDraft.copy(startDate = startDate, endDate = endDate)
+        val endDateCorrected = if (singleDateSelection) startDate else endDate
+        _uiState.update { it.copy(screenState = it.screenState.copy(startDateMillis = startDate, endDateMillis = endDateCorrected, isDateErrorVisible = false)) }
+        tourBookingDraft = tourBookingDraft.copy(startDate = startDate, endDate = endDateCorrected)
         viewModelScope.launch { saveTourBookingDraftUseCase(tourBookingDraft) }
     }
 
