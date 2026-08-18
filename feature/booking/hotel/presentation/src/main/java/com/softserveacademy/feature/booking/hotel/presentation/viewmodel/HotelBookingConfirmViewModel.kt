@@ -110,7 +110,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 cancelBooking()
             }
             HotelBookingConfirmEvent.OnPaymentSuccess -> {
-                // Finalize booking after successful payment
                 finalizeBooking()
             }
             HotelBookingConfirmEvent.OnPaymentReset -> {
@@ -215,17 +214,11 @@ class HotelBookingConfirmViewModel @Inject constructor(
     }
 
     private fun finalizeBooking() {
-        val state = _uiState.value
-        val hotelId = state.hotel?.id
-        val roomId = state.selectedRoom?.id
-        val checkIn = state.bookingDraft?.checkIn ?: 0L
-        val checkOut = state.bookingDraft?.checkOut ?: 0L
-
         viewModelScope.launch {
             currentBookingId?.let { id ->
                 updateHotelBookingStatusUseCase(id, BookingStatus.COMPLETED)
             }
-            clearHotelBookingDraftUseCase(hotelId.toString())
+            clearHotelBookingDraftUseCase(hotelId)
             _uiState.update { it.copy(isPaymentSuccessful = true) }
         }
     }
@@ -245,7 +238,6 @@ class HotelBookingConfirmViewModel @Inject constructor(
         return HotelBooking(
             bookingId = currentBookingId ?: UUID.randomUUID().toString(),
             userId = deviceId,
-            //userId = "testing",
             hotelId = hotelDetails.id,
             roomId = room.id ?: "",
             checkIn = draft.checkIn ?: 0L,
