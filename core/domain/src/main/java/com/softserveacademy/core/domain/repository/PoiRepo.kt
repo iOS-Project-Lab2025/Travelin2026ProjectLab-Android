@@ -11,9 +11,14 @@ interface PoiRepo {
      * Fetch nearby places of interest for a specific location.
      * @param latitude The latitude of the location.
      * @param longitude The longitude of the location.
+     * @param radius Optional search radius in meters.
      * @return A list of nearby places with walking times.
      */
-    suspend fun getNearbyPlaces(latitude: Double, longitude: Double): AppResult<List<Poi>>
+    suspend fun getNearbyPlaces(
+        latitude: Double,
+        longitude: Double,
+        radius: Double? = null
+    ): AppResult<List<Poi>>
 
     /**
      * Fetch a description of the area for a specific location.

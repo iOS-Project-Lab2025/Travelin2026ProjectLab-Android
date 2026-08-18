@@ -21,6 +21,7 @@ import com.softserveacademy.core.error.mapper.ExceptionMapper
 import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.core.error.util.safeCall
 import com.softserveacademy.core.data.api.RouteMatrixElement
+import android.util.Log
 import com.google.android.libraries.places.api.model.PhotoMetadata
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
@@ -30,6 +31,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
+
+private const val TAG = "PoiRepoImpl"
 
 /**
  * Implementation of [PoiRepo] that uses Google Places API and Google Maps Route Matrix API.
@@ -65,11 +68,13 @@ class PoiRepoImpl @Inject constructor(
      *
      * @param latitude The latitude of the center point.
      * @param longitude The longitude of the center point.
+     * @param radius Optional search radius in meters.
      * @return [AppResult] containing a list of [Poi] or an error.
      */
     override suspend fun getNearbyPlaces(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        radius: Double?
     ): AppResult<List<Poi>> = safeCall(mapper) {
         val fields = listOf(
             Place.Field.DISPLAY_NAME,
@@ -78,18 +83,38 @@ class PoiRepoImpl @Inject constructor(
             Place.Field.PHOTO_METADATAS,
             Place.Field.EDITORIAL_SUMMARY
         )
+        val actualRadius = radius ?: searchRadius
+        val types = listOf(
+            "tourist_attraction",
+            "museum",
+            "park",
+            "restaurant",
+            "cafe",
+            "shopping_mall",
+            "movie_theater",
+            "art_gallery",
+            "aquarium"
+        )
         val places = fetchPlaces(
             latitude,
             longitude,
-            searchRadius,
+            actualRadius,
             maxPoiSearch,
-            listOf("tourist_attraction", "museum", "park"),
+            types,
             fields
         )
+        Log.d(TAG, "getNearbyPlaces: fetched ${places.size} places from Google SDK")
+        places.forEach { Log.d(TAG, "Place found: ${it.displayName} at ${it.location}") }
+
         if (places.isEmpty()) return@safeCall emptyList()
 
-        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
-        mapPlacesToPois(places, routeMatrix, "walk")
+        val routeMatrix = try {
+            fetchRouteMatrix(latitude, longitude, places, "DRIVE")
+        } catch (e: Exception) {
+            Log.e(TAG, "Route Matrix failed, using backup distance calculation", e)
+            emptyList()
+        }
+        mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
     }
 
     /**
@@ -132,18 +157,7 @@ class PoiRepoImpl @Inject constructor(
         if (places.isEmpty()) return@safeCall emptyList()
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places, "DRIVE")
-        places.mapIndexed { index, place ->
-            val element = routeMatrix.find { it.destinationIndex == index }
-            val time = formatDuration(element?.duration)
-            val isTransit = place.placeTypes?.any { it.contains("station") || it.contains("transit") } == true
-            val suffix = if (isTransit) "walk" else "drive"
-
-            Poi(
-                name = place.displayName ?: "Station",
-                type = place.placeTypes?.firstOrNull()?.formatType() ?: "Transport",
-                travelTime = "$time $suffix"
-            )
-        }
+        mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
     }
 
     /**
@@ -162,7 +176,7 @@ class PoiRepoImpl @Inject constructor(
         if (places.isEmpty()) return@safeCall emptyList()
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
-        mapPlacesToPois(places, routeMatrix, "walk")
+        mapPlacesToPois(latitude, longitude, places, routeMatrix, "walk")
     }
 
     /**
@@ -229,12 +243,16 @@ class PoiRepoImpl @Inject constructor(
     /**
      * Maps a list of [Place] objects and their route data into domain [Poi] objects.
      *
+     * @param originLat Latitude of the user/origin.
+     * @param originLon Longitude of the user/origin.
      * @param places The list of places to map.
      * @param routeMatrix The corresponding route data.
      * @param suffix Suffix to append to the travel time (e.g., "walk").
      * @return A list of mapped [Poi] domain objects.
      */
     private suspend fun mapPlacesToPois(
+        originLat: Double,
+        originLon: Double,
         places: List<Place>,
         routeMatrix: List<RouteMatrixElement>,
         suffix: String
@@ -242,15 +260,37 @@ class PoiRepoImpl @Inject constructor(
         places.mapIndexed { index, place ->
             async {
                 val element = routeMatrix.find { it.destinationIndex == index }
+                val itemLat = place.location?.latitude ?: 0.0
+                val itemLon = place.location?.longitude ?: 0.0
+                
+                // Backup logic: If Route Matrix API fails, calculate straight-line distance
+                val distance = element?.distanceMeters ?: calculateLocalDistance(originLat, originLon, itemLat, itemLon)
+                // Estimate driving time (approx 10 m/s or 36 km/h) if duration is missing
+                val duration = element?.duration ?: "${(distance / 10.0).toInt()}s"
+
                 Poi(
                     name = place.displayName ?: "Unknown",
                     type = place.placeTypes?.firstOrNull()?.formatType() ?: "POI",
-                    travelTime = "${formatDuration(element?.duration)} $suffix",
+                    travelTime = "${formatDuration(duration)} $suffix",
+                    distanceMeters = distance,
                     imageUrl = fetchPhotoUri(place.photoMetadatas?.firstOrNull()),
-                    description = place.editorialSummary
+                    description = place.editorialSummary,
+                    latitude = itemLat,
+                    longitude = itemLon
                 )
             }
         }.awaitAll()
+    }
+
+    private fun calculateLocalDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Int {
+        val r = 6371000 // Earth radius in meters
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return (r * c).toInt()
     }
 
     /**
@@ -262,12 +302,19 @@ class PoiRepoImpl @Inject constructor(
     private suspend fun fetchPhotoUri(
         photoMetadata: PhotoMetadata?
     ): String? {
-        if (photoMetadata == null) return null
+        if (photoMetadata == null) {
+            Log.d(TAG, "fetchPhotoUri: No photo metadata available for this place")
+            return null
+        }
         return try {
-            placesClient.fetchResolvedPhotoUri(
+            val result = placesClient.fetchResolvedPhotoUri(
                 FetchResolvedPhotoUriRequest.builder(photoMetadata).build()
-            ).await().uri?.toString()
-        } catch (_: Exception) {
+            ).await()
+            val uri = result.uri?.toString()
+            Log.d(TAG, "fetchPhotoUri: Successfully resolved URI: $uri")
+            uri
+        } catch (e: Exception) {
+            Log.e(TAG, "fetchPhotoUri: Failed to resolve photo URI: ${e.message}")
             null
         }
     }

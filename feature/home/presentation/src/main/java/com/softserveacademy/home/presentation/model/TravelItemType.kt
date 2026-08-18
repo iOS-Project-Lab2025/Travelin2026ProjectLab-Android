@@ -12,5 +12,6 @@ import kotlinx.serialization.Serializable
 enum class TravelItemType {
     HOTEL,
     TOUR,
-    DESTINATION
+    DESTINATION,
+    POI
 }

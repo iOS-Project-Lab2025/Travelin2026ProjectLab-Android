@@ -52,7 +52,7 @@ class UpcomingTripCardTest {
             }
         }
 
-        // THEN: Validamos que la información crítica sea visible en la interfaz
+        // THEN: Validate that critical information is visible in the interface
         composeTestRule.onNodeWithText("ZEEBAW").assertIsDisplayed()
         composeTestRule.onNodeWithText("CGK").assertIsDisplayed()
         composeTestRule.onNodeWithText("DPS").assertIsDisplayed()

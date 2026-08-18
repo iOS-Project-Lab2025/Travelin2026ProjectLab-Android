@@ -20,18 +20,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import android.location.Geocoder
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.softserveacademy.core.presentation.design_system.theme.*
+import androidx.compose.ui.res.painterResource
+import com.softserveacademy.core.presentation.design_system.R as DesignR
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.presentation.model.TravelItemType
@@ -89,6 +93,8 @@ fun DestinationSearchScreen(
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     updateCityName(location.latitude, location.longitude)
+                    viewModel.currentLatitude = location.latitude
+                    viewModel.currentLongitude = location.longitude
                 }
             }
         }
@@ -99,18 +105,21 @@ fun DestinationSearchScreen(
     ) { isGranted ->
         if (isGranted) {
             try {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        updateCityName(location.latitude, location.longitude)
-                        viewModel.toggleNearbyMode(true, location.latitude, location.longitude)
-                    } else {
-                        // Fallback or mock if location is null (common on emulators)
-                        viewModel.toggleNearbyMode(true, -33.4489, -70.6693)
+                fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            updateCityName(location.latitude, location.longitude)
+                            viewModel.toggleNearbyMode(true, location.latitude, location.longitude)
+                        } else {
+                            // Fallback or mock if location is null
+                            viewModel.toggleNearbyMode(true, -33.4489, -70.6693)
+                        }
                     }
-                }
             } catch (e: SecurityException) {
                 // Should not happen as we just got permission
             }
+        } else {
+            viewModel.onPermissionDenied()
         }
     }
 
@@ -131,10 +140,31 @@ fun DestinationSearchScreen(
         ) {
             FilterRow(
                 selectedFilter = viewModel.currentFilter,
-                onFilterSelected = { viewModel.onFilterChanged(it) }
+                onFilterSelected = { filter ->
+                    if (filter == SearchFilter.POIS) {
+                        val permissionCheck = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        } else {
+                            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                                .addOnSuccessListener { location ->
+                                    if (location != null) {
+                                        viewModel.currentLatitude = location.latitude
+                                        viewModel.currentLongitude = location.longitude
+                                    }
+                                    viewModel.onFilterChanged(filter)
+                                }
+                        }
+                    } else {
+                        viewModel.onFilterChanged(filter)
+                    }
+                }
             )
 
-            if (viewModel.isNearbyMode) {
+            if (viewModel.isNearbyMode || viewModel.currentFilter == SearchFilter.POIS) {
                 RadiusSlider(
                     radius = viewModel.searchRadius,
                     onRadiusChange = { viewModel.onRadiusChanged(it) }
@@ -175,11 +205,17 @@ fun DestinationSearchScreen(
                             locationName = currentCity
                         )
                     }
-                    ResultsList(items, onItemClick)
+                    ResultsList(
+                        items = items, 
+                        onItemClick = onItemClick
+                    )
                 }
 
                 is SearchUiState.Empty -> EmptyState()
                 is SearchUiState.Error -> ErrorState(state.message) { viewModel.performSearch() }
+                is SearchUiState.PermissionDenied -> PermissionErrorState {
+                    permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
             }
         }
     }
@@ -257,8 +293,9 @@ fun FilterRow(selectedFilter: SearchFilter, onFilterSelected: (SearchFilter) -> 
     ) {
         items(SearchFilter.entries) { filter ->
             val isSelected = selectedFilter == filter
+            val label = if (filter == SearchFilter.POIS) "POIs" else filter.name.lowercase().replaceFirstChar { it.uppercase() }
             FilterChip(
-                label = filter.name.lowercase().replaceFirstChar { it.uppercase() },
+                label = label,
                 icon = getFilterIcon(filter),
                 isSelected = isSelected,
                 onClick = { onFilterSelected(filter) }
@@ -384,16 +421,17 @@ fun RadiusSlider(radius: Float, onRadiusChange: (Float) -> Unit) {
     }
 }
 
-/**
- * Displays search results in a vertical list.
- */
 @Composable
-fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -> Unit) {
+fun ResultsList(
+    items: List<SearchItem>, 
+    onItemClick: (String, TravelItemType) -> Unit
+) {
     LazyColumn(
         contentPadding = PaddingValues(TravelinDimens.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
     ) {
         items(items) { item ->
+            // ... (rest of items)
             when (item) {
                 is SearchItem.HotelItem -> SearchResultCard(
                     title = item.hotel.name,
@@ -423,6 +461,21 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     rating = item.destination.rating,
                     onClick = { onItemClick(item.destination.id, TravelItemType.DESTINATION) }
                 )
+
+                is SearchItem.PoiItem -> SearchResultCard(
+                    title = item.poi.name,
+                    location = "${item.poi.type} • ${item.poi.travelTime}",
+                    image = item.poi.imageUrl,
+                    price = item.poi.distanceMeters?.let { "%.1f km".format(it / 1000.0) } ?: "",
+                    priceLabel = "Distance:",
+                    rating = null,
+                    onClick = { 
+                        onItemClick(
+                            "${item.poi.name}|${item.poi.latitude}|${item.poi.longitude}", 
+                            TravelItemType.POI
+                        ) 
+                    }
+                )
             }
         }
     }
@@ -446,6 +499,7 @@ fun SearchResultCard(
     price: String,
     rating: Double?,
     ratingText: String? = null,
+    priceLabel: String = "from $",
     onClick: () -> Unit = {}
 ) {
     Surface(
@@ -462,14 +516,30 @@ fun SearchResultCard(
                 .fillMaxWidth()
                 .height(TravelinDimens.ImageSizeMedium)
         ) {
-            AsyncImage(
-                model = image,
-                contentDescription = null,
+            Box(
                 modifier = Modifier
                     .size(TravelinDimens.ImageSizeMedium)
-                    .clip(MaterialTheme.shapes.medium),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                if (image != null) {
+                    AsyncImage(
+                        model = image,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        error = painterResource(DesignR.drawable.ic_bag)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Bag,
+                        contentDescription = null,
+                        modifier = Modifier.size(TravelinDimens.IconSizeLarge),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .padding(start = TravelinDimens.PaddingNormal)
@@ -493,26 +563,28 @@ fun SearchResultCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = StarIcon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(TravelinDimens.IconSizeSmall)
-                    )
-                    Text(
-                        text = buildString {
-                            append(" $rating")
-                            if (!ratingText.isNullOrEmpty()) {
-                                append(" ($ratingText)")
-                            }
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                if (rating != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = StarIcon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(TravelinDimens.IconSizeSmall)
+                        )
+                        Text(
+                            text = buildString {
+                                append(" $rating")
+                                if (!ratingText.isNullOrEmpty()) {
+                                    append(" ($ratingText)")
+                                }
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
                 Text(
-                    text = "from $$price/person",
+                    text = if (priceLabel == "Distance:") "$priceLabel $price" else "$priceLabel$price/person",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.align(Alignment.End)
@@ -528,9 +600,11 @@ fun SearchResultCard(
 @Composable
 fun getFilterIcon(filter: SearchFilter) = when (filter) {
     SearchFilter.ALL -> SearchIcon
+    SearchFilter.POIS -> StarIcon
     SearchFilter.HOTELS -> HotelIcon
     SearchFilter.TOURS -> TicketIcon
     SearchFilter.DESTINATIONS -> LocationMarkerIcon
+
 }
 
 // --- UI States components ---
@@ -568,5 +642,35 @@ fun ErrorState(msg: String, onRetry: () -> Unit) {
     ) {
         Text(text = msg, color = MaterialTheme.colorScheme.error)
         Button(onClick = onRetry) { Text("Retry") }
+    }
+}
+
+/**
+ * Screen displayed when location permission is denied.
+ */
+@Composable
+fun PermissionErrorState(onRetry: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize().padding(TravelinDimens.PaddingLarge),
+        Arrangement.Center,
+        Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = LocationMarkerIcon,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.error
+        )
+        Spacer(Modifier.height(TravelinDimens.SpaceMedium))
+        Text(
+            text = "Location permission is required to find nearby places.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(TravelinDimens.SpaceMedium))
+        Button(onClick = onRetry) {
+            Text("Grant Permission")
+        }
     }
 }
