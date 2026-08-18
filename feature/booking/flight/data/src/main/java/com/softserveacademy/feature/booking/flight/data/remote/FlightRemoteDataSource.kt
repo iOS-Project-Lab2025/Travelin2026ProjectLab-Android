@@ -2,6 +2,7 @@ package com.softserveacademy.feature.booking.flight.data.remote
 
 import com.softserveacademy.core.domain.model.Airport
 import com.softserveacademy.core.domain.model.FlightOffer
+import com.softserveacademy.core.domain.model.PassengerCounts
 import com.softserveacademy.core.domain.model.PassengerType
 
 /**
@@ -15,7 +16,7 @@ interface FlightRemoteDataSource {
     suspend fun getFlightOffers(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>,
+        passengerCounts: PassengerCounts,
         cabinClass: com.softserveacademy.core.domain.model.CabinClass,
         departureDate: Long?,
         returnDate: Long?

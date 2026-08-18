@@ -1,9 +1,8 @@
 package com.softserveacademy.feature.booking.flight.presentation.events
 
-import com.softserveacademy.core.domain.model.DocumentType
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
-import com.softserveacademy.core.domain.model.Gender
+
 
 /**
  * User intents for the Passenger Information screen.
@@ -16,7 +15,7 @@ sealed interface FlightPassengerInfoEvent {
     /** Updates selection-based data (Gender, DocType, BirthDate). */
     data class OnPassengerDetailSelected(val index: Int, val passenger: FlightPassenger) : FlightPassengerInfoEvent
 
-    data class OnContactInfoChanged(val contactInfo: FlightContactInfo) : FlightPassengerInfoEvent
+    data class OnContactInfoChanged(val contactInfo: BookingContactInfo) : FlightPassengerInfoEvent
 
     // --- UI Triggers ---
     data class OnShowGenderSheet(val index: Int) : FlightPassengerInfoEvent

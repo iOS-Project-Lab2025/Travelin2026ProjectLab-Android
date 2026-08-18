@@ -330,7 +330,7 @@ fun TravelHomeScreen(
                                             address = hotel.address,
                                             starRating = hotel.starCategory,
                                             ratingText = "${hotel.starCategory}-star hotel",
-                                            price = "$${hotel.pricePerNight}",
+                                            price = "\$${hotel.pricePerNight}",
                                             priceSuffix = "/night",
                                             imageUrl = hotel.imageList.firstOrNull() ?: ""
                                         )

@@ -12,7 +12,7 @@ class RetrofitFlightRemoteDataSource @Inject constructor() : FlightRemoteDataSou
     override suspend fun getFlightOffers(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>,
+        passengerCounts: PassengerCounts,
         cabinClass: CabinClass,
         departureDate: Long?,
         returnDate: Long?
