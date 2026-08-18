@@ -93,28 +93,35 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
     }
 
     private fun onDateRangeSelected(startDate: Long?, endDate: Long?) {
-        var endDateCorrected = endDate
+        var correctedStartDate = startDate
+        var correctedEndDate = endDate
+
         if (singleDateSelection) {
-            endDateCorrected = startDate
-        } else if (startDate != null && tourDuration != Duration.ZERO) {
+            if (endDate != null && endDate != startDate) {
+                if (startDate == uiState.value.screenState.startDateMillis) {
+                    correctedStartDate = endDate
+                }
+            }
+            correctedEndDate = correctedStartDate
+        } else if (correctedStartDate != null && tourDuration != Duration.ZERO) {
             // Fix the date to ensure it is within the tour duration
-            val dateRangeDuration = if (endDateCorrected != null) endDateCorrected - startDate else 0L
+            val dateRangeDuration = if (correctedEndDate != null) correctedEndDate - correctedStartDate else 0L
             val tourDurationWithoutStart =
                 if (tourDuration != Duration.ZERO) tourDuration - Duration.parse("PT24H") else Duration.ZERO
             if (dateRangeDuration != tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)) {
-                endDateCorrected =
-                    startDate + tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)
+                correctedEndDate =
+                    correctedStartDate + tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)
             }
         }
 
-        if (tourBookingDraft.startDate == startDate && tourBookingDraft.endDate == endDateCorrected) return
+        if (tourBookingDraft.startDate == correctedStartDate && tourBookingDraft.endDate == correctedEndDate) return
 
-        tourBookingDraft = tourBookingDraft.copy(startDate = startDate, endDate = endDateCorrected)
+        tourBookingDraft = tourBookingDraft.copy(startDate = correctedStartDate, endDate = correctedEndDate)
         updateState {
             it.copy(
                 screenState = it.screenState.copy(
-                    startDateMillis = startDate,
-                    endDateMillis = endDateCorrected,
+                    startDateMillis = correctedStartDate,
+                    endDateMillis = correctedEndDate,
                     isDateErrorVisible = false
                 )
             )
