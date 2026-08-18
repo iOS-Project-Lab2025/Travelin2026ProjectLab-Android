@@ -24,7 +24,7 @@ fun TourEnterBookingDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel.validationSuccess) {
         viewModel.validationSuccess.collectLatest { success ->
             if (success) {
                 onNavigateToContactInfo()

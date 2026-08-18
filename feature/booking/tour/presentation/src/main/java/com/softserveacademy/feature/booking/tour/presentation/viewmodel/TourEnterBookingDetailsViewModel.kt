@@ -11,21 +11,19 @@ import com.softserveacademy.feature.booking.common.presentation.R
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.tour.presentation.events.TourEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.tour.presentation.states.TourEnterBookingDetailsState
-import com.softserveacademy.feature.booking.tour.domain.model.Participants
 import com.softserveacademy.feature.booking.tour.domain.model.TourBookingDraft
 import com.softserveacademy.feature.booking.tour.domain.usecase.GetTourBookingDraftUseCase
 import com.softserveacademy.feature.booking.tour.domain.usecase.SaveTourBookingDraftUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 
 @HiltViewModel
@@ -39,44 +37,37 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
 
     private val tourId: String = checkNotNull(savedStateHandle["tourId"])
 
-    private val _uiState = MutableStateFlow(TourEnterBookingDetailsState())
+    private val _uiState = MutableStateFlow(savedStateHandle.get<TourEnterBookingDetailsState>(KEY_STATE) ?: TourEnterBookingDetailsState())
     val uiState: StateFlow<TourEnterBookingDetailsState> = _uiState.asStateFlow()
 
-    private val _validationSuccess = MutableSharedFlow<Boolean>()
-    val validationSuccess: SharedFlow<Boolean> = _validationSuccess.asSharedFlow()
+    private val _validationSuccess = MutableStateFlow(false)
+    val validationSuccess: StateFlow<Boolean> = _validationSuccess.asStateFlow()
 
     var tourDuration: Duration = Duration.ZERO
     var singleDateSelection: Boolean = false
 
-    private var tourBookingDraft: TourBookingDraft = TourBookingDraft(tourId = tourId)
+    private var tourBookingDraft: TourBookingDraft = savedStateHandle.get<TourBookingDraft>(KEY_BOOKING_DRAFT) ?: TourBookingDraft(tourId = tourId)
 
     init {
-        viewModelScope.launch {
-            _uiState.update { it.copy(screenState = it.screenState.copy(isLoading = true)) }
-            val draft = getTourBookingDraftUseCase(tourId)
-            if (draft != null) {
-                tourBookingDraft = draft
+        if (savedStateHandle.get<TourEnterBookingDetailsState>(KEY_STATE) == null) {
+            updateState { it.copy(screenState = it.screenState.copy(isLoading = true)) }
+            viewModelScope.launch {
+                val draft = getTourBookingDraftUseCase(tourId)
+                if (draft != null) {
+                    tourBookingDraft = draft
+                }
+
                 getTourDetailsUseCase(tourId)
                     .onSuccess { tourDetails ->
                         // If tour duration is less than 24 hrs enable single date selection
                         tourDuration = tourDetails.duration
                         singleDateSelection = tourDuration <= Duration.parse("PT24H")
                     }
-                _uiState.update { state ->
-                    state.copy(
-                        screenState = state.screenState.copy(
-                            startDateMillis = draft.startDate,
-                            endDateMillis = draft.endDate,
-                            singleDatePicker = singleDateSelection,
-                            isLoading = false
-                        ),
-                        adultsCount = draft.participants.adults,
-                        childrenCount = draft.participants.children,
-                        infantsCount = draft.participants.infants
-                    )
-                }
-            } else {
-                _uiState.update { it.copy(screenState = it.screenState.copy(isLoading = false)) }
+
+                syncSavedState()
+                updateUiState()
+                delay(500.milliseconds) // Small delay for smooth transition
+                updateState { it.copy(screenState = it.screenState.copy(isLoading = false)) }
             }
         }
     }
@@ -103,37 +94,74 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
 
     private fun onDateRangeSelected(startDate: Long?, endDate: Long?) {
         var endDateCorrected = endDate
-        if (singleDateSelection){
-           endDateCorrected = startDate
+        if (singleDateSelection) {
+            endDateCorrected = startDate
         } else if (startDate != null && tourDuration != Duration.ZERO) {
             // Fix the date to ensure it is within the tour duration
             val dateRangeDuration = if (endDateCorrected != null) endDateCorrected - startDate else 0L
-            val tourDurationWithoutStart = if (tourDuration != Duration.ZERO) tourDuration - Duration.parse("PT24H") else Duration.ZERO
-            if (dateRangeDuration != tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)){
-                endDateCorrected = startDate + tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)
+            val tourDurationWithoutStart =
+                if (tourDuration != Duration.ZERO) tourDuration - Duration.parse("PT24H") else Duration.ZERO
+            if (dateRangeDuration != tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)) {
+                endDateCorrected =
+                    startDate + tourDurationWithoutStart.toLong(DurationUnit.MILLISECONDS)
             }
         }
-        _uiState.update { it.copy(screenState = it.screenState.copy(startDateMillis = startDate, endDateMillis = endDateCorrected, isDateErrorVisible = false)) }
+
+        if (tourBookingDraft.startDate == startDate && tourBookingDraft.endDate == endDateCorrected) return
+
         tourBookingDraft = tourBookingDraft.copy(startDate = startDate, endDate = endDateCorrected)
-        viewModelScope.launch { saveTourBookingDraftUseCase(tourBookingDraft) }
+        updateState {
+            it.copy(
+                screenState = it.screenState.copy(
+                    startDateMillis = startDate,
+                    endDateMillis = endDateCorrected,
+                    isDateErrorVisible = false
+                )
+            )
+        }
+        syncSavedState()
     }
 
     private fun onAdultsCountChange(count: Int) {
-        _uiState.update { it.copy(adultsCount = count) }
+        tourBookingDraft =
+            tourBookingDraft.copy(participants = tourBookingDraft.participants.copy(adults = count))
+        updateState {
+            it.copy(
+                adultsCount = count,
+                screenState = it.screenState.copy(isGuestErrorVisible = false)
+            )
+        }
+        syncSavedState()
     }
 
     private fun onChildrenCountChange(count: Int) {
-        _uiState.update { it.copy(childrenCount = count) }
+        tourBookingDraft =
+            tourBookingDraft.copy(participants = tourBookingDraft.participants.copy(children = count))
+        updateState { it.copy(childrenCount = count) }
+        syncSavedState()
     }
 
     private fun onInfantsCountChange(count: Int) {
-        _uiState.update { it.copy(infantsCount = count) }
+        tourBookingDraft =
+            tourBookingDraft.copy(participants = tourBookingDraft.participants.copy(infants = count))
+        updateState { it.copy(infantsCount = count) }
+        syncSavedState()
     }
 
     private fun onNextClick() {
-        val dateResult = validateEnterBookingDetailsUseCase.validateDates(uiState.value.screenState.startDateMillis, uiState.value.screenState.endDateMillis)
+        val dateResult = validateEnterBookingDetailsUseCase.validateDates(
+            uiState.value.screenState.startDateMillis,
+            uiState.value.screenState.endDateMillis
+        )
         if (dateResult is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid) {
-            _uiState.update { it.copy(screenState = it.screenState.copy(isDateErrorVisible = true, dateErrorMessage = tourBookingR.string.error_select_dates)) }
+            updateState {
+                it.copy(
+                    screenState = it.screenState.copy(
+                        isDateErrorVisible = true,
+                        dateErrorMessage = tourBookingR.string.error_select_dates
+                    )
+                )
+            }
             return
         }
         val durationResult = validateEnterBookingDetailsUseCase.validateDatesDuration(
@@ -142,39 +170,85 @@ class TourEnterBookingDetailsViewModel @Inject constructor(
             if (singleDateSelection) tourDuration else tourDuration - Duration.parse("PT24H")
         )
         if (durationResult is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid) {
-            _uiState.update { it.copy(screenState = it.screenState.copy(isDateErrorVisible = true, dateErrorMessage = tourBookingR.string.error_dates_duration)) }
+            updateState {
+                it.copy(
+                    screenState = it.screenState.copy(
+                        isDateErrorVisible = true,
+                        dateErrorMessage = tourBookingR.string.error_dates_duration
+                    )
+                )
+            }
             return
         }
-        _uiState.update { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = true)) }
+        updateState { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = true)) }
     }
 
     private fun onDismissBottomSheet() {
-        _uiState.update { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = false)) }
+        updateState {
+            it.copy(
+                screenState = it.screenState.copy(
+                    showGuestBottomSheet = false,
+                    isGuestErrorVisible = false
+                )
+            )
+        }
     }
 
     private fun onAcceptClick() {
         val guestResult = validateEnterBookingDetailsUseCase.validateGuests(uiState.value.adultsCount)
         if (guestResult is ValidateEnterBookingDetailsUseCase.ValidationResult.Invalid) {
-            _uiState.update { it.copy(screenState = it.screenState.copy(isGuestErrorVisible = true, guestErrorMessage = R.string.booking_error_at_least_one_adult)) }
+            updateState {
+                it.copy(
+                    screenState = it.screenState.copy(
+                        isGuestErrorVisible = true,
+                        guestErrorMessage = R.string.booking_error_at_least_one_adult
+                    )
+                )
+            }
             return
         }
 
-        tourBookingDraft = tourBookingDraft.copy(
-            participants = Participants(
-                adults = uiState.value.adultsCount,
-                children = uiState.value.childrenCount,
-                infants = uiState.value.infantsCount
-            )
-        )
+        updateState { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = false)) }
+        _validationSuccess.value = true
+    }
 
-        viewModelScope.launch {
-            saveTourBookingDraftUseCase(tourBookingDraft)
-            _uiState.update { it.copy(screenState = it.screenState.copy(showGuestBottomSheet = false)) }
-            _validationSuccess.emit(true)
+    private fun updateUiState() {
+        updateState {
+            it.copy(
+                screenState = it.screenState.copy(
+                    startDateMillis = tourBookingDraft.startDate,
+                    endDateMillis = tourBookingDraft.endDate,
+                    singleDatePicker = singleDateSelection
+                ),
+                adultsCount = tourBookingDraft.participants.adults,
+                childrenCount = tourBookingDraft.participants.children,
+                infantsCount = tourBookingDraft.participants.infants
+            )
         }
     }
 
-    fun resetValidationStatus(){
-        // Reset the validation status
+    private fun updateState(update: (TourEnterBookingDetailsState) -> TourEnterBookingDetailsState) {
+        _uiState.update(update)
+        savedStateHandle[KEY_STATE] = _uiState.value
+    }
+
+    private fun syncSavedState() {
+        savedStateHandle[KEY_BOOKING_DRAFT] = tourBookingDraft
+        viewModelScope.launch {
+            saveTourBookingDraftUseCase(tourBookingDraft)
+        }
+    }
+
+    /**
+     * Resets the validation success flag.
+     * Should be called when navigation to the next screen is handled or when navigating back.
+     */
+    fun resetValidationStatus() {
+        _validationSuccess.value = false
+    }
+
+    companion object {
+        private const val KEY_BOOKING_DRAFT = "tour_booking_draft"
+        private const val KEY_STATE = "booking_details_state"
     }
 }
