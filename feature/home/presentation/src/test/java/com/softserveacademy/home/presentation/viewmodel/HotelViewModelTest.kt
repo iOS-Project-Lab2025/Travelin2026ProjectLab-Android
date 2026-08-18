@@ -1,7 +1,6 @@
 package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.softserveacademy.core.domain.usecase.GetAreaDescriptionUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyPlacesUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyRestaurantsUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
@@ -34,7 +33,6 @@ class HotelViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val getHotelDetailsUseCase = mockk<GetHotelDetailsUseCase>()
     private val getNearbyPlacesUseCase = mockk<GetNearbyPlacesUseCase>(relaxed = true)
-    private val getAreaDescriptionUseCase = mockk<GetAreaDescriptionUseCase>(relaxed = true)
     private val getNearbyTransportUseCase = mockk<GetNearbyTransportUseCase>(relaxed = true)
     private val getNearbyRestaurantsUseCase = mockk<GetNearbyRestaurantsUseCase>(relaxed = true)
     private lateinit var viewModel: HotelDetailsViewModel
@@ -46,7 +44,6 @@ class HotelViewModelTest {
             savedStateHandle = SavedStateHandle(),
             getHotelDetailsUseCase = getHotelDetailsUseCase,
             getNearbyPlacesUseCase = getNearbyPlacesUseCase,
-            getAreaDescriptionUseCase = getAreaDescriptionUseCase,
             getNearbyTransportUseCase = getNearbyTransportUseCase,
             getNearbyRestaurantsUseCase = getNearbyRestaurantsUseCase
         )

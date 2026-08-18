@@ -19,6 +19,10 @@
     <string name="feat_hotel_bar_and_lounge">Bar and Lounge</string>
     <string name="feat_hotel_buffet_breakfast">Buffet Breakfast</string>
     <string name="feat_hotel_breakfast">Breakfast</string>
+    <string name="feat_hotel_close_label">Close</string>
+    <string name="feat_hotel_poi_type_label">Type</string>
+    <string name="feat_hotel_poi_travel_time_label">Travel time</string>
+    <string name="feat_hotel_about_label">About</string>
 
     <!-- Tour Features -->
     <string name="feat_tour_transport">Transport</string>

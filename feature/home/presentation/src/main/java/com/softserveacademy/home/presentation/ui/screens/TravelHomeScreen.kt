@@ -330,7 +330,7 @@ fun TravelHomeScreen(
                                             address = hotel.address,
                                             starRating = hotel.starCategory,
                                             ratingText = "${hotel.starCategory}-star hotel",
-                                            price = "$50",// TODO: Get this value from the minimum of the list of room prices (with the respective currency)
+                                            price = "\$${hotel.pricePerNight}",
                                             priceSuffix = "/night",
                                             imageUrl = hotel.imageList.firstOrNull() ?: ""
                                         )

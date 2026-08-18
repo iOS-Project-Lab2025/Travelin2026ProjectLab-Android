@@ -137,7 +137,7 @@ fun TravelListScreen(
                                 address = item.address
                                 rating = item.starCategory
                                 ratingText = "${item.starCategory}-star hotel"
-                                price = "$50" // TODO: Get this value from the minimum of the list of room prices (with the respective currency)
+                                price = "\$${item.pricePerNight}"
                                 priceSuffix = "/night"
                                 imageUrl = item.imageList.firstOrNull() ?: ""
                             } else {
@@ -146,7 +146,7 @@ fun TravelListScreen(
                                 id = tour.id
                                 title = tour.title
                                 address = tour.location
-                                rating = tour.rating.toInt() // TODO: Stars and user rating i´ts different, maybe make new cards?
+                                rating = tour.rating.toInt() // TODO: Stars and user rating it's different, maybe make new cards?
                                 ratingText = tour.rating.toString()
                                 price = tour.price
                                 priceSuffix = null
