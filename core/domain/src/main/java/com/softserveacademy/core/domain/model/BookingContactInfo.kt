@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 import java.io.Serializable as JavaSerializable
 
 /**
- * Data class representing the contact information for a booking.
+ * Generic model for contact information across all booking types (Hotel, Flight, Tours).
  *
- *  @property firstName The first name of the guest or participant.
- *  @property lastName The last name of the guest or participant.
- *  @property email The email address of the guest or participant.
- *  @property countryCode The country code of the guest's phone number.
- *  @property phoneNumber The phone number of the guest or participant.
+ * @property firstName Contact person's first name.
+ * @property lastName Contact person's last name.
+ * @property email Primary communication email.
+ * @property countryCode International dial code (e.g., +1, +56).
+ * @property phoneNumber Primary contact number.
  */
 @Serializable
 data class BookingContactInfo(

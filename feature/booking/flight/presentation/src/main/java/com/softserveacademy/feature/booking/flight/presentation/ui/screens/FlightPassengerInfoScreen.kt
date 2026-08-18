@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
@@ -244,15 +244,15 @@ private val previewState = FlightPassengerInfoState(
             firstName = "John",
             lastName = "Doe",
             documentNumber = "12345678-9",
-            passengerType = com.softserveacademy.core.domain.model.PassengerType.ADU,
+            passengerType = com.softserveacademy.core.domain.model.PassengerType.ADT,
             gender = com.softserveacademy.core.domain.model.Gender.MALE,
             nationality = "Chile",
             birthDateMillis = System.currentTimeMillis() - 946080000000L
         )
     ),
-    contactInfo = FlightContactInfo(
+    contactInfo = BookingContactInfo(
         email = "john.doe@travelin.com",
-        phone = "987654321",
+        phoneNumber = "987654321",
         countryCode = "+56"
     )
 )

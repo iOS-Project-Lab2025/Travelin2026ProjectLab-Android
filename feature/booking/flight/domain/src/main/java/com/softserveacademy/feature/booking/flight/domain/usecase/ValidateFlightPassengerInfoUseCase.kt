@@ -1,6 +1,6 @@
 package com.softserveacademy.feature.booking.flight.domain.usecase
 
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.feature.booking.flight.domain.model.ContactError
 import com.softserveacademy.feature.booking.flight.domain.model.PassengerValidationResult
@@ -26,7 +26,7 @@ class ValidateFlightPassengerInfoUseCase @Inject constructor() {
      */
     fun validate(
         passengers: List<FlightPassenger>,
-        contactInfo: FlightContactInfo?
+        contactInfo: BookingContactInfo?
     ): PassengerValidationResult {
         // Validate Passengers
         val passengerErrors = passengers.mapIndexed { index, passenger ->
@@ -59,8 +59,8 @@ class ValidateFlightPassengerInfoUseCase @Inject constructor() {
                 else -> null
             },
             phoneError = when {
-                contactInfo?.phone?.isBlank() == true -> PassengerFieldError.EMPTY
-                (contactInfo?.phone?.length ?: 0) < 6 -> PassengerFieldError.TOO_SHORT
+                contactInfo?.phoneNumber?.isBlank() == true -> PassengerFieldError.EMPTY
+                (contactInfo?.phoneNumber?.length ?: 0) < 6 -> PassengerFieldError.TOO_SHORT
                 else -> null
             }
         )
@@ -77,7 +77,7 @@ class ValidateFlightPassengerInfoUseCase @Inject constructor() {
 
         val age = calculateAge(millis)
         return when (type) {
-            com.softserveacademy.core.domain.model.PassengerType.ADU -> if (age < 12) PassengerFieldError.INVALID_AGE else null
+            com.softserveacademy.core.domain.model.PassengerType.ADT -> if (age < 12) PassengerFieldError.INVALID_AGE else null
             com.softserveacademy.core.domain.model.PassengerType.CHD -> if (age !in 2..11) PassengerFieldError.INVALID_AGE else null
             com.softserveacademy.core.domain.model.PassengerType.INF -> if (age >= 2) PassengerFieldError.INVALID_AGE else null
         }

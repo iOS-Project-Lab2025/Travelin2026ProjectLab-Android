@@ -24,15 +24,11 @@ data class Flight(
     val id: String,
     val airline: Airline,
     val flightNumber: String,
-
     val origin: Airport,
     val destination: Airport,
-
     val departureTime: Long,
     val arrivalTime: Long,
-
     val duration: Duration,
-
     val cabinClass: CabinClass
 )
 
@@ -48,9 +44,19 @@ data class Flight(
 data class FlightOffer(
     val id: String,
     val flight: Flight,
-    val basePrice: Double
+    val basePrice: Double,
+    val baggageAllowance: BaggageAllowance = BaggageAllowance(),
 )
 
+/**
+ * Represents baggage allowance information for a flight.
+ */
+@Serializable
+data class BaggageAllowance(
+    val carryOnIncluded: Boolean = true,
+    val checkedBagsCount: Int = 0,
+    val maxWeightKg: Int? = null
+)
 /**
  * Represents an airline operating commercial flights.
  *
@@ -93,7 +99,7 @@ data class FlightSegment(
 data class FlightPassenger(
     val firstName: String = "",
     val lastName: String = "",
-    val passengerType: PassengerType = PassengerType.ADU,
+    val passengerType: PassengerType = PassengerType.ADT,
     val documentType: DocumentType = DocumentType.PASSPORT,
     val documentNumber: String = "",
     val nationality: String = "Chile",
@@ -114,13 +120,13 @@ enum class CabinClass {
 
 /**
  * Standard Airline Passenger Type Codes (PTC).
- * @property ADU Adult, Over 12 years old
+ * @property ADT Adult, Over 12 years old
  * @property CHD Child, Between 2 and 12 years old
  * @property INF Infant, Under 2 years old, usually sitting on lap
  */
 @Serializable
 enum class PassengerType {
-    ADU,
+    ADT,
     CHD,
     INF
 }

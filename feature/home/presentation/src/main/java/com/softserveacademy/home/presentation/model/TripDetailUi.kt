@@ -93,7 +93,7 @@ fun Trip.toTripDetailUi(): TripDetailUi {
                         seatNumber = t.seatNumber,
                         gate = t.gate,
                         boardingGroup = t.boardingGroup,
-                        seatClass = t.seatClass.name.replace("_", " ").lowercase()
+                        seatClass = t.cabinClass.name.replace("_", " ").lowercase()
                             .replaceFirstChar { it.uppercase() }
                     )
                 },
