@@ -14,7 +14,7 @@ data class HotelBookingConfirmState(
     val selectedRoom: HotelRoom? = null,
     val bookingDraft: HotelBookingDraft? = null,
     val clientSecret: String? = null,
-    val totalPrice: Int = 0,
+    val totalPrice: Double = 0.0,
     val isPaymentSuccessful: Boolean = false,
     val isPaymentSheetLoading: Boolean = false,
     val error: String? = null,

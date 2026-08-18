@@ -72,10 +72,10 @@ data class BookingGuests(
 @Serializable
 data class HotelBookingPrice(
     @SerialName("rate_per_night")
-    val ratePerNight: Int,
+    val ratePerNight: Double,
     @SerialName("room_subtotal")
-    val roomSubtotal: Int,
-    val taxes: Int = 0,
-    val fees: Int = 0,
-    val total: Int
+    val roomSubtotal: Double,
+    val taxes: Double = 0.0,
+    val fees: Double = 0.0,
+    val total: Double
 )

@@ -243,10 +243,10 @@ class TourBookingConfirmViewModel @Inject constructor(
                 ratePerAdult = tourDetails.rates.adults,
                 ratePerChildren = tourDetails.rates.children,
                 ratePerInfant = tourDetails.rates.infants,
-                subtotal = state.totalPrice.toInt(),
-                taxes = 0,
-                fees = 0,
-                total = state.totalPrice.toInt()
+                subtotal = state.totalPrice,
+                taxes = 0.0,
+                fees = 0.0,
+                total = state.totalPrice
             ),
             confirmationCode = "TB-${System.currentTimeMillis() % 10000}",
             status = status,

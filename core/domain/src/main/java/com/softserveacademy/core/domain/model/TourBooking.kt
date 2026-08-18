@@ -75,8 +75,8 @@ data class TourBookingPrice(
     val ratePerChildren: Double,
     @SerialName("rate_per_infant")
     val ratePerInfant: Double,
-    val subtotal: Int,
-    val taxes: Int = 0,
-    val fees: Int = 0,
-    val total: Int
+    val subtotal: Double,
+    val taxes: Double = 0.0,
+    val fees: Double = 0.0,
+    val total: Double
 )

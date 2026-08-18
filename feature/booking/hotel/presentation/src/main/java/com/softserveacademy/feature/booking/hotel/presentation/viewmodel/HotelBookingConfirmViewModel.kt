@@ -72,7 +72,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
                         val nights = if (checkIn != null && checkOut != null) {
                             ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(1)
                         } else 1
-                        val totalPrice = (selectedRoom?.pricePerNight ?: 0) * nights
+                        val totalPrice = (selectedRoom?.pricePerNight ?: 0.0) * nights
 
                         _uiState.update {
                             it.copy(
@@ -142,7 +142,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
     private fun createPaymentIntent() {
         val state = _uiState.value
-        val amount = state.totalPrice.toLong()
+        val amount = (state.totalPrice * 100).toLong()
         if (amount <= 0) {
             _uiState.update { it.copy(error = "Invalid price calculation") }
             return
@@ -170,7 +170,7 @@ class HotelBookingConfirmViewModel @Inject constructor(
 
             val finalBookingId = currentBookingId ?: return@launch
 
-            createPaymentIntentUseCase(amount * 100, "usd") // Stripe expects amount in cents
+            createPaymentIntentUseCase(amount, "usd") // Stripe expects amount in cents
                 .onSuccess { secret ->
                     _uiState.update { it.copy(clientSecret = secret, isPaymentSheetLoading = false) }
                     // Update status to PENDING as we are now awaiting payment
@@ -250,8 +250,8 @@ class HotelBookingConfirmViewModel @Inject constructor(
             price = HotelBookingPrice(
                 ratePerNight = room.pricePerNight,
                 roomSubtotal = state.totalPrice,
-                taxes = 0,
-                fees = 0,
+                taxes = 0.0,
+                fees = 0.0,
                 total = state.totalPrice
             ),
             confirmationCode = "HB-${System.currentTimeMillis() % 10000}",

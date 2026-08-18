@@ -30,7 +30,7 @@ data class HotelRoom(
     val bedCount: Int = 1,
     @Serializable(with = FlexibleListSerializer::class)
     val amenities: List<String>,
-    val pricePerNight: Int,
+    val pricePerNight: Double,
     val images: List<String> = emptyList(),
     val totalRooms: Int = 5,
     val allowPets: Boolean = false

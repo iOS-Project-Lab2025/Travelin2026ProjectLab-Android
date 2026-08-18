@@ -78,7 +78,7 @@ class HotelBookingConfirmViewModelTest {
             description = "Desc",
             address = "Loc",
             imageList = emptyList(),
-            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100)),
+            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100.0)),
             reviewRating = 4.5,
             numberOfReviews = 10
         )

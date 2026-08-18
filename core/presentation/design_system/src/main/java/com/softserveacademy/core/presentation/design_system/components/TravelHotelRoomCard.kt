@@ -192,7 +192,7 @@ private fun TravelHotelRoomCardPreview() {
             "hotel.ac",
             "hotel.room_service"
         ),
-        pricePerNight = 150,
+        pricePerNight = 150.0,
         images = listOf(
             "https://picsum.photos/200/300",
             "https://picsum.photos/200"

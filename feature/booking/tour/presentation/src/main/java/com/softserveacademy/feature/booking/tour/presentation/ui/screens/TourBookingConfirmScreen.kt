@@ -176,7 +176,7 @@ fun TourBookingConfirmContent(
         TravelLoadingScreen()
     } else {
         TravelBookingConfirmScreen(
-            totalPrice = uiState.totalPrice.toInt(),
+            totalPrice = uiState.totalPrice,
             onBackClick = onBackClick,
             onConfirmClick = onConfirmClick,
             isConfirmLoading = uiState.isPaymentSheetLoading,
