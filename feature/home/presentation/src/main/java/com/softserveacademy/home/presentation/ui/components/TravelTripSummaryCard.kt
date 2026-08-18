@@ -42,7 +42,7 @@ fun TravelTripSummaryCard(
         shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -194,7 +194,7 @@ private fun TravelTripSummaryCardPreview() {
         tourInfo = null
     )
 
-    Travelin2026ProjectLabTheme {
+    Travelin2026ProjectLabTheme(darkTheme = true) {
         TravelTripSummaryCard(
             tripDetail = mockTrip,
             modifier = Modifier.padding(TravelinDimens.PaddingMedium)

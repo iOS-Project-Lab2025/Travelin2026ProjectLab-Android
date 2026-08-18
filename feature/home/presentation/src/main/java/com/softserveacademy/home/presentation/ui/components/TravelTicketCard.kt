@@ -46,7 +46,7 @@ fun TravelTicketCard(
         shape = cardShape,
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         modifier = modifier.fillMaxWidth()
     ) {
