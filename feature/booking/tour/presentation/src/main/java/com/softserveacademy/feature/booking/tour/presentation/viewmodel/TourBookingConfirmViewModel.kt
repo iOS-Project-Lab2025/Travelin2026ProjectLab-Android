@@ -246,7 +246,8 @@ class TourBookingConfirmViewModel @Inject constructor(
                 subtotal = state.totalPrice,
                 taxes = 0.0,
                 fees = 0.0,
-                total = state.totalPrice
+                total = state.totalPrice,
+                currencyCode = "USD"
             ),
             confirmationCode = "TB-${System.currentTimeMillis() % 10000}",
             status = status,

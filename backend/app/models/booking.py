@@ -33,6 +33,7 @@ class HotelBookingPrice(BaseSchema):
     taxes: Optional[float] = 0.0
     fees: Optional[float] = 0.0
     total: float
+    currency_code: str = Field("USD", alias="currency_code")
 
 class HotelBooking(BaseSchema):
     booking_id: str = Field(alias="booking_id")
@@ -63,6 +64,7 @@ class TourBookingPrice(BaseSchema):
     taxes: float = 0.0
     fees: float = 0.0
     total: float
+    currency_code: str = Field("USD", alias="currency_code")
 
 class TourBooking(BaseSchema):
     booking_id: str = Field(alias="booking_id")

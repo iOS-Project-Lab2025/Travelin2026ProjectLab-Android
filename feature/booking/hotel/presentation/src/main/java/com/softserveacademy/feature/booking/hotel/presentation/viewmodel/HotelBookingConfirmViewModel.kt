@@ -252,7 +252,8 @@ class HotelBookingConfirmViewModel @Inject constructor(
                 roomSubtotal = state.totalPrice,
                 taxes = 0.0,
                 fees = 0.0,
-                total = state.totalPrice
+                total = state.totalPrice,
+                currencyCode = "USD"
             ),
             confirmationCode = "HB-${System.currentTimeMillis() % 10000}",
             status = status,

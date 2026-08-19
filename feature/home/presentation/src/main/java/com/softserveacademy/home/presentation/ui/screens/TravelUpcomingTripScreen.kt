@@ -234,7 +234,7 @@ private fun TravelUpcomingTripScreenPreview() {
             checkIn = parseMillis("yyyy-MM-dd", "2024-11-23"),
             checkOut = parseMillis("yyyy-MM-dd", "2024-11-28"),
             guests = BookingGuests(adults = 2),
-            price = HotelBookingPrice(ratePerNight = 100.0, roomSubtotal = 500.0, taxes = 0.0, fees = 0.0, total = 500.0),
+            price = HotelBookingPrice(ratePerNight = 100.0, roomSubtotal = 500.0, taxes = 0.0, fees = 0.0, total = 500.0, currencyCode = "USD"),
             status = BookingStatus.COMPLETED,
             confirmationCode = "HOTEL456",
             createdAt = parseMillis("yyyy-MM-dd", "2024-11-01"),
@@ -253,7 +253,8 @@ private fun TravelUpcomingTripScreenPreview() {
                     ratePerChildren = 0.0,
                     ratePerInfant = 0.0,
                     subtotal = 100.0,
-                    total = 100.0
+                    total = 100.0,
+                    currencyCode = "USD"
                 ),
                 confirmationCode = "TOUR789",
                 status = BookingStatus.COMPLETED,
