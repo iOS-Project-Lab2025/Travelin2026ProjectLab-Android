@@ -36,6 +36,7 @@ import com.softserveacademy.feature.auth.register.presentation.viewmodel.Registe
 import com.softserveacademy.travelin2026projectlab.navigation.NavigationRoot
 import com.stripe.android.PaymentConfiguration
 import com.softserveacademy.feature.booking.common.data.BuildConfig
+import io.github.jan.supabase.SupabaseClient
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.getValue
@@ -71,8 +72,12 @@ class MainActivity : ComponentActivity() {
     // Create the "splash screen brain" and decides where to go
     private val getSplashDestinationUseCase by lazy { GetSplashDestinationUseCase(corePreferencesRepository) }
     private val splashViewModel by lazy { SplashViewModel(getSplashDestinationUseCase) }
-    private val loginRepository by lazy { LoginRepositoryImpl(dataStore) }
-    private val registerRepository by lazy { RegisterRepositoryImpl(dataStore) }
+
+    @Inject
+    lateinit var supabase: SupabaseClient
+
+    private val loginRepository by lazy { LoginRepositoryImpl(supabase) }
+    private val registerRepository by lazy { RegisterRepositoryImpl(supabase) }
 
     private val registerUseCase by lazy { RegisterUseCase(registerRepository) }
     private val loginUseCase by lazy { LoginUseCase(loginRepository) }

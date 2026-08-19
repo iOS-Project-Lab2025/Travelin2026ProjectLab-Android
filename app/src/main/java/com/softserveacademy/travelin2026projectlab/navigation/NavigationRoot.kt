@@ -1,6 +1,7 @@
 package com.softserveacademy.travelin2026projectlab.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -87,6 +88,30 @@ fun NavigationRoot(
     registerViewModel: RegisterViewModel,
     forgotPasswordViewModel: ForgotPasswordViewModel
 ) {
+    // Global navigation listener for authentication state
+    LaunchedEffect(isLoggedIn, isFirstTime) {
+        if (!isFirstTime) {
+            if (isLoggedIn) {
+                // If we're authenticated but not in the MainGraph, move there.
+                // We check if the current destination is null or within AuthGraph.
+                val currentRoute = navController.currentDestination?.route
+                if (currentRoute == null || currentRoute.contains("AuthGraph") || currentRoute.contains("LoginScreen")) {
+                    navController.navigate(Routes.MainGraph) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            } else {
+                // If we're NOT authenticated but not in the AuthGraph, move there.
+                val currentRoute = navController.currentDestination?.route
+                if (currentRoute != null && !currentRoute.contains("AuthGraph")) {
+                    navController.navigate(Routes.AuthGraph) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = when {
@@ -105,7 +130,7 @@ fun NavigationRoot(
             forgotPasswordViewModel = forgotPasswordViewModel
         )
 
-        mainGraph(navController)
+        mainGraph(navController, loginViewModel)
         bookingGraph(navController)
         flightGraph(navController)
     }
@@ -226,7 +251,8 @@ fun NavGraphBuilder.authGraph(navController: NavHostController,
  * @param navController The navigation controller used for screen navigation.
  */
 fun NavGraphBuilder.mainGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    loginViewModel: LoginViewModel
 ) {
 
     navigation<Routes.MainGraph>(
@@ -276,8 +302,9 @@ fun NavGraphBuilder.mainGraph(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onLogoutSuccess = {
+                    loginViewModel.resetState()
                     navController.navigate(Routes.AuthGraph) {
-                        popUpTo(Routes.MainGraph) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 onEditProfileClick = {

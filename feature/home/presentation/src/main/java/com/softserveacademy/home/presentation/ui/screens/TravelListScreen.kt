@@ -149,7 +149,7 @@ fun TravelListScreen(
                                 ratingText = tour.rating.toString()
                                 price = "$ ${formatPrice(tour.rates.adults)}"
                                 priceSuffix = null
-                                imageUrl = tour.imageUrl.toString()
+                                imageUrl = tour.imageUrl ?: ""
                             }
 
                             Box(

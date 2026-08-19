@@ -40,6 +40,16 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                         ?: ""
                     manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
                     buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+
+                    val supabaseUrl = getProperty("SUPABASE_URL")
+                        ?: project.findProperty("SUPABASE_URL")?.toString()
+                        ?: ""
+                    buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
+
+                    val supabaseKey = getProperty("SUPABASE_KEY")
+                        ?: project.findProperty("SUPABASE_KEY")?.toString()
+                        ?: ""
+                    buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
                 }
                 compileOptions {
                     sourceCompatibility = JavaVersion.VERSION_11

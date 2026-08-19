@@ -33,4 +33,12 @@ class LoginViewModel(
             }
         }
     }
+
+    fun resetState() {
+        email = ""
+        password = ""
+        isLoading = false
+        error = null
+        isSuccess = false
+    }
 }

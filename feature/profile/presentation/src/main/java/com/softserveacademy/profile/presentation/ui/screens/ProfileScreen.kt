@@ -271,12 +271,28 @@ fun ProfileContent(
                 }
                 is ProfileState.Error -> {
                     Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.align(Alignment.Center).padding(TravelinDimens.PaddingLarge),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
                     ) {
-                        Text(text = state.message, color = MaterialTheme.colorScheme.error)
-                        Button(onClick = onRetry) {
+                        Text(
+                            text = state.message,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(
+                            onClick = onRetry,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(TravelinDimens.SpaceSmall)
+                        ) {
                             Text("Retry")
+                        }
+                        OutlinedButton(
+                            onClick = onLogoutClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(TravelinDimens.SpaceSmall)
+                        ) {
+                            Text(stringResource(R.string.logout_label))
                         }
                     }
                 }

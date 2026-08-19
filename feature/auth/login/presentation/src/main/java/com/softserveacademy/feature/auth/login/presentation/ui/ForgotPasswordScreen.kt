@@ -104,7 +104,7 @@ fun ForgotPasswordContent(
 
         TravelAuthPrimaryButton(
             text = stringResource(R.string.forgot_password_recover_button),
-            onClick = navonRecoverClick,
+            onClick = onRecoverClick,
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()
         )

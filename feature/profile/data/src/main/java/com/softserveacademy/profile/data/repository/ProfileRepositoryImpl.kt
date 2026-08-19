@@ -2,45 +2,99 @@ package com.softserveacademy.profile.data.repository
 
 import com.softserveacademy.profile.domain.model.UserProfile
 import com.softserveacademy.profile.domain.repository.ProfileRepository
-import kotlinx.coroutines.delay
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.postgrest
+import kotlinx.serialization.Serializable
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Implementation of [ProfileRepository] providing profile data.
- * Currently uses mock data.
+ * Implementation of [ProfileRepository] providing profile data from Supabase.
  */
-class ProfileRepositoryImpl @Inject constructor() : ProfileRepository {
+class ProfileRepositoryImpl @Inject constructor(
+    private val supabase: SupabaseClient
+) : ProfileRepository {
 
-    private var cachedProfile = UserProfile(
-        firstName = "John",
-        lastName = "Doe",
-        points = 100,
-        avatarUrl = "https://example.com/avatar.jpg",
-        phone = "+855 123 456 789",
-        birthDate = 839808000000L, // 12/08/1996
-        isBirthDateChanged = false,
-        location = "Mars, Solar System"
-    )
-
-    /**
-     * Fetches mock profile data after a short delay.
-     * @return A [Result] with the mock user profile.
-     */
     override suspend fun getProfile(): Result<UserProfile> {
-        delay(1000.milliseconds) // Simulate network delay
-        return Result.success(cachedProfile)
+        return try {
+            val user = supabase.auth.currentUserOrNull()
+                ?: return Result.failure(Exception("User not authenticated"))
+
+            val profileDto = supabase.postgrest["profiles"]
+                .select {
+                    filter {
+                        eq("id", user.id)
+                    }
+                }
+                .decodeSingle<ProfileDto>()
+
+            Result.success(profileDto.toDomain())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    /**
-     * Updates mock profile data after a short delay.
-     * @param profile The updated profile data.
-     * @param password The new password, if provided.
-     * @return A [Result] indicating success.
-     */
     override suspend fun updateProfile(profile: UserProfile, password: String?): Result<Unit> {
-        delay(1000.milliseconds) // Simulate network delay
-        cachedProfile = profile
-        return Result.success(Unit)
+        return try {
+            val user = supabase.auth.currentUserOrNull()
+                ?: return Result.failure(Exception("User not authenticated"))
+
+            val profileDto = ProfileDto.fromDomain(user.id, profile)
+            
+            supabase.postgrest["profiles"].update(profileDto) {
+                filter {
+                    eq("id", user.id)
+                }
+            }
+
+            if (!password.isNullOrBlank()) {
+                supabase.auth.updateUser {
+                    this.password = password
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    @Serializable
+    internal data class ProfileDto(
+        val id: String,
+        val first_name: String,
+        val last_name: String,
+        val email: String? = null,
+        val phone: String? = null,
+        val birth_date: Long? = null,
+        val points: Int = 0,
+        val avatar_url: String? = null,
+        val location: String? = null,
+        val is_birth_date_changed: Boolean = false
+    ) {
+        fun toDomain() = UserProfile(
+            firstName = first_name,
+            lastName = last_name,
+            points = points,
+            avatarUrl = avatar_url ?: "",
+            phone = phone,
+            birthDate = birth_date,
+            isBirthDateChanged = is_birth_date_changed,
+            location = location
+        )
+
+        companion object {
+            fun fromDomain(id: String, domain: UserProfile) = ProfileDto(
+                id = id,
+                first_name = domain.firstName,
+                last_name = domain.lastName,
+                phone = domain.phone,
+                birth_date = domain.birthDate,
+                points = domain.points,
+                avatar_url = domain.avatarUrl,
+                location = domain.location,
+                is_birth_date_changed = domain.isBirthDateChanged
+            )
+        }
     }
 }

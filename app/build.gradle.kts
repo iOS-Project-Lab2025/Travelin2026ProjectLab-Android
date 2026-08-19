@@ -88,6 +88,9 @@ dependencies {
     implementation(projects.feature.booking.common.data)
     implementation(projects.feature.booking.common.presentation)
 
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.auth)
+
     // coil for jetpack compose to allow render images
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)

@@ -71,6 +71,8 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             logoutUseCase().onSuccess {
                 _logoutEvent.emit(Unit)
+            }.onFailure {
+                _logoutEvent.emit(Unit)
             }
         }
     }

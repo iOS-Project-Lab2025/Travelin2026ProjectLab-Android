@@ -96,9 +96,16 @@ class EditProfileViewModel @Inject constructor(
             return
         }
 
-        if (password.isNotEmpty() && password != confirmPassword) {
-            state = EditProfileState.Error("Passwords do not match")
-            return
+        // If either password field is touched, validate they are not empty and match
+        if (password.isNotEmpty() || confirmPassword.isNotEmpty()) {
+            if (password.isEmpty()) {
+                state = EditProfileState.Error("Password cannot be empty")
+                return
+            }
+            if (password != confirmPassword) {
+                state = EditProfileState.Error("Passwords do not match")
+                return
+            }
         }
 
         viewModelScope.launch {
@@ -116,6 +123,8 @@ class EditProfileViewModel @Inject constructor(
             state = EditProfileState.Loading
             updateProfileUseCase(updatedProfile, password.ifEmpty { null }).onSuccess {
                 state = EditProfileState.UpdateSuccess
+                password = ""
+                confirmPassword = ""
                 isBirthDateAlreadyChanged = updatedProfile.isBirthDateChanged
             }.onFailure {
                 state = EditProfileState.Error(it.message ?: "Failed to update profile")

@@ -19,4 +19,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.google.places)
     implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.ktor.client.android)
 }
