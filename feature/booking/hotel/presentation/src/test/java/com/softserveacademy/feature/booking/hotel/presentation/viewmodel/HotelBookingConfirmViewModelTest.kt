@@ -75,12 +75,11 @@ class HotelBookingConfirmViewModelTest {
         val hotel = Hotel(
             id = "hotel1",
             name = "Test Hotel",
-            description = "Desc",
             address = "Loc",
-            imageList = emptyList(),
-            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100)),
             reviewRating = 4.5,
-            numberOfReviews = 10
+            numberOfReviews = 10,
+            description = "Desc",
+            rooms = listOf(HotelRoom(id = "room1", type = "Type", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100)),
         )
 
         coEvery { getHotelBookingDraftUseCase("hotel1") } returns draft

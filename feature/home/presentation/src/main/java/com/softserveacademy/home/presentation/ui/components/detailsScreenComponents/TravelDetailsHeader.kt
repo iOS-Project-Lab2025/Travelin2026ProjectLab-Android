@@ -33,6 +33,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
  * @param name The name of the destination.
  * @param rating The destination's user rating.
  * @param limitedReviews Formatted string representing the number of reviews.
+ * @param isFavorite Whether the destination is marked as favorite.
  * @param onBackClick Action to perform when the back button is clicked.
  * @param onSeeAllPhotosClick Action to perform when the images button is clicked.
  * @param onShareClick Action to perform when the share button is clicked.
@@ -44,6 +45,7 @@ fun TravelDetailsHeader(
     name : String,
     rating : Double,
     limitedReviews : String,
+    isFavorite: Boolean = false,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -62,7 +64,12 @@ fun TravelDetailsHeader(
                 .height(250.dp)
         )
 
-        TravelDetailsTopIcons(onBackClick,onShareClick,onFavoriteClick)
+        TravelDetailsTopIcons(
+            isFavorite = isFavorite,
+            onBackClick = onBackClick,
+            onShareClick = onShareClick,
+            onFavoriteClick = onFavoriteClick
+        )
 
         Column(
             verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall),

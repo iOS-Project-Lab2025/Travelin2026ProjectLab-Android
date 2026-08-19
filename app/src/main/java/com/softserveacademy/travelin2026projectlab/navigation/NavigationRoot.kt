@@ -44,6 +44,8 @@ import com.softserveacademy.home.presentation.ui.screens.TravelTourDetailsScreen
 // Favorites screens.
 import com.softserveacademy.feature.favorites.common.presentation.ui.screens.RootFavoritesScreen
 import com.softserveacademy.feature.favorites.common.presentation.events.FavoriteType
+import com.softserveacademy.feature.favorites.hotels.presentation.ui.screens.RootFavoritesHotelScreen
+import com.softserveacademy.feature.favorites.tours.presentation.ui.screens.RootFavoritesToursScreen
 
 // Booking screens.
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelEnterBookingDetailsScreen
@@ -375,10 +377,10 @@ fun NavGraphBuilder.mainGraph(
         composable<Routes.TravelFavoritesScreen> {
             RootFavoritesScreen(
                 onNavigateToHotels = {
-                    navController.navigate(Routes.TravelListScreen(type = TravelItemType.HOTEL))
+                    navController.navigate(Routes.FavoritesHotelsScreen)
                 },
                 onNavigateToTours = {
-                    navController.navigate(Routes.TravelListScreen(type = TravelItemType.TOUR))
+                    navController.navigate(Routes.FavoritesToursScreen)
                 },
                 onNavigateToDetail = { id, type ->
                     val route = when (type) {
@@ -389,6 +391,24 @@ fun NavGraphBuilder.mainGraph(
                 },
                 onBackClick = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Routes.FavoritesHotelsScreen> {
+            RootFavoritesHotelScreen(
+                onBackClick = { navController.popBackStack() },
+                onHotelClick = { id ->
+                    navController.navigate(Routes.TravelHotelDetailsScreen(id = id))
+                }
+            )
+        }
+
+        composable<Routes.FavoritesToursScreen> {
+            RootFavoritesToursScreen(
+                onBackClick = { navController.popBackStack() },
+                onTourClick = { id ->
+                    navController.navigate(Routes.TravelTourDetailsScreen(id = id))
                 }
             )
         }

@@ -2,7 +2,6 @@ package com.softserveacademy.feature.favorites.hotels.data.repository
 
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelRoom
-import com.softserveacademy.core.domain.model.HotelRoomAmenity
 import com.softserveacademy.feature.favorites.common.domain.repository.FavoritesRepository
 import com.softserveacademy.feature.favorites.hotels.domain.model.FavoriteHotel
 import com.softserveacademy.feature.favorites.hotels.domain.repository.FavoriteHotelRepository
@@ -25,16 +24,17 @@ class FavoriteHotelRepositoryImpl @Inject constructor(
                         address = item.location,
                         reviewRating = item.rating,
                         imageList = listOf(item.imageUrl),
+                        pricePerNight = item.price,
                         rooms = listOf(
                             HotelRoom(
                                 type = "Standard",
                                 description = "Comfortable room",
                                 maxOccupancy = 2,
                                 bedType = "1 Bed",
-                                amenities = emptyList<HotelRoomAmenity>(),
+                                amenities = emptyList(),
                                 pricePerNight = item.price
                             )
-                        )
+                        ),
                     ),
                     isAvailable = true,
                     roomType = "1 Bed" // Mapping default values as per item structure

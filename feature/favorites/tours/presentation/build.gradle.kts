@@ -1,30 +1,22 @@
 plugins {
-    alias(libs.plugins.android.library)
+    id("com.softserveacademy.android.feature")
+    id("com.softserveacademy.android.hilt")
 }
 
 android {
-    namespace = "com.example.presentation"
-    compileSdk {
-        version = release(37)
-    }
-
-    defaultConfig {
-        minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
+    namespace = "com.softserveacademy.feature.favorites.tours.presentation"
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
+    implementation(projects.feature.favorites.tours.domain)
+    implementation(projects.feature.favorites.common.domain)
+    implementation(projects.feature.favorites.common.presentation)
+    implementation(projects.core.presentation.designSystem)
+    implementation(projects.core.domain)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.javax.inject)
 }
