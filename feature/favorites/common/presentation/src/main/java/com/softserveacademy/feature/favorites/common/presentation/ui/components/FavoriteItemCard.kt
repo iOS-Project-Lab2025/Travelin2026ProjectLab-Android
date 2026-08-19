@@ -25,6 +25,15 @@ fun FavoriteItemCard(
     onRemoveClick: (FavoriteItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isTour = favoriteItem.type.equals("TOUR", ignoreCase = true) ||
+                 favoriteItem.type.equals("TOURS", ignoreCase = true)
+
+    val priceDisplay = if (isTour) {
+        ""
+    } else {
+        favoriteItem.price?.let { "$$it/night" } ?: ""
+    }
+
     Box(
         modifier = modifier.clickable { onCardClick(favoriteItem) }
     ) {
@@ -32,8 +41,8 @@ fun FavoriteItemCard(
             title = favoriteItem.title,
             location = favoriteItem.location,
             rating = favoriteItem.rating.toString(),
-            price = "$${favoriteItem.price}/pax",
-            duration = "3D2N",
+            price = priceDisplay,
+            duration = if (isTour) "Explore" else "Stay",
             imageUrl = favoriteItem.imageUrl,
             onClick = { onCardClick(favoriteItem) }
         )
@@ -41,7 +50,7 @@ fun FavoriteItemCard(
         TravelIconButton(
             icon = HeartFilledIcon,
             onClick = { onRemoveClick(favoriteItem) },
-            iconColor = MaterialTheme.colorScheme.error,
+            iconColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(TravelinDimens.PaddingSmall)

@@ -87,7 +87,7 @@ fun TravelIconButtonPreview() {
                 icon = HeartFilledIcon,
                 onClick = {},
                 modifier = Modifier,
-                iconColor = MaterialTheme.colorScheme.error
+                iconColor = MaterialTheme.colorScheme.primary
             )
             TravelIconButton(
                 icon = ArrowLeftIcon,
