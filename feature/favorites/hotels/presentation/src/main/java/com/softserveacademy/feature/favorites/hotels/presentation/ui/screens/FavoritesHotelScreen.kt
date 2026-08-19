@@ -28,8 +28,6 @@ import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
 import com.softserveacademy.core.presentation.design_system.components.TravelFilterChip
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
-import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
-import com.softserveacademy.core.presentation.design_system.components.TravelErrorScreen
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
@@ -175,7 +173,7 @@ private fun FavoritesHotelScreenPreview() {
                 name = "Hotel 1",
                 address = "Krong Siem Reap",
                 starCategory = 4,
-                imageList = listOf("https://picsum.photos/200")
+                imageList = listOf("https://picsum.photos/200"),
             )
         ),
         FavoriteHotel(
@@ -184,7 +182,7 @@ private fun FavoritesHotelScreenPreview() {
                 name = "Hotel 2",
                 address = "Krong Siem Reap",
                 starCategory = 5,
-                imageList = listOf("https://picsum.photos/201")
+                imageList = listOf("https://picsum.photos/201"),
             )
         )
     )

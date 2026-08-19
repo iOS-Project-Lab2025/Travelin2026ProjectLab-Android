@@ -120,6 +120,7 @@ fun TravelTourDetailsScreen(
             TravelTourDetailsWrapper(
                 tour = tourDetails,
                 isDarkTheme = isDark,
+                isFavorite = tourDetailState.isFavorite,
                 isDescriptionExpanded = tourDetailState.isDescriptionExpanded,
                 showFullMap = tourDetailState.showFullMap,
                 showAllAmenities = tourDetailState.showAllAmenities,
@@ -187,6 +188,7 @@ private fun TravelTourDetailsWrapper(
     tour: Tour,
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean,
+    isFavorite: Boolean = false,
     isDescriptionExpanded: Boolean = false,
     showAllAmenities: Boolean = false,
     showFullMap: Boolean = false,
@@ -223,6 +225,7 @@ private fun TravelTourDetailsWrapper(
                         name = tour.title,
                         rating = tour.rating,
                         limitedReviews = tour.limitedReviews,
+                        isFavorite = isFavorite,
                         onBackClick = onBackClick,
                         onSeeAllPhotosClick = onSeeAllPhotosClick,
                         onShareClick = onShareClick,

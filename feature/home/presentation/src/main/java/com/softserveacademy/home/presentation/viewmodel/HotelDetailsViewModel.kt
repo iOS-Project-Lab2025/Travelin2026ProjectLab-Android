@@ -65,18 +65,22 @@ class HotelDetailsViewModel @Inject constructor(
             HotelDetailsEvent.ToggleFavorite -> {
                 _hotelDetailsState.value.hotel?.let { hotel ->
                     viewModelScope.launch {
-                        val favoriteItem = FavoriteItem(
-                            id = hotel.id,
-                            title = hotel.name,
-                            location = hotel.address,
-                            rating = hotel.reviewRating,
-                            type = "HOTEL",
-                            price = hotel.rooms.firstOrNull()?.pricePerNight ?: 0,
-                            imageUrl = hotel.imageList.firstOrNull() ?: "",
-                            addedAt = System.currentTimeMillis()
-                        )
-                        toggleFavoriteUseCase(favoriteItem)
-                        updateState { it.copy(isFavorite = !it.isFavorite) }
+                        try {
+                            val favoriteItem = FavoriteItem(
+                                id = hotel.id,
+                                title = hotel.name,
+                                location = hotel.address,
+                                rating = hotel.reviewRating,
+                                type = "HOTEL",
+                                price = hotel.rooms.firstOrNull()?.pricePerNight ?: 0,
+                                imageUrl = hotel.imageList.firstOrNull() ?: "",
+                                addedAt = System.currentTimeMillis()
+                            )
+                            toggleFavoriteUseCase(favoriteItem)
+                            updateState { it.copy(isFavorite = !it.isFavorite) }
+                        } catch (e: Exception) {
+                            android.util.Log.e("HotelDetailsViewModel", "Error toggling favorite", e)
+                        }
                     }
                 }
             }

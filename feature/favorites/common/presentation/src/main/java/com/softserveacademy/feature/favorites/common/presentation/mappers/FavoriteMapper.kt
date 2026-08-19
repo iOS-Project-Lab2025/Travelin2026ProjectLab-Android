@@ -1,14 +1,27 @@
 package com.softserveacademy.feature.favorites.common.presentation.mappers
 
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.feature.favorites.common.domain.model.FavoriteItem
 
 fun FavoriteItem.toHotel(): Hotel {
     return Hotel(
+        id = this.id,
         name = this.title,
         address = this.location,
-        userRating = this.rating,
         pricePerNight = this.price,
-        image = listOf(this.imageUrl)
+        reviewRating = this.rating,
+        imageList = listOf(this.imageUrl)
+    )
+}
+
+fun FavoriteItem.toTour(): Tour {
+    return Tour(
+        id = this.id,
+        title = this.title,
+        location = this.location,
+        rating = this.rating,
+        price = this.price.toDouble(),
+        imageList = listOf(this.imageUrl)
     )
 }

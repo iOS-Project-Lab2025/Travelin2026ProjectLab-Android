@@ -94,6 +94,9 @@ dependencies {
     implementation(projects.feature.favorites.hotels.domain)
     implementation(projects.feature.favorites.hotels.data)
     implementation(projects.feature.favorites.hotels.presentation)
+    implementation(projects.feature.favorites.tours.domain)
+    implementation(projects.feature.favorites.tours.data)
+    implementation(projects.feature.favorites.tours.presentation)
 
     // coil for jetpack compose to allow render images
     implementation(libs.coil.compose)

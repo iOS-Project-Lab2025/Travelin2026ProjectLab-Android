@@ -397,7 +397,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Koh Rong Samloem, Cambodia",
                             starCategory = 5,
                             reviewRating = 4.8,
-                            imageList = listOf("https://picsum.photos/id/10/800/600")
+                            imageList = listOf("https://picsum.photos/id/10/800/600"),
                         ),
                         Hotel(
                             id = "2",
@@ -405,7 +405,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Phuket, Thailand",
                             starCategory = 4,
                             reviewRating = 4.6,
-                            imageList = listOf("https://picsum.photos/id/11/800/600")
+                            imageList = listOf("https://picsum.photos/id/11/800/600"),
                         ),
                         Hotel(
                             id = "3",
@@ -413,7 +413,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Zermatt, Switzerland",
                             starCategory = 5,
                             reviewRating = 4.9,
-                            imageList = listOf("https://picsum.photos/id/12/800/600")
+                            imageList = listOf("https://picsum.photos/id/12/800/600"),
                         ),
                         Hotel(
                             id = "4",
@@ -421,7 +421,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Bali, Indonesia",
                             starCategory = 4,
                             reviewRating = 4.7,
-                            imageList = listOf("https://picsum.photos/id/13/800/600")
+                            imageList = listOf("https://picsum.photos/id/13/800/600"),
                         ),
                         Hotel(
                             id = "5",
@@ -429,7 +429,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Paris, France",
                             starCategory = 5,
                             reviewRating = 4.9,
-                            imageList = listOf("https://picsum.photos/id/14/800/600")
+                            imageList = listOf("https://picsum.photos/id/14/800/600"),
                         )
                     )
                 )

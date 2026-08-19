@@ -101,7 +101,7 @@ object HomeMockData {
             address = "Koh Rong Samloem, Cambodia",
             starCategory = 4,
             reviewRating = 4.8,
-            imageList = listOf("https://picsum.photos/id/10/800/600")
+            imageList = listOf("https://picsum.photos/id/10/800/600"),
         ),
         Hotel(
             id = "2",
@@ -109,7 +109,7 @@ object HomeMockData {
             address = "Phuket, Thailand",
             starCategory = 4,
             reviewRating = 4.6,
-            imageList = listOf("https://picsum.photos/id/11/800/600")
+            imageList = listOf("https://picsum.photos/id/11/800/600"),
         ),
         Hotel(
             id = "3",
@@ -117,7 +117,7 @@ object HomeMockData {
             address = "Zermatt, Switzerland",
             starCategory = 5,
             reviewRating = 4.9,
-            imageList = listOf("https://picsum.photos/id/12/800/600")
+            imageList = listOf("https://picsum.photos/id/12/800/600"),
         ),
         Hotel(
             id = "4",
@@ -125,7 +125,7 @@ object HomeMockData {
             address = "Bali, Indonesia",
             starCategory = 4,
             reviewRating = 4.7,
-            imageList = listOf("https://picsum.photos/id/13/800/600")
+            imageList = listOf("https://picsum.photos/id/13/800/600"),
         ),
         Hotel(
             id = "5",
@@ -133,7 +133,7 @@ object HomeMockData {
             address = "Paris, France",
             starCategory = 5,
             reviewRating = 4.9,
-            imageList = listOf("https://picsum.photos/id/14/800/600")
+            imageList = listOf("https://picsum.photos/id/14/800/600"),
         )
     )
 
