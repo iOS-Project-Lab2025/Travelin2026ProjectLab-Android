@@ -27,7 +27,7 @@ fun TravelDetailsTopIcons(
             .fillMaxWidth()
             .padding(
                 horizontal = TravelinDimens.PaddingMedium,
-                vertical = TravelinDimens.PaddingSmall
+                vertical = TravelinDimens.PaddingNormal
             ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
