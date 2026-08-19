@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,10 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
-import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
-import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
-import com.softserveacademy.core.presentation.design_system.theme.Green70
-import com.softserveacademy.core.presentation.design_system.theme.White100_Alpha70
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
+import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.home.presentation.R
 import com.softserveacademy.home.presentation.model.TravelItemType
 import com.softserveacademy.home.presentation.state.SectionState
@@ -67,15 +66,14 @@ fun TravelListScreen(
                     )
                 },
                 navigationIcon = {
-                    TravelIconButton(
-                        icon = ArrowLeftIcon,
-                        onClick = onBackClick,
-                        iconColor = Green70,
-                        backgroundColor = White100_Alpha70,
-                        contentDescription = "Back button",
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                    TravelArrowIconButton(onClick = onBackClick)
                 },
+                windowInsets = WindowInsets(
+                    TravelinDimens.PaddingNormal,
+                    0.dp,
+                    TravelinDimens.PaddingMedium,
+                    TravelinDimens.PaddingSmall
+                ),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )

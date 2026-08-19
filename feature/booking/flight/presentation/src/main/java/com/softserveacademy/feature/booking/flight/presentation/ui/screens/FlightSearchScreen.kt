@@ -17,6 +17,7 @@ import androidx.compose.runtime.key
 import com.softserveacademy.core.domain.model.FlightType
 import com.softserveacademy.core.presentation.design_system.components.InlineErrorBanner
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.common.presentation.ui.components.*
@@ -145,19 +146,13 @@ fun FlightCriteriaContent(
 
     Scaffold(
         topBar = {
-            IconButton(
+            TravelArrowIconButton(
                 onClick = onBack,
                 modifier = Modifier.padding(
-                    start = TravelinDimens.PaddingSmall,
-                    top = TravelinDimens.PaddingSmall
+                    start = TravelinDimens.PaddingMedium,
+                    top = TravelinDimens.PaddingNormal
                 )
-            ) {
-                Icon(
-                    imageVector = ArrowLeftIcon,
-                    contentDescription = stringResource(R.string.flight_back_content_description),
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            )
         },
         bottomBar = {
             TravelBookingBottomBar(
