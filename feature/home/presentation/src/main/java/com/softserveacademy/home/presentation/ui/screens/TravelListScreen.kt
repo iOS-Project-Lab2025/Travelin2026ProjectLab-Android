@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelCardHorizontal
 import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
@@ -137,7 +138,7 @@ fun TravelListScreen(
                                 address = item.address
                                 rating = item.starCategory
                                 ratingText = "${item.starCategory}-star hotel"
-                                price = "\$${item.pricePerNight}"
+                                price = "$${formatPrice(item.pricePerNight)}"
                                 priceSuffix = "/night"
                                 imageUrl = item.imageList.firstOrNull() ?: ""
                             } else {
@@ -148,7 +149,7 @@ fun TravelListScreen(
                                 address = tour.location
                                 rating = tour.rating.toInt() // TODO: Stars and user rating it's different, maybe make new cards?
                                 ratingText = tour.rating.toString()
-                                price = "$ ${tour.rates.adults}"
+                                price = "$ ${formatPrice(tour.rates.adults)}"
                                 priceSuffix = null
                                 imageUrl = tour.imageUrl.toString()
                             }

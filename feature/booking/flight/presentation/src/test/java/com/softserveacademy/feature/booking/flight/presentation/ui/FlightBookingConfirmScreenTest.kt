@@ -73,7 +73,7 @@ class FlightBookingConfirmScreenTest {
      */
     @Test
     fun whenDataIsLoaded_displaysTotalAmountInBottomBar() {
-        val testPrice = 900
+        val testPrice = 900.0
         val testCurrency = "USD"
 
         composeTestRule.setContent {
@@ -92,7 +92,8 @@ class FlightBookingConfirmScreenTest {
         }
 
         // Verify the big price text in the Bottom Bar
-        composeTestRule.onNodeWithText("$testCurrency $testPrice", substring = true).assertIsDisplayed()
+        // formatPrice(900.0) returns "900"
+        composeTestRule.onNodeWithText("$testCurrency 900", substring = true).assertIsDisplayed()
         composeTestRule.onNodeWithText("Total Price", ignoreCase = true).assertExists()
     }
 

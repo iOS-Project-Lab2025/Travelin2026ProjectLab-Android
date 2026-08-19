@@ -265,9 +265,10 @@ object HomeMockData {
             guests = BookingGuests(adults = 2),
 
             price = HotelBookingPrice(
-                ratePerNight = 50,
-                roomSubtotal = 250,
-                total = 250
+                ratePerNight = 50.0,
+                roomSubtotal = 250.0,
+                total = 250.0,
+                currencyCode = "USD"
             ),
 
             confirmationCode = "HOTEL456",
@@ -294,8 +295,9 @@ object HomeMockData {
                     ratePerAdult = 120.0,
                     ratePerChildren = 60.0,
                     ratePerInfant = 0.0,
-                    subtotal = 250,
-                    total = 250
+                    subtotal = 250.0,
+                    total = 250.0,
+                    currencyCode = "USD"
                 ),
                 confirmationCode = "TOUR789",
                 status = BookingStatus.COMPLETED,

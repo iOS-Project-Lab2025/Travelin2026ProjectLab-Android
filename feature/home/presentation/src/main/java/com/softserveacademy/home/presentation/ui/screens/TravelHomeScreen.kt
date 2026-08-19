@@ -49,6 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.softserveacademy.core.domain.model.RatePerParticipant
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 
 /**
@@ -264,7 +265,7 @@ fun TravelHomeScreen(
                                 title = tour.title,
                                 location = tour.location,
                                 rating = tour.rating.toString(),
-                                price = "$ ${tour.rates.adults}",
+                                price = "$ ${formatPrice(tour.rates.adults)}",
                                 duration = tour.duration,
                                 imageUrl = tour.imageUrl ?: "",
                                 onClick = { onTourClick(tour.id) }
@@ -331,7 +332,7 @@ fun TravelHomeScreen(
                                             address = hotel.address,
                                             starRating = hotel.starCategory,
                                             ratingText = "${hotel.starCategory}-star hotel",
-                                            price = "\$${hotel.pricePerNight}",
+                                            price = "$${formatPrice(hotel.pricePerNight)}",
                                             priceSuffix = "/night",
                                             imageUrl = hotel.imageList.firstOrNull() ?: ""
                                         )

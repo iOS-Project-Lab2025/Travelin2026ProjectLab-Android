@@ -28,11 +28,12 @@ class HotelBookingGuests(BaseSchema):
     pets: bool = False
 
 class HotelBookingPrice(BaseSchema):
-    rate_per_night: int = Field(alias="rate_per_night")
-    room_subtotal: int = Field(alias="room_subtotal")
-    taxes: Optional[int] = 0
-    fees: Optional[int] = 0
-    total: int
+    rate_per_night: float = Field(alias="rate_per_night")
+    room_subtotal: float = Field(alias="room_subtotal")
+    taxes: Optional[float] = 0.0
+    fees: Optional[float] = 0.0
+    total: float
+    currency_code: str = Field("USD", alias="currency_code")
 
 class HotelBooking(BaseSchema):
     booking_id: str = Field(alias="booking_id")
@@ -59,10 +60,11 @@ class TourBookingPrice(BaseSchema):
     rate_per_adult: float = Field(alias="rate_per_adult")
     rate_per_children: float = Field(alias="rate_per_children")
     rate_per_infant: float = Field(alias="rate_per_infant")
-    subtotal: int
-    taxes: int = 0
-    fees: int = 0
-    total: int
+    subtotal: float
+    taxes: float = 0.0
+    fees: float = 0.0
+    total: float
+    currency_code: str = Field("USD", alias="currency_code")
 
 class TourBooking(BaseSchema):
     booking_id: str = Field(alias="booking_id")

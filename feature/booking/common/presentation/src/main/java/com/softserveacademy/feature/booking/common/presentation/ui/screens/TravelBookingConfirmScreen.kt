@@ -13,6 +13,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
@@ -23,7 +24,7 @@ import com.softserveacademy.core.presentation.design_system.components.TravelErr
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelBookingConfirmScreen(
-    totalPrice: Int,
+    totalPrice: Double,
     onBackClick: () -> Unit,
     onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -78,7 +79,7 @@ fun TravelBookingConfirmScreen(
 
 @Composable
 fun TravelBookingConfirmBottomBar(
-    totalPrice: Int,
+    totalPrice: Double,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
@@ -111,7 +112,7 @@ fun TravelBookingConfirmBottomBar(
                         fontWeight = FontWeight.Bold,
                     )
                 ) {
-                    append(" $$totalPrice")
+                    append(" $${formatPrice(totalPrice)}")
                 }
             }
 
@@ -136,7 +137,7 @@ fun TravelBookingConfirmBottomBar(
 fun TravelBookingConfirmScreenPreview() {
     Travelin2026ProjectLabTheme() {
         TravelBookingConfirmScreen(
-            totalPrice = 100,
+            totalPrice = 100.0,
             onBackClick = {},
             onConfirmClick = {},
             content = {

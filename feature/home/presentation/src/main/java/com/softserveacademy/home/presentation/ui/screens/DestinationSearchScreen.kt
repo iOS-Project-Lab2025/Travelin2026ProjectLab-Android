@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
@@ -251,7 +252,7 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     title = item.hotel.name,
                     location = item.hotel.address,
                     image = item.hotel.imageList.firstOrNull(),
-                    price = "$\$item.hotel.pricePerNight",
+                    price = formatPrice(item.hotel.pricePerNight),
                     rating = item.hotel.reviewRating,
                     onClick = { item.hotel.id.let { onItemClick(it, TravelItemType.HOTEL) } }
                 )
@@ -260,7 +261,7 @@ fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -
                     title = item.tour.title,
                     location = item.tour.location,
                     image = item.tour.imageList.firstOrNull(),
-                    price = "${item.tour.rates.adults}",
+                    price = formatPrice(item.tour.rates.adults),
                     rating = item.tour.rating,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
                 )

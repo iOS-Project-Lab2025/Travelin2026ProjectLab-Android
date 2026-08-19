@@ -66,6 +66,7 @@ data class BookingParticipants(
  * @property taxes Total taxes applied to the booking.
  * @property fees Total fees applied to the booking.
  * @property total The final total price including taxes and fees.
+ * @property currencyCode ISO currency code used for payment.
  */
 @Serializable
 data class TourBookingPrice(
@@ -75,8 +76,10 @@ data class TourBookingPrice(
     val ratePerChildren: Double,
     @SerialName("rate_per_infant")
     val ratePerInfant: Double,
-    val subtotal: Int,
-    val taxes: Int = 0,
-    val fees: Int = 0,
-    val total: Int
+    val subtotal: Double,
+    val taxes: Double = 0.0,
+    val fees: Double = 0.0,
+    val total: Double,
+    @SerialName("currency_code")
+    val currencyCode: String = "USD"
 )

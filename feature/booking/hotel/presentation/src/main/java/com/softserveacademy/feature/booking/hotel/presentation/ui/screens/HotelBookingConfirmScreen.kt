@@ -277,7 +277,7 @@ fun HotelBookingConfirmPreview() {
         maxOccupancy = 5,
         bedType = "1 Queen bed",
         amenities = emptyList(),
-        pricePerNight = 150,
+        pricePerNight = 150.0,
         images = listOf("https://picsum.photos/400/300")
     )
 
