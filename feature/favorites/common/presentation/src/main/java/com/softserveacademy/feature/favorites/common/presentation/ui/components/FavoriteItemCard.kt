@@ -41,7 +41,7 @@ fun FavoriteItemCard(
         TravelIconButton(
             icon = HeartFilledIcon,
             onClick = { onRemoveClick(favoriteItem) },
-            iconColor = MaterialTheme.colorScheme.error,
+            iconColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(TravelinDimens.PaddingSmall)
