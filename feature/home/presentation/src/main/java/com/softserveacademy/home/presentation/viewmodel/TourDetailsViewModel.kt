@@ -63,7 +63,7 @@ class TourDetailsViewModel @Inject constructor(
                                 location = tour.location,
                                 rating = tour.rating,
                                 type = "TOUR",
-                                price = tour.price.toInt(),
+                                price = tour.rates.adults,
                                 imageUrl = tour.imageList.firstOrNull() ?: "",
                                 addedAt = System.currentTimeMillis()
                             )

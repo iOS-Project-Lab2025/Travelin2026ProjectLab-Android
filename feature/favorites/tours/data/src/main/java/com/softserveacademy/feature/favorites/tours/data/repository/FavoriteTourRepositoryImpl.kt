@@ -23,7 +23,6 @@ class FavoriteTourRepositoryImpl @Inject constructor(
                         location = item.location,
                         rating = item.rating,
                         imageList = listOf(item.imageUrl),
-                        price = item.price.toDouble()
                     ),
                     isAvailable = true,
                     category = "Adventure"

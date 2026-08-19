@@ -311,13 +311,12 @@ private fun FavoritesCarouselSection(
 @Composable
 private fun TravelFavoritesScreenLoadedPreview() {
     val mockFavorites = listOf(
-        // === TOURS / TRIPS ===
+        // === TOURS  ===
         FavoriteItem(
             id = "1",
             title = "Mount Bromo",
             location = "Volcano in East Java",
             rating = 4.9,
-            price = 150,
             imageUrl = "",
             type = "TOUR",
             addedAt = System.currentTimeMillis()
@@ -327,7 +326,6 @@ private fun TravelFavoritesScreenLoadedPreview() {
             title = "Labengki Sombori",
             location = "Islands in Sulawesi",
             rating = 4.8,
-            price = 250,
             imageUrl = "",
             type = "TOUR",
             addedAt = System.currentTimeMillis()
@@ -337,7 +335,6 @@ private fun TravelFavoritesScreenLoadedPreview() {
             title = "Torres del Paine",
             location = "Patagonia, Chile",
             rating = 5.0,
-            price = 400,
             imageUrl = "",
             type = "TOUR",
             addedAt = System.currentTimeMillis()
@@ -349,7 +346,7 @@ private fun TravelFavoritesScreenLoadedPreview() {
             title = "Grand Hotel Valparaíso",
             location = "Viña del Mar",
             rating = 4.8,
-            price = 120,
+            price = 120.0,
             imageUrl = "",
             type = "HOTEL",
             addedAt = System.currentTimeMillis()
@@ -359,7 +356,7 @@ private fun TravelFavoritesScreenLoadedPreview() {
             title = "Enjoy Viña del Mar",
             location = "Viña del Mar",
             rating = 4.6,
-            price = 180,
+            price = 150.0,
             imageUrl = "",
             type = "HOTEL",
             addedAt = System.currentTimeMillis()

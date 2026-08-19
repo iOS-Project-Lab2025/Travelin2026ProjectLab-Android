@@ -9,9 +9,9 @@ fun FavoriteItem.toHotel(): Hotel {
         id = this.id,
         name = this.title,
         address = this.location,
-        pricePerNight = this.price,
+        pricePerNight = this.price ?: 0.0,
         reviewRating = this.rating,
-        imageList = listOf(this.imageUrl)
+        imageList = listOf(this.imageUrl),
     )
 }
 
@@ -21,7 +21,6 @@ fun FavoriteItem.toTour(): Tour {
         title = this.title,
         location = this.location,
         rating = this.rating,
-        price = this.price.toDouble(),
-        imageList = listOf(this.imageUrl)
+        imageList = listOf(this.imageUrl),
     )
 }

@@ -127,7 +127,7 @@ fun FavoritesToursScreen(
                             address = tour.location,
                             starRating = tour.rating.toInt(),
                             ratingText = tour.rating.toString(),
-                            price = "$ ${tour.price}",
+                            price = "$ ${tour.rates.adults}",
                             priceSuffix = null,
                             imageUrl = tour.imageList.firstOrNull() ?: ""
                         )

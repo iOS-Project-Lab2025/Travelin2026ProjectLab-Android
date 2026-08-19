@@ -72,7 +72,7 @@ class HotelDetailsViewModel @Inject constructor(
                                 location = hotel.address,
                                 rating = hotel.reviewRating,
                                 type = "HOTEL",
-                                price = hotel.rooms.firstOrNull()?.pricePerNight ?: 0,
+                                price = hotel.pricePerNight,
                                 imageUrl = hotel.imageList.firstOrNull() ?: "",
                                 addedAt = System.currentTimeMillis()
                             )

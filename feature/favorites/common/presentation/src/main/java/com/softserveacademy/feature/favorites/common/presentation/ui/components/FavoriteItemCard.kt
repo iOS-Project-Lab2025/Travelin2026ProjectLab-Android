@@ -61,7 +61,7 @@ private fun FavoriteItemCardPreview() {
         title = "Grand Hotel Valparaíso",
         location = "Viña del Mar, Chile",
         rating = 4.8,
-        price = 120,
+        price = 120.0,
         imageUrl = "https://picsum.photos/200",
         type = FavoriteType.HOTEL.name,
         addedAt = System.currentTimeMillis()

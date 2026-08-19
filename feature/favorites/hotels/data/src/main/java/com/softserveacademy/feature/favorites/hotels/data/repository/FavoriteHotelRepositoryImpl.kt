@@ -24,7 +24,7 @@ class FavoriteHotelRepositoryImpl @Inject constructor(
                         address = item.location,
                         reviewRating = item.rating,
                         imageList = listOf(item.imageUrl),
-                        pricePerNight = item.price,
+                        pricePerNight = item.price ?: 0.0,
                         rooms = listOf(
                             HotelRoom(
                                 type = "Standard",
@@ -32,7 +32,7 @@ class FavoriteHotelRepositoryImpl @Inject constructor(
                                 maxOccupancy = 2,
                                 bedType = "1 Bed",
                                 amenities = emptyList(),
-                                pricePerNight = item.price
+                                pricePerNight = item.price ?: 0.0
                             )
                         ),
                     ),

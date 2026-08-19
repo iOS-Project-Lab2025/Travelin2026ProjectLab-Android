@@ -74,7 +74,7 @@ private fun TravelFavoritesSectionPreview() {
             title = "Mount Bromo",
             location = "Volcano in East Java",
             rating = 4.9,
-            price = 150,
+            price = 150.0,
             imageUrl = "",
             type = "TOURS",
             addedAt = System.currentTimeMillis()
@@ -84,7 +84,7 @@ private fun TravelFavoritesSectionPreview() {
             title = "Labengki Sombori",
             location = "Islands in Sulawesi",
             rating = 4.8,
-            price = 250,
+            price = 250.0,
             imageUrl = "",
             type = "TOURS",
             addedAt = System.currentTimeMillis()

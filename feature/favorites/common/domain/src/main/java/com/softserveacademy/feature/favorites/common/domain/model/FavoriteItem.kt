@@ -9,7 +9,7 @@ data class FavoriteItem(
     val location: String,
     val rating: Double,
     val type: String,
-    val price: Int,
+    val price: Double? = null,
     val imageUrl: String,
     val addedAt: Long
 ) {
