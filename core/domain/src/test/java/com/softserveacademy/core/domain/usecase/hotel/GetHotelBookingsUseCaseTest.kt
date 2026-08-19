@@ -40,7 +40,7 @@ class GetHotelBookingsUseCaseTest {
                 checkIn = 1000L,
                 checkOut = 2000L,
                 guests = BookingGuests(2, 0, false),
-                price = HotelBookingPrice(100, 200, 0, 0, 200),
+                price = HotelBookingPrice(100.0, 200.0, 0.0, 0.0, 200.0, "USD"),
                 status = BookingStatus.COMPLETED,
                 confirmationCode = "HB-500",
                 createdAt = 500L,

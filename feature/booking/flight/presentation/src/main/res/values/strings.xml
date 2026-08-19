@@ -135,7 +135,7 @@
     <string name="flight_confirm_dates_label">Dates Selected</string>
     <!-- Confirmation Screen Enhancements -->
     <string name="flight_confirm_price_summary_header">Price Summary</string>
-    <string name="flight_confirm_price_breakdown_format">%1$s %2$d per ticket x %3$d passengers</string>
+    <string name="flight_confirm_price_breakdown_format">%1$s %2$s per ticket x %3$d passengers</string>
     <string name="flight_confirm_total_price_label">Total Price</string>
     <!-- Confirmation Screen Final -->
     <string name="flight_confirm_guests_label">Travelers</string>
