@@ -12,7 +12,14 @@ This project uses Gradle Product Flavors and Build Types to manage different env
 
 ### Signing & Secrets
 
-For information on how to configure signing for release builds and manage secrets like API keys, see [SIGNING.md](SIGNING.md).
+For information on how to configure signing for release builds and manage secrets like API keys (Google Maps, Koog AI, Stripe), see [SIGNING.md](SIGNING.md).
+
+| Feature | Key Required | Purpose |
+| :--- | :--- | :--- |
+| **Maps** | `MAPS_API_KEY` | Google Maps rendering and Places API. |
+| **Aira Assistant** | `AI_KEY` | Gemini LLM integration for travel suggestions. |
+| **Payments** | `STRIPE_PUBLISHABLE_KEY` | Frontend Stripe SDK initialization. |
+| **Payments** | `STRIPE_SECRET_KEY` | Backend/Mock PaymentIntent creation. |
 
 ### Build Types
 
