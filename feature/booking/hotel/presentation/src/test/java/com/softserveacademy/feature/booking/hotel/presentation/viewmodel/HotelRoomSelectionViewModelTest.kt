@@ -45,8 +45,8 @@ class HotelRoomSelectionViewModelTest {
 
     private val hotelId = "1"
     private val mockRooms = listOf(
-        HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100),
-        HotelRoom(id = "2", type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200)
+        HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 1, amenities = emptyList(), pricePerNight = 100.0),
+        HotelRoom(id = "2", type = "Room 2", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 200.0)
     )
 
     private val checkIn = 1000L
@@ -148,7 +148,7 @@ class HotelRoomSelectionViewModelTest {
     @Test
     fun `applyFilters resets selectedRoomId when filteredRooms is empty and persists it`() = runTest {
         val specialRooms = listOf(
-            HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100)
+            HotelRoom(id = "1", type = "Room 1", description = "", maxOccupancy = 2, bedType = "", bedCount = 2, amenities = emptyList(), pricePerNight = 100.0)
         )
         coEvery { getFilterRoomsUseCase(hotelId, any(), any()) } returns AppResult.Success(specialRooms)
         coEvery { getAvailableRoomsUseCase(any(), any(), any(), any(), any()) } returns AppResult.Success(specialRooms)

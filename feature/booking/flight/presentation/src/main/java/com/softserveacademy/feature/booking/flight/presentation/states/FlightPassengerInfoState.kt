@@ -1,6 +1,6 @@
 package com.softserveacademy.feature.booking.flight.presentation.states
 
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.feature.booking.flight.domain.model.ContactError
 import com.softserveacademy.feature.booking.flight.domain.model.PassengerError
@@ -16,7 +16,7 @@ import com.softserveacademy.feature.booking.flight.domain.model.PassengerError
  */
 data class FlightPassengerInfoState(
     val passengers: List<FlightPassenger> = emptyList(),
-    val contactInfo: FlightContactInfo = FlightContactInfo(),
+    val contactInfo: BookingContactInfo = BookingContactInfo(),
     val isLoading: Boolean = true,
     val passengerErrors: Map<Int, PassengerError> = emptyMap(),
     val contactError: ContactError? = null,

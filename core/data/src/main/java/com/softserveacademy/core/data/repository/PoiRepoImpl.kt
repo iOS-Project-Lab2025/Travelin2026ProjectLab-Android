@@ -71,10 +71,9 @@ class PoiRepoImpl @Inject constructor(
     override suspend fun getNearbyPlaces(
         latitude: Double,
         longitude: Double,
-        radius: Double?
+        radius: Double?,
         requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
-
         val fields = listOf(
             Place.Field.DISPLAY_NAME,
             Place.Field.TYPES,
@@ -82,7 +81,7 @@ class PoiRepoImpl @Inject constructor(
             Place.Field.PHOTO_METADATAS,
             Place.Field.EDITORIAL_SUMMARY
         )
-        val actualRadius = radius ?: searchRadius
+        val actualRadius = radius ?: 5000.0  // Define default radius
         val types = listOf(
             "tourist_attraction",
             "museum",
@@ -98,8 +97,9 @@ class PoiRepoImpl @Inject constructor(
             latitude,
             longitude,
             actualRadius,
-            maxPoiSearch,
+            requestNumber,
             types,
+            emptyList(),
             fields
         )
         Log.d(TAG, "getNearbyPlaces: fetched ${places.size} places from Google SDK")
@@ -116,24 +116,7 @@ class PoiRepoImpl @Inject constructor(
         mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
     }
 
-        val excludedTypes = listOf("condominium_complex", "lodging", "real_estate_agency")
 
-        val places = fetchPlaces(
-            latitude,
-            longitude,
-            5000.0,
-            requestNumber,
-            listOf("tourist_attraction", "museum", "park"),
-            excludedTypes,
-            fields
-        )
-
-        if (places.isEmpty()) return@safeCall emptyList()
-
-        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
-
-        mapPlacesToPois(places, routeMatrix, "walk")
-    }
 
     /**
      * Fetches nearby transport hubs like bus and train stations.
@@ -147,7 +130,6 @@ class PoiRepoImpl @Inject constructor(
         longitude: Double,
         requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
-
         val fields = listOf(
             Place.Field.DISPLAY_NAME,
             Place.Field.TYPES,
@@ -171,9 +153,6 @@ class PoiRepoImpl @Inject constructor(
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places, "DRIVE")
         mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
-
-        mapPlacesToPois(places, routeMatrix, "drive")
-
     }
 
     /**

@@ -10,5 +10,5 @@ interface FlightBookingRepository {
     /**
      * Officializes a flight booking by saving it to persistent storage.
      */
-    suspend fun saveBooking(booking: FlightBooking): AppResult<Unit>
+    suspend fun saveBooking(booking: FlightBooking): AppResult<FlightBooking>
 }

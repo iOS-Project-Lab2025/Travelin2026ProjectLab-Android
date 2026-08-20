@@ -72,6 +72,11 @@ class TourDetailsViewModel @Inject constructor(
             TourDetailsEvent.DismissAmenities -> {
                 updateState { it.copy(showAllAmenities = false) }
             }
+            TourDetailsEvent.Book -> {
+                _tourDetailsState.value.tourDetails?.let {
+                    sendEffect(TourDetailsEventEffect.NavigateToBooking(it.id))
+                }
+            }
         }
     }
 

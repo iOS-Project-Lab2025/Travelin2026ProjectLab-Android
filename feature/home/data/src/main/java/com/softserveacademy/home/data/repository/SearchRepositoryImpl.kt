@@ -108,7 +108,7 @@ class SearchRepositoryImpl @Inject constructor(
 
                     is SearchItem.PoiItem -> {
                         // POIs are already filtered by the API using circular bounds.
-                        // If we have a road/walking distance, we can use it for extra precision, 
+                        // If we have a road/walking distance, we can use it for extra precision,
                         // but if it's missing (e.g. no route found), we still keep the item.
                         val distanceKm = item.poi.distanceMeters?.toDouble()?.let { it / 1000.0 }
                         return@filter distanceKm == null || distanceKm <= radius
@@ -154,7 +154,7 @@ class SearchRepositoryImpl @Inject constructor(
 
     private fun getMockData(): List<SearchItem> = listOf(
         // Hotels (We only keep those that do not come from the API if necessary, but here we remove them to use only the API)
-        
+
         // Tours (We only keep those that do not come from the API)
 
         // Destinations
@@ -163,6 +163,8 @@ class SearchRepositoryImpl @Inject constructor(
         SearchItem.DestinationItem(Destination("d3", "https://picsum.photos/id/15/400/300", "Atacama Desert", "Antofagasta, Chile", 4.9, 800.0, "USD", "3D2N")),
 
         // More randoms to reach 15
+        SearchItem.HotelItem(Hotel("4", "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
+        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours, 30.0, 4.5, TourCategory.CITY)),
         SearchItem.DestinationItem(Destination("d4", "https://picsum.photos/id/17/400/300", "Pucón", "Araucanía, Chile", 4.7, 500.0, "USD", "3D2N"))
     )
 }

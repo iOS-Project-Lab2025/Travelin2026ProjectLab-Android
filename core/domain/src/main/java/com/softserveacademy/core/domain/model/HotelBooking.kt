@@ -25,6 +25,7 @@ import kotlinx.serialization.Serializable
 data class HotelBooking(
     @SerialName("booking_id")
     val bookingId: String,
+    @SerialName("user_id")
     val userId: String? = null,
     @SerialName("hotel_id")
     val hotelId: String,
@@ -35,7 +36,7 @@ data class HotelBooking(
     @SerialName("check_out")
     val checkOut: Long,
     val guests: BookingGuests,
-    val price: BookingPrice,
+    val price: HotelBookingPrice,
     val status: BookingStatus,
     @SerialName("confirmation_code")
     val confirmationCode: String,
@@ -67,36 +68,17 @@ data class BookingGuests(
  * @property taxes Total taxes applied to the booking.
  * @property fees Total fees applied to the booking.
  * @property total The final total price including taxes and fees.
+ * @property currencyCode ISO currency code used for payment.
  */
 @Serializable
-data class BookingPrice(
+data class HotelBookingPrice(
     @SerialName("rate_per_night")
-    val ratePerNight: Int,
+    val ratePerNight: Double,
     @SerialName("room_subtotal")
-    val roomSubtotal: Int,
-    val taxes: Int = 0,
-    val fees: Int = 0,
-    val total: Int
-)
-
-/**
- * Data class representing the contact information for a booking.
- *
- *  @property firstName The first name of the guest.
- *  @property lastName The last name of the guest.
- *  @property email The email address of the guest.
- *  @property countryCode The country code of the guest's phone number.
- *  @property phoneNumber The phone number of the guest.
- */
-@Serializable
-data class BookingContactInfo(
-    @SerialName("first_name")
-    val firstName: String = "",
-    @SerialName("last_name")
-    val lastName: String = "",
-    val email: String = "",
-    @SerialName("country_code")
-    val countryCode: String = "",
-    @SerialName("phone_number")
-    val phoneNumber: String = ""
+    val roomSubtotal: Double,
+    val taxes: Double = 0.0,
+    val fees: Double = 0.0,
+    val total: Double,
+    @SerialName("currency_code")
+    val currencyCode: String = "USD"
 )

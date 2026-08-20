@@ -7,8 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
+import com.softserveacademy.feature.booking.hotel.presentation.events.HotelEnterBookingDetailsEvent
+import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelEnterBookingDetailsScreen
 import com.softserveacademy.feature.booking.common.presentation.ui.components.util.TravelBookingCountItem
 import com.softserveacademy.feature.booking.hotel.presentation.R
@@ -44,30 +45,29 @@ fun HotelEnterBookingDetailsScreen(
         TravelBookingCountItem.Counter(
             label = stringResource(R.string.adults_label),
             count = uiState.adultsCount,
-            onCountChange = { viewModel.onEvent(TravelEnterBookingDetailsEvent.OnAdultsCountChange(it)) },
+            onCountChange = { viewModel.onEvent(HotelEnterBookingDetailsEvent.OnAdultsCountChange(it)) },
             minCount = 1
         ),
         TravelBookingCountItem.Counter(
-            label = stringResource(R.string.kids_label),
-            subtitle = stringResource(R.string.kids_subtitle),
+            label = stringResource(R.string.children_label),
+            subtitle = stringResource(R.string.children_subtitle),
             count = uiState.childrenCount,
-            onCountChange = { viewModel.onEvent(TravelEnterBookingDetailsEvent.OnChildrenCountChange(it)) }
+            onCountChange = { viewModel.onEvent(HotelEnterBookingDetailsEvent.OnChildrenCountChange(it)) }
         ),
         TravelBookingCountItem.Switch(
             label = stringResource(R.string.pets_label),
             checked = uiState.hasPets,
-            onCheckedChange = { viewModel.onEvent(TravelEnterBookingDetailsEvent.OnHasPetsChange(it)) }
+            onCheckedChange = { viewModel.onEvent(HotelEnterBookingDetailsEvent.OnHasPetsChange(it)) }
         )
     )
 
     TravelEnterBookingDetailsScreen(
         modifier = modifier,
-        state = uiState,
+        state = uiState.screenState,
         onEvent = { event ->
             when (event) {
                 TravelEnterBookingDetailsEvent.OnBackClick -> onBackClick()
-                TravelEnterBookingDetailsEvent.OnAcceptClick -> viewModel.onEvent(event)
-                else -> viewModel.onEvent(event)
+                else -> viewModel.onEvent(HotelEnterBookingDetailsEvent.ScreenEvent(event))
             }
         },
         bookingCountItems = bookingCountItems,

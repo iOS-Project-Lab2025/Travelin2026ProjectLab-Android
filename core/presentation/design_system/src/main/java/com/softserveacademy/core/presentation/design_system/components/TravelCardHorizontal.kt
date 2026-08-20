@@ -116,7 +116,7 @@ fun TravelCardHorizontal(
                 }
             }
             Text(
-                text = "$price${priceSuffix ?: ""}",
+                text = "${price}${priceSuffix ?: ""}",
                 modifier = Modifier.align(Alignment.End),
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium

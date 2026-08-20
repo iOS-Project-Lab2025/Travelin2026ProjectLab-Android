@@ -52,6 +52,14 @@ import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelCo
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelBookingConfirmScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelBookingConfirmViewModel
 import com.softserveacademy.feature.booking.common.presentation.ui.screens.TravelBookingSuccessScreen
+
+// Tour Booking screens.
+import com.softserveacademy.feature.booking.tour.presentation.ui.screens.TourEnterBookingDetailsScreen
+import com.softserveacademy.feature.booking.tour.presentation.viewmodel.TourEnterBookingDetailsViewModel
+import com.softserveacademy.feature.booking.tour.presentation.ui.screens.TourContactInfoScreen
+import com.softserveacademy.feature.booking.tour.presentation.viewmodel.TourContactInfoViewModel
+import com.softserveacademy.feature.booking.tour.presentation.ui.screens.TourBookingConfirmScreen
+import com.softserveacademy.feature.booking.tour.presentation.viewmodel.TourBookingConfirmViewModel
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightBookingConfirmScreen
 import com.softserveacademy.feature.booking.flight.presentation.ui.screens.FlightPassengerInfoScreen
 
@@ -327,7 +335,10 @@ fun NavGraphBuilder.mainGraph(
             TravelTourDetailsScreen(
                 itemId = route.id,
                 onBackClick = { navController.popBackStack() },
-                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) }
+                onSeeAllPhotosClick = { navController.navigate(Routes.HotelGalleryScreen(id = route.id)) },
+                onBookClick = { tourId ->
+                    navController.navigate(Routes.TourEnterBookingDetailsScreen(tourId = tourId))
+                }
             )
         }
 
@@ -442,6 +453,43 @@ fun NavGraphBuilder.bookingGraph(navController: NavHostController) {
         composable<Routes.HotelBookingConfirmationScreen> {
             val viewModel: HotelBookingConfirmViewModel = hiltViewModel()
             HotelBookingConfirmScreen(
+                onBackClick = { navController.popBackStack() },
+                onPaymentSuccess = {
+                    navController.navigate(Routes.TravelBookingSuccessScreen)
+                },
+                viewModel = viewModel
+            )
+        }
+
+        composable<Routes.TourEnterBookingDetailsScreen> { backStackEntry ->
+            val route: Routes.TourEnterBookingDetailsScreen = backStackEntry.toRoute()
+            val viewModel: TourEnterBookingDetailsViewModel = hiltViewModel()
+
+            TourEnterBookingDetailsScreen(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToContactInfo = {
+                    navController.navigate(Routes.TourContactInfoScreen(tourId = route.tourId))
+                },
+                viewModel = viewModel
+            )
+        }
+
+        composable<Routes.TourContactInfoScreen> { backStackEntry ->
+            val route: Routes.TourContactInfoScreen = backStackEntry.toRoute()
+            val viewModel: TourContactInfoViewModel = hiltViewModel()
+
+            TourContactInfoScreen(
+                onBackClick = { navController.popBackStack() },
+                onNextClick = {
+                    navController.navigate(Routes.TourBookingConfirmationScreen(tourId = route.tourId))
+                },
+                viewModel = viewModel
+            )
+        }
+
+        composable<Routes.TourBookingConfirmationScreen> {
+            val viewModel: TourBookingConfirmViewModel = hiltViewModel()
+            TourBookingConfirmScreen(
                 onBackClick = { navController.popBackStack() },
                 onPaymentSuccess = {
                     navController.navigate(Routes.TravelBookingSuccessScreen)

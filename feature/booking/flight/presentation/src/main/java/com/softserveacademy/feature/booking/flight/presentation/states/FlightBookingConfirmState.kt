@@ -8,7 +8,7 @@ import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDra
 data class FlightBookingConfirmState(
     val isLoading: Boolean = true,
     val draft: FlightBookingDraft? = null,
-    val totalPrice: Int = 0,
+    val totalPrice: Double = 0.0,
     val currency: String = "USD",
     val showPaymentSimulationSheet: Boolean = false,
     val isPaymentSuccessful: Boolean = false,

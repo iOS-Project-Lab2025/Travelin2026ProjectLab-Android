@@ -36,7 +36,7 @@ fun TravelFlightLegCard(
         shape = RoundedCornerShape(TravelinDimens.SpaceSmall),
         elevation = CardDefaults.cardElevation(TravelinDimens.ElevationMedium),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         modifier = modifier.fillMaxWidth()
     ) {

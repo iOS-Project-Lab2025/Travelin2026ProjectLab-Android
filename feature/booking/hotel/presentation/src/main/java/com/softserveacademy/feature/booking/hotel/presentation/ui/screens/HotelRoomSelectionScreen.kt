@@ -185,7 +185,7 @@ private fun HotelRoomSelectionScreenPreview() {
             bedType = "1 King bed",
             bedCount = 1,
             amenities = listOf("hotel.breakfast", "hotel.wifi"),
-            pricePerNight = 150,
+            pricePerNight = 150.0,
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
                 "https://picsum.photos/id/138/200/300"
@@ -199,7 +199,7 @@ private fun HotelRoomSelectionScreenPreview() {
             bedType = "1 Queen bed",
             bedCount = 1,
             amenities = listOf("hotel.breakfast", "hotel.wifi"),
-            pricePerNight = 150,
+            pricePerNight = 150.0,
             images = listOf(
                 "https://picsum.photos/id/137/200/300",
                 "https://picsum.photos/id/138/200/300"

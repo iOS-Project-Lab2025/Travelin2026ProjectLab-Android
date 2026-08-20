@@ -3,8 +3,8 @@
     <string name="guest_count_title">Guests</string>
     <string name="guest_count_subtitle">Add guests to your reservation</string>
     <string name="adults_label">Adults</string>
-    <string name="kids_label">Kids</string>
-    <string name="kids_subtitle">0 – 17 years</string>
+    <string name="children_label">Children</string>
+    <string name="children_subtitle">0 – 17 years</string>
     <string name="pets_label">Do you travel with pets?</string>
 
     <string name="room_selection_title">Choose your room</string>
@@ -20,7 +20,7 @@
     <string name="booking_confirm_total_label">Total: </string>
     <string name="booking_confirm_button_label">Confirm</string>
     <string name="booking_confirm_nights_days_badge">%1$d Nights, %2$d Days</string>
-    <string name="booking_confirm_guests_format">%1$d adult, %2$d kids, %3$s</string>
+    <string name="booking_confirm_guests_format">%1$d adult, %2$d children, %3$s</string>
     <string name="booking_confirm_pets_yes">pets</string>
     <string name="booking_confirm_pets_no">no pets</string>
 </resources>

@@ -3,6 +3,8 @@ plugins {
     id("com.softserveacademy.android.hilt")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -79,6 +81,9 @@ dependencies {
     implementation(projects.feature.booking.flight.domain)
     implementation(projects.feature.booking.flight.data)
     implementation(projects.feature.booking.flight.presentation)
+    implementation(projects.feature.booking.tour.domain)
+    implementation(projects.feature.booking.tour.data)
+    implementation(projects.feature.booking.tour.presentation)
     implementation(projects.feature.booking.common.domain)
     implementation(projects.feature.booking.common.data)
     implementation(projects.feature.booking.common.presentation)
@@ -86,5 +91,10 @@ dependencies {
     // coil for jetpack compose to allow render images
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+
 }
 

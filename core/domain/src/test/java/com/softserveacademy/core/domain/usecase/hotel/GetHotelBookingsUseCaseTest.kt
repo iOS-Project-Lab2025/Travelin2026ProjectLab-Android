@@ -2,7 +2,7 @@ package com.softserveacademy.core.domain.usecase.hotel
 
 import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.core.domain.model.BookingGuests
-import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.HotelBookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.HotelBooking
 import com.softserveacademy.core.domain.repository.HotelBookingRepository
@@ -40,7 +40,7 @@ class GetHotelBookingsUseCaseTest {
                 checkIn = 1000L,
                 checkOut = 2000L,
                 guests = BookingGuests(2, 0, false),
-                price = BookingPrice(100, 200, 0, 0, 200),
+                price = HotelBookingPrice(100.0, 200.0, 0.0, 0.0, 200.0, "USD"),
                 status = BookingStatus.COMPLETED,
                 confirmationCode = "HB-500",
                 createdAt = 500L,

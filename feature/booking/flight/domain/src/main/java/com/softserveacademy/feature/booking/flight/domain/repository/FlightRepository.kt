@@ -1,7 +1,9 @@
 package com.softserveacademy.feature.booking.flight.domain.repository
 
 import com.softserveacademy.core.domain.model.Airport
+import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.FlightOffer
+import com.softserveacademy.core.domain.model.PassengerCounts
 import com.softserveacademy.core.domain.model.PassengerType
 import kotlinx.coroutines.flow.Flow
 
@@ -21,11 +23,12 @@ interface FlightRepository {
      * @param returnDate Epoch millis for the return flight (used primarily for package search).
      * @return A Flow emitting a list of matching flight offers.
      */
+
     fun searchFlights(
         origin: String,
         destination: String,
-        passengerCounts: Map<PassengerType, Int>,
-        cabinClass: com.softserveacademy.core.domain.model.CabinClass,
+        passengerCounts: PassengerCounts,
+        cabinClass: CabinClass,
         departureDate: Long?,
         returnDate: Long?
     ): Flow<List<FlightOffer>>
@@ -39,3 +42,4 @@ interface FlightRepository {
      */
     fun searchAirports(query: String): Flow<List<Airport>>
 }
+

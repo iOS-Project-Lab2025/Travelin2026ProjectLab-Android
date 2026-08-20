@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="participant_count_title">Participants</string>
+    <string name="participant_count_subtitle">Add participants to your tour</string>
+    <string name="adults_label">Adults</string>
+    <string name="children_label">Children</string>
+    <string name="children_subtitle">2 – 12 years</string>
+    <string name="infants_label">Infants</string>
+    <string name="infants_subtitle">0 – 2 years</string>
+
+    <string name="error_select_dates">Please select the start and end dates</string>
+    <string name="error_dates_duration">Please select the dates within the tour duration</string>
+
+    <string name="contact_info_subtitle">Who is taking the tour?</string>
+
+    <string name="booking_confirm_participants_format">%1$d adults, %2$d children, %3$d infants</string>
+
+    <string name="start_date_label">Start date</string>
+    <string name="end_date_label">End date</string>
+    <string name="date_label">Date</string>
+    <string name="participants_label">Participants</string>
+</resources>

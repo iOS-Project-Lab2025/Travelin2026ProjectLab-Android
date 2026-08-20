@@ -3,6 +3,7 @@ package com.softserveacademy.feature.booking.flight.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.model.FlightType
+import com.softserveacademy.core.domain.model.PassengerCounts
 import com.softserveacademy.feature.booking.common.presentation.events.TravelEnterBookingDetailsEvent
 import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft
 import com.softserveacademy.feature.booking.flight.domain.repository.FlightBookingDraftRepository
@@ -149,14 +150,14 @@ class FlightSearchViewModel @Inject constructor(
                 }
 
                 val draft = FlightBookingDraft(
-                    segments = finalSegments,
-                    startDateMillis = currentState.bookingDetailsState.startDateMillis,
-                    endDateMillis = currentState.bookingDetailsState.endDateMillis,
-                    adults = currentState.adults,
-                    children = currentState.children,
-                    infants = currentState.infants,
                     flightType = currentState.selectedFlightType,
-                    cabinClass = currentState.selectedCabinClass
+                    cabinClass = currentState.selectedCabinClass,
+                    passengerCounts = PassengerCounts(
+                        adults = currentState.adults,
+                        children = currentState.children,
+                        infants = currentState.infants
+                    ),
+                    segments = finalSegments //origin, destination, date included
                 )
                 draftRepository.saveDraft(draft)
                 _navigationEvent.emit(Unit)

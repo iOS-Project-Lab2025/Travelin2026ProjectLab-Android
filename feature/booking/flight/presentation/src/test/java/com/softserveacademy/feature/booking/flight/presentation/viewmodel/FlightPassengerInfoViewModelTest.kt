@@ -1,7 +1,7 @@
 package com.softserveacademy.feature.booking.flight.presentation.viewmodel
 
-import com.softserveacademy.core.domain.model.FlightContactInfo
 import com.softserveacademy.core.domain.model.FlightPassenger
+import com.softserveacademy.core.domain.model.PassengerCounts
 import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft
 import com.softserveacademy.feature.booking.flight.domain.model.PassengerValidationResult
@@ -42,8 +42,7 @@ class FlightPassengerInfoViewModelTest {
 
     // Mock setup for a 2-passenger booking
     private val mockDraft = FlightBookingDraft(
-        adults = 2,
-        children = 0,
+        passengerCounts = PassengerCounts(adults = 2, children = 0),
         passengers = emptyList() // Initial empty state
     )
 
@@ -112,7 +111,7 @@ class FlightPassengerInfoViewModelTest {
         advanceUntilIdle()
 
         // Input messy name
-        val messyPassenger = FlightPassenger(firstName = "jOHN", lastName = "dOE pEREZ", passengerType = PassengerType.ADU)
+        val messyPassenger = FlightPassenger(firstName = "jOHN", lastName = "dOE pEREZ", passengerType = PassengerType.ADT)
         viewModel.onEvent(FlightPassengerInfoEvent.OnPassengerDataChanged(1, messyPassenger))
 
         // Final Next click (Save and Finish)

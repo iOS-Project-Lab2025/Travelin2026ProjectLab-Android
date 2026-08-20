@@ -3,19 +3,20 @@ package com.softserveacademy.home.data.mockdata
 import com.softserveacademy.core.domain.model.Airline
 import com.softserveacademy.core.domain.model.Airport
 import com.softserveacademy.core.domain.model.BookingGuests
-import com.softserveacademy.core.domain.model.BookingPrice
+import com.softserveacademy.core.domain.model.BookingParticipants
+import com.softserveacademy.core.domain.model.HotelBookingPrice
 import com.softserveacademy.core.domain.model.BookingStatus
 import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
+import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.HotelBooking
-import com.softserveacademy.core.domain.model.SeatClass
+import com.softserveacademy.core.domain.model.PassengerType
 import com.softserveacademy.core.domain.model.Ticket
-import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourBooking
-import com.softserveacademy.core.domain.model.TourCategory
+import com.softserveacademy.core.domain.model.TourBookingPrice
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.profile.domain.model.UserProfile
 import java.util.Calendar
@@ -148,6 +149,7 @@ object HomeMockData {
         flights = listOf(
             FlightBooking(
                 bookingId = "flight_booking_001",
+                userId = "user_123",
                 flights = listOf(
                     Flight(
                         id = "flight_001",
@@ -200,33 +202,52 @@ object HomeMockData {
                         cabinClass = CabinClass.ECONOMY
                     )
                 ),
+                passengers = listOf(
+                    FlightPassenger(firstName = "John", lastName = "Doe", passengerType = com.softserveacademy.core.domain.model.PassengerType.ADT),
+                    FlightPassenger(
+                        firstName = "Jane",
+                        lastName = "Doe",
+                        passengerType = PassengerType.ADT
+                    )
+                ),
                 tickets = listOf(
                     Ticket(
                         ticketNumber = "TK-987654321",
                         passengerName = "John Doe",
+                        flightId = "11",
+                        flightNumber = "LA500",
+                        originCode = "SCL",
+                        destinationCode = "CDG",
                         seatNumber = "12A",
                         gate = "B15",
                         boardingGroup = "Group 2",
-                        seatClass = SeatClass.ECONOMY
+                        cabinClass = CabinClass.ECONOMY
                     ),
                     Ticket(
                         ticketNumber = "TK-987654322",
                         passengerName = "Jane Doe",
+                        flightId = "12",
+                        flightNumber = "LA500",
+                        originCode = "SCL",
+                        destinationCode = "CDG",
                         seatNumber = "12B",
                         gate = "B15",
                         boardingGroup = "Group 2",
-                        seatClass = SeatClass.ECONOMY
+                        cabinClass = CabinClass.ECONOMY
                     )
                 ),
                 confirmationCode = "ABC123",
                 status = BookingStatus.COMPLETED,
                 totalAmount = 900.0,
                 currencyCode = "USD",
-                contactInfo = com.softserveacademy.core.domain.model.FlightContactInfo(
+                contactInfo = com.softserveacademy.core.domain.model.BookingContactInfo(
+                    firstName = "John",
+                    lastName = "Doe",
                     email = "john.doe@travelin.com",
-                    phone = "987654321",
+                    phoneNumber = "987654321",
                     countryCode = "+56"
-                )
+                ),
+                createdAt = dateTimeLong(2026, 7, 31, 10, 0)
             )
         ),
 
@@ -243,10 +264,11 @@ object HomeMockData {
 
             guests = BookingGuests(adults = 2),
 
-            price = BookingPrice(
-                ratePerNight = 50,
-                roomSubtotal = 250,
-                total = 250
+            price = HotelBookingPrice(
+                ratePerNight = 50.0,
+                roomSubtotal = 250.0,
+                total = 250.0,
+                currencyCode = "USD"
             ),
 
             confirmationCode = "HOTEL456",
@@ -260,31 +282,26 @@ object HomeMockData {
         tours = listOf(
             TourBooking(
                 bookingId = "tour_booking_001",
-
-                tour = Tour(
-                    id = "tour_001",
-                    title = "Eiffel Tower Experience",
-                    description = "Visit the Eiffel Tower with a guided tour.",
-                    location = "Paris, France",
-                    imageList = listOf("https://picsum.photos/id/1031/800/600"),
-                    duration = 3.hours,
-                    price = 120.0,
-                    rating = 4.8,
-                    category = TourCategory.CULTURE,
-                    includedServices = listOf(
-                        "TOUR_TRANSPORT",
-                        "TOUR_GUIDE",
-                        "TOUR_TICKET"
-                    )
+                userId = "Prueba",
+                tourId = "tour_1",
+                startDate = dateLong(2026, 8, 8),
+                endDate = dateLong(2026, 8, 10),
+                participants = BookingParticipants(
+                    adults = 1,
+                    children = 0,
+                    infants = 0
                 ),
-
-                date = dateLong(2026, 8, 8),
-
-                participants = 2,
-
+                price = TourBookingPrice(
+                    ratePerAdult = 120.0,
+                    ratePerChildren = 60.0,
+                    ratePerInfant = 0.0,
+                    subtotal = 250.0,
+                    total = 250.0,
+                    currencyCode = "USD"
+                ),
                 confirmationCode = "TOUR789",
-
-                status = BookingStatus.COMPLETED
+                status = BookingStatus.COMPLETED,
+                createdAt = dateLong(2026, 7, 31),
             )
         )
     )

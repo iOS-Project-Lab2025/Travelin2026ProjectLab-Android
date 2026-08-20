@@ -26,13 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import android.location.Geocoder
-import java.util.Locale
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.softserveacademy.core.presentation.design_system.theme.*
 import androidx.compose.ui.res.painterResource
 import com.softserveacademy.core.presentation.design_system.R as DesignR
@@ -206,7 +199,7 @@ fun DestinationSearchScreen(
                         )
                     }
                     ResultsList(
-                        items = items, 
+                        items = items,
                         onItemClick = onItemClick
                     )
                 }
@@ -423,7 +416,7 @@ fun RadiusSlider(radius: Float, onRadiusChange: (Float) -> Unit) {
 
 @Composable
 fun ResultsList(
-    items: List<SearchItem>, 
+    items: List<SearchItem>,
     onItemClick: (String, TravelItemType) -> Unit
 ) {
     LazyColumn(
@@ -437,7 +430,6 @@ fun ResultsList(
                     title = item.hotel.name,
                     location = item.hotel.address,
                     image = item.hotel.imageList.firstOrNull(),
-                    price = "500", // TODO: change for minimum price from rooms
                     price = "$\$item.hotel.pricePerNight",
                     rating = item.hotel.reviewRating,
                     ratingText = item.hotel.limitedReviews,
@@ -448,7 +440,7 @@ fun ResultsList(
                     title = item.tour.title,
                     location = item.tour.location,
                     image = item.tour.imageList.firstOrNull(),
-                    price = item.tour.price.toString(),
+                    price = "${item.tour.price}",
                     rating = item.tour.rating,
                     ratingText = item.tour.limitedReviews,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
@@ -470,11 +462,11 @@ fun ResultsList(
                     price = item.poi.distanceMeters?.let { "%.1f km".format(it / 1000.0) } ?: "",
                     priceLabel = "Distance:",
                     rating = null,
-                    onClick = { 
+                    onClick = {
                         onItemClick(
-                            "${item.poi.name}|${item.poi.latitude}|${item.poi.longitude}", 
+                            "${item.poi.name}|${item.poi.latitude}|${item.poi.longitude}",
                             TravelItemType.POI
-                        ) 
+                        )
                     }
                 )
             }

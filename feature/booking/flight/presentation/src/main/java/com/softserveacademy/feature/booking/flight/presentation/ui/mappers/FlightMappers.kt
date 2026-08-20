@@ -56,7 +56,7 @@ fun DocumentType.toDisplayName(): String {
 @Composable
 fun PassengerType.toDisplayName(): String {
     return when (this) {
-        PassengerType.ADU -> stringResource(R.string.flight_label_adult_single)
+        PassengerType.ADT -> stringResource(R.string.flight_label_adult_single)
         PassengerType.CHD -> stringResource(R.string.flight_label_child_single)
         PassengerType.INF -> stringResource(R.string.flight_label_infant_single)
     }

@@ -7,8 +7,10 @@ import com.softserveacademy.core.domain.model.CabinClass
 import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.Flight
 import com.softserveacademy.core.domain.model.FlightBooking
-import com.softserveacademy.core.domain.model.FlightContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
+import com.softserveacademy.core.domain.model.FlightPassenger
 import com.softserveacademy.core.domain.model.Hotel
+import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.domain.model.Ticket
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourCategory
@@ -65,20 +67,25 @@ class HomeViewModelTest {
         cabinClass = CabinClass.ECONOMY
     )
 
-    private val ticket = Ticket(ticketNumber = "TK-123", passengerName = "John Doe")
+    private val ticket = Ticket(ticketNumber = "TK-123", passengerName = "John Doe", flightId = "flight_001", flightNumber = "LA500", originCode = "SCL", destinationCode = "CDG")
     private val flightBooking = FlightBooking(
         bookingId = "booking_001",
+        userId = "user_123",
         flights = listOf(flight),
+        passengers = listOf(FlightPassenger(firstName = "John", lastName = "Doe")),
         tickets = listOf(ticket),
         confirmationCode = "ABC123",
         status = BookingStatus.COMPLETED,
         totalAmount = 1500.0,
         currencyCode = "USD",
-        contactInfo = FlightContactInfo(
+        contactInfo = BookingContactInfo(
+            firstName = "John",
+            lastName = "Doe",
             email = "john@example.com",
-            phone = "123456789",
+            phoneNumber = "123456789",
             countryCode = "+56"
-        )
+        ),
+        createdAt = 1000L
     )
 
     private val destination = Destination(
@@ -110,7 +117,11 @@ class HomeViewModelTest {
             location = "Paris, France",
             imageList = listOf("https://example.com/tour.png"),
             duration = 3.hours,
-            price = 120.0,
+            rates = RatePerParticipant(
+                adults = 100.0,
+                children = 50.0,
+                infants = 0.0
+            ),
             rating = 4.8,
             category = TourCategory.CULTURE
         )

@@ -3,7 +3,7 @@ package com.softserveacademy.feature.booking.hotel.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softserveacademy.feature.booking.hotel.domain.model.ContactInfo
+import com.softserveacademy.core.domain.model.BookingContactInfo
 import com.softserveacademy.feature.booking.hotel.domain.model.HotelBookingDraft
 import com.softserveacademy.feature.booking.hotel.domain.usecase.GetHotelBookingDraftUseCase
 import com.softserveacademy.feature.booking.hotel.domain.usecase.SaveHotelBookingDraftUseCase
@@ -125,7 +125,7 @@ class HotelContactInfoViewModel @Inject constructor(
 
         viewModelScope.launch {
             val repositoryDraft = getHotelBookingDraftUseCase(hotelId)
-            val updatedContactInfo = ContactInfo(
+            val updatedContactInfo = BookingContactInfo(
                 firstName = _uiState.value.firstName,
                 lastName = _uiState.value.lastName,
                 email = _uiState.value.email,

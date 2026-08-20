@@ -38,7 +38,7 @@ data class Hotel(
     val description: String = "",
     @Serializable(with = FlexibleListSerializer::class)
     val amenities: List<String> = emptyList(),
-    val pricePerNight: Int = 0,
+    val pricePerNight: Double = 0.0,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val rooms: List<HotelRoom> = emptyList(),

@@ -13,11 +13,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.*
+import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.components.TravelLoadingScreen
 import com.softserveacademy.core.presentation.design_system.components.TravelPrimaryButton
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.CalendarIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft
 import com.softserveacademy.feature.booking.flight.presentation.R
 import com.softserveacademy.feature.booking.flight.presentation.events.FlightBookingConfirmEvent
 import com.softserveacademy.feature.booking.flight.presentation.states.FlightBookingConfirmState
@@ -158,22 +160,12 @@ fun FlightBookingConfirmContent(
                         modifier = Modifier.padding(horizontal = TravelinDimens.PaddingMedium),
                         verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceSmall)
                     ) {
-                        val dateText =
-                            if (draft.flightType == FlightType.ROUND_TRIP && draft.startDateMillis != null && draft.endDateMillis != null) {
-                                "${dateFormatter.format(Date(draft.startDateMillis!!))} - ${
-                                    dateFormatter.format(
-                                        Date(
-                                            draft.endDateMillis!!
-                                        )
-                                    )
-                                }"
-                            } else {
-                                draft.segments.firstOrNull()?.dateMillis?.let {
-                                    dateFormatter.format(
-                                        Date(it)
-                                    )
-                                } ?: ""
-                            }
+                        val dateText = if (draft.flightType == FlightType.ROUND_TRIP) {
+                            // first and last segment
+                            "${dateFormatter.format(Date(draft.segments.first().dateMillis ?: 0))} - ${dateFormatter.format(Date(draft.segments.last().dateMillis ?: 0))}"
+                        } else {
+                            draft.segments.firstOrNull()?.dateMillis?.let { dateFormatter.format(Date(it)) } ?: ""
+                        }
 
                         SummaryInfoCard(
                             label = stringResource(R.string.flight_confirm_dates_label),
@@ -184,9 +176,9 @@ fun FlightBookingConfirmContent(
                             label = stringResource(R.string.flight_confirm_guests_label),
                             value = stringResource(
                                 R.string.flight_confirm_guests_format,
-                                draft.adults,
-                                draft.children,
-                                draft.infants
+                                draft.passengerCounts.adults,
+                                draft.passengerCounts.children,
+                                draft.passengerCounts.infants
                             )
                         )
                     }
@@ -211,7 +203,7 @@ fun FlightBookingConfirmContent(
                     ) {
                         // Price Breakdown
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            val totalPax = draft.adults + draft.children + draft.infants
+                            val totalPax = draft.passengerCounts.adults + draft.passengerCounts.children + draft.passengerCounts.infants
                             val pricePerTicket =
                                 if (totalPax > 0) state.totalPrice / totalPax else 0
                             Text(
@@ -223,7 +215,7 @@ fun FlightBookingConfirmContent(
                                 text = stringResource(
                                     R.string.flight_confirm_price_breakdown_format,
                                     state.currency,
-                                    pricePerTicket,
+                                    formatPrice(pricePerTicket.toDouble()),
                                     totalPax
                                 ),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -233,7 +225,7 @@ fun FlightBookingConfirmContent(
 
                         // Summary Cards
                         PassengerSummaryCard(passengers = draft.passengers)
-                        ContactSummaryCard(contact = draft.contactInfo ?: FlightContactInfo())
+                        ContactSummaryCard(contact = draft.contactInfo ?: BookingContactInfo())
 
                         Spacer(Modifier.height(TravelinDimens.SpaceMedium))
                     }
@@ -248,7 +240,7 @@ fun FlightBookingConfirmContent(
  * Clean Bottom Bar showing only the Currency and Total Price.
  */
 @Composable
-private fun FlightBookingConfirmBottomBar(totalPrice: Int, currency: String, isLoading: Boolean, onConfirm: () -> Unit) {
+private fun FlightBookingConfirmBottomBar(totalPrice: Double, currency: String, isLoading: Boolean, onConfirm: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shadowElevation = 8.dp,
@@ -263,7 +255,7 @@ private fun FlightBookingConfirmBottomBar(totalPrice: Int, currency: String, isL
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.flight_confirm_total_price_label), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
-                    text = "$currency $totalPrice",
+                    text = "$currency ${formatPrice(totalPrice)}",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
@@ -288,21 +280,30 @@ fun FlightBookingConfirmPreview() {
     val mockFlight = Flight("fl1", mockAirline, "LA500", Airport("SCL", "Santiago", "SCL", "Chile"), Airport("LIM", "Lima", "LIM", "Peru"), System.currentTimeMillis(), System.currentTimeMillis() + 14400000, kotlin.time.Duration.ZERO, CabinClass.BUSINESS)
     val mockOffer = FlightOffer("off1", mockFlight, 450.0)
 
-    val mockDraft = com.softserveacademy.feature.booking.flight.domain.model.FlightBookingDraft(
-        adults = 1,
-        children = 1,
+    val mockDraft = FlightBookingDraft(
+        passengerCounts = PassengerCounts(
+            adults = 2,
+            children = 1),
         selectedOffers = mapOf(0 to mockOffer),
         passengers = listOf(
-            FlightPassenger(firstName = "john", lastName = "doe", passengerType = PassengerType.ADU),
+            FlightPassenger(
+                firstName = "john",
+                lastName = "doe",
+                passengerType = PassengerType.ADT
+            ),
             FlightPassenger(firstName = "jane", lastName = "doe", passengerType = PassengerType.CHD)
         ),
-        contactInfo = FlightContactInfo(email = "john.doe@travelin.com", phone = "987654321", countryCode = "+56")
+        contactInfo = BookingContactInfo(
+            email = "john.doe@travelin.com",
+            phoneNumber = "987654321",
+            countryCode = "+56"
+        )
     )
 
     com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             FlightBookingConfirmContent(
-                state = FlightBookingConfirmState(isLoading = false, draft = mockDraft, totalPrice = 900, currency = "USD"),
+                state = FlightBookingConfirmState(isLoading = false, draft = mockDraft, totalPrice = 900.0, currency = "USD"),
                 onBack = {},
                 onConfirm = {},
                 onSimulateSuccess = {},
