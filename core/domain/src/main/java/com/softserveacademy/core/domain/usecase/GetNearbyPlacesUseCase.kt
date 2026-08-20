@@ -12,6 +12,6 @@ class GetNearbyPlacesUseCase @Inject constructor(
     private val poiRepo: PoiRepo
 ) {
     suspend operator fun invoke(latitude: Double, longitude: Double, requestNumber: Int): AppResult<List<Poi>> {
-        return poiRepo.getNearbyPlaces(latitude, longitude, requestNumber)
+        return poiRepo.getNearbyPlaces(latitude, longitude, requestNumber = requestNumber)
     }
 }

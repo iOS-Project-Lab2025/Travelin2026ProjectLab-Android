@@ -87,10 +87,12 @@ fun RootHomeScreen(
             onBackClick = { isSearchMode = false },
             onItemClick = { id, type ->
                 isSearchMode = false
-                if (type == TravelItemType.HOTEL) {
-                    actions.onHotelClick(id)
-                } else {
-                    actions.onTourClick(id)
+                android.util.Log.d("RootHomeScreen", "Item clicked: id=$id, type=$type")
+                when (type) {
+                    TravelItemType.HOTEL -> actions.onHotelClick(id)
+                    TravelItemType.TOUR -> actions.onTourClick(id)
+                    TravelItemType.POI -> actions.onPoiClick(id)
+                    else -> actions.onTourClick(id)
                 }
             }
         )
@@ -108,7 +110,7 @@ fun RootHomeScreen(
             onJourneySeeAllClick = actions.onJourneySeeAllClick,
             onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
             onUpcomingTripClick = actions.onUpcomingTripClick,
-            onSearchClick = { isSearchMode = true }, // Activamos el modo búsqueda
+            onSearchClick = { isSearchMode = true }, // Activate search mode
             modifier = modifier
         )
     }

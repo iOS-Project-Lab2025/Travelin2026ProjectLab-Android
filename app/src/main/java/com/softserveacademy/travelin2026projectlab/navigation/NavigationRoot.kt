@@ -40,6 +40,7 @@ import com.softserveacademy.home.presentation.ui.screens.TravelListScreen
 import com.softserveacademy.home.presentation.model.TravelItemType
 import com.softserveacademy.home.presentation.ui.screens.TravelHotelDetailScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelTourDetailsScreen
+import com.softserveacademy.home.presentation.ui.screens.TravelPoiDetailsScreen
 
 // Favorites screens.
 import com.softserveacademy.feature.favorites.common.presentation.ui.screens.RootFavoritesScreen
@@ -248,6 +249,10 @@ fun NavGraphBuilder.mainGraph(
                     onTourClick = { id ->
                         navController.navigate(Routes.TravelTourDetailsScreen(id = id))
                     },
+                    onPoiClick = { id ->
+                        android.util.Log.d("NavigationRoot", "Navigating to POI: $id")
+                        navController.navigate(Routes.TravelPoiDetailsScreen(id = id))
+                    },
                     onFlightsClick = {
                         navController.navigate(Routes.FlightSearchScreen)
                     },
@@ -346,6 +351,22 @@ fun NavGraphBuilder.mainGraph(
             )
         }
 
+        composable<Routes.TravelPoiDetailsScreen> { backStackEntry ->
+            val route: Routes.TravelPoiDetailsScreen = backStackEntry.toRoute()
+            // The ID is passed as "name|lat|lon"
+            val parts = route.id.split("|")
+            val name = parts.getOrNull(0) ?: ""
+            val lat = parts.getOrNull(1)?.toDoubleOrNull() ?: 0.0
+            val lon = parts.getOrNull(2)?.toDoubleOrNull() ?: 0.0
+            
+            TravelPoiDetailsScreen(
+                poiName = name,
+                lat = lat,
+                lon = lon,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
         composable<Routes.HotelGalleryScreen> { backStackEntry ->
             val route: Routes.HotelGalleryScreen = backStackEntry.toRoute()
             TravelHotelGalleryScreen(
@@ -379,6 +400,8 @@ fun NavGraphBuilder.mainGraph(
                     val destination = when (route.type) {
                         TravelItemType.HOTEL -> Routes.TravelHotelDetailsScreen(id = id)
                         TravelItemType.TOUR -> Routes.TravelTourDetailsScreen(id = id)
+                        TravelItemType.DESTINATION -> Routes.TravelTourDetailsScreen(id = id)
+                        TravelItemType.POI -> Routes.TravelPoiDetailsScreen(id = id)
                     }
                     navController.navigate(destination)
                 }

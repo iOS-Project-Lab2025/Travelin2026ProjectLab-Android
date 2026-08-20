@@ -70,6 +70,9 @@ sealed interface Routes {
     data class TravelTourDetailsScreen(val id: String) : Routes
 
     @Serializable
+    data class TravelPoiDetailsScreen(val id: String) : Routes
+
+    @Serializable
     data class HotelGalleryScreen(val id: String) : Routes
 
     @Serializable

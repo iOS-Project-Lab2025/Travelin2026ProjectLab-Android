@@ -1,6 +1,12 @@
 package com.softserveacademy.home.data.repository
 
+import android.util.Log
+import com.softserveacademy.core.domain.model.Destination
 import com.softserveacademy.core.domain.model.*
+import com.softserveacademy.core.domain.repository.HotelRepo
+import com.softserveacademy.core.domain.repository.PoiRepo
+import com.softserveacademy.core.domain.repository.TourRepo
+import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.domain.repository.SearchRepository
@@ -8,64 +14,159 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 
-class SearchRepositoryImpl @Inject constructor() : SearchRepository {
+private const val TAG = "SearchRepositoryImpl"
+
+class SearchRepositoryImpl @Inject constructor(
+    private val hotelRepo: HotelRepo,
+    private val tourRepo: TourRepo,
+    private val poiRepo: PoiRepo,
+) : SearchRepository {
 
     override suspend fun search(
         query: String,
         filter: SearchFilter,
-        location: String?
+        location: String?,
+        latitude: Double?,
+        longitude: Double?,
+        radius: Double?
     ): Result<List<SearchItem>> {
-        // Simulamos un delay de red
-        kotlinx.coroutines.delay(1000.milliseconds)
+        // Get hotels from the API if the filter allows it
+        val hotels = if (filter == SearchFilter.ALL || filter == SearchFilter.HOTELS) {
+            when (val result = hotelRepo.getHotels()) {
+                is AppResult.Success -> result.data.map { SearchItem.HotelItem(it) }
+                is AppResult.Failure -> emptyList()
+            }
+        } else emptyList()
 
-        val allItems = getMockData()
+        // Get tours from the API if the filter allows it
+        val tours = if (filter == SearchFilter.ALL || filter == SearchFilter.TOURS) {
+            when (val result = tourRepo.getTours()) {
+                is AppResult.Success -> result.data.map { SearchItem.TourItem(it) }
+                is AppResult.Failure -> emptyList()
+            }
+        } else emptyList()
 
-        // Filtramos por texto y por categoría
-        val filtered = allItems.filter { item ->
-            val matchesQuery = when (item) {
+        // For destinations, we continue using mocks for now
+        val otherItems = if (filter == SearchFilter.ALL || filter == SearchFilter.DESTINATIONS) {
+            getMockData().filter { it is SearchItem.DestinationItem }
+        } else emptyList()
+
+        // Get POIs if the filter allows it
+        val pois = if (filter == SearchFilter.ALL || filter == SearchFilter.POIS) {
+            if (latitude != null && longitude != null) {
+                // radius is in km, convert to meters for PoiRepo
+                val radiusInMeters = radius?.let { it * 1000 }
+                Log.d(TAG, "Fetching POIs: lat=$latitude, lon=$longitude, radius=$radiusInMeters")
+                when (val result = poiRepo.getNearbyPlaces(latitude, longitude, radiusInMeters)) {
+                    is AppResult.Success -> {
+                        Log.d(TAG, "POI Repo returned ${result.data.size} items")
+                        result.data.map { SearchItem.PoiItem(it) }
+                    }
+                    is AppResult.Failure -> {
+                        Log.e(TAG, "POI Failure: ${result.error}")
+                        emptyList()
+                    }
+                }
+            } else {
+                Log.d(TAG, "POI skipped: coordinates are null")
+                emptyList()
+            }
+        } else emptyList()
+
+        val allItems = hotels + tours + otherItems + pois
+
+        // Filter by text
+        var filtered = allItems.filter { item ->
+            when (item) {
                 is SearchItem.HotelItem -> item.hotel.name.contains(query, ignoreCase = true) || item.hotel.address.contains(query, ignoreCase = true)
-                is SearchItem.FlightItem -> item.flight.destination.city.contains(query, ignoreCase = true) || item.flight.airline.name.contains(query, ignoreCase = true)
                 is SearchItem.TourItem -> item.tour.title.contains(query, ignoreCase = true) || item.tour.location.contains(query, ignoreCase = true)
                 is SearchItem.DestinationItem -> item.destination.name.contains(query, ignoreCase = true) || item.destination.location.contains(query, ignoreCase = true)
+                is SearchItem.PoiItem -> item.poi.name.contains(query, ignoreCase = true) || item.poi.type.contains(query, ignoreCase = true)
             }
-
-            val matchesFilter = when (filter) {
-                SearchFilter.ALL -> true
-                SearchFilter.HOTELS -> item is SearchItem.HotelItem
-                SearchFilter.FLIGHTS -> item is SearchItem.FlightItem
-                SearchFilter.TOURS -> item is SearchItem.TourItem
-                SearchFilter.DESTINATIONS -> item is SearchItem.DestinationItem
-            }
-
-            matchesQuery && matchesFilter
         }
 
-        return Result.success(filtered)
+        // Filter by distance if coordinates and radius are provided
+        if (latitude != null && longitude != null && radius != null) {
+            filtered = filtered.filter { item ->
+                val itemLat: Double
+                val itemLon: Double
+                when (item) {
+                    is SearchItem.HotelItem -> {
+                        itemLat = item.hotel.latitude
+                        itemLon = item.hotel.longitude
+                    }
+
+                    is SearchItem.TourItem -> {
+                        itemLat = item.tour.latitude
+                        itemLon = item.tour.longitude
+                    }
+
+                    is SearchItem.DestinationItem -> {
+                        // Mock coordinates for destinations
+                        itemLat = -33.4489 // Santiago as default mock
+                        itemLon = -70.6693
+                    }
+
+                    is SearchItem.PoiItem -> {
+                        // POIs are already filtered by the API using circular bounds.
+                        // If we have a road/walking distance, we can use it for extra precision,
+                        // but if it's missing (e.g. no route found), we still keep the item.
+                        val distanceKm = item.poi.distanceMeters?.toDouble()?.let { it / 1000.0 }
+                        return@filter distanceKm == null || distanceKm <= radius
+                    }
+                }
+                calculateDistance(latitude, longitude, itemLat, itemLon) <= radius
+            }
+        }
+
+        // Sort POIs by ascending distance
+        val finalResults = if (filter == SearchFilter.POIS) {
+            filtered.filterIsInstance<SearchItem.PoiItem>()
+                .sortedBy { it.poi.distanceMeters ?: Int.MAX_VALUE }
+        } else if (filter == SearchFilter.ALL) {
+            // In ALL, we still want POIs to be sorted among themselves if they are present?
+            // Usually, we just return the mixed list. But the prompt said "found POIs should be sorted".
+            // I'll sort the whole list by distance if possible.
+            filtered.sortedBy { item ->
+                when (item) {
+                    is SearchItem.PoiItem -> item.poi.distanceMeters?.toDouble() ?: Double.MAX_VALUE
+                    is SearchItem.HotelItem -> calculateDistance(latitude ?: 0.0, longitude ?: 0.0, item.hotel.latitude, item.hotel.longitude) * 1000
+                    is SearchItem.TourItem -> calculateDistance(latitude ?: 0.0, longitude ?: 0.0, item.tour.latitude, item.tour.longitude) * 1000
+                    is SearchItem.DestinationItem -> Double.MAX_VALUE // Mock destinations at the end
+                }
+            }
+        } else {
+            filtered
+        }
+
+        return Result.success(finalResults)
+    }
+
+    private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val r = 6371 // Earth radius in km
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return r * c
     }
 
     private fun getMockData(): List<SearchItem> = listOf(
-        // Hotels
-        SearchItem.HotelItem(Hotel("1", "San Alfonso del Mar", "Algarrobo, Chile", 5, 4.8, 200, listOf("https://picsum.photos/id/164/400/300"))),
-        SearchItem.HotelItem(Hotel("2", "Icon Hotel", "Santiago, Chile", 4, 4.5, 120, listOf("https://picsum.photos/id/165/400/300"))),
-        SearchItem.HotelItem(Hotel("3", "The Ritz-Carlton", "Santiago, Chile", 5, 4.9, 350, listOf("https://picsum.photos/id/166/400/300"))),
+        // Hotels (We only keep those that do not come from the API if necessary, but here we remove them to use only the API)
 
-        // Tours
-        SearchItem.TourItem(Tour("t1", "Cajón del Maipo Trekking", "Full day trekking in the Andes", "San José de Maipo", listOf("https://picsum.photos/id/10/400/300"), 8.hours, RatePerParticipant(adults = 45.0, children = 20.0, infants = 0.0), 4.8, TourCategory.ADVENTURE)),
-        SearchItem.TourItem(Tour("t2", "Wine Tasting Tour", "Visit 3 premium vineyards", "Valle de Casablanca", listOf("https://picsum.photos/id/11/400/300"), 6.hours, RatePerParticipant(adults = 30.0, children = 15.0, infants = 0.0), 4.9, TourCategory.GASTRONOMY)),
-        SearchItem.TourItem(Tour("t3", "Valparaiso Walking Tour", "Graffiti and elevators", "Valparaíso", listOf("https://picsum.photos/id/12/400/300"), 3.hours, RatePerParticipant(adults = 20.0, children = 10.0, infants = 0.0), 4.7, TourCategory.CULTURE)),
+        // Tours (We only keep those that do not come from the API)
 
         // Destinations
         SearchItem.DestinationItem(Destination("d1", "https://picsum.photos/id/13/400/300", "Torres del Paine", "Patagonia, Chile", 4.9, 1500.0, "USD", "5D4N")),
         SearchItem.DestinationItem(Destination("d2", "https://picsum.photos/id/14/400/300", "Easter Island", "Polynesia, Chile", 4.8, 1200.0, "USD", "4D3N")),
         SearchItem.DestinationItem(Destination("d3", "https://picsum.photos/id/15/400/300", "Atacama Desert", "Antofagasta, Chile", 4.9, 800.0, "USD", "3D2N")),
 
-        // Flights (Mocking simpler data for preview)
-        SearchItem.FlightItem(Flight("f1", Airline("LA", "LATAM", ""), "LA202", Airport("SCL", "Santiago", "Santiago", "Chile"), Airport("JFK", "John F. Kennedy", "New York", "USA"), 0, 0, 10.hours, CabinClass.ECONOMY)),
-        SearchItem.FlightItem(Flight("f2", Airline("H2", "SKY", ""), "H2101", Airport("SCL", "Santiago", "Santiago", "Chile"), Airport("LIM", "Jorge Chavez", "Lima", "Peru"), 0, 0, 3.hours, CabinClass.ECONOMY)),
-
         // More randoms to reach 15
         SearchItem.HotelItem(Hotel("4", "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
-        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours, RatePerParticipant(adults = 30.0, children = 15.0, infants = 0.0), 4.5, TourCategory.CITY)),
+        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours,
+            RatePerParticipant(30.0), 4.5, TourCategory.CITY)),
         SearchItem.DestinationItem(Destination("d4", "https://picsum.photos/id/17/400/300", "Pucón", "Araucanía, Chile", 4.7, 500.0, "USD", "3D2N"))
     )
 }
