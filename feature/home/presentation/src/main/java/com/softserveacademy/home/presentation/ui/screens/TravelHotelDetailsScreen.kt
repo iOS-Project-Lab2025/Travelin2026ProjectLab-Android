@@ -1,29 +1,51 @@
 package com.softserveacademy.home.presentation.ui.screens
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
 import com.google.android.gms.maps.model.LatLng
+import com.softserveacademy.core.domain.model.AiRecommendation
 import com.softserveacademy.core.domain.model.Hotel
 import com.softserveacademy.core.domain.model.Poi
 import com.softserveacademy.core.domain.util.formatPrice
@@ -45,6 +67,10 @@ import com.softserveacademy.home.presentation.ui.components.detailsScreenCompone
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.MapOverlay
 import com.softserveacademy.home.presentation.ui.components.detailsScreenComponents.NearbyPlacesSection
 import com.softserveacademy.home.presentation.viewmodel.HotelDetailsViewModel
+import com.softserveacademy.home.presentation.koog.AiraVoiceFAB
+import com.softserveacademy.home.presentation.koog.AiraThinkingIndicator
+import com.softserveacademy.home.presentation.koog.AiraFeedbackBubble
+import com.softserveacademy.home.presentation.koog.VoiceRecognizerContract
 
 /**
  * Stateful screen that use the [TravelHotelDetailsWrapper].
@@ -74,8 +100,65 @@ fun TravelHotelDetailScreen(
     val hotelDetails = hotelDetailState.hotel
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    val onNavigateClick: (AiRecommendation) -> Unit = { recommendation ->
+        val gmmIntentUri = Uri.parse("geo:0,0?q=${recommendation.latitude},${recommendation.longitude}(${recommendation.name})")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        context.startActivity(mapIntent)
+    }
+
+    val voiceLauncher = rememberLauncherForActivityResult(VoiceRecognizerContract()) { query ->
+        query?.let {
+            viewModel.onEvent(HotelDetailsEvent.VoiceSearch(it))
+        }
+    }
+
+    val multiplePermissionsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val audioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
+        val locationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        
+        if (audioGranted) {
+            // If they clicked the mic and then granted permission
+            // we might want to launch voice here, but we need to know if that was the intent.
+            // For now, just having them granted is good.
+        }
+    }
+
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            voiceLauncher.launch(Unit)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        // Ask for permissions on start if they misclicked previously
+        val permissionsToRequest = mutableListOf<String>()
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.RECORD_AUDIO)
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        
+        if (permissionsToRequest.isNotEmpty()) {
+            multiplePermissionsLauncher.launch(permissionsToRequest.toTypedArray())
+        }
+    }
+
     LaunchedEffect(itemId){
         viewModel.onEvent(HotelDetailsEvent.Load(itemId))
+    }
+
+    // Auto-hide feedback bubble after 5 seconds
+    LaunchedEffect(hotelDetailState.lastVoiceQuery) {
+        if (hotelDetailState.lastVoiceQuery != null) {
+            delay(5000)
+            viewModel.onEvent(HotelDetailsEvent.ClearVoiceQuery)
+        }
     }
 
     val shareTitle = stringResource(id = R.string.share_hotel_title)
@@ -101,6 +184,9 @@ fun TravelHotelDetailScreen(
                         val shareIntent = Intent.createChooser(sendIntent, shareTitle)
                         context.startActivity(shareIntent)
                     }
+                    is HotelDetailsEventEffect.ShowAiError -> {
+                        // In a real app we could show a toast or snackbar
+                    }
                 }
             }
         }
@@ -117,59 +203,96 @@ fun TravelHotelDetailScreen(
             )
         }
         hotelDetails != null -> {
-            TravelHotelDetailsWrapper(
-                hotel = hotelDetails,
-                isDarkTheme = isDark,
-                isDescriptionExpanded = hotelDetailState.isDescriptionExpanded,
-                showAllAmenities = hotelDetailState.showAmenitiesDialog,
-                showFullMap = hotelDetailState.showFullMap,
-                onBackClick = {
-                    viewModel.onEvent(HotelDetailsEvent.NavigateBack)
-                },
-                onSeeAllPhotosClick = {
-                    viewModel.onEvent(HotelDetailsEvent.ViewGallery)
-                },
-                onBookClick = {
-                    viewModel.onEvent(HotelDetailsEvent.BookNow)
-                },
-                onShareClick = {
-                    viewModel.onEvent(HotelDetailsEvent.Share)
-                },
-                onFavoriteClick = {
-                    viewModel.onEvent(HotelDetailsEvent.ToggleFavorite)
-                },
-                onDescriptionExpandClick = {
-                    viewModel.onEvent(HotelDetailsEvent.ToggleDescription)
-                },
-                onSeeAllAmenitiesClick = {
-                    viewModel.onEvent(HotelDetailsEvent.ViewAllAmenities)
-                },
-                onDismissAmenitiesOverlay = {
-                    viewModel.onEvent(HotelDetailsEvent.DismissAmenities)
-                },
-                onMapClick = {
-                    viewModel.onEvent(HotelDetailsEvent.ViewFullMap)
-                },
-                onDismissMap = {
-                    viewModel.onEvent(HotelDetailsEvent.DismissMap)
-                },
-                onSeeMoreNearbyClick = {
-                    viewModel.onEvent(HotelDetailsEvent.ViewExploreArea)
-                },
-                showExploreArea = hotelDetailState.showExploreArea,
-                areaDescription = hotelDetailState.areaDescription,
-                nearbyTransport = hotelDetailState.nearbyTransport,
-                nearbyRestaurants = hotelDetailState.nearbyRestaurants,
-                isPoiLoading = hotelDetailState.isPoiLoading,
-                poiErrorMessage = hotelDetailState.poiErrorMessage,
-                onRetryPois = {
-                    viewModel.onEvent(HotelDetailsEvent.RetryPois)
-                },
-                onDismissExploreArea = {
-                    viewModel.onEvent(HotelDetailsEvent.DismissExploreArea)
-                },
-                modifier = modifier
-            )
+            Box(modifier = modifier.fillMaxSize()) {
+                TravelHotelDetailsWrapper(
+                    hotel = hotelDetails,
+                    isDarkTheme = isDark,
+                    isDescriptionExpanded = hotelDetailState.isDescriptionExpanded,
+                    showAllAmenities = hotelDetailState.showAmenitiesDialog,
+                    showFullMap = hotelDetailState.showFullMap,
+                    onBackClick = {
+                        viewModel.onEvent(HotelDetailsEvent.NavigateBack)
+                    },
+                    onSeeAllPhotosClick = {
+                        viewModel.onEvent(HotelDetailsEvent.ViewGallery)
+                    },
+                    onBookClick = {
+                        viewModel.onEvent(HotelDetailsEvent.BookNow)
+                    },
+                    onShareClick = {
+                        viewModel.onEvent(HotelDetailsEvent.Share)
+                    },
+                    onFavoriteClick = {
+                        viewModel.onEvent(HotelDetailsEvent.ToggleFavorite)
+                    },
+                    onDescriptionExpandClick = {
+                        viewModel.onEvent(HotelDetailsEvent.ToggleDescription)
+                    },
+                    onSeeAllAmenitiesClick = {
+                        viewModel.onEvent(HotelDetailsEvent.ViewAllAmenities)
+                    },
+                    onDismissAmenitiesOverlay = {
+                        viewModel.onEvent(HotelDetailsEvent.DismissAmenities)
+                    },
+                    onMapClick = {
+                        viewModel.onEvent(HotelDetailsEvent.ViewFullMap)
+                    },
+                    onDismissMap = {
+                        viewModel.onEvent(HotelDetailsEvent.DismissMap)
+                    },
+                    onSeeMoreNearbyClick = {
+                        viewModel.onEvent(HotelDetailsEvent.ViewExploreArea)
+                    },
+                    showExploreArea = hotelDetailState.showExploreArea,
+                    areaDescription = hotelDetailState.areaDescription,
+                    nearbyTransport = hotelDetailState.nearbyTransport,
+                    nearbyRestaurants = hotelDetailState.nearbyRestaurants,
+                    aiRecommendations = hotelDetailState.aiRecommendations,
+                    isAiLoading = hotelDetailState.isAiLoading,
+                    lastVoiceQuery = hotelDetailState.lastVoiceQuery,
+                    isPoiLoading = hotelDetailState.isPoiLoading,
+                    poiErrorMessage = hotelDetailState.poiErrorMessage,
+                    onRetryPois = {
+                        viewModel.onEvent(HotelDetailsEvent.RetryPois)
+                    },
+                    onDismissExploreArea = {
+                        viewModel.onEvent(HotelDetailsEvent.DismissExploreArea)
+                    },
+                    onRecommendationClick = { recommendation ->
+                        viewModel.onEvent(HotelDetailsEvent.SelectRecommendation(recommendation))
+                    },
+                    onNavigateClick = onNavigateClick,
+                    onVoiceClick = {
+                        val permissionCheck = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.RECORD_AUDIO
+                        )
+                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                            voiceLauncher.launch(Unit)
+                        } else {
+                            audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    }
+                )
+
+                // Recommendation Card overlay
+                hotelDetailState.selectedRecommendation?.let { recommendation ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 80.dp),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        com.softserveacademy.home.presentation.koog.RecommendationCard(
+                            recommendation = recommendation,
+                            onNavigateClick = onNavigateClick,
+                            onDismiss = {
+                                viewModel.onEvent(HotelDetailsEvent.SelectRecommendation(null))
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -222,10 +345,16 @@ private fun TravelHotelDetailsWrapper(
     areaDescription: String? = null,
     nearbyTransport: List<Poi> = emptyList(),
     nearbyRestaurants: List<Poi> = emptyList(),
+    aiRecommendations: List<AiRecommendation> = emptyList(),
+    isAiLoading: Boolean = false,
+    lastVoiceQuery: String? = null,
     isPoiLoading: Boolean = false,
     poiErrorMessage: String? = null,
     onRetryPois: () -> Unit = {},
     onDismissExploreArea: () -> Unit = {},
+    onRecommendationClick: (AiRecommendation) -> Unit = {},
+    onNavigateClick: (AiRecommendation) -> Unit = {},
+    onVoiceClick: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
@@ -235,6 +364,18 @@ private fun TravelHotelDetailsWrapper(
                         price = "$${formatPrice(hotel.pricePerNight)}",
                         onBookClick = onBookClick
                     )
+                }
+            },
+            floatingActionButton = {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 70.dp) // Offset to not cover bottom bar too much
+                ) {
+                    if (isAiLoading) {
+                        AiraThinkingIndicator()
+                    }
+                    AiraVoiceFAB(onClick = onVoiceClick)
                 }
             }
         ) { innerPadding ->
@@ -280,6 +421,49 @@ private fun TravelHotelDetailsWrapper(
                     )
                     Divider()
                 }
+
+                if (aiRecommendations.isNotEmpty() || isAiLoading) {
+                    item {
+                        Column(
+                            modifier = Modifier.padding(vertical = TravelinDimens.PaddingMedium)
+                        ) {
+                            Text(
+                                text = "Aira Suggestions",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryFixed,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = TravelinDimens.PaddingLarge)
+                            )
+
+                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
+
+                            if (isAiLoading && aiRecommendations.isEmpty()) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().height(100.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AiraThinkingIndicator()
+                                }
+                            }
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = TravelinDimens.PaddingLarge),
+                                horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
+                            ) {
+                                items(aiRecommendations) { recommendation ->
+                                    com.softserveacademy.home.presentation.koog.RecommendationCard(
+                                        recommendation = recommendation,
+                                        onDismiss = { /* No-op in list */ },
+                                        onNavigateClick = onNavigateClick,
+                                        modifier = Modifier.width(300.dp)
+                                    )
+                                }
+                            }
+                        }
+                        Divider()
+                    }
+                }
+
                 item {
                     NearbyPlacesSection(
                         nearbyPlaces = hotel.nearbyPlaces,
@@ -297,6 +481,12 @@ private fun TravelHotelDetailsWrapper(
             MapOverlay(
                 hotelCoordinates = LatLng(hotel.latitude, hotel.longitude),
                 isDarkTheme = isDarkTheme,
+                aiRecommendations = aiRecommendations,
+                isAiLoading = isAiLoading,
+                lastVoiceQuery = lastVoiceQuery,
+                onRecommendationClick = onRecommendationClick,
+                onNavigateClick = onNavigateClick,
+                onVoiceClick = onVoiceClick,
                 onDismiss = onDismissMap
             )
         }
