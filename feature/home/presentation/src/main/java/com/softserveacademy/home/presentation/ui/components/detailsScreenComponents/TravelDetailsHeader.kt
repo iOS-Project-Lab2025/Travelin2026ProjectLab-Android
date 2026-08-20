@@ -48,6 +48,7 @@ fun TravelDetailsHeader(
     name : String,
     rating : Double,
     limitedReviews : String,
+    isFavorite: Boolean,
     onBackClick: () -> Unit,
     onSeeAllPhotosClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -84,7 +85,12 @@ fun TravelDetailsHeader(
                 )
         )
 
-        TravelDetailsTopIcons(onBackClick,onShareClick,onFavoriteClick)
+        TravelDetailsTopIcons(
+            isFavorite = isFavorite,
+            onBackClick = onBackClick,
+            onShareClick = onShareClick,
+            onFavoriteClick = onFavoriteClick
+        )
 
         Column(
             verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceExtraSmall),

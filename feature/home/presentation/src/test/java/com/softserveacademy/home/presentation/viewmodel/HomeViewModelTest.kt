@@ -131,7 +131,6 @@ class HomeViewModelTest {
         Hotel(
             name = "Hotel A",
             address = "Paris, France",
-            imageList = emptyList()
         )
     )
 

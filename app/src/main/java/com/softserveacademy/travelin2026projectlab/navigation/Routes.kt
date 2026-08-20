@@ -49,6 +49,15 @@ sealed interface Routes {
     data object TravelHomeScreen : Routes
 
     @Serializable
+    data object TravelFavoritesScreen : Routes
+
+    @Serializable
+    data object FavoritesHotelsScreen : Routes
+
+    @Serializable
+    data object FavoritesToursScreen : Routes
+
+    @Serializable
     data object ProfileScreen : Routes
 
     @Serializable

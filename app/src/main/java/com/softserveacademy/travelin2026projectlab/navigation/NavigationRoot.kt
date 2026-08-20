@@ -42,6 +42,12 @@ import com.softserveacademy.home.presentation.ui.screens.TravelHotelDetailScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelTourDetailsScreen
 import com.softserveacademy.home.presentation.ui.screens.TravelPoiDetailsScreen
 
+// Favorites screens.
+import com.softserveacademy.feature.favorites.common.presentation.ui.screens.RootFavoritesScreen
+import com.softserveacademy.feature.favorites.common.presentation.events.FavoriteType
+import com.softserveacademy.feature.favorites.hotels.presentation.ui.screens.RootFavoritesHotelScreen
+import com.softserveacademy.feature.favorites.tours.presentation.ui.screens.RootFavoritesToursScreen
+
 // Booking screens.
 import com.softserveacademy.feature.booking.hotel.presentation.ui.screens.HotelEnterBookingDetailsScreen
 import com.softserveacademy.feature.booking.hotel.presentation.viewmodel.HotelEnterBookingDetailsViewModel
@@ -256,6 +262,9 @@ fun NavGraphBuilder.mainGraph(
                             launchSingleTop = true
                         }
                     },
+                    onFavoritesClick = {
+                        navController.navigate(Routes.TravelFavoritesScreen)
+                    },
                     onProfileClick = {
                         navController.navigate(Routes.ProfileScreen) {
                             popUpTo(Routes.TravelHomeScreen)
@@ -395,6 +404,45 @@ fun NavGraphBuilder.mainGraph(
                         TravelItemType.POI -> Routes.TravelPoiDetailsScreen(id = id)
                     }
                     navController.navigate(destination)
+                }
+            )
+        }
+
+        composable<Routes.TravelFavoritesScreen> {
+            RootFavoritesScreen(
+                onNavigateToHotels = {
+                    navController.navigate(Routes.FavoritesHotelsScreen)
+                },
+                onNavigateToTours = {
+                    navController.navigate(Routes.FavoritesToursScreen)
+                },
+                onNavigateToDetail = { id, type ->
+                    val route = when (type) {
+                        FavoriteType.HOTEL -> Routes.TravelHotelDetailsScreen(id = id)
+                        FavoriteType.TOUR -> Routes.TravelTourDetailsScreen(id = id)
+                    }
+                    navController.navigate(route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Routes.FavoritesHotelsScreen> {
+            RootFavoritesHotelScreen(
+                onBackClick = { navController.popBackStack() },
+                onHotelClick = { id ->
+                    navController.navigate(Routes.TravelHotelDetailsScreen(id = id))
+                }
+            )
+        }
+
+        composable<Routes.FavoritesToursScreen> {
+            RootFavoritesToursScreen(
+                onBackClick = { navController.popBackStack() },
+                onTourClick = { id ->
+                    navController.navigate(Routes.TravelTourDetailsScreen(id = id))
                 }
             )
         }
