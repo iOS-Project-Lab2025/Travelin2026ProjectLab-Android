@@ -52,7 +52,7 @@ class HotelViewModelTest {
             getNearbyPlacesUseCase = getNearbyPlacesUseCase,
             getNearbyTransportUseCase = getNearbyTransportUseCase,
             getNearbyRestaurantsUseCase = getNearbyRestaurantsUseCase,
-            getAiRecommendationsUseCase = getAiRecommendationsUseCase
+            getAiRecommendationsUseCase = getAiRecommendationsUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             favoritesRepository = favoritesRepository
         )
