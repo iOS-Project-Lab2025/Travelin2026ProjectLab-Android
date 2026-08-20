@@ -11,6 +11,7 @@ import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.domain.repository.SearchRepository
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "SearchRepositoryImpl"
@@ -164,7 +165,8 @@ class SearchRepositoryImpl @Inject constructor(
 
         // More randoms to reach 15
         SearchItem.HotelItem(Hotel("4", "Hotel Antumalal", "Pucón, Chile", 5, 4.8, 280, listOf("https://picsum.photos/id/167/400/300"))),
-        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours, 30.0, 4.5, TourCategory.CITY)),
+        SearchItem.TourItem(Tour("t4", "City Tour Santiago", "Historic center and hills", "Santiago", listOf("https://picsum.photos/id/16/400/300"), 4.hours,
+            RatePerParticipant(30.0), 4.5, TourCategory.CITY)),
         SearchItem.DestinationItem(Destination("d4", "https://picsum.photos/id/17/400/300", "Pucón", "Araucanía, Chile", 4.7, 500.0, "USD", "3D2N"))
     )
 }

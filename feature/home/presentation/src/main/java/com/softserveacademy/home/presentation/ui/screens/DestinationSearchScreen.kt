@@ -3,6 +3,7 @@ package com.softserveacademy.home.presentation.ui.screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -28,12 +29,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.softserveacademy.core.presentation.design_system.theme.*
 import androidx.compose.ui.res.painterResource
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.softserveacademy.core.presentation.design_system.R as DesignR
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.presentation.model.TravelItemType
 import com.softserveacademy.home.presentation.viewmodel.SearchUiState
 import com.softserveacademy.home.presentation.viewmodel.SearchViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 /**
  * Main screen for the Destination Search feature.
@@ -440,7 +447,7 @@ fun ResultsList(
                     title = item.tour.title,
                     location = item.tour.location,
                     image = item.tour.imageList.firstOrNull(),
-                    price = "${item.tour.price}",
+                    price = "${item.tour.rates}",
                     rating = item.tour.rating,
                     ratingText = item.tour.limitedReviews,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }

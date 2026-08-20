@@ -113,10 +113,8 @@ class PoiRepoImpl @Inject constructor(
             Log.e(TAG, "Route Matrix failed, using backup distance calculation", e)
             emptyList()
         }
-        mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
+        mapPlacesToPois(places, routeMatrix, "drive")
     }
-
-
 
     /**
      * Fetches nearby transport hubs like bus and train stations.
@@ -152,7 +150,7 @@ class PoiRepoImpl @Inject constructor(
         if (places.isEmpty()) return@safeCall emptyList()
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places, "DRIVE")
-        mapPlacesToPois(latitude, longitude, places, routeMatrix, "drive")
+        mapPlacesToPois(places, routeMatrix, "drive")
     }
 
     /**
@@ -188,8 +186,6 @@ class PoiRepoImpl @Inject constructor(
         if (places.isEmpty()) return@safeCall emptyList()
 
         val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
-        mapPlacesToPois(latitude, longitude, places, routeMatrix, "walk")
-
         mapPlacesToPois(places, routeMatrix, "walk")
     }
 
@@ -260,16 +256,13 @@ class PoiRepoImpl @Inject constructor(
     /**
      * Maps a list of [Place] objects and their route data into domain [Poi] objects.
      *
-     * @param originLat Latitude of the user/origin.
-     * @param originLon Longitude of the user/origin.
      * @param places The list of places to map.
      * @param routeMatrix The corresponding route data.
      * @param suffix Suffix to append to the travel time (e.g., "walk").
      * @return A list of mapped [Poi] domain objects.
      */
     private suspend fun mapPlacesToPois(
-        originLat: Double,
-        originLon: Double,
+
         places: List<Place>,
         routeMatrix: List<RouteMatrixElement>,
         suffix: String
@@ -279,17 +272,14 @@ class PoiRepoImpl @Inject constructor(
                 val element = routeMatrix.find { it.destinationIndex == index }
                 val itemLat = place.location?.latitude ?: 0.0
                 val itemLon = place.location?.longitude ?: 0.0
-                
-                // Backup logic: If Route Matrix API fails, calculate straight-line distance
-                val distance = element?.distanceMeters ?: calculateLocalDistance(originLat, originLon, itemLat, itemLon)
-                // Estimate driving time (approx 10 m/s or 36 km/h) if duration is missing
-                val duration = element?.duration ?: "${(distance / 10.0).toInt()}s"
+
+
 
                 Poi(
                     name = place.displayName ?: "Unknown",
                     type = place.placeTypes?.firstOrNull()?.formatType() ?: "POI",
-                    travelTime = "${formatDuration(duration)} $suffix",
-                    distanceMeters = distance,
+                    travelTime = "${formatDuration(element?.duration)} $suffix",
+                    distanceMeters = element?.distanceMeters ?: 0,
                     imageUrl = fetchPhotoUri(place.photoMetadatas?.firstOrNull()),
                     description = place.editorialSummary,
                     latitude = itemLat,
@@ -297,17 +287,6 @@ class PoiRepoImpl @Inject constructor(
                 )
             }
         }.awaitAll()
-    }
-
-    private fun calculateLocalDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Int {
-        val r = 6371000 // Earth radius in meters
-        val dLat = Math.toRadians(lat2 - lat1)
-        val dLon = Math.toRadians(lon2 - lon1)
-        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        return (r * c).toInt()
     }
 
     /**
