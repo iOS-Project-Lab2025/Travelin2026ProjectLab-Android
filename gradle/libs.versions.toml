@@ -23,6 +23,7 @@ datastore = "1.1.3"
 stripe = "23.13.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
+playServicesLocation = "21.4.0"
 
 ##Added for feature of NavGraph
 navigationRuntimeKtx = "2.9.8"
@@ -68,6 +69,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
 google-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "google-places" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 

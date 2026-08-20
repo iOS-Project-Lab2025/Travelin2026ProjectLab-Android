@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
  * @property name The name of the place.
  * @property type The type of place (e.g., Museum, Park, Restaurant).
  * @property travelTime The estimated time to trave to the place from the hotel (e.g., "5 min").
+ * @property distanceMeters The distance to the place in meters.
  * @property imageUrl An optional URL for a photo of the place.
  * @property description A short summary or description of the place.
  */
@@ -16,6 +17,9 @@ data class Poi(
     val name: String,
     val type: String,
     val travelTime: String,
+    val distanceMeters: Int? = null,
     val imageUrl: String? = null,
-    val description: String? = null
+    val description: String? = null,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 ) : java.io.Serializable

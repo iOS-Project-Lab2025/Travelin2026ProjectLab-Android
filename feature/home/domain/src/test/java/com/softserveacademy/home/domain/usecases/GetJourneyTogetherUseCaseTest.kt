@@ -1,5 +1,6 @@
 package com.softserveacademy.home.domain.usecases
 
+import com.softserveacademy.core.domain.model.RatePerParticipant
 import com.softserveacademy.core.domain.model.Tour
 import com.softserveacademy.core.domain.model.TourCategory
 import com.softserveacademy.home.domain.repository.HomeRepository
@@ -19,7 +20,7 @@ class GetJourneyTogetherUseCaseTest {
     @Test
     fun `given success when invoke then returns tour list`() = runTest {
         val tours = listOf(
-            Tour(id = "t1", title = "Tour 1", description = "Desc", location = "Loc", imageList = listOf("url"), duration = 2.hours, price = 50.0, rating = 4.5, category = TourCategory.CULTURE)
+            Tour(id = "t1", title = "Tour 1", description = "Desc", location = "Loc", imageList = listOf("url"), duration = 2.hours, RatePerParticipant(adults = 50.0), rating = 4.5, category = TourCategory.CULTURE)
         )
         coEvery { repository.getJourneyTogether() } returns Result.success(tours)
 

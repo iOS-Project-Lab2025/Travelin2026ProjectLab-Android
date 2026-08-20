@@ -65,7 +65,7 @@ fun PassengerSelectionSheet(state: FlightSearchState, onEvent: (FlightSearchEven
         val currentTotal = state.adults + state.children + state.infants
         val remainingSpace = 9 - currentTotal
         val subtitleText = if (currentTotal >= 9)
-            "Maximum of 9 passengers allowed" // Debería ir a strings.xml
+            "Maximum of 9 passengers allowed" // Should be in strings.xml
         else stringResource(R.string.flight_max_passengers_subtitle)
 
         val passengerItems = listOf(
