@@ -1,7 +1,6 @@
 package com.softserveacademy.core.data.repository
 
 import android.content.Context
-import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.softserveacademy.core.data.BuildConfig
 import com.google.android.libraries.places.api.model.CircularBounds
