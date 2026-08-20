@@ -1,8 +1,9 @@
 package com.softserveacademy.core.data.repository
 
 import android.content.Context
-import android.content.pm.PackageManager
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
+import com.softserveacademy.core.data.BuildConfig
 import com.google.android.libraries.places.api.model.CircularBounds
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchResolvedPhotoUriRequest
@@ -45,17 +46,10 @@ class PoiRepoImpl @Inject constructor(
     private val googleMapsApiService: GoogleMapsApiService,
     private val placesClient: PlacesClient,
     private val mapper: ExceptionMapper,
-    @param:ApplicationContext private val context: Context,
+    @ApplicationContext private val context: Context,
 ) : PoiRepo {
 
-    private val apiKey: String by lazy {
-        try {
-            val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            ai.metaData?.getString("com.google.android.geo.API_KEY") ?: ""
-        } catch (e: Exception) {
-            ""
-        }
-    }
+    private val apiKey: String = BuildConfig.MAPS_API_KEY
 
     /**
      * Fetches nearby tourist attractions and historical sites.
@@ -69,7 +63,7 @@ class PoiRepoImpl @Inject constructor(
         longitude: Double,
         requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
-
+        Log.d("PoiRepo", "Loading nearby places for $latitude, $longitude")
         val fields = listOf(
             Place.Field.DISPLAY_NAME,
             Place.Field.TYPES,
@@ -92,7 +86,12 @@ class PoiRepoImpl @Inject constructor(
 
         if (places.isEmpty()) return@safeCall emptyList()
 
-        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
+        val routeMatrix = try {
+            fetchRouteMatrix(latitude, longitude, places)
+        } catch (e: Exception) {
+            Log.e("PoiRepo", "Error fetching route matrix: ${e.message}", e)
+            throw e
+        }
 
         mapPlacesToPois(places, routeMatrix, "walk")
     }
@@ -109,7 +108,7 @@ class PoiRepoImpl @Inject constructor(
         longitude: Double,
         requestNumber: Int
     ): AppResult<List<Poi>> = safeCall(mapper) {
-
+        Log.d("PoiRepo", "Loading nearby places for $latitude, $longitude")
         val fields = listOf(
             Place.Field.DISPLAY_NAME,
             Place.Field.TYPES,
@@ -169,7 +168,12 @@ class PoiRepoImpl @Inject constructor(
         
         if (places.isEmpty()) return@safeCall emptyList()
 
-        val routeMatrix = fetchRouteMatrix(latitude, longitude, places)
+        val routeMatrix = try {
+            fetchRouteMatrix(latitude, longitude, places)
+        } catch (e: Exception) {
+            Log.e("PoiRepo", "Error fetching route matrix: ${e.message}", e)
+            throw e
+        }
 
         mapPlacesToPois(places, routeMatrix, "walk")
     }
@@ -201,7 +205,12 @@ class PoiRepoImpl @Inject constructor(
             .setExcludedTypes(excludedTypes)
             .setMaxResultCount(maxResults)
             .build()
-        return placesClient.searchNearby(request).await().places
+        return try {
+            placesClient.searchNearby(request).await().places
+        } catch (e: Exception) {
+            Log.e("PoiRepo", "Error fetching places: ${e.message}", e)
+            throw e
+        }
     }
 
     /**
@@ -221,6 +230,7 @@ class PoiRepoImpl @Inject constructor(
     ) = googleMapsApiService.computeRouteMatrix(
         apiKey = apiKey,
         fieldMask = "originIndex,destinationIndex,duration,distanceMeters,condition",
+        packageName = context.packageName,
         request = RouteMatrixRequest(
             origins = listOf(RouteMatrixOrigin(Waypoint(LocationDto(LatLngDto(lat, lng))))),
             destinations = destinations.map { place ->
