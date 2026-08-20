@@ -1,5 +1,11 @@
 package com.softserveacademy.home.presentation.ui.screens
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,23 +14,33 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import com.softserveacademy.core.domain.util.formatPrice
 import com.softserveacademy.core.presentation.design_system.theme.*
+import androidx.compose.ui.res.painterResource
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.softserveacademy.core.presentation.design_system.R as DesignR
 import com.softserveacademy.home.domain.repository.SearchFilter
 import com.softserveacademy.home.domain.repository.SearchItem
 import com.softserveacademy.home.presentation.model.TravelItemType
 import com.softserveacademy.home.presentation.viewmodel.SearchUiState
 import com.softserveacademy.home.presentation.viewmodel.SearchViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 /**
  * Main screen for the Destination Search feature.
@@ -34,12 +50,79 @@ import com.softserveacademy.home.presentation.viewmodel.SearchViewModel
  * @param onItemClick Callback when a search result item is clicked.
  * @param viewModel The [SearchViewModel] that manages the search logic and state.
  */
+@SuppressLint("MissingPermission")
 @Composable
 fun DestinationSearchScreen(
     onBackClick: () -> Unit,
     onItemClick: (String, TravelItemType) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    var currentCity by remember { mutableStateOf("Location not found") }
+    val scope = rememberCoroutineScope()
+
+    val updateCityName: (Double, Double) -> Unit = { lat, lon ->
+        scope.launch(Dispatchers.IO) {
+            try {
+                val geocoder = Geocoder(context, Locale.getDefault())
+                @Suppress("DEPRECATION")
+                val addresses = geocoder.getFromLocation(lat, lon, 1)
+                val cityName = addresses?.firstOrNull()?.locality
+                    ?: addresses?.firstOrNull()?.subAdminArea
+                    ?: addresses?.firstOrNull()?.adminArea
+
+                if (cityName != null) {
+                    withContext(Dispatchers.Main) {
+                        currentCity = cityName
+                    }
+                }
+            } catch (e: Exception) {
+                // Network or Geocoder service unavailable
+            }
+        }
+    }
+
+    // Attempt to get location and city name on start if permission is already granted
+    LaunchedEffect(Unit) {
+        val permissionCheck = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    updateCityName(location.latitude, location.longitude)
+                    viewModel.currentLatitude = location.latitude
+                    viewModel.currentLongitude = location.longitude
+                }
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            try {
+                fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            updateCityName(location.latitude, location.longitude)
+                            viewModel.toggleNearbyMode(true, location.latitude, location.longitude)
+                        } else {
+                            // Fallback or mock if location is null
+                            viewModel.toggleNearbyMode(true, -33.4489, -70.6693)
+                        }
+                    }
+            } catch (e: SecurityException) {
+                // Should not happen as we just got permission
+            }
+        } else {
+            viewModel.onPermissionDenied()
+        }
+    }
+
     Scaffold(
         topBar = {
             SearchTopBar(
@@ -57,8 +140,36 @@ fun DestinationSearchScreen(
         ) {
             FilterRow(
                 selectedFilter = viewModel.currentFilter,
-                onFilterSelected = { viewModel.onFilterChanged(it) }
+                onFilterSelected = { filter ->
+                    if (filter == SearchFilter.POIS) {
+                        val permissionCheck = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        } else {
+                            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                                .addOnSuccessListener { location ->
+                                    if (location != null) {
+                                        viewModel.currentLatitude = location.latitude
+                                        viewModel.currentLongitude = location.longitude
+                                    }
+                                    viewModel.onFilterChanged(filter)
+                                }
+                        }
+                    } else {
+                        viewModel.onFilterChanged(filter)
+                    }
+                }
             )
+
+            if (viewModel.isNearbyMode || viewModel.currentFilter == SearchFilter.POIS) {
+                RadiusSlider(
+                    radius = viewModel.searchRadius,
+                    onRadiusChange = { viewModel.onRadiusChanged(it) }
+                )
+            }
 
             // Handle UI states based on the ViewModel's state
             when (val state = viewModel.uiState) {
@@ -66,14 +177,45 @@ fun DestinationSearchScreen(
                 is SearchUiState.Idle, is SearchUiState.Success -> {
                     val items = (state as? SearchUiState.Success)?.items ?: emptyList()
                     // Display the nearby header only if the search query is currently empty
-                    if (viewModel.searchQuery.isEmpty() && items.isNotEmpty()) {
-                        NearbyHeader()
+                    if (viewModel.searchQuery.isEmpty()) {
+                        NearbyHeader(
+                            onClick = {
+                                val permissionCheck = ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.ACCESS_FINE_LOCATION
+                                )
+                                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                                        if (location != null) {
+                                            updateCityName(location.latitude, location.longitude)
+                                            viewModel.toggleNearbyMode(
+                                                !viewModel.isNearbyMode,
+                                                location.latitude,
+                                                location.longitude
+                                            )
+                                        } else {
+                                            viewModel.toggleNearbyMode(!viewModel.isNearbyMode, -33.4489, -70.6693)
+                                        }
+                                    }
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                }
+                            },
+                            isNearbyMode = viewModel.isNearbyMode,
+                            locationName = currentCity
+                        )
                     }
-                    ResultsList(items, onItemClick)
+                    ResultsList(
+                        items = items,
+                        onItemClick = onItemClick
+                    )
                 }
 
                 is SearchUiState.Empty -> EmptyState()
                 is SearchUiState.Error -> ErrorState(state.message) { viewModel.performSearch() }
+                is SearchUiState.PermissionDenied -> PermissionErrorState {
+                    permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
             }
         }
     }
@@ -151,8 +293,9 @@ fun FilterRow(selectedFilter: SearchFilter, onFilterSelected: (SearchFilter) -> 
     ) {
         items(SearchFilter.entries) { filter ->
             val isSelected = selectedFilter == filter
+            val label = if (filter == SearchFilter.POIS) "POIs" else filter.name.lowercase().replaceFirstChar { it.uppercase() }
             FilterChip(
-                label = filter.name.lowercase().replaceFirstChar { it.uppercase() },
+                label = label,
                 icon = getFilterIcon(filter),
                 isSelected = isSelected,
                 onClick = { onFilterSelected(filter) }
@@ -202,34 +345,38 @@ fun FilterChip(label: String, icon: ImageVector, isSelected: Boolean, onClick: (
  * Header section showing the user's current location and prompt for nearby searches.
  */
 @Composable
-fun NearbyHeader() {
+fun NearbyHeader(onClick: () -> Unit, isNearbyMode: Boolean, locationName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(TravelinDimens.PaddingMedium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .size(TravelinDimens.IconSizeExtraLarge)
-                .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                .background(
+                    if (isNearbyMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                    CircleShape
+                ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = LocationMarkerIcon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = if (isNearbyMode) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
             )
         }
         Spacer(Modifier.width(TravelinDimens.SpaceMedium))
         Column {
             Text(
-                text = "Search place nearby",
+                text = "Search nearby",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = if (isNearbyMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Current location - Santiago",
+                text = "Current location - $locationName",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -237,36 +384,98 @@ fun NearbyHeader() {
     }
 }
 
-/**
- * Displays search results in a vertical list.
- */
 @Composable
-fun ResultsList(items: List<SearchItem>, onItemClick: (String, TravelItemType) -> Unit) {
+fun RadiusSlider(radius: Float, onRadiusChange: (Float) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = TravelinDimens.PaddingMedium)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Distance radius",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "${radius.toInt()} km",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        Slider(
+            value = radius,
+            onValueChange = onRadiusChange,
+            valueRange = 1f..100f,
+            steps = 99,
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colorScheme.primary,
+                activeTrackColor = MaterialTheme.colorScheme.primary,
+                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        )
+    }
+}
+
+@Composable
+fun ResultsList(
+    items: List<SearchItem>,
+    onItemClick: (String, TravelItemType) -> Unit
+) {
     LazyColumn(
         contentPadding = PaddingValues(TravelinDimens.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
     ) {
         items(items) { item ->
+            // ... (rest of items)
             when (item) {
                 is SearchItem.HotelItem -> SearchResultCard(
                     title = item.hotel.name,
                     location = item.hotel.address,
                     image = item.hotel.imageList.firstOrNull(),
-                    price = formatPrice(item.hotel.pricePerNight),
+                    price = "$\$item.hotel.pricePerNight",
                     rating = item.hotel.reviewRating,
-                    onClick = { item.hotel.id.let { onItemClick(it, TravelItemType.HOTEL) } }
+                    ratingText = item.hotel.limitedReviews,
+                    onClick = { onItemClick(item.hotel.id, TravelItemType.HOTEL) }
                 )
 
                 is SearchItem.TourItem -> SearchResultCard(
                     title = item.tour.title,
                     location = item.tour.location,
                     image = item.tour.imageList.firstOrNull(),
-                    price = formatPrice(item.tour.rates.adults),
+                    price = "${item.tour.rates}",
                     rating = item.tour.rating,
+                    ratingText = item.tour.limitedReviews,
                     onClick = { onItemClick(item.tour.id, TravelItemType.TOUR) }
                 )
-                // Handle additional search result types as needed
-                else -> {}
+
+                is SearchItem.DestinationItem -> SearchResultCard(
+                    title = item.destination.name,
+                    location = item.destination.location,
+                    image = item.destination.imageUrl,
+                    price = "${item.destination.pricePerPax}",
+                    rating = item.destination.rating,
+                    onClick = { onItemClick(item.destination.id, TravelItemType.DESTINATION) }
+                )
+
+                is SearchItem.PoiItem -> SearchResultCard(
+                    title = item.poi.name,
+                    location = "${item.poi.type} • ${item.poi.travelTime}",
+                    image = item.poi.imageUrl,
+                    price = item.poi.distanceMeters?.let { "%.1f km".format(it / 1000.0) } ?: "",
+                    priceLabel = "Distance:",
+                    rating = null,
+                    onClick = {
+                        onItemClick(
+                            "${item.poi.name}|${item.poi.latitude}|${item.poi.longitude}",
+                            TravelItemType.POI
+                        )
+                    }
+                )
             }
         }
     }
@@ -289,6 +498,8 @@ fun SearchResultCard(
     image: String?,
     price: String,
     rating: Double?,
+    ratingText: String? = null,
+    priceLabel: String = "from $",
     onClick: () -> Unit = {}
 ) {
     Surface(
@@ -305,14 +516,30 @@ fun SearchResultCard(
                 .fillMaxWidth()
                 .height(TravelinDimens.ImageSizeMedium)
         ) {
-            AsyncImage(
-                model = image,
-                contentDescription = null,
+            Box(
                 modifier = Modifier
                     .size(TravelinDimens.ImageSizeMedium)
-                    .clip(MaterialTheme.shapes.medium),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                if (image != null) {
+                    AsyncImage(
+                        model = image,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        error = painterResource(DesignR.drawable.ic_bag)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Bag,
+                        contentDescription = null,
+                        modifier = Modifier.size(TravelinDimens.IconSizeLarge),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .padding(start = TravelinDimens.PaddingNormal)
@@ -336,21 +563,28 @@ fun SearchResultCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = StarIcon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(TravelinDimens.IconSizeSmall)
-                    )
-                    Text(
-                        text = " $rating",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                if (rating != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = StarIcon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(TravelinDimens.IconSizeSmall)
+                        )
+                        Text(
+                            text = buildString {
+                                append(" $rating")
+                                if (!ratingText.isNullOrEmpty()) {
+                                    append(" ($ratingText)")
+                                }
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
                 Text(
-                    text = "from $$price/person",
+                    text = if (priceLabel == "Distance:") "$priceLabel $price" else "$priceLabel$price/person",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.align(Alignment.End)
@@ -366,10 +600,11 @@ fun SearchResultCard(
 @Composable
 fun getFilterIcon(filter: SearchFilter) = when (filter) {
     SearchFilter.ALL -> SearchIcon
+    SearchFilter.POIS -> StarIcon
     SearchFilter.HOTELS -> HotelIcon
-    SearchFilter.FLIGHTS -> PlaneIcon
     SearchFilter.TOURS -> TicketIcon
     SearchFilter.DESTINATIONS -> LocationMarkerIcon
+
 }
 
 // --- UI States components ---
@@ -407,5 +642,35 @@ fun ErrorState(msg: String, onRetry: () -> Unit) {
     ) {
         Text(text = msg, color = MaterialTheme.colorScheme.error)
         Button(onClick = onRetry) { Text("Retry") }
+    }
+}
+
+/**
+ * Screen displayed when location permission is denied.
+ */
+@Composable
+fun PermissionErrorState(onRetry: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize().padding(TravelinDimens.PaddingLarge),
+        Arrangement.Center,
+        Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = LocationMarkerIcon,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.error
+        )
+        Spacer(Modifier.height(TravelinDimens.SpaceMedium))
+        Text(
+            text = "Location permission is required to find nearby places.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(TravelinDimens.SpaceMedium))
+        Button(onClick = onRetry) {
+            Text("Grant Permission")
+        }
     }
 }

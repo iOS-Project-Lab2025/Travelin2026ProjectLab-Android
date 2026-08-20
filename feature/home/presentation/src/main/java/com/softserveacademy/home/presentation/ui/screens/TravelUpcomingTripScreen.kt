@@ -1,11 +1,11 @@
 package com.softserveacademy.home.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softserveacademy.core.domain.model.Airline
 import com.softserveacademy.core.domain.model.Airport
@@ -38,6 +39,7 @@ import com.softserveacademy.core.domain.model.TourBookingPrice
 import com.softserveacademy.core.domain.model.Trip
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.Travelin2026ProjectLabTheme
+import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 import com.softserveacademy.home.presentation.model.toTripDetailUi
 import com.softserveacademy.home.presentation.state.SectionState
 import com.softserveacademy.home.presentation.state.UpcomingTripState
@@ -82,14 +84,19 @@ fun TravelUpcomingTripScreen(
                 title = {
                     Text(
                         text = "Upcoming Trip",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        TravelArrowIconButton {onBackClick()  }
-                    }
+                        TravelArrowIconButton(onClick = onBackClick)
                 },
+                windowInsets = WindowInsets(
+                    TravelinDimens.PaddingNormal,
+                    0.dp,
+                    TravelinDimens.PaddingMedium,
+                    TravelinDimens.PaddingSmall
+                ),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = Color.White

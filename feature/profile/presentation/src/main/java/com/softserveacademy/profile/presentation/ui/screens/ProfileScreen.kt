@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softserveacademy.core.domain.model.AppTheme
 import com.softserveacademy.profile.domain.model.UserProfile
-import com.softserveacademy.core.presentation.design_system.components.TravelIconButton
+import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.*
 import com.softserveacademy.profile.presentation.viewmodel.ProfileViewModel
 import com.softserveacademy.profile.presentation.state.ProfileState
@@ -233,15 +233,13 @@ fun ProfileContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding()
-                    .padding(TravelinDimens.PaddingLarge),
+                    .padding(
+                        horizontal = TravelinDimens.PaddingMedium,
+                        vertical = TravelinDimens.PaddingNormal
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TravelIconButton(
-                    icon = ArrowLeftIcon,
-                    onClick = onNavigateBack,
-                    contentDescription = "Back"
-                )
+                TravelArrowIconButton(onClick = onNavigateBack)
             }
         },
         bottomBar = {

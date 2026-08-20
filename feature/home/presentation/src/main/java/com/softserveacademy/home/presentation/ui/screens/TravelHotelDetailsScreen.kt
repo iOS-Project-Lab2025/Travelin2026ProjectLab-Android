@@ -207,6 +207,7 @@ fun TravelHotelDetailScreen(
                 TravelHotelDetailsWrapper(
                     hotel = hotelDetails,
                     isDarkTheme = isDark,
+                    isFavorite = hotelDetailState.isFavorite, // Added from main
                     isDescriptionExpanded = hotelDetailState.isDescriptionExpanded,
                     showAllAmenities = hotelDetailState.showAmenitiesDialog,
                     showFullMap = hotelDetailState.showFullMap,
@@ -329,6 +330,7 @@ private fun TravelHotelDetailsWrapper(
     hotel: Hotel,
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean,
+    isFavorite: Boolean = false,
     isDescriptionExpanded: Boolean = false,
     showAllAmenities: Boolean = false,
     showFullMap: Boolean = false,
@@ -380,6 +382,7 @@ private fun TravelHotelDetailsWrapper(
                         name = hotel.name,
                         rating = hotel.reviewRating,
                         limitedReviews = hotel.limitedReviews,
+                        isFavorite = isFavorite,
                         onBackClick = onBackClick,
                         onSeeAllPhotosClick = onSeeAllPhotosClick,
                         onShareClick = onShareClick,
@@ -479,6 +482,10 @@ private fun TravelHotelDetailsWrapperPreview() {
         TravelHotelDetailsWrapper(
             hotel = Hotel(
                 id = "1",
+                name = "Koh Rong Samloem",
+                address = "Jalan Sunset Road No. 101, Kuta, Bali",
+                reviewRating = 3.6,
+                numberOfReviews = 30,
                 imageList = listOf(
                     "https://picsum.photos/200",
                     "https://picsum.photos/id/1020/800/600",
@@ -488,9 +495,6 @@ private fun TravelHotelDetailsWrapperPreview() {
                     "https://images.unsplash.com/photo-1582719508461-905c673771fd",
                     "https://images.unsplash.com/photo-1582719508461-905c673771fd"
                 ),
-                name = "Koh Rong Samloem",
-                numberOfReviews = 30,
-                reviewRating = 3.6,
                 description = LoremIpsum(words = 50).values.first(),
                 amenities = listOf(
                     "hotel.fitness_center",
@@ -501,9 +505,8 @@ private fun TravelHotelDetailsWrapperPreview() {
                     "hotel.cleaning_services",
                     "hotel.room_service"
                 ),
-                address = "Jalan Sunset Road No. 101, Kuta, Bali",
                 latitude = 1.35,
-                longitude = 103.87
+                longitude = 103.87,
             ),
             isDarkTheme = false,
             isPoiLoading = false,

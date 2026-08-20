@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.softserveacademy.core.presentation.design_system.theme.ArrowLeftIcon
 import com.softserveacademy.core.presentation.design_system.theme.HeartFilledIcon
 import com.softserveacademy.core.presentation.design_system.theme.HeartLineIcon
@@ -44,7 +45,8 @@ fun TravelIconButton(
     iconColor : Color = MaterialTheme.colorScheme.onSurface,
     backgroundColor : Color = MaterialTheme.colorScheme.surface,
     contentDescription: String? = null,
-    debounceInterval: Long = 1000L
+    debounceInterval: Long = 1000L,
+    iconSize: Dp = TravelinDimens.IconSizeSmall
 ){
     var lastClickTime by remember { mutableLongStateOf(0L) }
     IconButton (
@@ -64,7 +66,7 @@ fun TravelIconButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            modifier = Modifier.requiredSize(TravelinDimens.IconSizeSmall),
+            modifier = Modifier.requiredSize(iconSize),
             tint = iconColor
         )
     }
@@ -87,7 +89,7 @@ fun TravelIconButtonPreview() {
                 icon = HeartFilledIcon,
                 onClick = {},
                 modifier = Modifier,
-                iconColor = MaterialTheme.colorScheme.error
+                iconColor = MaterialTheme.colorScheme.primary
             )
             TravelIconButton(
                 icon = ArrowLeftIcon,

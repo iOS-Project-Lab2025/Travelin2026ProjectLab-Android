@@ -11,6 +11,9 @@ import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
 import com.softserveacademy.core.error.model.AppError
+import com.softserveacademy.feature.favorites.common.domain.model.FavoriteItem
+import com.softserveacademy.feature.favorites.common.domain.repository.FavoritesRepository
+import com.softserveacademy.feature.favorites.common.domain.usecase.ToggleFavoriteUseCase
 import com.softserveacademy.home.presentation.events.HotelDetailsEventEffect
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import com.softserveacademy.home.presentation.state.HotelDetailsState
@@ -33,6 +36,8 @@ class HotelDetailsViewModel @Inject constructor(
     private val getNearbyTransportUseCase: GetNearbyTransportUseCase,
     private val getNearbyRestaurantsUseCase: GetNearbyRestaurantsUseCase,
     private val getAiRecommendationsUseCase: GetAiRecommendationsUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _hotelDetailsState = MutableStateFlow(
@@ -60,7 +65,26 @@ class HotelDetailsViewModel @Inject constructor(
                 }
             }
             HotelDetailsEvent.ToggleFavorite -> {
-                updateState { it.copy(isFavorite = !it.isFavorite) }
+                _hotelDetailsState.value.hotel?.let { hotel ->
+                    viewModelScope.launch {
+                        try {
+                            val favoriteItem = FavoriteItem(
+                                id = hotel.id,
+                                title = hotel.name,
+                                location = hotel.address,
+                                rating = hotel.reviewRating,
+                                type = "HOTEL",
+                                price = hotel.pricePerNight,
+                                imageUrl = hotel.imageList.firstOrNull() ?: "",
+                                addedAt = System.currentTimeMillis()
+                            )
+                            toggleFavoriteUseCase(favoriteItem)
+                            updateState { it.copy(isFavorite = !it.isFavorite) }
+                        } catch (e: Exception) {
+                            android.util.Log.e("HotelDetailsViewModel", "Error toggling favorite", e)
+                        }
+                    }
+                }
             }
             HotelDetailsEvent.BookNow -> {
                 _hotelDetailsState.value.hotel?.let {
@@ -127,6 +151,11 @@ class HotelDetailsViewModel @Inject constructor(
     private fun loadDetail(id: String) {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, errorMessage = null) }
+            
+            // Check if it's favorite
+            val isFavorite = favoritesRepository.isFavorite(id)
+            updateState { it.copy(isFavorite = isFavorite) }
+
             getHotelDetailsUseCase(id)
                 .onSuccess { hotel ->
                     updateState { it.copy(isLoading = false, hotel = hotel) }

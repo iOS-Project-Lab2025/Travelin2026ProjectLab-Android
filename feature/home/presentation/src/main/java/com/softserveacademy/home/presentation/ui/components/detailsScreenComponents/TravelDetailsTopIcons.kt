@@ -18,6 +18,7 @@ import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
 
 @Composable
 fun TravelDetailsTopIcons(
+    isFavorite: Boolean = false,
     onBackClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {}
@@ -27,7 +28,7 @@ fun TravelDetailsTopIcons(
             .fillMaxWidth()
             .padding(
                 horizontal = TravelinDimens.PaddingMedium,
-                vertical = TravelinDimens.PaddingSmall
+                vertical = TravelinDimens.PaddingNormal
             ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -38,7 +39,10 @@ fun TravelDetailsTopIcons(
 
             Spacer(modifier = Modifier.width(TravelinDimens.SpaceSmall))
 
-            TravelFavoriteIconButton(onClick = onFavoriteClick)
+            TravelFavoriteIconButton(
+                isFavorite = isFavorite,
+                onClick = onFavoriteClick
+            )
         }
     }
 }

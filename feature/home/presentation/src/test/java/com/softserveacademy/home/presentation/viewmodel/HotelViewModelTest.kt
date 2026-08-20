@@ -8,6 +8,8 @@ import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.error.model.AppError
 import com.softserveacademy.core.error.model.AppResult
+import com.softserveacademy.feature.favorites.common.domain.repository.FavoritesRepository
+import com.softserveacademy.feature.favorites.common.domain.usecase.ToggleFavoriteUseCase
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -37,6 +39,8 @@ class HotelViewModelTest {
     private val getNearbyTransportUseCase = mockk<GetNearbyTransportUseCase>(relaxed = true)
     private val getNearbyRestaurantsUseCase = mockk<GetNearbyRestaurantsUseCase>(relaxed = true)
     private val getAiRecommendationsUseCase = mockk<GetAiRecommendationsUseCase>(relaxed = true)
+    private val toggleFavoriteUseCase = mockk<ToggleFavoriteUseCase>()
+    private val favoritesRepository = mockk<FavoritesRepository>(relaxed = true)
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
@@ -49,6 +53,8 @@ class HotelViewModelTest {
             getNearbyTransportUseCase = getNearbyTransportUseCase,
             getNearbyRestaurantsUseCase = getNearbyRestaurantsUseCase,
             getAiRecommendationsUseCase = getAiRecommendationsUseCase
+            toggleFavoriteUseCase = toggleFavoriteUseCase,
+            favoritesRepository = favoritesRepository
         )
     }
 

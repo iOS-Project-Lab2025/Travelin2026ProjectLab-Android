@@ -44,19 +44,19 @@ fun TravelCarouselPreview() {
             address = "Volcano in East Java",
             reviewRating = 4.9,
             //An example picture has been added to Res/drawables
-            imageList = listOf("https://picsum.photos/200")
+            imageList = listOf("https://picsum.photos/200"),
         ),
         Hotel(
             name = "Swiss-Belhotel Rainforest",
             address = "Kuta, Bali, Indonesia",
             reviewRating = 4.5,
-            imageList = listOf("https://picsum.photos/200")
+            imageList = listOf("https://picsum.photos/200"),
         ),
         Hotel(
             name = "Tokyo Adventure Resort",
             address = "Tokyo, Japan",
             reviewRating = 4.8,
-            imageList = listOf("https://picsum.photos/200")
+            imageList = listOf("https://picsum.photos/200"),
         )
     )
 

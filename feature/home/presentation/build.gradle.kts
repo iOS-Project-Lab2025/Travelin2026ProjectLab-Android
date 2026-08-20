@@ -39,6 +39,7 @@ dependencies {
     implementation(projects.feature.profile.domain)
     implementation(projects.feature.profile.presentation)
     implementation(projects.feature.home.domain)
+    implementation(projects.feature.favorites.common.domain)
     implementation(projects.core.presentation.designSystem)
     implementation(projects.core.presentation.ui)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -59,4 +60,6 @@ dependencies {
 
     // Maps SDK for Android
     implementation(libs.maps.compose)
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
 }

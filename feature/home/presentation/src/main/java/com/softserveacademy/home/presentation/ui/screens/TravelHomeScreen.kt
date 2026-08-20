@@ -87,10 +87,12 @@ fun RootHomeScreen(
             onBackClick = { isSearchMode = false },
             onItemClick = { id, type ->
                 isSearchMode = false
-                if (type == TravelItemType.HOTEL) {
-                    actions.onHotelClick(id)
-                } else {
-                    actions.onTourClick(id)
+                android.util.Log.d("RootHomeScreen", "Item clicked: id=$id, type=$type")
+                when (type) {
+                    TravelItemType.HOTEL -> actions.onHotelClick(id)
+                    TravelItemType.TOUR -> actions.onTourClick(id)
+                    TravelItemType.POI -> actions.onPoiClick(id)
+                    else -> actions.onTourClick(id)
                 }
             }
         )
@@ -103,11 +105,12 @@ fun RootHomeScreen(
             onTourClick = actions.onTourClick,
             onFlightClick = actions.onFlightsClick,  
             onAccountClick = actions.onAccountClick,
+            onFavoritesClick = actions.onFavoritesClick,
             onProfileClick = actions.onProfileClick,
             onJourneySeeAllClick = actions.onJourneySeeAllClick,
             onHotelsSeeAllClick = actions.onHotelsSeeAllClick,
             onUpcomingTripClick = actions.onUpcomingTripClick,
-            onSearchClick = { isSearchMode = true }, // Activamos el modo búsqueda
+            onSearchClick = { isSearchMode = true }, // Activate search mode
             modifier = modifier
         )
     }
@@ -143,6 +146,7 @@ fun TravelHomeScreen(
     onTourClick: (String) -> Unit,
     onAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onFavoritesClick: () -> Unit = {},
     onFlightClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onJourneySeeAllClick: () -> Unit = {},
@@ -165,7 +169,10 @@ fun TravelHomeScreen(
             TravelNavigationBar(
                 selectedTab = 0,
                 onTabClick = { index ->
-                    if (index == 3) onAccountClick()
+                    when (index) {
+                        2 -> onFavoritesClick()
+                        3 -> onAccountClick()
+                    }
                 }
             )
         }
@@ -392,7 +399,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Koh Rong Samloem, Cambodia",
                             starCategory = 5,
                             reviewRating = 4.8,
-                            imageList = listOf("https://picsum.photos/id/10/800/600")
+                            imageList = listOf("https://picsum.photos/id/10/800/600"),
                         ),
                         Hotel(
                             id = "2",
@@ -400,7 +407,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Phuket, Thailand",
                             starCategory = 4,
                             reviewRating = 4.6,
-                            imageList = listOf("https://picsum.photos/id/11/800/600")
+                            imageList = listOf("https://picsum.photos/id/11/800/600"),
                         ),
                         Hotel(
                             id = "3",
@@ -408,7 +415,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Zermatt, Switzerland",
                             starCategory = 5,
                             reviewRating = 4.9,
-                            imageList = listOf("https://picsum.photos/id/12/800/600")
+                            imageList = listOf("https://picsum.photos/id/12/800/600"),
                         ),
                         Hotel(
                             id = "4",
@@ -416,7 +423,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Bali, Indonesia",
                             starCategory = 4,
                             reviewRating = 4.7,
-                            imageList = listOf("https://picsum.photos/id/13/800/600")
+                            imageList = listOf("https://picsum.photos/id/13/800/600"),
                         ),
                         Hotel(
                             id = "5",
@@ -424,7 +431,7 @@ private fun TravelHomeScreenPreview() {
                             address = "Paris, France",
                             starCategory = 5,
                             reviewRating = 4.9,
-                            imageList = listOf("https://picsum.photos/id/14/800/600")
+                            imageList = listOf("https://picsum.photos/id/14/800/600"),
                         )
                     )
                 )

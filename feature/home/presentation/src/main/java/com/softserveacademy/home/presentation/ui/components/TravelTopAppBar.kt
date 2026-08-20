@@ -153,7 +153,7 @@ fun TravelBackground(modifier: Modifier = Modifier) {
 
         }
 
-        // Tu contenido va aquí encima
+        // Your content goes here above
     }
 }
 

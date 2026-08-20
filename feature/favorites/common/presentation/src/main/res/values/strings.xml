@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hotels_label">Hotels</string>
+    <string name="tours_label">Tours</string>
+    <string name="search_favorites_placeholder">Search into your favorites</string>
+    <string name="see_all_label">See all</string>
+
+    <!-- Empty states -->
+    <string name="no_favorites_title">No Favourites Yet</string>
+    <string name="no_favorites_subtitle">Save your favourite items to\nfind them easily later!</string>
+    <string name="go_back_button">Go Back</string>
+
+    <!-- Restricted state -->
+    <string name="not_a_user_title">Oops! It\'s seems\nyou are not a user yet</string>
+    <string name="not_a_user_subtitle">Please sign in so you can\nsave your favourite items to\nfound them easily here!</string>
+    <string name="sign_in_button">Sign in</string>
+</resources>

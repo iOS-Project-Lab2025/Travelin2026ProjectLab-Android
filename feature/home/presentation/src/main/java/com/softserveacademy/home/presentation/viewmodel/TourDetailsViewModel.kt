@@ -17,11 +17,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.softserveacademy.core.error.model.AppResult
+import com.softserveacademy.feature.favorites.common.domain.model.FavoriteItem
+import com.softserveacademy.feature.favorites.common.domain.repository.FavoritesRepository
+import com.softserveacademy.feature.favorites.common.domain.usecase.ToggleFavoriteUseCase
 
 @HiltViewModel
 class TourDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val tourRepo: TourRepo
+    private val tourRepo: TourRepo,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _tourDetailsState = MutableStateFlow(
@@ -49,7 +54,26 @@ class TourDetailsViewModel @Inject constructor(
                 }
             }
             TourDetailsEvent.ToggleFavorite -> {
-                updateState { it.copy(isFavorite = !it.isFavorite) }
+                _tourDetailsState.value.tourDetails?.let { tour ->
+                    viewModelScope.launch {
+                        try {
+                            val favoriteItem = FavoriteItem(
+                                id = tour.id,
+                                title = tour.title,
+                                location = tour.location,
+                                rating = tour.rating,
+                                type = "TOUR",
+                                price = tour.rates.adults,
+                                imageUrl = tour.imageList.firstOrNull() ?: "",
+                                addedAt = System.currentTimeMillis()
+                            )
+                            toggleFavoriteUseCase(favoriteItem)
+                            updateState { it.copy(isFavorite = !it.isFavorite) }
+                        } catch (e: Exception) {
+                            android.util.Log.e("TourDetailsViewModel", "Error toggling favorite", e)
+                        }
+                    }
+                }
             }
 
             TourDetailsEvent.ViewGallery -> {
@@ -94,6 +118,11 @@ class TourDetailsViewModel @Inject constructor(
     private fun loadDetail(id: String) {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, errorMessage = null) }
+            
+            // Check favorite status
+            val isFavorite = favoritesRepository.isFavorite(id)
+            updateState { it.copy(isFavorite = isFavorite) }
+
             when (val result = tourRepo.getTourById(id)) {
                 is AppResult.Success -> {
                     updateState { it.copy(isLoading = false, tourDetails = result.data) }
