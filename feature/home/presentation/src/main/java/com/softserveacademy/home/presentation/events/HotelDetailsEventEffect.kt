@@ -10,4 +10,5 @@ sealed interface HotelDetailsEventEffect {
     data class ShareHotel(val hotel: Hotel) : HotelDetailsEventEffect
     data class NavigateToBooking(val hotelId: String) : HotelDetailsEventEffect
     data class NavigateToGallery(val imageList: List<String>) : HotelDetailsEventEffect
+    data class ShowAiError(val message: String) : HotelDetailsEventEffect
 }
