@@ -16,7 +16,7 @@ import org.robolectric.annotation.Config
  * Uses a minimal MaterialTheme in tests to avoid resolving app-specific resources at runtime.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [33])
+@Config(sdk = [35], manifest = Config.NONE)
 class TravelInlineBannerTest {
 
     @get:Rule
