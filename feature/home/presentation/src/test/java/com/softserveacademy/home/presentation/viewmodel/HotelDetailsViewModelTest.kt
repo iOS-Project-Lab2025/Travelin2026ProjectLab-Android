@@ -42,6 +42,7 @@ class HotelDetailsViewModelTest {
     private val getNearbyTransportUseCase = mockk<GetNearbyTransportUseCase>()
     private val getNearbyRestaurantsUseCase = mockk<GetNearbyRestaurantsUseCase>()
     private val getAiRecommendationsUseCase = mockk<GetAiRecommendationsUseCase>()
+    private val favoritesRepository = mockk<FavoritesRepository>()
     private val savedStateHandle = SavedStateHandle()
 
     private lateinit var viewModel: HotelDetailsViewModel
@@ -62,6 +63,7 @@ class HotelDetailsViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        coEvery { favoritesRepository.isFavorite(any()) } returns false
         viewModel = HotelDetailsViewModel(
             savedStateHandle,
             getHotelDetailsUseCase,
@@ -70,7 +72,7 @@ class HotelDetailsViewModelTest {
             getNearbyRestaurantsUseCase,
             getAiRecommendationsUseCase,
             mockk<ToggleFavoriteUseCase>(),
-            mockk<FavoritesRepository>()            
+            favoritesRepository          
         )
     }
 
