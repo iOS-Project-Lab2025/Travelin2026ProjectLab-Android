@@ -10,6 +10,8 @@ import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.error.model.AppResult
 import com.softserveacademy.home.presentation.events.HotelDetailsEvent
+import com.softserveacademy.feature.favorites.common.domain.usecase.ToggleFavoriteUseCase
+import com.softserveacademy.feature.favorites.common.domain.repository.FavoritesRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +68,9 @@ class HotelDetailsViewModelTest {
             getNearbyPlacesUseCase,
             getNearbyTransportUseCase,
             getNearbyRestaurantsUseCase,
-            getAiRecommendationsUseCase
+            getAiRecommendationsUseCase,
+            mockk<ToggleFavoriteUseCase>(),
+            mockk<FavoritesRepository>()            
         )
     }
 
