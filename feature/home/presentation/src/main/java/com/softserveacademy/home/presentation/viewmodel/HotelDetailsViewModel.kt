@@ -35,7 +35,7 @@ class HotelDetailsViewModel @Inject constructor(
     private val getNearbyPlacesUseCase: GetNearbyPlacesUseCase,
     private val getNearbyTransportUseCase: GetNearbyTransportUseCase,
     private val getNearbyRestaurantsUseCase: GetNearbyRestaurantsUseCase,
-    private val getAiRecommendationsUseCase: GetAiRecommendationsUseCase
+    private val getAiRecommendationsUseCase: GetAiRecommendationsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
