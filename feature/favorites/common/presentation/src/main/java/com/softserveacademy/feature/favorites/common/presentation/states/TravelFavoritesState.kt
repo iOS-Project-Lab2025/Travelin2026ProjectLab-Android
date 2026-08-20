@@ -20,6 +20,6 @@ data class TravelFavoritesState(
         }
 
     val isRestricted: Boolean get() = !isLoading && !isAuthenticated
-    val isEmpty: Boolean get() = !isLoading && isAuthenticated && filteredFavorites.isEmpty()
-    val hasContent: Boolean get() = !isLoading && isAuthenticated && filteredFavorites.isNotEmpty()
+    val isEmpty: Boolean get() = !isLoading && isAuthenticated && allFavorites.isEmpty()
+    val hasContent: Boolean get() = !isLoading && isAuthenticated && allFavorites.isNotEmpty()
 }

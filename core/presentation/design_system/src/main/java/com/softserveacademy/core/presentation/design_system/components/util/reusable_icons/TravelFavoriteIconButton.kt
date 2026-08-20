@@ -17,7 +17,7 @@ fun TravelFavoriteIconButton(
     TravelIconButton(
         icon = if (isFavorite) HeartFilledIcon else HeartLineIcon,
         onClick = onClick,
-        iconColor = if (isFavorite) Color.Red else MaterialTheme.colorScheme.primary,
+        iconColor = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface,
         contentDescription = "favorite button",
         backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
         modifier = modifier
