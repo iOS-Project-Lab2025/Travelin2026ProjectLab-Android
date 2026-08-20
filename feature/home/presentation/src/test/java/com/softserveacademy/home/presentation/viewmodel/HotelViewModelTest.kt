@@ -1,6 +1,7 @@
 package com.softserveacademy.home.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import com.softserveacademy.core.domain.usecase.GetAiRecommendationsUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyPlacesUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyRestaurantsUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
@@ -35,6 +36,7 @@ class HotelViewModelTest {
     private val getNearbyPlacesUseCase = mockk<GetNearbyPlacesUseCase>(relaxed = true)
     private val getNearbyTransportUseCase = mockk<GetNearbyTransportUseCase>(relaxed = true)
     private val getNearbyRestaurantsUseCase = mockk<GetNearbyRestaurantsUseCase>(relaxed = true)
+    private val getAiRecommendationsUseCase = mockk<GetAiRecommendationsUseCase>(relaxed = true)
     private lateinit var viewModel: HotelDetailsViewModel
 
     @Before
@@ -45,7 +47,8 @@ class HotelViewModelTest {
             getHotelDetailsUseCase = getHotelDetailsUseCase,
             getNearbyPlacesUseCase = getNearbyPlacesUseCase,
             getNearbyTransportUseCase = getNearbyTransportUseCase,
-            getNearbyRestaurantsUseCase = getNearbyRestaurantsUseCase
+            getNearbyRestaurantsUseCase = getNearbyRestaurantsUseCase,
+            getAiRecommendationsUseCase = getAiRecommendationsUseCase
         )
     }
 

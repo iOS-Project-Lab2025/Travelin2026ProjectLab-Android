@@ -14,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -91,13 +92,18 @@ class HotelDetailsViewModelTest {
         viewModel.onEvent(HotelDetailsEvent.Load("1"))
         advanceUntilIdle()
 
-        coEvery { getAiRecommendationsUseCase(query, 10.0, 20.0) } returns AppResult.Success(recommendations)
+        coEvery { getAiRecommendationsUseCase(query, 10.0, 20.0) } coAnswers {
+            delay(1000)
+            AppResult.Success(recommendations)
+        }
 
         // WHEN: Voice search is triggered
         viewModel.onEvent(HotelDetailsEvent.VoiceSearch(query))
         
         // THEN: State is updated with recommendations and loading finishes
+        testDispatcher.scheduler.runCurrent()
         assertTrue(viewModel.hotelDetailsState.value.isAiLoading)
+        
         advanceUntilIdle()
         
         assertFalse(viewModel.hotelDetailsState.value.isAiLoading)
@@ -142,7 +148,7 @@ class HotelDetailsViewModelTest {
         advanceUntilIdle()
 
         coEvery { getAiRecommendationsUseCase(query, 10.0, 20.0) } returns AppResult.Failure(
-            com.softserveacademy.core.error.model.AppError.Network.NoConnection()
+            com.softserveacademy.core.error.model.AppError.Network.NoConnection
         )
 
         // WHEN: Voice search is triggered

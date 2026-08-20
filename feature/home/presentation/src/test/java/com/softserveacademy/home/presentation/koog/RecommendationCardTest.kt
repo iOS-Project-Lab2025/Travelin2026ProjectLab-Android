@@ -17,7 +17,7 @@ import org.robolectric.annotation.Config
  * UI tests for [RecommendationCard] using Robolectric.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [37])
+@Config(sdk = [35])
 class RecommendationCardTest {
 
     @get:Rule
