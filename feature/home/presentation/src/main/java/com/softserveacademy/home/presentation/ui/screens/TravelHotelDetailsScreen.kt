@@ -276,20 +276,22 @@ fun TravelHotelDetailScreen(
                 )
 
                 // Recommendation Card overlay
-                hotelDetailState.selectedRecommendation?.let { recommendation ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 80.dp),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        com.softserveacademy.home.presentation.koog.RecommendationCard(
-                            recommendation = recommendation,
-                            onNavigateClick = onNavigateClick,
-                            onDismiss = {
-                                viewModel.onEvent(HotelDetailsEvent.SelectRecommendation(null))
-                            }
-                        )
+                if (hotelDetailState.showFullMap) {
+                    hotelDetailState.selectedRecommendation?.let { recommendation ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 80.dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            com.softserveacademy.home.presentation.koog.RecommendationCard(
+                                recommendation = recommendation,
+                                onNavigateClick = onNavigateClick,
+                                onDismiss = {
+                                    viewModel.onEvent(HotelDetailsEvent.SelectRecommendation(null))
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -365,18 +367,6 @@ private fun TravelHotelDetailsWrapper(
                         onBookClick = onBookClick
                     )
                 }
-            },
-            floatingActionButton = {
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(bottom = 70.dp) // Offset to not cover bottom bar too much
-                ) {
-                    if (isAiLoading) {
-                        AiraThinkingIndicator()
-                    }
-                    AiraVoiceFAB(onClick = onVoiceClick)
-                }
             }
         ) { innerPadding ->
             LazyColumn(
@@ -420,48 +410,6 @@ private fun TravelHotelDetailsWrapper(
                         onMapClick = onMapClick
                     )
                     Divider()
-                }
-
-                if (aiRecommendations.isNotEmpty() || isAiLoading) {
-                    item {
-                        Column(
-                            modifier = Modifier.padding(vertical = TravelinDimens.PaddingMedium)
-                        ) {
-                            Text(
-                                text = "Aira Suggestions",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onPrimaryFixed,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = TravelinDimens.PaddingLarge)
-                            )
-
-                            Spacer(modifier = Modifier.height(TravelinDimens.SpaceMedium))
-
-                            if (isAiLoading && aiRecommendations.isEmpty()) {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().height(100.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    AiraThinkingIndicator()
-                                }
-                            }
-
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = TravelinDimens.PaddingLarge),
-                                horizontalArrangement = Arrangement.spacedBy(TravelinDimens.SpaceMedium)
-                            ) {
-                                items(aiRecommendations) { recommendation ->
-                                    com.softserveacademy.home.presentation.koog.RecommendationCard(
-                                        recommendation = recommendation,
-                                        onDismiss = { /* No-op in list */ },
-                                        onNavigateClick = onNavigateClick,
-                                        modifier = Modifier.width(300.dp)
-                                    )
-                                }
-                            }
-                        }
-                        Divider()
-                    }
                 }
 
                 item {

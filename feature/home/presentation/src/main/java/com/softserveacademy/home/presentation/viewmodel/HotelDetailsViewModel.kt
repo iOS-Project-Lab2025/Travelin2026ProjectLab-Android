@@ -211,15 +211,15 @@ class HotelDetailsViewModel @Inject constructor(
                 .onSuccess { recommendations ->
                     updateState { it.copy(isAiLoading = false, aiRecommendations = recommendations) }
                     if (recommendations.isEmpty()) {
-                        val emptyMsg = "No encontré nada para '$query'. Prueba con otra cosa."
+                        val emptyMsg = "I couldn't find anything for '$query'. Try something else."
                         updateState { it.copy(lastVoiceQuery = emptyMsg) }
                         sendEffect(HotelDetailsEventEffect.ShowAiError(emptyMsg))
                     }
                 }
                 .onFailure { error ->
                     val message = when (error) {
-                        is AppError.Network.NoConnection -> "Sin conexión a internet. Aira no puede responder."
-                        else -> "Hubo un problema consultando a Aira. Inténtalo de nuevo."
+                        is AppError.Network.NoConnection -> "No internet connection. Aira cannot respond."
+                        else -> "There was a problem consulting Aira. Try again."
                     }
                     updateState { it.copy(isAiLoading = false, aiErrorMessage = message, lastVoiceQuery = message) }
                     sendEffect(HotelDetailsEventEffect.ShowAiError(message))
