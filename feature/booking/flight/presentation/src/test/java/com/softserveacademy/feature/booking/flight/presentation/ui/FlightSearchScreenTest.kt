@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config
  * Uses Robolectric to simulate the Android environment for Compose Rule.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34], packageName = "com.softserveacademy.feature.booking.flight.presentation")
+@Config(sdk = [35], packageName = "com.softserveacademy.feature.booking.flight.presentation")
 class FlightSearchScreenTest {
 
     @get:Rule
