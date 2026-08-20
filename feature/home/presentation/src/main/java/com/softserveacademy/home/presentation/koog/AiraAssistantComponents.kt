@@ -39,7 +39,7 @@ fun AiraVoiceFAB(
     ) {
         Icon(
             imageVector = Icons.Default.Mic,
-            contentDescription = "Asistente Aira"
+            contentDescription = "Aira Assistant"
         )
     }
 }
@@ -140,7 +140,7 @@ fun RecommendationCard(
                         color = Green70
                     )
                     IconButton(onClick = onDismiss) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "Cerrar")
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                     }
                 }
                 Text(
@@ -167,7 +167,7 @@ fun RecommendationCard(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Lévame ahí")
+                    Text("Take me there!")
                 }
             }
         }

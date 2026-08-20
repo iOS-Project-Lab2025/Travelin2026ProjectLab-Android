@@ -13,7 +13,7 @@ class VoiceRecognizerContract : ActivityResultContract<Unit, String?>() {
     override fun createIntent(context: Context, input: Unit): Intent {
         return Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Aira te escucha...")
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Aira is listening...")
             // Optimization for silence detection (1.5s)
             putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500L)
         }
