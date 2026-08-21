@@ -47,6 +47,7 @@ dependencies {
     implementation(projects.feature.auth.common.domain)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     testImplementation(libs.bundles.testing.stack)
     testImplementation(libs.androidx.compose.ui.test.junit4)

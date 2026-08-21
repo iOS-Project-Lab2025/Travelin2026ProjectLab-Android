@@ -108,3 +108,9 @@ dependencies {
 
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.2")
+    }
+}
+

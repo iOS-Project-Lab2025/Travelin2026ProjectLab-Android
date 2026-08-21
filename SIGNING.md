@@ -23,7 +23,23 @@ KEY_PASSWORD=your_key_password
 
 Refer to `local.properties.example` for a template.
 
-### 2. CI/Environment Variables
+## Secrets & API Keys
+
+The project requires several API keys to function correctly. These should be provided in `local.properties` for local development and as environment variables/GitHub Secrets for CI.
+
+### 1. Google Maps API Key (`MAPS_API_KEY`)
+Used for displaying maps and POIs in the Hotel Details and Exploration screens.
+- **Provider**: Google Maps Platform.
+
+### 2. Koog AI Key (`AI_KEY`)
+Used by the Aira Assistant to process voice queries and provide travel recommendations.
+- **Provider**: Google AI Studio (Gemini API).
+
+### 3. Stripe Keys (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`)
+Used for processing payments in the booking flows.
+- **Provider**: Stripe Dashboard.
+
+## CI/Environment Variables
 
 For CI environments (like GitHub Actions), these secrets can be provided as environment variables:
 
@@ -31,6 +47,10 @@ For CI environments (like GitHub Actions), these secrets can be provided as envi
 - `KEYSTORE_PASSWORD`
 - `KEY_ALIAS`
 - `KEY_PASSWORD`
+- `MAPS_API_KEY`
+- `AI_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PUBLISHABLE_KEY`
 
 ### Build Logic Fallback
 

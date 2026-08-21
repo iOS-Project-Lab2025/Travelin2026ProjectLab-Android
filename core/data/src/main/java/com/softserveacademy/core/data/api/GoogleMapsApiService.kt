@@ -53,6 +53,7 @@ interface GoogleMapsApiService {
     suspend fun computeRouteMatrix(
         @Header("X-Goog-Api-Key") apiKey: String,
         @Header("X-Goog-FieldMask") fieldMask: String,
+        @Header("X-Android-Package") packageName: String,
         @Body request: RouteMatrixRequest
     ): List<RouteMatrixElement>
 }

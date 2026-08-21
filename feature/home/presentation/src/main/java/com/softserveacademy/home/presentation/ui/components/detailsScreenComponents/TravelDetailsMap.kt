@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -38,10 +40,15 @@ import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.softserveacademy.home.presentation.R
+import com.softserveacademy.core.domain.model.AiRecommendation
 import com.softserveacademy.core.presentation.design_system.R as DesignSystemR
+import androidx.compose.ui.graphics.Color
 import com.softserveacademy.core.presentation.design_system.components.util.reusable_icons.TravelArrowIconButton
 import com.softserveacademy.core.presentation.design_system.theme.LocationMarkerIcon
 import com.softserveacademy.core.presentation.design_system.theme.TravelinDimens
+import com.softserveacademy.home.presentation.koog.AiraFeedbackBubble
+import com.softserveacademy.home.presentation.koog.AiraThinkingIndicator
+import com.softserveacademy.home.presentation.koog.AiraVoiceFAB
 
 /**
  * Displays the location section of the hotel, including the address and a Google Map.
@@ -153,6 +160,12 @@ fun TravelDetailsMap(
 fun MapOverlay(
     hotelCoordinates: LatLng,
     isDarkTheme: Boolean,
+    aiRecommendations: List<AiRecommendation> = emptyList(),
+    isAiLoading: Boolean = false,
+    lastVoiceQuery: String? = null,
+    onRecommendationClick: (AiRecommendation) -> Unit = {},
+    onNavigateClick: (AiRecommendation) -> Unit = {},
+    onVoiceClick: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     // BackHandler is active only when the overlay is visible
@@ -211,6 +224,27 @@ fun MapOverlay(
                         modifier = Modifier.size(TravelinDimens.IconSizeExtraLarge)
                     )
                 }
+
+                // AI Recommendations markers
+                aiRecommendations.forEach { recommendation ->
+                    MarkerComposable(
+                        state = rememberUpdatedMarkerState(
+                            position = LatLng(recommendation.latitude, recommendation.longitude)
+                        ),
+                        title = recommendation.name,
+                        onClick = {
+                            onRecommendationClick(recommendation)
+                            false
+                        }
+                    ) {
+                        Icon(
+                            imageVector = LocationMarkerIcon,
+                            contentDescription = recommendation.name,
+                            tint = Color.Blue,
+                            modifier = Modifier.size(TravelinDimens.IconSizeLarge)
+                        )
+                    }
+                }
             }
 
             TravelArrowIconButton(
@@ -218,6 +252,35 @@ fun MapOverlay(
                     .padding(TravelinDimens.PaddingMedium),
                 onClick = onDismiss
             )
+
+            // Aira Assistant Floating UI inside full map
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 180.dp, end = 16.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Column(horizontalAlignment = Alignment.End) {
+                    if (isAiLoading) {
+                        AiraThinkingIndicator(modifier = Modifier.padding(bottom = 8.dp))
+                    }
+                    AiraVoiceFAB(
+                        onClick = onVoiceClick
+                    )
+                }
+            }
+
+            // Feedback bubble at the top
+            lastVoiceQuery?.let { query ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .zIndex(2f),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    AiraFeedbackBubble(text = query)
+                }
+            }
         }
     }
 }

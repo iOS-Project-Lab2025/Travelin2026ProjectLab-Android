@@ -19,4 +19,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.google.places)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.koog.agents)
+    implementation(libs.koog.google.client)
+    implementation(libs.koog.http.ktor)
+    implementation(libs.ktor.client.okhttp)
 }

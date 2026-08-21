@@ -25,7 +25,7 @@ import kotlin.time.Duration
  * 4. Full-screen loading state behavior.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34], packageName = "com.softserveacademy.feature.booking.flight.presentation")
+@Config(sdk = [35], packageName = "com.softserveacademy.feature.booking.flight.presentation")
 class FlightBookingConfirmScreenTest {
 
     @get:Rule

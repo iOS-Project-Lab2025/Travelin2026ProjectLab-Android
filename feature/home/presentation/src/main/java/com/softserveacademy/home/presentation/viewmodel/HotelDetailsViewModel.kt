@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.softserveacademy.core.domain.usecase.GetNearbyPlacesUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyRestaurantsUseCase
 import com.softserveacademy.core.domain.usecase.GetNearbyTransportUseCase
+import com.softserveacademy.core.domain.usecase.GetAiRecommendationsUseCase
 import com.softserveacademy.core.domain.usecase.hotel.GetHotelDetailsUseCase
 import com.softserveacademy.core.error.extension.onFailure
 import com.softserveacademy.core.error.extension.onSuccess
@@ -34,6 +35,7 @@ class HotelDetailsViewModel @Inject constructor(
     private val getNearbyPlacesUseCase: GetNearbyPlacesUseCase,
     private val getNearbyTransportUseCase: GetNearbyTransportUseCase,
     private val getNearbyRestaurantsUseCase: GetNearbyRestaurantsUseCase,
+    private val getAiRecommendationsUseCase: GetAiRecommendationsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
@@ -119,6 +121,18 @@ class HotelDetailsViewModel @Inject constructor(
                 _hotelDetailsState.value.hotel?.let {
                     loadNearbyPlaces(it.latitude, it.longitude)
                 }
+            }
+            is HotelDetailsEvent.VoiceSearch -> {
+                performVoiceSearch(event.query)
+            }
+            is HotelDetailsEvent.SelectRecommendation -> {
+                updateState { it.copy(selectedRecommendation = event.recommendation) }
+            }
+            HotelDetailsEvent.ClearVoiceQuery -> {
+                updateState { it.copy(lastVoiceQuery = null) }
+            }
+            HotelDetailsEvent.ClearAiRecommendations -> {
+                updateState { it.copy(aiRecommendations = emptyList(), lastVoiceQuery = null) }
             }
         }
     }
@@ -215,6 +229,30 @@ class HotelDetailsViewModel @Inject constructor(
             is AppError.Network.NoConnection -> "No internet connection. Please check your network."
             is AppError.Network.Timeout -> "Connection timed out. Please try again."
             else -> "Failed to load nearby places"
+        }
+    }
+
+    private fun performVoiceSearch(query: String) {
+        val hotel = _hotelDetailsState.value.hotel ?: return
+        viewModelScope.launch {
+            updateState { it.copy(isAiLoading = true, aiErrorMessage = null, lastVoiceQuery = query, aiRecommendations = emptyList()) }
+            getAiRecommendationsUseCase(query, hotel.latitude, hotel.longitude)
+                .onSuccess { recommendations ->
+                    updateState { it.copy(isAiLoading = false, aiRecommendations = recommendations) }
+                    if (recommendations.isEmpty()) {
+                        val emptyMsg = "I couldn't find anything for '$query'. Try something else."
+                        updateState { it.copy(lastVoiceQuery = emptyMsg) }
+                        sendEffect(HotelDetailsEventEffect.ShowAiError(emptyMsg))
+                    }
+                }
+                .onFailure { error ->
+                    val message = when (error) {
+                        is AppError.Network.NoConnection -> "No internet connection. Aira cannot respond."
+                        else -> "There was a problem consulting Aira. Try again."
+                    }
+                    updateState { it.copy(isAiLoading = false, aiErrorMessage = message, lastVoiceQuery = message) }
+                    sendEffect(HotelDetailsEventEffect.ShowAiError(message))
+                }
         }
     }
 

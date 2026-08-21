@@ -52,18 +52,27 @@ jobs:
           fi
           echo "sdk.dir=$SDK_PATH" > local.properties
           echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> local.properties
+          echo "AI_KEY=${{ secrets.AI_KEY }}" >> local.properties
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> local.properties
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> local.properties
 
       # Compila el proyecto en modo debug (verifica que no haya errores de compilación)
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+          AI_KEY: ${{ secrets.AI_KEY }}
+          STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       # (Opcional) corre los tests unitarios también
       - name: Run unit tests
         run: ./gradlew testDevDebugUnitTest testProdDebugUnitTest testStagingDebugUnitTest --stacktrace
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+          AI_KEY: ${{ secrets.AI_KEY }}
+          STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
 
       # Valida que el formato estético cumpla con Ktlint

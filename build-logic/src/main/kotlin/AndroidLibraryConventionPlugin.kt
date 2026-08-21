@@ -40,6 +40,11 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                         ?: ""
                     manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
                     buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+
+                    val aiKey = getProperty("AI_KEY")
+                        ?: project.findProperty("AI_KEY")?.toString()
+                        ?: ""
+                    buildConfigField("String", "AI_KEY", "\"$aiKey\"")
                 }
                 compileOptions {
                     sourceCompatibility = JavaVersion.VERSION_11
