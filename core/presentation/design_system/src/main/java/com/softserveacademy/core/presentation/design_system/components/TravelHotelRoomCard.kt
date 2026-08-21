@@ -62,7 +62,7 @@ fun TravelHotelRoomCard(
             .clickable(enabled = isClickable && isAvailable) { onRoomSelected(room) },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = if (isAvailable) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = if (isAvailable) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = TravelinDimens.ElevationSmall
@@ -75,7 +75,6 @@ fun TravelHotelRoomCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
-                    .then(if (!isAvailable) Modifier.background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)) else Modifier)
             )
 
             Column(
