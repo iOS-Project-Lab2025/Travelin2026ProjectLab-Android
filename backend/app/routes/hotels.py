@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 from app.database import supabase
-from app.models.hotel import HotelModel, RoomModel
 from typing import List, Optional
 
 router = APIRouter(
@@ -8,7 +7,7 @@ router = APIRouter(
     tags=["Hotels"]
 )
 
-@router.get("", response_model=List[HotelModel])
+@router.get("")
 def get_hotels():
     response = (
         supabase
@@ -17,9 +16,23 @@ def get_hotels():
         .execute()
     )
 
-    return [HotelModel(**hotel) for hotel in response.data]
+    hotels = []
 
-@router.get("/{id}/", response_model=HotelModel)
+    for hotel in response.data:
+        hotels.append({
+            "id": hotel["id"],
+            "name": hotel["name"],
+            "address": hotel["address"],
+            "star": hotel["star"],
+            "userRating": hotel["user_rating"],
+            "pricePerNight": hotel["price_per_night"],
+            "image": hotel.get("image_list", []),
+            "amenities": hotel.get("amenities", [])
+        })
+
+    return hotels
+
+@router.get("/{id}/")
 def get_hotel_by_id(id: str):
     # Fetch hotel details
     hotel_response = (
@@ -34,7 +47,7 @@ def get_hotel_by_id(id: str):
     if not hotel_response.data:
         raise HTTPException(status_code=404, detail="Hotel not found")
 
-    hotel_data = hotel_response.data
+    hotel = hotel_response.data
 
     # Fetch associated rooms from the 'rooms' table
     rooms_response = (
@@ -45,11 +58,39 @@ def get_hotel_by_id(id: str):
         .execute()
     )
 
-    hotel_data["rooms"] = rooms_response.data
+    rooms = []
+    for room in rooms_response.data:
+        rooms.append({
+            "id": str(room["id"]),
+            "type": room["type"],
+            "description": room.get("description", ""),
+            "maxOccupancy": room["max_occupancy"],
+            "bedType": room.get("bed_type", ""),
+            "bedCount": room.get("bed_count", 1),
+            "amenities": room.get("amenities", []),
+            "pricePerNight": float(room["price_per_night"]),
+            "images": room.get("images", []),
+            "totalRooms": room["total_rooms"],
+            "allowPets": room["allow_pets"],
+        })
 
-    return HotelModel(**hotel_data)
+    return {
+        "id": str(hotel["id"]),
+        "name": hotel["name"],
+        "address": hotel["address"],
+        "star": hotel["star"],
+        "userRating": hotel["user_rating"],
+        "pricePerNight": hotel["price_per_night"],
+        "image": hotel.get("image_list", []),
+        "description": hotel.get("description", ""),
+        "numberOfReviews": hotel.get("number_of_reviews", 0),
+        "latitude": hotel.get("latitude", 0.0),
+        "longitude": hotel.get("longitude", 0.0),
+        "amenities": hotel.get("amenities", []),
+        "rooms": rooms
+    }
 
-@router.get("/{id}/rooms/", response_model=List[RoomModel])
+@router.get("/{id}/rooms/")
 def get_hotel_rooms(id: str):
     response = (
         supabase
@@ -59,4 +100,19 @@ def get_hotel_rooms(id: str):
         .execute()
     )
 
-    return [RoomModel(**room) for room in response.data]
+    rooms = []
+    for room in response.data:
+        rooms.append({
+            "id": str(room["id"]),
+            "type": room["type"],
+            "description": room.get("description", ""),
+            "maxOccupancy": room["max_occupancy"],
+            "bedType": room.get("bed_type", ""),
+            "bedCount": room.get("bed_count", 1),
+            "amenities": room.get("amenities", []),
+            "pricePerNight": float(room["price_per_night"]),
+            "images": room.get("images", []),
+            "totalRooms": room["total_rooms"],
+            "allowPets": room["allow_pets"],
+        })
+    return rooms
